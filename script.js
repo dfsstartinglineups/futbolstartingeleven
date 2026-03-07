@@ -69,12 +69,24 @@ function getTimeBadgeHtml(data) {
         badge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
     }
 
-    // LATEST EVENT SNIPPET ADDED
+    // UPDATED: LATEST EVENT SNIPPET WITH TEAM LOGO AND NULL FALLBACK
     let latestEvent = '';
     if (data.events && data.events.length > 0) {
-        const lastEv = data.events[data.events.length - 1]; // Grabs the most recent event
+        const lastEv = data.events[data.events.length - 1]; 
         const icon = lastEv.type === 'Goal' ? '⚽' : '🟥';
-        latestEvent = `<span class="ms-2 text-success fw-bold text-truncate" style="font-size: 0.70rem; max-width: 140px; display: inline-block; vertical-align: middle;">${icon} ${lastEv.player} (${lastEv.time}')</span>`;
+        
+        // Figure out which team this event belongs to
+        const isHomeTeam = lastEv.team_id === data.teams.home.id;
+        const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
+        const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo; // Grab the tiny logo URL
+        
+        // If player is null or "null", use the team name instead
+        const playerName = (lastEv.player && lastEv.player !== "null") ? lastEv.player : teamName;
+        
+        // Injected the logo image tag right between the icon and the player name
+        latestEvent = `<span class="ms-2 text-success fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
+            ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} (${lastEv.time}')
+        </span>`;
     }
 
     return badge + latestEvent;
@@ -97,9 +109,14 @@ function getEventsHtml(data) {
     const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id);
     const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
     
-    const formatEvents = (evs) => evs.map(e => {
+    // UPDATED: Added teamName parameter so we have a fallback
+    const formatEvents = (evs, teamName) => evs.map(e => {
         let icon = e.type === 'Goal' ? '⚽' : '🟥';
-        return `<span class="d-inline-block me-1">${icon} <span class="text-dark fw-bold">${e.player}</span> ${e.time}'</span>`;
+        
+        // If player is null or "null", use the team name instead
+        let playerName = (e.player && e.player !== "null") ? e.player : teamName;
+        
+        return `<span class="d-inline-block me-1">${icon} <span class="text-dark fw-bold">${playerName}</span> ${e.time}'</span>`;
     }).join(' ');
 
     return `
@@ -110,8 +127,8 @@ function getEventsHtml(data) {
          onmouseout="this.style.backgroundColor='transparent'"
          title="Click to expand/collapse goals and cards">
         <div class="d-flex justify-content-between text-muted w-100">
-            <div class="event-col text-start pe-1 text-truncate" style="flex: 1; min-width: 0;">${formatEvents(homeEvents)}</div>
-            <div class="event-col text-end ps-1 text-truncate" style="flex: 1; min-width: 0;">${formatEvents(awayEvents)}</div>
+            <div class="event-col text-start pe-1 text-truncate" style="flex: 1; min-width: 0;">${formatEvents(homeEvents, data.teams.home.name)}</div>
+            <div class="event-col text-end ps-1 text-truncate" style="flex: 1; min-width: 0;">${formatEvents(awayEvents, data.teams.away.name)}</div>
         </div>
     </div>`;
 }
