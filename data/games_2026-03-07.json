@@ -16323,7 +16323,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 17,
+                "elapsed": 18,
                 "extra": null
             }
         },
@@ -16342,20 +16342,20 @@
                 "id": 1615,
                 "name": "DC United",
                 "logo": "https://media.api-sports.io/football/teams/1615.png",
-                "winner": null,
+                "winner": false,
                 "rank": 6
             },
             "away": {
                 "id": 9568,
                 "name": "Inter Miami",
                 "logo": "https://media.api-sports.io/football/teams/9568.png",
-                "winner": null,
+                "winner": true,
                 "rank": 7
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -16795,7 +16795,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 18,
+                "team_id": 9568,
+                "player": "R. de Paul",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -16864,7 +16872,7 @@
         "injuries": {
             "home": [],
             "away": [],
-            "fetched": false
+            "fetched": true
         },
         "events": []
     },
@@ -16935,7 +16943,7 @@
         "injuries": {
             "home": [],
             "away": [],
-            "fetched": false
+            "fetched": true
         },
         "events": []
     },
