@@ -48,13 +48,14 @@ function updateSEO(leagueKey, dateStr) {
     document.getElementById('seo-h1').innerText = `Daily ${leagueName} Starting Lineups & Formations`;
 }
 
-function renderLeagueMenu(activeLeague) {
+function renderLeagueMenu(activeLeague, currentDate) {
     const menu = document.getElementById('league-menu');
     menu.innerHTML = '';
     
     Object.keys(SUPPORTED_LEAGUES).forEach(key => {
         const a = document.createElement('a');
-        a.href = `?league=${key}`;
+        // Attach BOTH the league and the current date to the URL to make dates sticky
+        a.href = `?league=${key}&date=${currentDate}`;
         a.className = `league-pill ${key === activeLeague ? 'active' : ''}`;
         a.textContent = SUPPORTED_LEAGUES[key].name;
         menu.appendChild(a);
@@ -67,7 +68,9 @@ function renderLeagueMenu(activeLeague) {
 async function init() {
     const params = getUrlParams();
     updateSEO(params.league, params.date);
-    renderLeagueMenu(params.league);
+    
+    // Pass the date into the menu renderer so it persists across clicks
+    renderLeagueMenu(params.league, params.date);
     
     const container = document.getElementById('games-container');
     const datePicker = document.getElementById('date-picker');
