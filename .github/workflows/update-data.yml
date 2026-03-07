@@ -1,9 +1,9 @@
-name: Scrape FotMob Lineups
+name: Scrape API-Football Lineups
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
-  workflow_dispatch:
+    - cron: '*/15 * * * *' # Runs every 15 minutes
+  workflow_dispatch: # Allows you to run it manually
 
 jobs:
   update-data:
@@ -21,6 +21,9 @@ jobs:
           python-version: '3.10'
 
       - name: Run Scraper
+        # THIS IS THE PART THAT WAS MISSING
+        env:
+          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
         run: python scraper.py
 
       - name: Commit and Push changes
@@ -28,5 +31,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add data/
-          git commit -m "Automated FotMob data update" || exit 0
+          git commit -m "Automated API-Football update" || exit 0
           git push
