@@ -313,25 +313,27 @@ async function updateLiveGames() {
         const injuriesEl = document.getElementById(`injuries-${fixId}`);
         
         if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
-            const newTimeHtml = getTimeBadgeHtml(match);
-            const newScoreHtml = getScoreHtml(match);
-            const newEventsHtml = getEventsHtml(match);
-            const newOddsHtml = getOddsHtml(match);
-            const newInjuriesHtml = getInjuriesHtml(match);
+            // Generate the new HTML and trim any invisible whitespace
+            const newTimeHtml = getTimeBadgeHtml(match).trim();
+            const newScoreHtml = getScoreHtml(match).trim();
+            const newEventsHtml = getEventsHtml(match).trim();
+            const newOddsHtml = getOddsHtml(match).trim();
+            const newInjuriesHtml = getInjuriesHtml(match).trim();
             
-            if (timeEl.innerHTML !== newTimeHtml) timeEl.innerHTML = newTimeHtml;
+            // Compare against the existing HTML (also trimmed of whitespace)
+            if (timeEl.innerHTML.trim() !== newTimeHtml) timeEl.innerHTML = newTimeHtml;
             
-            // IF THE SCORE CHANGES, ADD THE FLASH ANIMATION
-            if (scoreEl.innerHTML !== newScoreHtml) {
+            // IF THE SCORE TRULY CHANGES, ADD THE FLASH ANIMATION
+            if (scoreEl.innerHTML.trim() !== newScoreHtml) {
                 scoreEl.innerHTML = newScoreHtml;
                 scoreEl.classList.remove('flash-green');
                 void scoreEl.offsetWidth; // This forces the browser to restart the animation
                 scoreEl.classList.add('flash-green');
             }
             
-            if (eventsEl.innerHTML !== newEventsHtml) eventsEl.innerHTML = newEventsHtml;
-            if (oddsEl.innerHTML !== newOddsHtml) oddsEl.innerHTML = newOddsHtml;
-            if (injuriesEl.innerHTML !== newInjuriesHtml) injuriesEl.innerHTML = newInjuriesHtml;
+            if (eventsEl.innerHTML.trim() !== newEventsHtml) eventsEl.innerHTML = newEventsHtml;
+            if (oddsEl.innerHTML.trim() !== newOddsHtml) oddsEl.innerHTML = newOddsHtml;
+            if (injuriesEl.innerHTML.trim() !== newInjuriesHtml) injuriesEl.innerHTML = newInjuriesHtml;
         }
     });
 }
