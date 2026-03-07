@@ -103,8 +103,9 @@ function renderLeagueMenu(activeLeague, currentDate) {
         const dropdownDiv = document.createElement('div');
         dropdownDiv.className = 'dropdown d-inline-block';
         
+        // Removed the 'btn' class and added inline dynamic color so it matches the pills
         dropdownDiv.innerHTML = `
-            <button class="btn dropdown-toggle league-pill ${isActiveRegion ? 'active' : ''}" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border: none; background: transparent;">
+            <button class="dropdown-toggle league-pill ${isActiveRegion ? 'active' : ''}" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border: none; background: transparent; color: ${isActiveRegion ? '#20c997' : '#adb5bd'};">
                 ${region}
             </button>
             <ul class="dropdown-menu dropdown-menu-dark shadow" style="background-color: #343a40; border-color: #495057;">
