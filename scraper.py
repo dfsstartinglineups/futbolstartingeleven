@@ -26,17 +26,48 @@ def process_date(target_date):
     
     print(f"\n--- Fetching live fixtures & scores for {date_str} ---")
     
-    # 1. Fetch the master schedule to get live scores and time elapsed
+    # 1. Fetch the master schedule
     fixtures_data = fetch_data(f"fixtures?date={date_str}&timezone=America/New_York")
     
     if not fixtures_data or "response" not in fixtures_data:
         print("No fixtures found or API error.")
         return
 
-    # Filter for our top leagues
     matches = [m for m in fixtures_data["response"] if m["league"]["id"] in TOP_LEAGUE_IDS]
     
-    # 2. Load existing local data (The "Memory")
+    # 2. Fetch the Odds for the day (Bet365 is bookmaker id 8)
+    print(f"--- Fetching Odds for {date_str} ---")
+    odds_dict = {}
+    odds_res = fetch_data(f"odds?date={date_str}&bookmaker=8")
+    
+    if odds_res and "response" in odds_res:
+        for odd_item in odds_res["response"]:
+            fix_id = odd_item["fixture"]["id"]
+            # Default odds structure
+            match_odds = {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "2.5", "over": "TBD", "under": "TBD"}
+            
+            if odd_item.get("bookmakers"):
+                bets = odd_item["bookmakers"][0].get("bets", [])
+                for bet in bets:
+                    # Bet ID 1 is Match Winner (Home/Draw/Away)
+                    if bet["id"] == 1: 
+                        for v in bet["values"]:
+                            # Keep exact decimal odds format
+                            if v["value"] == "Home": match_odds["home"] = str(v["odd"])
+                            if v["value"] == "Draw": match_odds["draw"] = str(v["odd"])
+                            if v["value"] == "Away": match_odds["away"] = str(v["odd"])
+                    # Bet ID 5 is Goals Over/Under
+                    elif bet["id"] == 5: 
+                        for v in bet["values"]:
+                            # Target the standard 2.5 goals line
+                            if "Over 2.5" in str(v["value"]):
+                                match_odds["over"] = str(v["odd"])
+                            elif "Under 2.5" in str(v["value"]):
+                                match_odds["under"] = str(v["odd"])
+            
+            odds_dict[fix_id] = match_odds
+
+    # 3. Load existing local data (The "Memory")
     existing_data = {}
     if os.path.exists(filepath):
         with open(filepath, "r") as f:
@@ -53,27 +84,22 @@ def process_date(target_date):
     for match in matches:
         fixture_id = match["fixture"]["id"]
         
-        # Check our memory to see if we already have the lineups
         existing_game = existing_data.get(fixture_id, {})
         home_lineup = existing_game.get("homeLineup")
         away_lineup = existing_game.get("awayLineup")
         
-        # Parse the kickoff time (API-Football returns ISO format)
         try:
             game_time_str = match['fixture']['date']
             if game_time_str.endswith('Z'):
                 game_time_str = game_time_str[:-1] + '+00:00'
             game_time = datetime.fromisoformat(game_time_str)
         except Exception as e:
-            print(f"Error parsing date {match['fixture']['date']}: {e}")
-            game_time = now_utc + timedelta(days=1) # Default to future if error
+            game_time = now_utc + timedelta(days=1)
             
-        # 3. The Smart Logic Checks
         needs_lineups = not home_lineup or not away_lineup
         within_window = now_utc >= (game_time - timedelta(minutes=60))
         valid_status = match["fixture"]["status"]["short"] not in ['PST', 'CANC', 'ABD']
         
-        # If we need them, we are within an hour of kickoff, and game isn't canceled
         if needs_lineups and within_window and valid_status:
             print(f"[{match['teams']['home']['name']} vs {match['teams']['away']['name']}] within 60 mins. Fetching lineups...")
             lineups_data = fetch_data(f"fixtures/lineups?fixture={fixture_id}")
@@ -81,10 +107,9 @@ def process_date(target_date):
             if lineups_data and "response" in lineups_data and len(lineups_data["response"]) == 2:
                 home_lineup = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["home"]["id"]), None)
                 away_lineup = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["away"]["id"]), None)
-                if home_lineup and away_lineup:
-                    print(f"✅ Lineups successfully locked in for {fixture_id}!")
-            else:
-                print(f"Lineups not yet available for {fixture_id}.")
+                
+        # Retrieve the odds we parsed earlier for this specific game
+        game_odds = odds_dict.get(fixture_id, {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"})
                 
         all_game_data.append({
             "fixture": match["fixture"],
@@ -92,10 +117,10 @@ def process_date(target_date):
             "teams": match["teams"],
             "goals": match["goals"],
             "homeLineup": home_lineup,
-            "awayLineup": away_lineup
+            "awayLineup": away_lineup,
+            "odds": game_odds # Append the odds object to the final JSON
         })
 
-    # Save everything back to the file
     os.makedirs("data", exist_ok=True)
     with open(filepath, "w") as f:
         json.dump(all_game_data, f, indent=4)
@@ -107,7 +132,6 @@ def main():
         print("CRITICAL ERROR: FOOTBALL_API_KEY environment variable not set.")
         return
 
-    # Only scrape TODAY
     today = datetime.now()
     dates_to_fetch = [today] 
     
