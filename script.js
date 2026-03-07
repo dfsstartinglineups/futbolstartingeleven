@@ -186,7 +186,8 @@ function updateSEO(leagueKey, dateStr) {
     const dateObj = new Date(dateStr + 'T12:00:00'); 
     const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     document.title = `Live ${leagueName} Soccer Lineups, Scores & Odds | FutbolStartingEleven`;
-    document.getElementById('seo-h1').innerText = `Live ${leagueName} Soccer Starting Lineups, Live Scores, Injuries, and Match Odds for ${formattedDate}`;
+    const seoEl = document.getElementById('seo-h1');
+    if(seoEl) seoEl.innerText = `Live ${leagueName} Soccer Starting Lineups, Live Scores, Injuries, and Match Odds for ${formattedDate}`;
 }
 
 function renderLeagueMenu(activeLeague, currentDate) {
@@ -410,13 +411,17 @@ function createGameCard(data) {
         
         const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation} FORMATION</div>`;
         const listItems = lineupData.startXI.map(p => {
-            const player = p.player;
-            let posColor = player.pos === 'G' ? "#dc3545" : player.pos === 'D' ? "#0d6efd" : player.pos === 'M' ? "#20c997" : "#ffc107";
+            // FIX: Some players might be missing a position in edge cases.
+            const safePos = p.player.pos || '-';
+            const safeName = p.player.name || 'Unknown';
+            const safeNum = p.player.number || '';
+            
+            let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
             return `
                 <li class="d-flex w-100 px-2 py-1 border-bottom">
-                    <span class="text-muted fw-bold d-inline-block text-start" style="font-size: 0.7rem; width: 25px; color: ${posColor} !important;">${player.pos}</span>
-                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${player.name}">${player.name}</span>
-                    <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${player.number}</span>
+                    <span class="text-muted fw-bold d-inline-block text-start" style="font-size: 0.7rem; width: 25px; color: ${posColor} !important;">${safePos}</span>
+                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${safeName}">${safeName}</span>
+                    <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
                 </li>`;
         }).join('');
         return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
