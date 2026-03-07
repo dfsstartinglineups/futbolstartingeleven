@@ -30,8 +30,8 @@ const LEAGUE_GROUPS = {
     ],
     "World": [
         { key: "saudi", id: 307, name: "Saudi Pro League" },
-        { key: "japan", id: 98, name: "J1 League" },
-        { key: "korea", id: 292, name: "K League 1" }
+        { key: "japan", id: 98, name: "J1 League" }
+        // Dropped K-League due to unreliable data feeds
     ]
 };
 
@@ -56,8 +56,7 @@ const LEAGUE_MAP_ESPN = {
     128: "arg.1",          // Argentina Liga Profesional
     13: "conmebol.libertadores", // Copa Libertadores
     307: "ksa.1",          // Saudi Pro League
-    98: "jpn.1",           // J1 League
-    292: "kor.1"           // K League 1
+    98: "jpn.1"            // J1 League
 };
 
 // ==========================================
