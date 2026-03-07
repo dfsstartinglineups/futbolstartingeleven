@@ -4695,7 +4695,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 80,
+                "elapsed": 85,
                 "extra": null
             }
         },
@@ -5230,7 +5230,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 77,
+                "elapsed": 82,
                 "extra": null
             }
         },
@@ -5262,7 +5262,7 @@
         },
         "goals": {
             "home": 1,
-            "away": 3
+            "away": 4
         },
         "homeLineup": {
             "team": {
@@ -5733,6 +5733,13 @@
                 "player": "L. Kerber",
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 78,
+                "team_id": 167,
+                "player": "T. Lemperle",
+                "type": "Goal",
+                "detail": "Normal Goal"
             }
         ]
     },
@@ -5755,7 +5762,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 82,
+                "elapsed": 86,
                 "extra": null
             }
         },
@@ -6276,7 +6283,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 78,
+                "elapsed": 83,
                 "extra": null
             }
         },
@@ -6788,7 +6795,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 77,
+                "elapsed": 82,
                 "extra": null
             }
         },
@@ -7314,7 +7321,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 51,
+                "elapsed": 56,
                 "extra": null
             }
         },
@@ -7333,19 +7340,19 @@
                 "id": 76,
                 "name": "Swansea",
                 "logo": "https://media.api-sports.io/football/teams/76.png",
-                "winner": null,
+                "winner": true,
                 "rank": 16
             },
             "away": {
                 "id": 75,
                 "name": "Stoke City",
                 "logo": "https://media.api-sports.io/football/teams/75.png",
-                "winner": null,
+                "winner": false,
                 "rank": 14
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -7411,6 +7418,13 @@
                 "player": "S. Thomas",
                 "type": "Card",
                 "detail": "Red Card"
+            },
+            {
+                "time": 53,
+                "team_id": 76,
+                "player": "Z. Vipotnik",
+                "type": "Goal",
+                "detail": "Normal Goal"
             }
         ]
     },
@@ -7433,7 +7447,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 52,
+                "elapsed": 57,
                 "extra": null
             }
         },
@@ -7542,7 +7556,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 52,
+                "elapsed": 57,
                 "extra": null
             }
         },
@@ -7659,7 +7673,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 51,
+                "elapsed": 56,
                 "extra": null
             }
         },
@@ -7794,7 +7808,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 48,
+                "elapsed": 53,
                 "extra": null
             }
         },
@@ -8311,7 +8325,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 48,
+                "elapsed": 53,
                 "extra": null
             }
         },
@@ -8330,19 +8344,19 @@
                 "id": 62,
                 "name": "Sheffield Utd",
                 "logo": "https://media.api-sports.io/football/teams/62.png",
-                "winner": null,
+                "winner": true,
                 "rank": 13
             },
             "away": {
                 "id": 60,
                 "name": "West Brom",
                 "logo": "https://media.api-sports.io/football/teams/60.png",
-                "winner": null,
+                "winner": false,
                 "rank": 22
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -8397,7 +8411,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 53,
+                "team_id": 62,
+                "player": "G. Campbell",
+                "type": "Goal",
+                "detail": "Own Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -8947,7 +8969,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 39,
+                "elapsed": 43,
                 "extra": null
             }
         },
@@ -9044,7 +9066,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 37,
+                "elapsed": 42,
                 "extra": null
             }
         },
@@ -9504,7 +9526,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 10,
+                "elapsed": 15,
                 "extra": null
             }
         },
@@ -10033,14 +10055,15 @@
         "homeLineup": null,
         "awayLineup": null,
         "odds": {
-            "home": "1.67",
-            "draw": "3.80",
-            "away": "5.25",
+            "home": "1.70",
+            "draw": "3.70",
+            "away": "5.00",
             "total": "2.5",
-            "over": "1.91",
-            "under": "1.91"
+            "over": "1.80",
+            "under": "2.00",
+            "refreshed": true
         },
-        "odds_refreshed": false,
+        "odds_refreshed": true,
         "injuries": {
             "home": [
                 "C. De Ketelaere",
