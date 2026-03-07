@@ -4,8 +4,11 @@
 const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 let ALL_GAMES_DATA = []; 
 
+// Check local storage for the user's saved preference
 let savedLineupState = localStorage.getItem('futbolLineupsExpanded');
 let globalLineupsExpanded = savedLineupState !== null ? savedLineupState === 'true' : true; 
+
+const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
 
 const LEAGUE_GROUPS = {
     "priority": [
@@ -187,36 +190,65 @@ function updateSEO(leagueKey, dateStr) {
 }
 
 function renderLeagueMenu(activeLeague, currentDate) {
-    const menu = document.getElementById('league-menu');
-    menu.innerHTML = '';
+    const desktopMenu = document.getElementById('league-menu-desktop');
+    const mobileMenu = document.getElementById('league-menu-mobile');
     
-    // THE FLAT RIBBON FIX - No Dropdowns!
-    // Render Priority Leagues
+    if (!desktopMenu || !mobileMenu) return;
+
+    desktopMenu.innerHTML = '';
+    mobileMenu.innerHTML = '';
+    
+    // --- 1. BUILD DESKTOP MENU (WITH DROPDOWNS) ---
     LEAGUE_GROUPS["priority"].forEach(league => {
         const a = document.createElement('a');
         a.href = `?league=${league.key}&date=${currentDate}`;
         a.className = `league-pill ${league.key === activeLeague ? 'active' : ''}`;
         a.textContent = league.name;
-        menu.appendChild(a);
+        desktopMenu.appendChild(a);
     });
 
-    // Render Region Leagues Flatly
+    ['Europe', 'Americas', 'World'].forEach(region => {
+        const regionLeagues = LEAGUE_GROUPS[region];
+        if (!regionLeagues || regionLeagues.length === 0) return; 
+        const isActiveRegion = regionLeagues.some(l => l.key === activeLeague);
+        const dropdownDiv = document.createElement('div');
+        dropdownDiv.className = 'dropdown d-inline-block flex-shrink-0';
+        dropdownDiv.innerHTML = `
+            <button class="dropdown-toggle league-pill ${isActiveRegion ? 'active' : ''}" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border: none; background: transparent; color: ${isActiveRegion ? '#20c997' : '#adb5bd'};">
+                ${region}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark shadow" style="background-color: #343a40; border-color: #495057;">
+                ${regionLeagues.map(league => `
+                    <li><a class="dropdown-item ${league.key === activeLeague ? 'text-success fw-bold' : 'text-light'}" href="?league=${league.key}&date=${currentDate}">${league.name}</a></li>
+                `).join('')}
+            </ul>`;
+        desktopMenu.appendChild(dropdownDiv);
+    });
+
+    // --- 2. BUILD MOBILE MENU (FLAT RIBBON, NO DROPDOWNS) ---
+    LEAGUE_GROUPS["priority"].forEach(league => {
+        const a = document.createElement('a');
+        a.href = `?league=${league.key}&date=${currentDate}`;
+        a.className = `league-pill ${league.key === activeLeague ? 'active' : ''}`;
+        a.textContent = league.name;
+        mobileMenu.appendChild(a);
+    });
+
     ['Europe', 'Americas', 'World'].forEach(region => {
         LEAGUE_GROUPS[region].forEach(league => {
             const a = document.createElement('a');
             a.href = `?league=${league.key}&date=${currentDate}`;
             a.className = `league-pill ${league.key === activeLeague ? 'active' : ''}`;
             a.textContent = league.name;
-            menu.appendChild(a);
+            mobileMenu.appendChild(a);
         });
     });
 
-    // Auto-scroll to active league pill
+    // Auto-scroll to active league pill (Mobile Only)
     setTimeout(() => {
-        const activePill = menu.querySelector('.active');
+        const activePill = mobileMenu.querySelector('.active');
         if (activePill) {
-            // Perfectly centers the active pill on mobile!
-            menu.scrollLeft = activePill.offsetLeft - (menu.offsetWidth / 2) + (activePill.offsetWidth / 2);
+            mobileMenu.scrollLeft = activePill.offsetLeft - (mobileMenu.offsetWidth / 2) + (activePill.offsetWidth / 2);
         }
     }, 100);
 }
