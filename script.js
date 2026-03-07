@@ -44,6 +44,7 @@ Object.values(LEAGUE_GROUPS).flat().forEach(l => SUPPORTED_LEAGUES[l.key] = l);
 const LEAGUE_MAP_ESPN = {
     39: "eng.1",           // Premier League
     40: "eng.2",           // EFL Championship
+    45: "eng.fa",          // FA Cup
     140: "esp.1",          // La Liga
     135: "ita.1",          // Serie A
     78: "ger.1",           // Bundesliga
@@ -235,10 +236,21 @@ function createGameCard(data) {
     const dateObj = new Date(data.fixture.date);
     const matchTime = dateObj.toLocaleDateString([], {weekday: 'short'}) + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
+    // --- SMART STATUS HANDLING ---
+    const isFinished = ['FT', 'AET', 'PEN'].includes(status);
+    const isPreGame = ['NS', 'TBD'].includes(status);
+    const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
+
     let timeBadge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
-    if (status !== 'NS' && status !== 'FT' && !data.isFallback) {
+    
+    if (isDelayed) {
+        // Show a red badge for postponed/canceled matches
+        timeBadge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
+    } else if (!isPreGame && !isFinished && !data.isFallback) {
+        // Match is actively LIVE
         timeBadge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${data.fixture.status.elapsed}'</span>`;
-    } else if (status === 'FT') {
+    } else if (isFinished) {
+        // Match is over
         timeBadge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
     }
 
@@ -294,7 +306,9 @@ function createGameCard(data) {
         return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
     };
 
-    const scoreHtml = (status !== 'NS' && !data.isFallback) 
+    // Only show the score if the match is LIVE or FINISHED
+    const showScore = !isPreGame && !isDelayed && !data.isFallback;
+    const scoreHtml = showScore 
         ? `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${data.goals.home} - ${data.goals.away}</div>` 
         : `<div class="text-muted mx-2" style="font-size: 0.8rem;">vs</div>`;
 
