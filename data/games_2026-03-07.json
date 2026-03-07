@@ -5235,10 +5235,10 @@
                 "city": "Heidenheim an der Brenz"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
-                "extra": 7
+                "extra": 8
             }
         },
         "league": {
@@ -6821,10 +6821,10 @@
                 "city": "Wolfsburg"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
-                "extra": 7
+                "extra": 9
             }
         },
         "league": {
@@ -7349,7 +7349,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 71,
+                "elapsed": 76,
                 "extra": null
             }
         },
@@ -7475,7 +7475,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 72,
+                "elapsed": 77,
                 "extra": null
             }
         },
@@ -7494,19 +7494,19 @@
                 "id": 1335,
                 "name": "Charlton",
                 "logo": "https://media.api-sports.io/football/teams/1335.png",
-                "winner": null,
+                "winner": true,
                 "rank": 18
             },
             "away": {
                 "id": 54,
                 "name": "Birmingham",
                 "logo": "https://media.api-sports.io/football/teams/54.png",
-                "winner": null,
+                "winner": false,
                 "rank": 11
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -7563,7 +7563,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 74,
+                "team_id": 1335,
+                "player": "C. Kelman",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -7584,7 +7592,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 72,
+                "elapsed": 77,
                 "extra": null
             }
         },
@@ -7603,19 +7611,19 @@
                 "id": 57,
                 "name": "Ipswich",
                 "logo": "https://media.api-sports.io/football/teams/57.png",
-                "winner": false,
+                "winner": null,
                 "rank": 4
             },
             "away": {
                 "id": 46,
                 "name": "Leicester",
                 "logo": "https://media.api-sports.io/football/teams/46.png",
-                "winner": true,
+                "winner": null,
                 "rank": 23
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 1
         },
         "homeLineup": {
@@ -7679,6 +7687,13 @@
                 "player": "P. Daka",
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 76,
+                "team_id": 57,
+                "player": "S. W. Egeli",
+                "type": "Goal",
+                "detail": "Normal Goal"
             }
         ]
     },
@@ -7701,7 +7716,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 71,
+                "elapsed": 76,
                 "extra": null
             }
         },
@@ -7836,7 +7851,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 68,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -8360,7 +8375,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 68,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -8475,7 +8490,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 56,
+                "elapsed": 61,
                 "extra": null
             }
         },
@@ -8990,6 +9005,13 @@
                 "player": "C. Espi",
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 59,
+                "team_id": 539,
+                "player": "J. A. Olasagasti",
+                "type": "Card",
+                "detail": "Red Card"
             }
         ]
     },
@@ -9577,7 +9599,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 30,
+                "elapsed": 35,
                 "extra": null
             }
         },
@@ -10103,8 +10125,451 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
+        "homeLineup": {
+            "team": {
+                "id": 499,
+                "name": "Atalanta",
+                "logo": "https://media.api-sports.io/football/teams/499.png",
+                "colors": {
+                    "player": {
+                        "primary": "0054a8",
+                        "number": "ffffff",
+                        "border": "0054a8"
+                    },
+                    "goalkeeper": {
+                        "primary": "c4f05f",
+                        "number": "fb465b",
+                        "border": "c4f05f"
+                    }
+                }
+            },
+            "formation": "3-4-2-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 30417,
+                        "name": "Marco Carnesecchi",
+                        "number": 29,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 48119,
+                        "name": "Odilon Kossounou",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 137976,
+                        "name": "Isak Hien",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1442,
+                        "name": "Sead Kola\u0161inac",
+                        "number": 23,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 91422,
+                        "name": "Raoul Bellanova",
+                        "number": 16,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 162106,
+                        "name": "Yunus Musah",
+                        "number": 6,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2763,
+                        "name": "Mario Pa\u0161ali\u0107",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 264857,
+                        "name": "Lorenzo Bernasconi",
+                        "number": 47,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 178749,
+                        "name": "Lazar Samard\u017ei\u0107",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 199837,
+                        "name": "Kamaldeen Sulemana",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 30544,
+                        "name": "Gianluca Scamacca",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "5:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 31069,
+                        "name": "Marco Sportiello",
+                        "number": 57,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 30419,
+                        "name": "Francesco Rossi",
+                        "number": 31,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 453906,
+                        "name": "Honest Ahanor",
+                        "number": 69,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 530,
+                        "name": "Mitchel Bakker",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 30421,
+                        "name": "Berat Djimsiti",
+                        "number": 19,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 412893,
+                        "name": "Sergej Levak",
+                        "number": 46,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 30432,
+                        "name": "Marten de Roon",
+                        "number": 15,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 203474,
+                        "name": "Nicola Zalewski",
+                        "number": 59,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2286,
+                        "name": "Davide Zappacosta",
+                        "number": 77,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 383017,
+                        "name": "Dominic Vavassori",
+                        "number": 45,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 66817,
+                        "name": "Nikola Krstovi\u0107",
+                        "number": 90,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
+            "coach": {
+                "id": 18433,
+                "name": "Raffaele Palladino",
+                "photo": "https://media.api-sports.io/football/coachs/18433.png"
+            }
+        },
+        "awayLineup": {
+            "team": {
+                "id": 494,
+                "name": "Udinese",
+                "logo": "https://media.api-sports.io/football/teams/494.png",
+                "colors": {
+                    "player": {
+                        "primary": "2d2f32",
+                        "number": "f3f1f1",
+                        "border": "2d2f32"
+                    },
+                    "goalkeeper": {
+                        "primary": "cdfe2d",
+                        "number": "f1f0e8",
+                        "border": "cdfe2d"
+                    }
+                }
+            },
+            "formation": "3-5-2",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 143648,
+                        "name": "Maduka Okoye",
+                        "number": 40,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 507646,
+                        "name": "Branimir Mla\u010di\u0107",
+                        "number": 22,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 18797,
+                        "name": "Christian Kabasele",
+                        "number": 27,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 281495,
+                        "name": "Thomas Kristensen",
+                        "number": 31,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 36916,
+                        "name": "Kingsley Ehizibue",
+                        "number": 19,
+                        "pos": "M",
+                        "grid": "3:5"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1939,
+                        "name": "Jakub Piotrowski",
+                        "number": 24,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 48047,
+                        "name": "Jesper Karlstr\u00f6m",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 541,
+                        "name": "J\u00fcrgen Ekkelenkamp",
+                        "number": 32,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 22007,
+                        "name": "Hassane Kamara",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 786,
+                        "name": "Nicol\u00f2 Zaniolo",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19185,
+                        "name": "Keinan Davis",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 197830,
+                        "name": "R\u0103zvan Sava",
+                        "number": 90,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 189,
+                        "name": "Daniele Padelli",
+                        "number": 93,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 418940,
+                        "name": "Alessandro Nunziante",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 411171,
+                        "name": "Juan Arizala",
+                        "number": 20,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 343558,
+                        "name": "Lennon Miller",
+                        "number": 38,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 347644,
+                        "name": "Arthur Atta",
+                        "number": 14,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 490138,
+                        "name": "Abdoulaye Camara",
+                        "number": 29,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 434410,
+                        "name": "Idrissa Gueye",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1134,
+                        "name": "Vakoun Bayo",
+                        "number": 15,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 40594,
+                        "name": "Adam Buksa",
+                        "number": 18,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
+            "coach": {
+                "id": 1217,
+                "name": "Kosta Runjaic",
+                "photo": "https://media.api-sports.io/football/coachs/1217.png"
+            }
+        },
         "odds": {
             "home": "1.70",
             "draw": "3.70",
