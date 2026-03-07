@@ -62,11 +62,13 @@
             background-color: #1a1d20;
             border-top: 1px solid #343a40;
             border-bottom: 1px solid #343a40;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
         }
-        .league-nav-container::-webkit-scrollbar { display: none; }
+        #league-menu {
+            flex-wrap: wrap; /* Allows menus to wrap cleanly without clipping */
+            row-gap: 4px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
         .league-pill {
             display: inline-block;
             padding: 8px 16px;
