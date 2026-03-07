@@ -299,12 +299,20 @@ function createGameCard(data) {
     if (data.injuries && (data.injuries.home.length > 0 || data.injuries.away.length > 0)) {
         const hInj = data.injuries.home.join(', ') || 'None';
         const aInj = data.injuries.away.join(', ') || 'None';
+        
+        // Added an onclick toggle to remove/add the 'text-truncate' class, plus hover effects so users know it's clickable
         injuriesHtml = `
-        <div class="border-bottom px-2 py-1 text-center text-truncate" style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545;" title="Home: ${hInj} | Away: ${aInj}">
-            <strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj} | <b>A:</b> ${aInj}</span>
+        <div class="border-bottom px-2 py-1 text-center" 
+             style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545; cursor: pointer; transition: background-color 0.2s;" 
+             onclick="this.querySelector('.injury-text').classList.toggle('text-truncate');" 
+             onmouseover="this.style.backgroundColor='#ffebeb'" 
+             onmouseout="this.style.backgroundColor='#fff5f5'" 
+             title="Click to expand/collapse injuries">
+            <div class="injury-text text-truncate user-select-none px-1">
+                <strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj} | <b>A:</b> ${aInj}</span>
+            </div>
         </div>`;
     }
-
     const buildLineupList = (lineupData) => {
         if (data.isFallback) {
             return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
