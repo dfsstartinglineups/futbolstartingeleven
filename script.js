@@ -181,7 +181,6 @@ function createGameCard(data) {
     const status = data.fixture.status.short;
 
     // --- TIMEZONE FIX ---
-    // Displays local time with weekday so late games in London show properly as "Sun 03:30 AM"
     const dateObj = new Date(data.fixture.date);
     const matchTime = dateObj.toLocaleDateString([], {weekday: 'short'}) + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
@@ -190,6 +189,37 @@ function createGameCard(data) {
         timeBadge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${data.fixture.status.elapsed}'</span>`;
     } else if (status === 'FT') {
         timeBadge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
+    }
+
+    // --- ODDS BAR INJECTION ---
+    let oddsHtml = '';
+    if (data.odds) {
+        const h = data.odds.home !== "TBD" ? data.odds.home : "-";
+        const d = data.odds.draw !== "TBD" ? data.odds.draw : "-";
+        const a = data.odds.away !== "TBD" ? data.odds.away : "-";
+        const t = data.odds.total !== "TBD" ? data.odds.total : "2.5";
+        const o = data.odds.over !== "TBD" ? data.odds.over : "-";
+        const u = data.odds.under !== "TBD" ? data.odds.under : "-";
+
+        oddsHtml = `
+        <div class="d-flex justify-content-between text-center bg-white border-top border-bottom py-1" style="font-size: 0.70rem;">
+            <div class="w-25">
+                <div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">1 (HOME)</div>
+                <div class="fw-bold text-dark">${h}</div>
+            </div>
+            <div class="w-25 border-start border-end">
+                <div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">X (DRAW)</div>
+                <div class="fw-bold text-dark">${d}</div>
+            </div>
+            <div class="w-25 border-end">
+                <div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">2 (AWAY)</div>
+                <div class="fw-bold text-dark">${a}</div>
+            </div>
+            <div class="w-25">
+                <div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">O/U ${t}</div>
+                <div class="fw-bold text-dark"><span class="text-success">O</span> ${o} &nbsp;<span class="text-danger">U</span> ${u}</div>
+            </div>
+        </div>`;
     }
 
     const buildLineupList = (lineupData) => {
@@ -238,7 +268,8 @@ function createGameCard(data) {
                     </div>
                 </div>
             </div>
-            <div class="bg-light border-top border-bottom text-center py-1">
+            ${oddsHtml}
+            <div class="bg-light border-bottom text-center py-1">
                 <span class="fw-bold text-muted" style="font-size: 0.7rem;">STARTING XI</span>
             </div>
             <div class="row g-0 bg-white">
