@@ -9627,7 +9627,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 76,
+                "elapsed": 81,
                 "extra": null
             }
         },
@@ -10127,7 +10127,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 35,
+                "elapsed": 39,
                 "extra": null
             }
         },
@@ -10651,7 +10651,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 5,
+                "elapsed": 10,
                 "extra": null
             }
         },
@@ -11151,7 +11151,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 3,
+                "elapsed": 8,
                 "extra": null
             }
         },
@@ -11170,19 +11170,19 @@
                 "id": 530,
                 "name": "Atletico Madrid",
                 "logo": "https://media.api-sports.io/football/teams/530.png",
-                "winner": null,
+                "winner": true,
                 "rank": 3
             },
             "away": {
                 "id": 548,
                 "name": "Real Sociedad",
                 "logo": "https://media.api-sports.io/football/teams/548.png",
-                "winner": null,
+                "winner": false,
                 "rank": 8
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -11679,7 +11679,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 5,
+                "team_id": 530,
+                "player": "A. Sorloth",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
