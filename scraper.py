@@ -28,7 +28,11 @@ def fetch_data(endpoint):
 def process_date(target_date):
     date_str = target_date.strftime("%Y-%m-%d")
     filepath = f"data/games_{date_str}.json"
+    ranks_filepath = f"data/ranks_{date_str}.json"
     now_utc = datetime.now(timezone.utc)
+    
+    # Ensure data directory exists early for our cache files
+    os.makedirs("data", exist_ok=True)
     
     print(f"\n--- Fetching live fixtures & scores for {date_str} ---")
     
@@ -42,7 +46,7 @@ def process_date(target_date):
     # Filter down to just our 16 leagues
     matches = [m for m in fixtures_data["response"] if m["league"]["id"] in TOP_LEAGUE_IDS]
 
-    # --- 2. LOAD MEMORY FIRST ---
+    # --- 2. LOAD MEMORY ---
     existing_data = {}
     if os.path.exists(filepath):
         with open(filepath, "r") as f:
@@ -52,37 +56,71 @@ def process_date(target_date):
                     existing_data[game["fixture"]["id"]] = game
             except Exception:
                 pass
+                
+    # Load Daily Ranks Cache
+    global_ranks = {}
+    if os.path.exists(ranks_filepath):
+        with open(ranks_filepath, "r") as f:
+            try:
+                global_ranks = json.load(f)
+            except Exception:
+                pass
 
-    # --- 3. FETCH STANDINGS / RANKS ---
-    active_leagues = set()
+    # --- 3. IDENTIFY MISSING DATA (Odds & Standings) ---
     leagues_needing_odds = set()
+    leagues_needing_standings = set()
     
     for match in matches:
         fixture_id = match["fixture"]["id"]
         league_id = match["league"]["id"]
         season = match["league"]["season"] 
-        active_leagues.add((league_id, season))
         
+        home_id = str(match["teams"]["home"]["id"])
+        away_id = str(match["teams"]["away"]["id"])
+        
+        # Check Odds Needs
         existing_game = existing_data.get(fixture_id, {})
         existing_odds = existing_game.get("odds", {"home": "TBD"})
         if existing_odds.get("home") == "TBD":
             leagues_needing_odds.add((league_id, season))
 
-    print(f"--- Fetching Standings Context ---")
-    ranks = {}
-    for league_id, season in active_leagues:
-        # Skip cup competitions where standard standings don't apply cleanly
-        if league_id in [2, 13, 45]: continue
-        
-        stand_data = fetch_data(f"standings?league={league_id}&season={season}")
-        if stand_data and stand_data.get("response"):
-            for lg in stand_data["response"]:
-                for group in lg["league"]["standings"]:
-                    for team in group:
-                        ranks[team["team"]["id"]] = team["rank"]
+        # Check Standings Needs
+        if league_id in [2, 13, 45]:
+            # Cup competitions don't have standard global ranks, mark as None to prevent retries
+            global_ranks[home_id] = None
+            global_ranks[away_id] = None
+        else:
+            # If either team is missing from our daily cache, flag the league to be fetched
+            if home_id not in global_ranks or away_id not in global_ranks:
+                leagues_needing_standings.add((league_id, season))
 
-    # --- 4. BULK ODDS FETCHING (Only if TBD) ---
-    print(f"--- Found {len(leagues_needing_odds)} leagues that still need baseline odds. ---")
+    # --- 4. BULK STANDINGS FETCHING (Optimized: Once per day per league) ---
+    if leagues_needing_standings:
+        print(f"--- Fetching Standings for {len(leagues_needing_standings)} missing leagues ---")
+        for league_id, season in leagues_needing_standings:
+            stand_data = fetch_data(f"standings?league={league_id}&season={season}")
+            if stand_data and stand_data.get("response"):
+                for lg in stand_data["response"]:
+                    for group in lg["league"]["standings"]:
+                        for team in group:
+                            global_ranks[str(team["team"]["id"])] = team["rank"]
+                            
+        # Post-Fetch cleanup: If a team is still missing (e.g. API glitch), mark as None so we don't loop endlessly
+        for match in matches:
+            if match["league"]["id"] in [l[0] for l in leagues_needing_standings]:
+                h_id = str(match["teams"]["home"]["id"])
+                a_id = str(match["teams"]["away"]["id"])
+                if h_id not in global_ranks: global_ranks[h_id] = None
+                if a_id not in global_ranks: global_ranks[a_id] = None
+                
+        # Save the updated ranks to the daily cache
+        with open(ranks_filepath, "w") as f:
+            json.dump(global_ranks, f, indent=4)
+
+    # --- 5. BULK ODDS FETCHING (Only if TBD) ---
+    if leagues_needing_odds:
+        print(f"--- Found {len(leagues_needing_odds)} leagues that still need baseline odds. ---")
+        
     odds_dict = {}
     for league_id, season in leagues_needing_odds:
         page = 1
@@ -116,7 +154,7 @@ def process_date(target_date):
             total_pages = odds_res.get("paging", {}).get("total", 1)
             page += 1
 
-    # --- 5. MAP DATA AND FETCH LIVE/PRE-MATCH METADATA ---
+    # --- 6. MAP DATA AND FETCH LIVE/PRE-MATCH METADATA ---
     all_game_data = []
     
     for match in matches:
@@ -201,7 +239,6 @@ def process_date(target_date):
             if ev_res and "response" in ev_res:
                 parsed_events = []
                 for ev in ev_res["response"]:
-                    # Only save Goals and Red Cards
                     if ev["type"] == "Goal" or (ev["type"] == "Card" and "Red" in ev["detail"]):
                         parsed_events.append({
                             "time": ev["time"]["elapsed"],
@@ -217,8 +254,8 @@ def process_date(target_date):
             "fixture": match["fixture"],
             "league": match["league"],
             "teams": {
-                "home": {**match["teams"]["home"], "rank": ranks.get(match["teams"]["home"]["id"])},
-                "away": {**match["teams"]["away"], "rank": ranks.get(match["teams"]["away"]["id"])}
+                "home": {**match["teams"]["home"], "rank": global_ranks.get(str(match["teams"]["home"]["id"]))},
+                "away": {**match["teams"]["away"], "rank": global_ranks.get(str(match["teams"]["away"]["id"]))}
             },
             "goals": match["goals"],
             "homeLineup": home_lineup,
@@ -229,7 +266,6 @@ def process_date(target_date):
             "events": events
         })
 
-    os.makedirs("data", exist_ok=True)
     with open(filepath, "w") as f:
         json.dump(all_game_data, f, indent=4)
     
@@ -241,10 +277,7 @@ def main():
         return
 
     today = datetime.now()
-    dates_to_fetch = [today] 
-    
-    for d in dates_to_fetch:
-        process_date(d)
+    process_date(today)
 
 if __name__ == "__main__":
     main()
