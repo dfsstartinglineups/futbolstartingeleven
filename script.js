@@ -402,8 +402,9 @@ function createGameCard(data) {
     const away = data.teams.away;
     const fixId = data.fixture.id;
 
+    // UPDATED: Both ranks now have the space on the right side
     const homeRank = home.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${home.rank}]</span> ` : '';
-    const awayRank = away.rank ? ` <span class="text-muted" style="font-size: 0.70rem;">[${away.rank}]</span>` : '';
+    const awayRank = away.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${away.rank}]</span> ` : '';
 
     const buildLineupList = (lineupData) => {
         if (data.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
@@ -411,7 +412,6 @@ function createGameCard(data) {
         
         const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation} FORMATION</div>`;
         const listItems = lineupData.startXI.map(p => {
-            // FIX: Some players might be missing a position in edge cases.
             const safePos = p.player.pos || '-';
             const safeName = p.player.name || 'Unknown';
             const safeNum = p.player.number || '';
@@ -446,7 +446,7 @@ function createGameCard(data) {
                     </div>
                     <div class="text-center" style="width: 38%;"> 
                         <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
-                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;">${away.name}${awayRank}</div>
+                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;">${awayRank}${away.name}</div>
                     </div>
                 </div>
                 <div id="events-${fixId}" class="w-100">${getEventsHtml(data)}</div>
