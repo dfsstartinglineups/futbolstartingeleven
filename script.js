@@ -6,15 +6,16 @@ let ALL_GAMES_DATA = [];
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
 
+// Updated with FotMob's internal League IDs
 const SUPPORTED_LEAGUES = {
     "top": { id: "top", name: "Top Matches" },
-    "epl": { id: 39, name: "Premier League" },
-    "laliga": { id: 140, name: "La Liga" },
-    "mls": { id: 253, name: "MLS" },
-    "seriea": { id: 135, name: "Serie A" },
-    "bundesliga": { id: 78, name: "Bundesliga" },
-    "ligue1": { id: 61, name: "Ligue 1" },
-    "ucl": { id: 2, name: "Champions League" }
+    "epl": { id: 47, name: "Premier League" },
+    "laliga": { id: 87, name: "La Liga" },
+    "mls": { id: 130, name: "MLS" },
+    "seriea": { id: 55, name: "Serie A" },
+    "bundesliga": { id: 54, name: "Bundesliga" },
+    "ligue1": { id: 53, name: "Ligue 1" },
+    "ucl": { id: 42, name: "Champions League" }
 };
 
 // ==========================================
@@ -51,7 +52,7 @@ function renderLeagueMenu(activeLeague) {
 }
 
 // ==========================================
-// 2. MAIN APP LOGIC (FETCHING LOCAL JSON)
+// 2. MAIN APP LOGIC 
 // ==========================================
 async function init() {
     const params = getUrlParams();
@@ -71,9 +72,9 @@ async function init() {
     ALL_GAMES_DATA = [];
     
     try {
-        // Fetch from our safely generated local file instead of the API
-        const res = await fetch('data/games.json?v=' + new Date().getTime());
-        if (!res.ok) throw new Error("No data file found.");
+        // Fetch the specific date file created by our FotMob Scraper
+        const res = await fetch(`data/games_${params.date}.json?v=` + new Date().getTime());
+        if (!res.ok) throw new Error("No data file found for this date.");
         
         let matches = await res.json();
 
@@ -84,7 +85,7 @@ async function init() {
         }
 
         if (matches.length === 0) {
-            container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-light border shadow-sm py-4"><h5 class="text-muted mb-0">No matches scheduled for this league today.</h5></div></div>`;
+            container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-light border shadow-sm py-4"><h5 class="text-muted mb-0">No matches scheduled for this league on this date.</h5></div></div>`;
             return;
         }
 
@@ -92,7 +93,7 @@ async function init() {
         renderGames();
 
     } catch (error) {
-        container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-danger">Waiting for automated data update... Check back soon.</div></div>`;
+        container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-danger">Waiting for automated data update... or no matches scheduled.</div></div>`;
     }
 }
 
@@ -107,11 +108,11 @@ function renderGames() {
     const searchText = searchInput ? searchInput.value.toLowerCase() : '';
 
     let filteredGames = ALL_GAMES_DATA.filter(item => {
-        const matchString = (item.teams.home.name + " " + item.teams.away.name).toLowerCase();
+        const matchString = (item.home.name + " " + item.away.name).toLowerCase();
         return matchString.includes(searchText);
     });
 
-    filteredGames.sort((a, b) => new Date(a.fixture.date) - new Date(b.fixture.date));
+    filteredGames.sort((a, b) => new Date(a.time) - new Date(b.time));
     filteredGames.forEach(item => container.appendChild(createGameCard(item)));
 }
 
@@ -119,28 +120,48 @@ function createGameCard(data) {
     const gameCard = document.createElement('div');
     gameCard.className = 'col-md-6 col-lg-6 col-xl-4 mb-2';
 
-    const home = data.teams.home;
-    const away = data.teams.away;
-    const matchTime = new Date(data.fixture.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    const status = data.fixture.status.short;
+    const home = data.home;
+    const away = data.away;
+    const matchTime = new Date(data.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
+    // FotMob Status: finished, ongoing, notStarted
+    const isLive = data.status.ongoing;
+    const isFinished = data.status.finished;
+    const isCancelled = data.status.cancelled;
 
     let timeBadge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
-    if (status !== 'NS' && status !== 'FT') timeBadge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${data.fixture.status.elapsed}'</span>`;
-    else if (status === 'FT') timeBadge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
+    if (isLive) timeBadge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem; animation: pulse 2s infinite;">LIVE</span>`;
+    else if (isFinished) timeBadge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
+    else if (isCancelled) timeBadge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">CANC</span>`;
 
     const buildLineupList = (lineupData) => {
-        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) {
+        if (!lineupData || !lineupData.optaLineup) {
             return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
         }
-        const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation} FORMATION</div>`;
-        const listItems = lineupData.startXI.map(p => {
-            const player = p.player;
-            let posColor = player.pos === 'G' ? "#dc3545" : player.pos === 'D' ? "#0d6efd" : player.pos === 'M' ? "#20c997" : "#ffc107";
+
+        const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43; letter-spacing: 0.5px;">✅ ${lineupData.teamData.formation} FORMATION</div>`;
+        
+        // FotMob structures lineup in rows (Keeper, Def, Mid, Fwd)
+        let players = [];
+        if (lineupData.optaLineup && lineupData.optaLineup.players) {
+            lineupData.optaLineup.players.forEach(row => {
+                row.forEach(p => players.push(p));
+            });
+        }
+
+        const listItems = players.map(player => {
+            const role = player.role || "M"; // Keeper, Defender, Midfielder, Attacker
+            let shortPos = role.charAt(0);
+            if (role === "Attacker") shortPos = "F";
+            if (role === "Keeper") shortPos = "G";
+
+            let posColor = shortPos === 'G' ? "#dc3545" : shortPos === 'D' ? "#0d6efd" : shortPos === 'M' ? "#20c997" : "#ffc107";
+            
             return `
                 <li class="d-flex w-100 px-2 py-1 border-bottom">
-                    <span class="text-muted fw-bold d-inline-block text-start" style="font-size: 0.7rem; width: 25px; color: ${posColor} !important;">${player.pos}</span>
-                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${player.name}">${player.name}</span>
-                    <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${player.number}</span>
+                    <span class="text-muted fw-bold d-inline-block text-start" style="font-size: 0.7rem; width: 25px; color: ${posColor} !important;">${shortPos}</span>
+                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${player.name.fullName}">${player.name.fullName}</span>
+                    <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${player.shirt}</span>
                 </li>`;
         }).join('');
         return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
@@ -149,9 +170,13 @@ function createGameCard(data) {
     const homeLineupHtml = buildLineupList(data.homeLineup);
     const awayLineupHtml = buildLineupList(data.awayLineup);
 
-    const scoreHtml = (status !== 'NS') 
-        ? `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${data.goals.home} - ${data.goals.away}</div>` 
-        : `<div class="text-muted mx-2" style="font-size: 0.8rem;">vs</div>`;
+    // Score extraction
+    let scoreHtml = `<div class="text-muted mx-2" style="font-size: 0.8rem;">vs</div>`;
+    if (isLive || isFinished) {
+        // FotMob status string format: "2 - 1"
+        const scoreStr = data.status.scoreStr || "0 - 0";
+        scoreHtml = `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${scoreStr}</div>`;
+    }
 
     gameCard.innerHTML = `
         <div class="lineup-card shadow-sm" style="margin-bottom: 8px;">
@@ -159,17 +184,17 @@ function createGameCard(data) {
                 <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom border-light">
                     <div style="flex: 0 0 auto;" class="pe-2">${timeBadge}</div>
                     <div class="text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;">
-                        ${data.league.name} • ${data.fixture.venue.name}
+                        ${data.league.name}
                     </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-2">
                     <div class="text-center" style="width: 40%;"> 
-                        <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1">
+                        <img src="https://images.fotmob.com/image_resources/logo/teamlogo/${home.id}.png" alt="${home.name}" class="team-logo mb-1" onerror="this.src=''">
                         <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;">${home.name}</div>
                     </div>
                     <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 20%;">${scoreHtml}</div>
                     <div class="text-center" style="width: 40%;"> 
-                        <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
+                        <img src="https://images.fotmob.com/image_resources/logo/teamlogo/${away.id}.png" alt="${away.name}" class="team-logo mb-1" onerror="this.src=''">
                         <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;">${away.name}</div>
                     </div>
                 </div>
@@ -191,6 +216,18 @@ function createGameCard(data) {
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     init();
+
     const searchInput = document.getElementById('team-search');
     if (searchInput) searchInput.addEventListener('input', renderGames);
+
+    const datePicker = document.getElementById('date-picker');
+    if (datePicker) {
+        datePicker.addEventListener('change', (e) => {
+            if (e.target.value) { 
+                e.target.blur();
+                const params = getUrlParams();
+                window.location.href = `?league=${params.league}&date=${e.target.value}`;
+            }
+        });
+    }
 });
