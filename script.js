@@ -10,7 +10,7 @@ const LEAGUE_GROUPS = {
     "priority": [
         { key: "top", id: "top", name: "Top Matches" },
         { key: "epl", id: 39, name: "Premier League" },
-        { key: "facup", id: 45, name: "FA Cup" }, // Added FA Cup
+        { key: "facup", id: 45, name: "FA Cup" }, 
         { key: "laliga", id: 140, name: "La Liga" },
         { key: "mls", id: 253, name: "MLS" },
         { key: "ucl", id: 2, name: "Champions League" }
@@ -32,33 +32,30 @@ const LEAGUE_GROUPS = {
     "World": [
         { key: "saudi", id: 307, name: "Saudi Pro League" },
         { key: "japan", id: 98, name: "J1 League" }
-        // Dropped K-League due to unreliable data feeds
     ]
 };
 
-// Flatten them for easy lookup elsewhere in the script
 const SUPPORTED_LEAGUES = {};
 Object.values(LEAGUE_GROUPS).flat().forEach(l => SUPPORTED_LEAGUES[l.key] = l);
 
-// Map API-Football IDs to ESPN Slugs for the Fallback Engine
 const LEAGUE_MAP_ESPN = {
-    39: "eng.1",           // Premier League
-    40: "eng.2",           // EFL Championship
-    45: "eng.fa",          // FA Cup
-    140: "esp.1",          // La Liga
-    135: "ita.1",          // Serie A
-    78: "ger.1",           // Bundesliga
-    61: "fra.1",           // Ligue 1
-    72: "ned.1",           // Eredivisie
-    94: "por.1",           // Primeira Liga
-    2: "uefa.champions",   // Champions League
-    253: "usa.1",          // MLS
-    262: "mex.1",          // Liga MX
-    71: "bra.1",           // Brazil Serie A
-    128: "arg.1",          // Argentina Liga Profesional
-    13: "conmebol.libertadores", // Copa Libertadores
-    307: "ksa.1",          // Saudi Pro League
-    98: "jpn.1"            // J1 League
+    39: "eng.1",           
+    40: "eng.2",           
+    45: "eng.fa",          
+    140: "esp.1",          
+    135: "ita.1",          
+    78: "ger.1",           
+    61: "fra.1",           
+    72: "ned.1",           
+    94: "por.1",           
+    2: "uefa.champions",   
+    253: "usa.1",          
+    262: "mex.1",          
+    71: "bra.1",           
+    128: "arg.1",          
+    13: "conmebol.libertadores", 
+    307: "ksa.1",          
+    98: "jpn.1"            
 };
 
 // ==========================================
@@ -74,18 +71,17 @@ function getUrlParams() {
 
 function updateSEO(leagueKey, dateStr) {
     const leagueName = SUPPORTED_LEAGUES[leagueKey]?.name || "Top Matches";
-    const dateObj = new Date(dateStr + 'T12:00:00'); // Force noon to prevent timezone date shifting
+    const dateObj = new Date(dateStr + 'T12:00:00'); 
     const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     
-    document.title = `${leagueName} Starting Lineups for ${formattedDate} | FutbolStartingEleven`;
-    document.getElementById('seo-h1').innerText = `Daily ${leagueName} Starting Lineups & Formations`;
+    document.title = `Live ${leagueName} Soccer Lineups, Scores & Odds | FutbolStartingEleven`;
+    document.getElementById('seo-h1').innerText = `Live ${leagueName} Soccer Starting Lineups, Live Scores, Injuries, and Match Odds for ${formattedDate}`;
 }
 
 function renderLeagueMenu(activeLeague, currentDate) {
     const menu = document.getElementById('league-menu');
     menu.innerHTML = '';
     
-    // 1. Render the Priority Pills
     LEAGUE_GROUPS["priority"].forEach(league => {
         const a = document.createElement('a');
         a.href = `?league=${league.key}&date=${currentDate}`;
@@ -94,11 +90,9 @@ function renderLeagueMenu(activeLeague, currentDate) {
         menu.appendChild(a);
     });
 
-    // 2. Render the Regional Dropdowns
     ['Europe', 'Americas', 'World'].forEach(region => {
-        if (LEAGUE_GROUPS[region].length === 0) return; // Skip if empty
+        if (LEAGUE_GROUPS[region].length === 0) return; 
 
-        // Check if the currently active league is inside this dropdown
         const isActiveRegion = LEAGUE_GROUPS[region].some(l => l.key === activeLeague);
         
         const dropdownDiv = document.createElement('div');
@@ -137,7 +131,6 @@ async function init() {
         </div>`;
     
     try {
-        // --- STEP 1: TRY LOCAL API-FOOTBALL DATA ---
         const localRes = await fetch(`data/games_${params.date}.json?v=` + new Date().getTime());
         
         if (localRes.ok) {
@@ -151,7 +144,6 @@ async function init() {
             return;
         }
 
-        // --- STEP 2: FALLBACK TO ESPN API ---
         console.log("Local data not found. Falling back to ESPN Schedule...");
         const espnDate = params.date.replace(/-/g, '');
         let espnUrl = "";
@@ -172,7 +164,6 @@ async function init() {
             return;
         }
 
-        // Map ESPN data into renderer-friendly format
         ALL_GAMES_DATA = espnData.events.map(e => {
             const comp = e.competitions[0];
             const home = comp.competitors.find(c => c.homeAway === 'home');
@@ -192,7 +183,6 @@ async function init() {
             };
         });
 
-        // --- STRICT DATE FILTER (Anchored to EST) ---
         ALL_GAMES_DATA = ALL_GAMES_DATA.filter(item => {
             const gameDateEST = new Date(item.fixture.date).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
             return gameDateEST === params.date;
@@ -244,17 +234,36 @@ function createGameCard(data) {
     let timeBadge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
     
     if (isDelayed) {
-        // Show a red badge for postponed/canceled matches
         timeBadge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
     } else if (!isPreGame && !isFinished && !data.isFallback) {
-        // Match is actively LIVE
         timeBadge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${data.fixture.status.elapsed}'</span>`;
     } else if (isFinished) {
-        // Match is over
         timeBadge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
     }
 
-    // --- ODDS BAR INJECTION (Only renders if odds actually exist) ---
+    // --- STANDINGS & RANKS ---
+    const homeRank = home.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${home.rank}]</span> ` : '';
+    const awayRank = away.rank ? ` <span class="text-muted" style="font-size: 0.70rem;">[${away.rank}]</span>` : '';
+
+    // --- LIVE EVENTS INJECTION (GOALS/CARDS) ---
+    let eventsHtml = '';
+    if (data.events && data.events.length > 0) {
+        const homeEvents = data.events.filter(e => e.team_id === home.id);
+        const awayEvents = data.events.filter(e => e.team_id === away.id);
+        
+        const formatEvents = (evs) => evs.map(e => {
+            let icon = e.type === 'Goal' ? '⚽' : '🟥';
+            return `<span class="d-inline-block px-1" title="${e.player}">${icon} ${e.time}'</span>`;
+        }).join('');
+
+        eventsHtml = `
+        <div class="d-flex justify-content-between align-items-center w-100 mt-1" style="font-size: 0.70rem;">
+            <div class="w-50 text-start text-muted text-truncate">${formatEvents(homeEvents)}</div>
+            <div class="w-50 text-end text-muted text-truncate">${formatEvents(awayEvents)}</div>
+        </div>`;
+    }
+
+    // --- ODDS BAR INJECTION ---
     let oddsHtml = '';
     if (data.odds && (data.odds.home !== "TBD" || data.odds.over !== "TBD")) {
         const h = data.odds.home !== "TBD" ? data.odds.home : "-";
@@ -285,6 +294,17 @@ function createGameCard(data) {
         </div>`;
     }
 
+    // --- INJURIES INJECTION ---
+    let injuriesHtml = '';
+    if (data.injuries && (data.injuries.home.length > 0 || data.injuries.away.length > 0)) {
+        const hInj = data.injuries.home.join(', ') || 'None';
+        const aInj = data.injuries.away.join(', ') || 'None';
+        injuriesHtml = `
+        <div class="border-bottom px-2 py-1 text-center text-truncate" style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545;" title="Home: ${hInj} | Away: ${aInj}">
+            <strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj} | <b>A:</b> ${aInj}</span>
+        </div>`;
+    }
+
     const buildLineupList = (lineupData) => {
         if (data.isFallback) {
             return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
@@ -306,7 +326,6 @@ function createGameCard(data) {
         return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
     };
 
-    // Only show the score if the match is LIVE or FINISHED
     const showScore = !isPreGame && !isDelayed && !data.isFallback;
     const scoreHtml = showScore 
         ? `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${data.goals.home} - ${data.goals.away}</div>` 
@@ -321,19 +340,23 @@ function createGameCard(data) {
                         ${data.league.name}
                     </div>
                 </div>
-                <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-2">
-                    <div class="text-center" style="width: 40%;"> 
+                <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1">
+                    <div class="text-center" style="width: 38%;"> 
                         <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1">
-                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;">${home.name}</div>
+                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;">${homeRank}${home.name}</div>
                     </div>
-                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 20%;">${scoreHtml}</div>
-                    <div class="text-center" style="width: 40%;"> 
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 24%;">
+                        ${scoreHtml}
+                    </div>
+                    <div class="text-center" style="width: 38%;"> 
                         <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
-                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;">${away.name}</div>
+                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;">${away.name}${awayRank}</div>
                     </div>
                 </div>
+                ${eventsHtml}
             </div>
             ${oddsHtml}
+            ${injuriesHtml}
             <div class="bg-light border-bottom text-center py-1">
                 <span class="fw-bold text-muted" style="font-size: 0.7rem;">STARTING XI</span>
             </div>
