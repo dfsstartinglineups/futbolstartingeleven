@@ -56,10 +56,28 @@ function getTimeBadgeHtml(data) {
     const isPreGame = ['NS', 'TBD'].includes(status);
     const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
 
-    if (isDelayed) return `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
-    if (!isPreGame && !isFinished && !data.isFallback) return `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${data.fixture.status.elapsed}'</span>`;
-    if (isFinished) return `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
-    return `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
+    let badge = '';
+
+    if (isDelayed) {
+        badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
+    } else if (!isPreGame && !isFinished && !data.isFallback) {
+        // PULSING DOT ADDED
+        badge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${data.fixture.status.elapsed}'</span>`;
+    } else if (isFinished) {
+        badge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
+    } else {
+        badge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
+    }
+
+    // LATEST EVENT SNIPPET ADDED
+    let latestEvent = '';
+    if (data.events && data.events.length > 0) {
+        const lastEv = data.events[data.events.length - 1]; // Grabs the most recent event
+        const icon = lastEv.type === 'Goal' ? '⚽' : '🟥';
+        latestEvent = `<span class="ms-2 text-success fw-bold text-truncate" style="font-size: 0.70rem; max-width: 140px; display: inline-block; vertical-align: middle;">${icon} ${lastEv.player} (${lastEv.time}')</span>`;
+    }
+
+    return badge + latestEvent;
 }
 
 function getScoreHtml(data) {
@@ -259,7 +277,15 @@ async function updateLiveGames() {
             const newInjuriesHtml = getInjuriesHtml(match);
             
             if (timeEl.innerHTML !== newTimeHtml) timeEl.innerHTML = newTimeHtml;
-            if (scoreEl.innerHTML !== newScoreHtml) scoreEl.innerHTML = newScoreHtml;
+            
+            // IF THE SCORE CHANGES, ADD THE FLASH ANIMATION
+            if (scoreEl.innerHTML !== newScoreHtml) {
+                scoreEl.innerHTML = newScoreHtml;
+                scoreEl.classList.remove('flash-green');
+                void scoreEl.offsetWidth; // This forces the browser to restart the animation
+                scoreEl.classList.add('flash-green');
+            }
+            
             if (eventsEl.innerHTML !== newEventsHtml) eventsEl.innerHTML = newEventsHtml;
             if (oddsEl.innerHTML !== newOddsHtml) oddsEl.innerHTML = newOddsHtml;
             if (injuriesEl.innerHTML !== newInjuriesHtml) injuriesEl.innerHTML = newInjuriesHtml;
