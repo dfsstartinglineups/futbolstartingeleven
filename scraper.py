@@ -38,50 +38,57 @@ def process_date(target_date):
         print("No fixtures found or API error.")
         return
 
+    # Filter down to just our 17 leagues
     matches = [m for m in fixtures_data["response"] if m["league"]["id"] in TOP_LEAGUE_IDS]
-    
-    # 2. Fetch the Odds for the day with PAGINATION (Bet365 is bookmaker id 8)
-    print(f"--- Fetching Odds for {date_str} ---")
+
+    # --- 2. THE FIX: FETCH ODDS BY ACTIVE LEAGUE ---
+    # Figure out which leagues actually have games playing today
+    active_leagues = set()
+    for match in matches:
+        league_id = match["league"]["id"]
+        season = match["league"]["season"] # API requires season when querying odds by league
+        active_leagues.add((league_id, season))
+
+    print(f"--- Found {len(active_leagues)} active leagues. Fetching Odds ---")
     odds_dict = {}
-    page = 1
-    total_pages = 1
     
-    # Loop through all pages of odds so we don't miss any games
-    while page <= total_pages:
-        odds_res = fetch_data(f"odds?date={date_str}&bookmaker=8&page={page}")
+    for league_id, season in active_leagues:
+        page = 1
+        total_pages = 1
         
-        if not odds_res or "response" not in odds_res:
-            break
+        while page <= total_pages:
+            odds_res = fetch_data(f"odds?league={league_id}&season={season}&date={date_str}&bookmaker=8&page={page}")
             
-        for odd_item in odds_res["response"]:
-            fix_id = odd_item["fixture"]["id"]
-            
-            # Remove the "2.5" default. Set everything to "TBD"
-            match_odds = {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}
-            
-            if odd_item.get("bookmakers"):
-                bets = odd_item["bookmakers"][0].get("bets", [])
-                for bet in bets:
-                    if bet["id"] == 1: 
-                        for v in bet["values"]:
-                            if v["value"] == "Home": match_odds["home"] = str(v["odd"])
-                            if v["value"] == "Draw": match_odds["draw"] = str(v["odd"])
-                            if v["value"] == "Away": match_odds["away"] = str(v["odd"])
-                    elif bet["id"] == 5: 
-                        for v in bet["values"]:
-                            # Only inject the 2.5 label if we actually find the odds for it
-                            if "Over 2.5" in str(v["value"]):
-                                match_odds["over"] = str(v["odd"])
-                                match_odds["total"] = "2.5"
-                            elif "Under 2.5" in str(v["value"]):
-                                match_odds["under"] = str(v["odd"])
-                                match_odds["total"] = "2.5"
-            
-            odds_dict[fix_id] = match_odds
-            
-        # Check how many total pages the API has for this date
-        total_pages = odds_res.get("paging", {}).get("total", 1)
-        page += 1
+            if not odds_res or "response" not in odds_res:
+                break
+                
+            for odd_item in odds_res["response"]:
+                fix_id = odd_item["fixture"]["id"]
+                
+                # Default to TBD
+                match_odds = {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}
+                
+                if odd_item.get("bookmakers"):
+                    bets = odd_item["bookmakers"][0].get("bets", [])
+                    for bet in bets:
+                        if bet["id"] == 1: # Match Winner
+                            for v in bet["values"]:
+                                if v["value"] == "Home": match_odds["home"] = str(v["odd"])
+                                if v["value"] == "Draw": match_odds["draw"] = str(v["odd"])
+                                if v["value"] == "Away": match_odds["away"] = str(v["odd"])
+                        elif bet["id"] == 5: # Over/Under
+                            for v in bet["values"]:
+                                if "Over 2.5" in str(v["value"]):
+                                    match_odds["over"] = str(v["odd"])
+                                    match_odds["total"] = "2.5"
+                                elif "Under 2.5" in str(v["value"]):
+                                    match_odds["under"] = str(v["odd"])
+                                    match_odds["total"] = "2.5"
+                
+                odds_dict[fix_id] = match_odds
+                
+            total_pages = odds_res.get("paging", {}).get("total", 1)
+            page += 1
 
     # 3. Load existing local data (The "Memory")
     existing_data = {}
@@ -104,6 +111,9 @@ def process_date(target_date):
         home_lineup = existing_game.get("homeLineup")
         away_lineup = existing_game.get("awayLineup")
         
+        # Grab the odds we just fetched for this specific fixture, or fallback to memory
+        game_odds = odds_dict.get(fixture_id, existing_game.get("odds", {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}))
+        
         try:
             game_time_str = match['fixture']['date']
             if game_time_str.endswith('Z'):
@@ -124,9 +134,6 @@ def process_date(target_date):
                 home_lineup = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["home"]["id"]), None)
                 away_lineup = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["away"]["id"]), None)
                 
-        # Retrieve the odds we parsed earlier for this specific game
-        game_odds = odds_dict.get(fixture_id, {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"})
-                
         all_game_data.append({
             "fixture": match["fixture"],
             "league": match["league"],
@@ -134,7 +141,7 @@ def process_date(target_date):
             "goals": match["goals"],
             "homeLineup": home_lineup,
             "awayLineup": away_lineup,
-            "odds": game_odds # Append the odds object to the final JSON
+            "odds": game_odds 
         })
 
     os.makedirs("data", exist_ok=True)
