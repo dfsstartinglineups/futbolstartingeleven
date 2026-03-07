@@ -28,11 +28,10 @@ jobs:
           python scraper.py
           python sitemap_generator.py
         
-
       - name: Commit and Push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/
-          git commit -m "Automated API-Football update" || exit 0
+          git add data/ sitemap.xml
+          git commit -m "Automated API-Football update and sitemap generation" || exit 0
           git push
