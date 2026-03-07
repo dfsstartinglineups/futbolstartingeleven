@@ -9,7 +9,7 @@ API_HOST = "https://v3.football.api-sports.io"
 
 # The expanded global league list (16 Leagues - K-League 292 dropped)
 TOP_LEAGUE_IDS = [
-    39, 40, 140, 135, 78, 61, 72, 94,  # Europe
+    39, 40, 45, 140, 135, 78, 61, 72, 94,  # Europe
     2, 13,                             # Continental
     253, 262, 71, 128,                 # Americas
     307, 98                            # World
