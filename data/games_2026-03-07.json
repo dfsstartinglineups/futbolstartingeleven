@@ -13229,7 +13229,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 5
+                "extra": 6
             }
         },
         "league": {
@@ -13247,19 +13247,19 @@
                 "id": 2939,
                 "name": "Al-Nassr",
                 "logo": "https://media.api-sports.io/football/teams/2939.png",
-                "winner": null,
+                "winner": true,
                 "rank": 1
             },
             "away": {
                 "id": 10513,
                 "name": "NEOM",
                 "logo": "https://media.api-sports.io/football/teams/10513.png",
-                "winner": null,
+                "winner": false,
                 "rank": 8
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -13305,7 +13305,15 @@
             "away": [],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 90,
+                "team_id": 2939,
+                "player": null,
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -13439,7 +13447,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 49,
+                "elapsed": 50,
                 "extra": null
             }
         },
@@ -13470,7 +13478,7 @@
             }
         },
         "goals": {
-            "home": 3,
+            "home": 4,
             "away": 0
         },
         "homeLineup": {
@@ -13943,6 +13951,13 @@
                 "player": "M. Moralez",
                 "type": "Goal",
                 "detail": "Penalty"
+            },
+            {
+                "time": 49,
+                "team_id": 1604,
+                "player": "K. Parks",
+                "type": "Goal",
+                "detail": "Normal Goal"
             }
         ]
     },
@@ -14037,7 +14052,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 54,
+                "elapsed": 55,
                 "extra": null
             }
         },
@@ -14056,19 +14071,19 @@
                 "id": 496,
                 "name": "Juventus",
                 "logo": "https://media.api-sports.io/football/teams/496.png",
-                "winner": null,
+                "winner": true,
                 "rank": 6
             },
             "away": {
                 "id": 801,
                 "name": "Pisa",
                 "logo": "https://media.api-sports.io/football/teams/801.png",
-                "winner": null,
+                "winner": false,
                 "rank": 19
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -14585,7 +14600,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 54,
+                "team_id": 496,
+                "player": "A. Cambiaso",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -16708,9 +16731,10 @@
             "away": "1.75",
             "total": "2.5",
             "over": "1.53",
-            "under": "2.40"
+            "under": "2.40",
+            "refreshed": true
         },
-        "odds_refreshed": false,
+        "odds_refreshed": true,
         "injuries": {
             "home": [
                 "A. Herrera",
