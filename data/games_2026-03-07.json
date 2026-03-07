@@ -9627,7 +9627,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 81,
+                "elapsed": 86,
                 "extra": null
             }
         },
@@ -10127,7 +10127,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 39,
+                "elapsed": 45,
                 "extra": null
             }
         },
@@ -10146,20 +10146,20 @@
                 "id": 499,
                 "name": "Atalanta",
                 "logo": "https://media.api-sports.io/football/teams/499.png",
-                "winner": null,
+                "winner": false,
                 "rank": 7
             },
             "away": {
                 "id": 494,
                 "name": "Udinese",
                 "logo": "https://media.api-sports.io/football/teams/494.png",
-                "winner": null,
+                "winner": true,
                 "rank": 10
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -10630,7 +10630,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 39,
+                "team_id": 494,
+                "player": "T. Kristensen",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -10651,7 +10659,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 10,
+                "elapsed": 15,
                 "extra": null
             }
         },
@@ -11151,7 +11159,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 8,
+                "elapsed": 13,
                 "extra": null
             }
         },
@@ -11170,20 +11178,20 @@
                 "id": 530,
                 "name": "Atletico Madrid",
                 "logo": "https://media.api-sports.io/football/teams/530.png",
-                "winner": true,
+                "winner": null,
                 "rank": 3
             },
             "away": {
                 "id": 548,
                 "name": "Real Sociedad",
                 "logo": "https://media.api-sports.io/football/teams/548.png",
-                "winner": false,
+                "winner": null,
                 "rank": 8
             }
         },
         "goals": {
             "home": 1,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -11684,6 +11692,13 @@
                 "time": 5,
                 "team_id": 530,
                 "player": "A. Sorloth",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            },
+            {
+                "time": 9,
+                "team_id": 548,
+                "player": "C. Soler",
                 "type": "Goal",
                 "detail": "Normal Goal"
             }
