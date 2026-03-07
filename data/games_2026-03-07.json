@@ -10127,7 +10127,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 67,
+                "elapsed": 72,
                 "extra": null
             }
         },
@@ -11745,7 +11745,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 39,
+                "elapsed": 44,
                 "extra": null
             }
         },
@@ -11764,20 +11764,20 @@
                 "id": 1837,
                 "name": "Wrexham",
                 "logo": "https://media.api-sports.io/football/teams/1837.png",
-                "winner": true,
+                "winner": null,
                 "rank": 6
             },
             "away": {
                 "id": 49,
                 "name": "Chelsea",
                 "logo": "https://media.api-sports.io/football/teams/49.png",
-                "winner": false,
+                "winner": null,
                 "rank": null
             }
         },
         "goals": {
             "home": 1,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -12219,6 +12219,13 @@
                 "player": "S. Smith",
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 40,
+                "team_id": 49,
+                "player": "A. Okonkwo",
+                "type": "Goal",
+                "detail": "Own Goal"
             }
         ]
     },
@@ -12241,7 +12248,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 25,
+                "elapsed": 30,
                 "extra": null
             }
         },
@@ -12742,7 +12749,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 22,
+                "elapsed": 27,
                 "extra": null
             }
         },
@@ -12761,20 +12768,20 @@
                 "id": 217,
                 "name": "SC Braga",
                 "logo": "https://media.api-sports.io/football/teams/217.png",
-                "winner": null,
+                "winner": false,
                 "rank": 4
             },
             "away": {
                 "id": 228,
                 "name": "Sporting CP",
                 "logo": "https://media.api-sports.io/football/teams/228.png",
-                "winner": null,
+                "winner": true,
                 "rank": 2
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -13286,9 +13293,19 @@
         },
         "odds_refreshed": false,
         "injuries": {
-            "home": [],
-            "away": [],
-            "fetched": false
+            "home": [
+                "M. Jones",
+                "A. Martinez",
+                "A. Perea"
+            ],
+            "away": [
+                "W. Cartagena",
+                "J. Gerbet",
+                "C. Guske",
+                "R. Jansson",
+                "A. Marin"
+            ],
+            "fetched": true
         },
         "events": []
     },
