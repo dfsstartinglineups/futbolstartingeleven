@@ -10128,7 +10128,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 1
+                "extra": 3
             }
         },
         "league": {
@@ -10680,7 +10680,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 57,
+                "elapsed": 58,
                 "extra": null
             }
         },
@@ -11195,7 +11195,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 54,
+                "elapsed": 55,
                 "extra": null
             }
         },
@@ -12764,7 +12764,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 2
+                "extra": 3
             }
         },
         "league": {
@@ -12782,20 +12782,20 @@
                 "id": 217,
                 "name": "SC Braga",
                 "logo": "https://media.api-sports.io/football/teams/217.png",
-                "winner": null,
+                "winner": false,
                 "rank": 4
             },
             "away": {
                 "id": 228,
                 "name": "Sporting CP",
                 "logo": "https://media.api-sports.io/football/teams/228.png",
-                "winner": null,
+                "winner": true,
                 "rank": 2
             }
         },
         "goals": {
             "home": 1,
-            "away": 1
+            "away": 2
         },
         "homeLineup": {
             "team": {
@@ -12854,6 +12854,13 @@
                 "player": "R. Horta",
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 45,
+                "team_id": 228,
+                "player": "L. Suarez",
+                "type": "Goal",
+                "detail": "Penalty"
             }
         ]
     },
@@ -13726,10 +13733,9 @@
             "away": "3.90",
             "total": "2.5",
             "over": "1.65",
-            "under": "2.20",
-            "refreshed": true
+            "under": "2.20"
         },
-        "odds_refreshed": true,
+        "odds_refreshed": false,
         "injuries": {
             "home": [
                 "M. Jones",
