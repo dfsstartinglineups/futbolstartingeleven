@@ -9627,8 +9627,8 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 86,
-                "extra": null
+                "elapsed": 90,
+                "extra": 1
             }
         },
         "league": {
@@ -10125,10 +10125,10 @@
                 "city": "Bergamo"
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
-                "extra": null
+                "extra": 2
             }
         },
         "league": {
@@ -10659,7 +10659,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 15,
+                "elapsed": 19,
                 "extra": null
             }
         },
@@ -10678,20 +10678,20 @@
                 "id": 192,
                 "name": "1. FC K\u00f6ln",
                 "logo": "https://media.api-sports.io/football/teams/192.png",
-                "winner": null,
+                "winner": false,
                 "rank": 13
             },
             "away": {
                 "id": 165,
                 "name": "Borussia Dortmund",
                 "logo": "https://media.api-sports.io/football/teams/165.png",
-                "winner": null,
+                "winner": true,
                 "rank": 2
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -11138,7 +11138,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 16,
+                "team_id": 165,
+                "player": "S. Guirassy",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -11159,7 +11167,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 13,
+                "elapsed": 18,
                 "extra": null
             }
         },
@@ -11712,7 +11720,7 @@
             "date": "2026-03-07T12:45:00-05:00",
             "timestamp": 1772905500,
             "periods": {
-                "first": null,
+                "first": 1772905500,
                 "second": null
             },
             "venue": {
@@ -11721,9 +11729,9 @@
                 "city": "Wrexham"
             },
             "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
+                "long": "First Half",
+                "short": "1H",
+                "elapsed": 3,
                 "extra": null
             }
         },
@@ -11754,8 +11762,8 @@
             }
         },
         "goals": {
-            "home": null,
-            "away": null
+            "home": 0,
+            "away": 0
         },
         "homeLineup": {
             "team": {
