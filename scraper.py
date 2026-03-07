@@ -7,8 +7,13 @@ from datetime import datetime, timezone, timedelta
 API_KEY = os.environ.get("FOOTBALL_API_KEY")
 API_HOST = "https://v3.football.api-sports.io"
 
-# The leagues we want to fetch
-TOP_LEAGUE_IDS = [39, 140, 135, 78, 61, 2, 253] # EPL, La Liga, Serie A, Bundes, Ligue 1, UCL, MLS
+# The expanded global league list (17 Leagues)
+TOP_LEAGUE_IDS = [
+    39, 40, 140, 135, 78, 61, 72, 94,  # Europe (EPL, Championship, La Liga, Serie A, Bundes, Ligue 1, Eredivisie, Portugal)
+    2, 13,                             # Continental (UCL, Copa Libertadores)
+    253, 262, 71, 128,                 # Americas (MLS, Liga MX, Brazil, Argentina)
+    307, 98, 292                       # World (Saudi Pro League, J1 League, K League 1)
+] 
 
 def fetch_data(endpoint):
     req = urllib.request.Request(f"{API_HOST}/{endpoint}")
