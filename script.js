@@ -6,26 +6,58 @@ let ALL_GAMES_DATA = [];
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
 
-const SUPPORTED_LEAGUES = {
-    "top": { id: "top", name: "Top Matches" },
-    "epl": { id: 39, name: "Premier League" },
-    "laliga": { id: 140, name: "La Liga" },
-    "mls": { id: 253, name: "MLS" },
-    "seriea": { id: 135, name: "Serie A" },
-    "bundesliga": { id: 78, name: "Bundesliga" },
-    "ligue1": { id: 61, name: "Ligue 1" },
-    "ucl": { id: 2, name: "Champions League" }
+const LEAGUE_GROUPS = {
+    "priority": [
+        { key: "top", id: "top", name: "Top Matches" },
+        { key: "epl", id: 39, name: "Premier League" },
+        { key: "laliga", id: 140, name: "La Liga" },
+        { key: "mls", id: 253, name: "MLS" },
+        { key: "ucl", id: 2, name: "Champions League" }
+    ],
+    "Europe": [
+        { key: "championship", id: 40, name: "Championship" },
+        { key: "seriea", id: 135, name: "Serie A" },
+        { key: "bundesliga", id: 78, name: "Bundesliga" },
+        { key: "ligue1", id: 61, name: "Ligue 1" },
+        { key: "eredivisie", id: 72, name: "Eredivisie" },
+        { key: "portugal", id: 94, name: "Primeira Liga" }
+    ],
+    "Americas": [
+        { key: "ligamx", id: 262, name: "Liga MX" },
+        { key: "brazil", id: 71, name: "Brasileirão" },
+        { key: "argentina", id: 128, name: "Liga Profesional" },
+        { key: "libertadores", id: 13, name: "Copa Libertadores" }
+    ],
+    "World": [
+        { key: "saudi", id: 307, name: "Saudi Pro League" },
+        { key: "japan", id: 98, name: "J1 League" },
+        { key: "korea", id: 292, name: "K League 1" }
+    ]
 };
+
+// Flatten them for easy lookup elsewhere in the script
+const SUPPORTED_LEAGUES = {};
+Object.values(LEAGUE_GROUPS).flat().forEach(l => SUPPORTED_LEAGUES[l.key] = l);
 
 // Map API-Football IDs to ESPN Slugs for the Fallback Engine
 const LEAGUE_MAP_ESPN = {
     39: "eng.1",           // Premier League
+    40: "eng.2",           // EFL Championship
     140: "esp.1",          // La Liga
     135: "ita.1",          // Serie A
     78: "ger.1",           // Bundesliga
     61: "fra.1",           // Ligue 1
+    72: "ned.1",           // Eredivisie
+    94: "por.1",           // Primeira Liga
     2: "uefa.champions",   // Champions League
-    253: "usa.1"           // MLS
+    253: "usa.1",          // MLS
+    262: "mex.1",          // Liga MX
+    71: "bra.1",           // Brazil Serie A
+    128: "arg.1",          // Argentina Liga Profesional
+    13: "conmebol.libertadores", // Copa Libertadores
+    307: "ksa.1",          // Saudi Pro League
+    98: "jpn.1",           // J1 League
+    292: "kor.1"           // K League 1
 };
 
 // ==========================================
@@ -52,13 +84,36 @@ function renderLeagueMenu(activeLeague, currentDate) {
     const menu = document.getElementById('league-menu');
     menu.innerHTML = '';
     
-    Object.keys(SUPPORTED_LEAGUES).forEach(key => {
+    // 1. Render the Priority Pills
+    LEAGUE_GROUPS["priority"].forEach(league => {
         const a = document.createElement('a');
-        // Attach BOTH the league and the current date to the URL to make dates sticky
-        a.href = `?league=${key}&date=${currentDate}`;
-        a.className = `league-pill ${key === activeLeague ? 'active' : ''}`;
-        a.textContent = SUPPORTED_LEAGUES[key].name;
+        a.href = `?league=${league.key}&date=${currentDate}`;
+        a.className = `league-pill ${league.key === activeLeague ? 'active' : ''}`;
+        a.textContent = league.name;
         menu.appendChild(a);
+    });
+
+    // 2. Render the Regional Dropdowns
+    ['Europe', 'Americas', 'World'].forEach(region => {
+        if (LEAGUE_GROUPS[region].length === 0) return; // Skip if empty
+
+        // Check if the currently active league is inside this dropdown
+        const isActiveRegion = LEAGUE_GROUPS[region].some(l => l.key === activeLeague);
+        
+        const dropdownDiv = document.createElement('div');
+        dropdownDiv.className = 'dropdown d-inline-block';
+        
+        dropdownDiv.innerHTML = `
+            <button class="btn dropdown-toggle league-pill ${isActiveRegion ? 'active' : ''}" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border: none; background: transparent;">
+                ${region}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark shadow" style="background-color: #343a40; border-color: #495057;">
+                ${LEAGUE_GROUPS[region].map(league => `
+                    <li><a class="dropdown-item ${league.key === activeLeague ? 'text-success fw-bold' : 'text-light'}" href="?league=${league.key}&date=${currentDate}">${league.name}</a></li>
+                `).join('')}
+            </ul>
+        `;
+        menu.appendChild(dropdownDiv);
     });
 }
 
@@ -68,8 +123,6 @@ function renderLeagueMenu(activeLeague, currentDate) {
 async function init() {
     const params = getUrlParams();
     updateSEO(params.league, params.date);
-    
-    // Pass the date into the menu renderer so it persists across clicks
     renderLeagueMenu(params.league, params.date);
     
     const container = document.getElementById('games-container');
@@ -140,7 +193,6 @@ async function init() {
 
         // --- STRICT DATE FILTER (Anchored to EST) ---
         ALL_GAMES_DATA = ALL_GAMES_DATA.filter(item => {
-            // Force ESPN data to group by US Eastern Time so international users don't lose late games
             const gameDateEST = new Date(item.fixture.date).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
             return gameDateEST === params.date;
         });
@@ -180,7 +232,6 @@ function createGameCard(data) {
     const away = data.teams.away;
     const status = data.fixture.status.short;
 
-    // --- TIMEZONE FIX ---
     const dateObj = new Date(data.fixture.date);
     const matchTime = dateObj.toLocaleDateString([], {weekday: 'short'}) + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
