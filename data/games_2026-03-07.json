@@ -10680,7 +10680,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 69,
+                "elapsed": 70,
                 "extra": null
             }
         },
@@ -12259,7 +12259,7 @@
             "timestamp": 1772906400,
             "periods": {
                 "first": 1772906400,
-                "second": null
+                "second": 1772910000
             },
             "venue": {
                 "id": 636,
@@ -12267,10 +12267,10 @@
                 "city": "Auxerre"
             },
             "status": {
-                "long": "Halftime",
-                "short": "HT",
-                "elapsed": 45,
-                "extra": 1
+                "long": "Second Half",
+                "short": "2H",
+                "elapsed": 46,
+                "extra": null
             }
         },
         "league": {
@@ -12879,7 +12879,7 @@
             "date": "2026-03-07T14:00:00-05:00",
             "timestamp": 1772910000,
             "periods": {
-                "first": null,
+                "first": 1772910000,
                 "second": null
             },
             "venue": {
@@ -12888,9 +12888,9 @@
                 "city": "Najran"
             },
             "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
+                "long": "First Half",
+                "short": "1H",
+                "elapsed": 2,
                 "extra": null
             }
         },
@@ -12921,8 +12921,8 @@
             }
         },
         "goals": {
-            "home": null,
-            "away": null
+            "home": 0,
+            "away": 0
         },
         "homeLineup": {
             "team": {
@@ -13065,7 +13065,15 @@
             "away": [],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 2,
+                "team_id": 2933,
+                "player": null,
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -13075,7 +13083,7 @@
             "date": "2026-03-07T14:00:00-05:00",
             "timestamp": 1772910000,
             "periods": {
-                "first": null,
+                "first": 1772910000,
                 "second": null
             },
             "venue": {
@@ -13084,9 +13092,9 @@
                 "city": "Riyadh"
             },
             "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
+                "long": "First Half",
+                "short": "1H",
+                "elapsed": 1,
                 "extra": null
             }
         },
@@ -13117,8 +13125,8 @@
             }
         },
         "goals": {
-            "home": null,
-            "away": null
+            "home": 0,
+            "away": 0
         },
         "homeLineup": {
             "team": {
@@ -13740,10 +13748,9 @@
             "away": "3.90",
             "total": "2.5",
             "over": "1.65",
-            "under": "2.20",
-            "refreshed": true
+            "under": "2.20"
         },
-        "odds_refreshed": true,
+        "odds_refreshed": false,
         "injuries": {
             "home": [
                 "M. Jones",
