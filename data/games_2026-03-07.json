@@ -4693,8 +4693,8 @@
                 "city": "Freiburg im Breisgau"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
                 "extra": null
             }
@@ -5238,7 +5238,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 2
+                "extra": 7
             }
         },
         "league": {
@@ -6302,10 +6302,10 @@
                 "city": "Leipzig"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
-                "extra": 3
+                "extra": 6
             }
         },
         "league": {
@@ -6824,7 +6824,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 2
+                "extra": 7
             }
         },
         "league": {
@@ -7349,7 +7349,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 66,
+                "elapsed": 71,
                 "extra": null
             }
         },
@@ -7475,7 +7475,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 67,
+                "elapsed": 72,
                 "extra": null
             }
         },
@@ -7584,7 +7584,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 67,
+                "elapsed": 72,
                 "extra": null
             }
         },
@@ -7701,7 +7701,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 66,
+                "elapsed": 71,
                 "extra": null
             }
         },
@@ -7836,7 +7836,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 63,
+                "elapsed": 68,
                 "extra": null
             }
         },
@@ -8360,7 +8360,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 63,
+                "elapsed": 68,
                 "extra": null
             }
         },
@@ -8475,7 +8475,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 51,
+                "elapsed": 56,
                 "extra": null
             }
         },
@@ -8985,7 +8985,7 @@
         },
         "events": [
             {
-                "time": 51,
+                "time": 50,
                 "team_id": 539,
                 "player": "C. Espi",
                 "type": "Goal",
@@ -9107,10 +9107,10 @@
                 "city": "Moreira de Conegos"
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
-                "extra": 4
+                "extra": 5
             }
         },
         "league": {
@@ -9128,19 +9128,19 @@
                 "id": 215,
                 "name": "Moreirense",
                 "logo": "https://media.api-sports.io/football/teams/215.png",
-                "winner": null,
+                "winner": true,
                 "rank": 7
             },
             "away": {
                 "id": 225,
                 "name": "Nacional",
                 "logo": "https://media.api-sports.io/football/teams/225.png",
-                "winner": null,
+                "winner": false,
                 "rank": 14
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -9548,7 +9548,15 @@
             "away": [],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 45,
+                "team_id": 215,
+                "player": "L. Semedo",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -9569,7 +9577,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 25,
+                "elapsed": 30,
                 "extra": null
             }
         },
@@ -10188,9 +10196,21 @@
         },
         "odds_refreshed": false,
         "injuries": {
-            "home": [],
-            "away": [],
-            "fetched": false
+            "home": [
+                "T. Hubers",
+                "D. Huseinbasic",
+                "L. Kilian",
+                "J. Schmied",
+                "S. Sebulonsen",
+                "J. Thielmann"
+            ],
+            "away": [
+                "E. Can",
+                "C. Chukwuemeka",
+                "F. Mane",
+                "N. Sule"
+            ],
+            "fetched": true
         },
         "events": []
     },
@@ -10259,9 +10279,16 @@
         },
         "odds_refreshed": false,
         "injuries": {
-            "home": [],
-            "away": [],
-            "fetched": false
+            "home": [
+                "P. Barrios"
+            ],
+            "away": [
+                "T. Kubo",
+                "A. Munoz",
+                "A. Odriozola",
+                "I. Ruperez"
+            ],
+            "fetched": true
         },
         "events": []
     },
