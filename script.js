@@ -103,7 +103,6 @@ function renderLeagueMenu(activeLeague, currentDate) {
         const dropdownDiv = document.createElement('div');
         dropdownDiv.className = 'dropdown d-inline-block';
         
-        // Removed the 'btn' class and added inline dynamic color so it matches the pills
         dropdownDiv.innerHTML = `
             <button class="dropdown-toggle league-pill ${isActiveRegion ? 'active' : ''}" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border: none; background: transparent; color: ${isActiveRegion ? '#20c997' : '#adb5bd'};">
                 ${region}
@@ -243,13 +242,13 @@ function createGameCard(data) {
         timeBadge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
     }
 
-    // --- ODDS BAR INJECTION ---
+    // --- ODDS BAR INJECTION (Only renders if odds actually exist) ---
     let oddsHtml = '';
-    if (data.odds) {
+    if (data.odds && (data.odds.home !== "TBD" || data.odds.over !== "TBD")) {
         const h = data.odds.home !== "TBD" ? data.odds.home : "-";
         const d = data.odds.draw !== "TBD" ? data.odds.draw : "-";
         const a = data.odds.away !== "TBD" ? data.odds.away : "-";
-        const t = data.odds.total !== "TBD" ? data.odds.total : "2.5";
+        const t = data.odds.total !== "TBD" ? data.odds.total : "-";
         const o = data.odds.over !== "TBD" ? data.odds.over : "-";
         const u = data.odds.under !== "TBD" ? data.odds.under : "-";
 
