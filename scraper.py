@@ -9,10 +9,10 @@ API_HOST = "https://v3.football.api-sports.io"
 
 # The expanded global league list (17 Leagues)
 TOP_LEAGUE_IDS = [
-    39, 40, 140, 135, 78, 61, 72, 94,  # Europe (EPL, Championship, La Liga, Serie A, Bundes, Ligue 1, Eredivisie, Portugal)
-    2, 13,                             # Continental (UCL, Copa Libertadores)
-    253, 262, 71, 128,                 # Americas (MLS, Liga MX, Brazil, Argentina)
-    307, 98, 292                       # World (Saudi Pro League, J1 League, K League 1)
+    39, 40, 140, 135, 78, 61, 72, 94,  # Europe
+    2, 13,                             # Continental
+    253, 262, 71, 128,                 # Americas
+    307, 98, 292                       # World
 ] 
 
 def fetch_data(endpoint):
@@ -40,37 +40,48 @@ def process_date(target_date):
 
     matches = [m for m in fixtures_data["response"] if m["league"]["id"] in TOP_LEAGUE_IDS]
     
-    # 2. Fetch the Odds for the day (Bet365 is bookmaker id 8)
+    # 2. Fetch the Odds for the day with PAGINATION (Bet365 is bookmaker id 8)
     print(f"--- Fetching Odds for {date_str} ---")
     odds_dict = {}
-    odds_res = fetch_data(f"odds?date={date_str}&bookmaker=8")
+    page = 1
+    total_pages = 1
     
-    if odds_res and "response" in odds_res:
+    # Loop through all pages of odds so we don't miss any games
+    while page <= total_pages:
+        odds_res = fetch_data(f"odds?date={date_str}&bookmaker=8&page={page}")
+        
+        if not odds_res or "response" not in odds_res:
+            break
+            
         for odd_item in odds_res["response"]:
             fix_id = odd_item["fixture"]["id"]
-            # Default odds structure
-            match_odds = {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "2.5", "over": "TBD", "under": "TBD"}
+            
+            # Remove the "2.5" default. Set everything to "TBD"
+            match_odds = {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}
             
             if odd_item.get("bookmakers"):
                 bets = odd_item["bookmakers"][0].get("bets", [])
                 for bet in bets:
-                    # Bet ID 1 is Match Winner (Home/Draw/Away)
                     if bet["id"] == 1: 
                         for v in bet["values"]:
-                            # Keep exact decimal odds format
                             if v["value"] == "Home": match_odds["home"] = str(v["odd"])
                             if v["value"] == "Draw": match_odds["draw"] = str(v["odd"])
                             if v["value"] == "Away": match_odds["away"] = str(v["odd"])
-                    # Bet ID 5 is Goals Over/Under
                     elif bet["id"] == 5: 
                         for v in bet["values"]:
-                            # Target the standard 2.5 goals line
+                            # Only inject the 2.5 label if we actually find the odds for it
                             if "Over 2.5" in str(v["value"]):
                                 match_odds["over"] = str(v["odd"])
+                                match_odds["total"] = "2.5"
                             elif "Under 2.5" in str(v["value"]):
                                 match_odds["under"] = str(v["odd"])
+                                match_odds["total"] = "2.5"
             
             odds_dict[fix_id] = match_odds
+            
+        # Check how many total pages the API has for this date
+        total_pages = odds_res.get("paging", {}).get("total", 1)
+        page += 1
 
     # 3. Load existing local data (The "Memory")
     existing_data = {}
