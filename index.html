@@ -133,6 +133,34 @@
         #team-search { color: #ffffff !important; color-scheme: dark; }
         #team-search::placeholder { color: #adb5bd !important; opacity: 1; }
         #team-search:focus { background-color: #495057 !important; color: #ffffff !important; border-color: #20c997 !important; box-shadow: 0 0 0 0.2rem rgba(32, 201, 151, 0.25) !important; }
+
+        /* LIVE UPDATE ANIMATIONS */
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); }
+        }
+        
+        .live-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background-color: #fff;
+            border-radius: 50%;
+            margin-right: 5px;
+            margin-bottom: 1px;
+            animation: pulse-green 2s infinite;
+        }
+
+        .flash-green {
+            animation: highlight-green 4s ease-out;
+            border-radius: 6px;
+        }
+
+        @keyframes highlight-green {
+            0% { background-color: #20c997; color: white !important; }
+            100% { background-color: transparent; color: inherit; }
+        }
     </style>
 </head>
 <body>
