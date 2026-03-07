@@ -3,70 +3,71 @@ import json
 import urllib.request
 from datetime import datetime, timedelta
 
-# FotMob League IDs
-TOP_LEAGUES = [47, 87, 55, 54, 53, 42, 130] # EPL, La Liga, Serie A, Bundes, Ligue 1, UCL, MLS
+# Grab the secret key from GitHub Actions
+API_KEY = os.environ.get("FOOTBALL_API_KEY")
+API_HOST = "https://v3.football.api-sports.io"
 
-def fetch_data(url):
-    req = urllib.request.Request(
-        url, 
-        headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
-    )
+# The leagues we want to fetch
+TOP_LEAGUE_IDS = [39, 140, 135, 78, 61, 2, 253] # EPL, La Liga, Serie A, Bundes, Ligue 1, UCL, MLS
+
+def fetch_data(endpoint):
+    req = urllib.request.Request(f"{API_HOST}/{endpoint}")
+    req.add_header("x-apisports-key", API_KEY)
     try:
         with urllib.request.urlopen(req) as response:
-            return json.loads(response.read().decode('utf-8'))
+            return json.loads(response.read().decode())
     except Exception as e:
-        print(f"Failed to fetch {url}: {e}")
+        print(f"Failed to fetch {endpoint}: {e}")
         return None
 
 def process_date(target_date):
-    date_str = target_date.strftime("%Y%m%d")
-    save_str = target_date.strftime("%Y-%m-%d")
-    print(f"--- Fetching schedule for {save_str} ---")
+    date_str = target_date.strftime("%Y-%m-%d")
+    print(f"\n--- Fetching fixtures for {date_str} ---")
     
-    # 1. Fetch the daily schedule
-    schedule_data = fetch_data(f"https://www.fotmob.com/api/matches?date={date_str}")
-    if not schedule_data or "leagues" not in schedule_data:
+    fixtures_data = fetch_data(f"fixtures?date={date_str}")
+    if not fixtures_data or "response" not in fixtures_data:
+        print("No fixtures found or API error.")
         return
 
+    # Filter for our top leagues
+    matches = [m for m in fixtures_data["response"] if m["league"]["id"] in TOP_LEAGUE_IDS]
+    
     all_game_data = []
+    
+    for match in matches:
+        fixture_id = match["fixture"]["id"]
+        print(f"Fetching lineups for fixture {fixture_id} ({match['teams']['home']['name']} vs {match['teams']['away']['name']})...")
+        
+        lineups_data = fetch_data(f"fixtures/lineups?fixture={fixture_id}")
+        
+        home_lineup = None
+        away_lineup = None
+        
+        if lineups_data and "response" in lineups_data and len(lineups_data["response"]) == 2:
+            home_lineup = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["home"]["id"]), None)
+            away_lineup = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["away"]["id"]), None)
 
-    # 2. Filter for our specific leagues
-    for league in schedule_data["leagues"]:
-        if league["primaryId"] in TOP_LEAGUES:
-            for match in league["matches"]:
-                match_id = match["id"]
-                print(f"Fetching Match ID {match_id} ({match['home']['name']} vs {match['away']['name']})...")
-                
-                # 3. Fetch the deep match details (Lineups, Formations)
-                details = fetch_data(f"https://www.fotmob.com/api/matchDetails?matchId={match_id}")
-                
-                home_lineup, away_lineup = None, None
-                
-                if details and "content" in details and "lineup" in details["content"]:
-                    lineup_data = details["content"]["lineup"]
-                    if "lineup" in lineup_data:
-                        # FotMob stores them in an array: [0] is Home, [1] is Away
-                        home_lineup = lineup_data["lineup"][0] if len(lineup_data["lineup"]) > 0 else None
-                        away_lineup = lineup_data["lineup"][1] if len(lineup_data["lineup"]) > 1 else None
+        all_game_data.append({
+            "fixture": match["fixture"],
+            "league": match["league"],
+            "teams": match["teams"],
+            "goals": match["goals"],
+            "homeLineup": home_lineup,
+            "awayLineup": away_lineup
+        })
 
-                all_game_data.append({
-                    "id": match_id,
-                    "league": {"id": league["primaryId"], "name": league["name"]},
-                    "time": match["status"]["utcTime"],
-                    "status": match["status"],
-                    "home": match["home"],
-                    "away": match["away"],
-                    "homeLineup": home_lineup,
-                    "awayLineup": away_lineup
-                })
-
-    # 4. Save to a date-specific file
+    # Save to a local JSON file designated by date
     os.makedirs("data", exist_ok=True)
-    with open(f"data/games_{save_str}.json", "w") as f:
+    with open(f"data/games_{date_str}.json", "w") as f:
         json.dump(all_game_data, f)
-    print(f"Saved {len(all_game_data)} games to data/games_{save_str}.json\n")
+    
+    print(f"Data successfully saved to data/games_{date_str}.json")
 
 def main():
+    if not API_KEY:
+        print("CRITICAL ERROR: FOOTBALL_API_KEY environment variable not set.")
+        return
+
     today = datetime.now()
     dates_to_fetch = [
         today - timedelta(days=1), # Yesterday
