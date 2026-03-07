@@ -8502,10 +8502,10 @@
                 "city": "Valencia"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
-                "extra": 5
+                "extra": 9
             }
         },
         "league": {
@@ -9055,7 +9055,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 78,
+                "elapsed": 83,
                 "extra": null
             }
         },
@@ -9152,7 +9152,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 74,
+                "elapsed": 79,
                 "extra": null
             }
         },
@@ -9627,7 +9627,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 51,
+                "elapsed": 56,
                 "extra": null
             }
         },
@@ -9646,20 +9646,20 @@
                 "id": 83,
                 "name": "Nantes",
                 "logo": "https://media.api-sports.io/football/teams/83.png",
-                "winner": null,
+                "winner": false,
                 "rank": 17
             },
             "away": {
                 "id": 77,
                 "name": "Angers",
                 "logo": "https://media.api-sports.io/football/teams/77.png",
-                "winner": null,
+                "winner": true,
                 "rank": 12
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -10098,7 +10098,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 52,
+                "team_id": 77,
+                "player": "A. Sbai",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -10119,7 +10127,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 9,
+                "elapsed": 15,
                 "extra": null
             }
         },
@@ -12214,17 +12222,434 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
-        "odds": {
-            "home": "3.75",
-            "draw": "3.30",
-            "away": "2.05",
-            "total": "2.5",
-            "over": "1.91",
-            "under": "1.91"
+        "homeLineup": {
+            "team": {
+                "id": 108,
+                "name": "Auxerre",
+                "logo": "https://media.api-sports.io/football/teams/108.png",
+                "colors": {
+                    "player": {
+                        "primary": "ffffff",
+                        "number": "2654d7",
+                        "border": "ffffff"
+                    },
+                    "goalkeeper": {
+                        "primary": "8bdae1",
+                        "number": "2c3793",
+                        "border": "8bdae1"
+                    }
+                }
+            },
+            "formation": "4-4-2",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 20542,
+                        "name": "Donovan L\u00e9on",
+                        "number": 16,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 191240,
+                        "name": "Marvin Senaya",
+                        "number": 29,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 162466,
+                        "name": "Sinaly Diomand\u00e9",
+                        "number": 20,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 115588,
+                        "name": "Bryan Okoh",
+                        "number": 24,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 7578,
+                        "name": "Gideon Mensah",
+                        "number": 14,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 174915,
+                        "name": "Josu\u00e9 Casimir",
+                        "number": 7,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 323625,
+                        "name": "K\u00e9vin Danois",
+                        "number": 5,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 21010,
+                        "name": "Elisha Owusu",
+                        "number": 42,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 215827,
+                        "name": "Fredrik Oppeg\u00e5rd",
+                        "number": 22,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 90617,
+                        "name": "Lassine Sinayoko",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19625,
+                        "name": "Danny Namaso",
+                        "number": 19,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 193681,
+                        "name": "Th\u00e9o De Percin",
+                        "number": 40,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 191189,
+                        "name": "Clement Akpa",
+                        "number": 92,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 193953,
+                        "name": "Lamine Sy",
+                        "number": 27,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 31016,
+                        "name": "Francisco Sierralta",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 30748,
+                        "name": "Assane Diouss\u00e9",
+                        "number": 18,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 152418,
+                        "name": "Naouirou Ahamada",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 381123,
+                        "name": "Ryan Rodin",
+                        "number": 31,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 627298,
+                        "name": "Mamoudou Cissokho",
+                        "number": 44,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 613216,
+                        "name": "Yvan Zaddy",
+                        "number": 41,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
+            "coach": {
+                "id": 25657,
+                "name": "Christophe Pelissier",
+                "photo": "https://media.api-sports.io/football/coachs/25657.png"
+            }
         },
-        "odds_refreshed": false,
+        "awayLineup": {
+            "team": {
+                "id": 95,
+                "name": "Strasbourg",
+                "logo": "https://media.api-sports.io/football/teams/95.png",
+                "colors": {
+                    "player": {
+                        "primary": "0034a5",
+                        "number": "ffffff",
+                        "border": "0034a5"
+                    },
+                    "goalkeeper": {
+                        "primary": "5dff6f",
+                        "number": "ffffff",
+                        "border": "5dff6f"
+                    }
+                }
+            },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 340151,
+                        "name": "Mike Penders",
+                        "number": 39,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 358166,
+                        "name": "Abdoul Ouattara",
+                        "number": 42,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 147835,
+                        "name": "Andrew Omobamidele",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 271542,
+                        "name": "Ismael Doukour\u00e9",
+                        "number": 6,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2933,
+                        "name": "Ben Chilwell",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 415431,
+                        "name": "Samir El Mourabet",
+                        "number": 29,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 396193,
+                        "name": "Lucas H\u00f8gsberg",
+                        "number": 24,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 369544,
+                        "name": "Gessime Yassine",
+                        "number": 80,
+                        "pos": "M",
+                        "grid": "4:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 70747,
+                        "name": "Julio Enciso",
+                        "number": 19,
+                        "pos": "M",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 359386,
+                        "name": "Martial Godo",
+                        "number": 20,
+                        "pos": "M",
+                        "grid": "4:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 291476,
+                        "name": "David Datro Fofana",
+                        "number": 15,
+                        "pos": "F",
+                        "grid": "5:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 2850,
+                        "name": "Karl-Johan Johnsson",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 129673,
+                        "name": "Stefan Baji\u0107",
+                        "number": 50,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 319572,
+                        "name": "Valent\u00edn Barco",
+                        "number": 32,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 345416,
+                        "name": "Rafael Luis",
+                        "number": 83,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 395762,
+                        "name": "Mathis Amougou",
+                        "number": 17,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 226803,
+                        "name": "Sebastian Nanasi",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 303016,
+                        "name": "Maxi Oyedele",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 390742,
+                        "name": "Joaquin Panichelli",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 334035,
+                        "name": "Samuel Amo-Ameyaw",
+                        "number": 27,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
+            "coach": {
+                "id": 25729,
+                "name": "Gary O'Neil",
+                "photo": "https://media.api-sports.io/football/coachs/25729.png"
+            }
+        },
+        "odds": {
+            "home": "4.33",
+            "draw": "3.40",
+            "away": "1.90",
+            "total": "2.5",
+            "over": "2.00",
+            "under": "1.80",
+            "refreshed": true
+        },
+        "odds_refreshed": true,
         "injuries": {
             "home": [
                 "N. Buayi-Kiala",
@@ -12332,9 +12757,10 @@
             "away": "1.95",
             "total": "2.5",
             "over": "1.95",
-            "under": "1.85"
+            "under": "1.85",
+            "refreshed": true
         },
-        "odds_refreshed": false,
+        "odds_refreshed": true,
         "injuries": {
             "home": [],
             "away": [],
