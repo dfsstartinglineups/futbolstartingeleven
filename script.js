@@ -211,7 +211,22 @@ function renderGames() {
         return matchString.includes(searchText);
     });
 
-    filteredGames.sort((a, b) => new Date(a.fixture.date) - new Date(b.fixture.date));
+    // Custom sorting: Push finished games to the bottom, otherwise sort by time
+    filteredGames.sort((a, b) => {
+        const statusA = a.fixture.status.short;
+        const statusB = b.fixture.status.short;
+        const isFinishedA = ['FT', 'AET', 'PEN'].includes(statusA);
+        const isFinishedB = ['FT', 'AET', 'PEN'].includes(statusB);
+
+        // If A is finished but B is not, push A to the bottom
+        if (isFinishedA && !isFinishedB) return 1;
+        // If B is finished but A is not, push B to the bottom
+        if (!isFinishedA && isFinishedB) return -1;
+        
+        // Otherwise (both finished or both active/upcoming), sort chronologically
+        return new Date(a.fixture.date) - new Date(b.fixture.date);
+    });
+
     filteredGames.forEach(item => container.appendChild(createGameCard(item)));
 }
 
