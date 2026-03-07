@@ -61,7 +61,6 @@ function getTimeBadgeHtml(data) {
     if (isDelayed) {
         badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
     } else if (!isPreGame && !isFinished && !data.isFallback) {
-        // PULSING DOT ADDED
         badge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${data.fixture.status.elapsed}'</span>`;
     } else if (isFinished) {
         badge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
@@ -69,24 +68,31 @@ function getTimeBadgeHtml(data) {
         badge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
     }
 
-    // UPDATED: LATEST EVENT SNIPPET WITH TEAM LOGO AND NULL FALLBACK
+    // UPDATED: LATEST EVENT SNIPPET (5-MINUTE TIMEOUT & CLEAR ON FT)
     let latestEvent = '';
-    if (data.events && data.events.length > 0) {
+    
+    // Only show the event if the game is still active
+    if (!isFinished && data.events && data.events.length > 0) {
         const lastEv = data.events[data.events.length - 1]; 
-        const icon = lastEv.type === 'Goal' ? '⚽' : '🟥';
         
-        // Figure out which team this event belongs to
-        const isHomeTeam = lastEv.team_id === data.teams.home.id;
-        const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
-        const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo; // Grab the tiny logo URL
-        
-        // If player is null or "null", use the team name instead
-        const playerName = (lastEv.player && lastEv.player !== "null") ? lastEv.player : teamName;
-        
-        // Injected the logo image tag right between the icon and the player name
-        latestEvent = `<span class="ms-2 text-success fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
-            ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} (${lastEv.time}')
-        </span>`;
+        // Grab the current match minute and the event's match minute
+        const currentMinute = data.fixture.status.elapsed || 0;
+        const eventMinute = parseInt(lastEv.time) || 0;
+
+        // Display if the event happened within the last 5 match minutes
+        if (currentMinute - eventMinute <= 5) {
+            const icon = lastEv.type === 'Goal' ? '⚽' : '🟥';
+            
+            const isHomeTeam = lastEv.team_id === data.teams.home.id;
+            const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
+            const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo; 
+            
+            const playerName = (lastEv.player && lastEv.player !== "null") ? lastEv.player : teamName;
+            
+            latestEvent = `<span class="ms-2 text-success fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
+                ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} (${lastEv.time}')
+            </span>`;
+        }
     }
 
     return badge + latestEvent;
