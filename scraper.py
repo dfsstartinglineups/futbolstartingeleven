@@ -24,7 +24,10 @@ def process_date(target_date):
     date_str = target_date.strftime("%Y-%m-%d")
     print(f"\n--- Fetching fixtures for {date_str} ---")
     
-    fixtures_data = fetch_data(f"fixtures?date={date_str}")
+    # --- TIMEZONE FIX ---
+    # Append &timezone=America/New_York to ensure international late games are properly assigned to the correct US calendar day.
+    fixtures_data = fetch_data(f"fixtures?date={date_str}&timezone=America/New_York")
+    
     if not fixtures_data or "response" not in fixtures_data:
         print("No fixtures found or API error.")
         return
