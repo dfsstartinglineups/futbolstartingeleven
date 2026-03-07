@@ -17,6 +17,17 @@ const SUPPORTED_LEAGUES = {
     "ucl": { id: 2, name: "Champions League" }
 };
 
+// Map API-Football IDs to ESPN Slugs for the Fallback Engine
+const LEAGUE_MAP_ESPN = {
+    39: "eng.1",           // Premier League
+    140: "esp.1",          // La Liga
+    135: "ita.1",          // Serie A
+    78: "ger.1",           // Bundesliga
+    61: "fra.1",           // Ligue 1
+    2: "uefa.champions",   // Champions League
+    253: "usa.1"           // MLS
+};
+
 // ==========================================
 // 1. INITIALIZATION & ROUTING
 // ==========================================
@@ -51,7 +62,7 @@ function renderLeagueMenu(activeLeague) {
 }
 
 // ==========================================
-// 2. MAIN APP LOGIC 
+// 2. MAIN APP LOGIC (HYBRID ENGINE)
 // ==========================================
 async function init() {
     const params = getUrlParams();
@@ -69,26 +80,66 @@ async function init() {
         </div>`;
     
     try {
-        const res = await fetch(`data/games_${params.date}.json?v=` + new Date().getTime());
-        if (!res.ok) throw new Error("No data file found.");
+        // --- STEP 1: TRY LOCAL API-FOOTBALL DATA (3-Day Window) ---
+        const localRes = await fetch(`data/games_${params.date}.json?v=` + new Date().getTime());
         
-        let matches = await res.json();
-
-        if (params.league !== 'top') {
-            const targetId = SUPPORTED_LEAGUES[params.league].id;
-            matches = matches.filter(m => m.league.id === targetId);
-        }
-
-        if (matches.length === 0) {
-            container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-light border shadow-sm py-4"><h5 class="text-muted mb-0">No matches found for this date.</h5></div></div>`;
+        if (localRes.ok) {
+            let matches = await localRes.json();
+            if (params.league !== 'top') {
+                const targetId = SUPPORTED_LEAGUES[params.league].id;
+                matches = matches.filter(m => m.league.id === targetId);
+            }
+            ALL_GAMES_DATA = matches;
+            renderGames();
             return;
         }
 
-        ALL_GAMES_DATA = matches;
+        // --- STEP 2: FALLBACK TO ESPN API (Long-term Schedule) ---
+        console.log("Local data not found. Falling back to ESPN Schedule...");
+        const espnDate = params.date.replace(/-/g, '');
+        let espnUrl = "";
+        
+        if (params.league === 'top') {
+            // Default to EPL for "Top Matches" schedule fallback
+            espnUrl = `https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=${espnDate}`;
+        } else {
+            const leagueId = SUPPORTED_LEAGUES[params.league].id;
+            const espnSlug = LEAGUE_MAP_ESPN[leagueId];
+            espnUrl = `https://site.api.espn.com/apis/site/v2/sports/soccer/${espnSlug}/scoreboard?dates=${espnDate}`;
+        }
+
+        const espnRes = await fetch(espnUrl);
+        const espnData = await espnRes.json();
+
+        if (!espnData.events || espnData.events.length === 0) {
+            container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-light border shadow-sm py-4"><h5 class="text-muted mb-0">No matches found for ${params.date}.</h5></div></div>`;
+            return;
+        }
+
+        // Map ESPN data into renderer-friendly format
+        ALL_GAMES_DATA = espnData.events.map(e => {
+            const comp = e.competitions[0];
+            const home = comp.competitors.find(c => c.homeAway === 'home');
+            const away = comp.competitors.find(c => c.homeAway === 'away');
+            
+            return {
+                fixture: { date: e.date, status: { short: e.status.type.shortDetail, elapsed: e.status.period } },
+                league: { name: espnData.leagues[0].name },
+                teams: {
+                    home: { name: home.team.displayName, logo: home.team.logo },
+                    away: { name: away.team.displayName, logo: away.team.logo }
+                },
+                goals: { home: home.score, away: away.score },
+                homeLineup: null,
+                awayLineup: null,
+                isFallback: true // Trigger "Match Day Only" UI note
+            };
+        });
+
         renderGames();
 
     } catch (error) {
-        container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-danger">Waiting for automated data update... Check back soon.</div></div>`;
+        container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-danger">Error loading data. Please try again.</div></div>`;
     }
 }
 
@@ -117,10 +168,16 @@ function createGameCard(data) {
     const status = data.fixture.status.short;
 
     let timeBadge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
-    if (status !== 'NS' && status !== 'FT') timeBadge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${data.fixture.status.elapsed}'</span>`;
-    else if (status === 'FT') timeBadge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
+    if (status !== 'NS' && status !== 'FT' && !data.isFallback) {
+        timeBadge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${data.fixture.status.elapsed}'</span>`;
+    } else if (status === 'FT') {
+        timeBadge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
+    }
 
     const buildLineupList = (lineupData) => {
+        if (data.isFallback) {
+            return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
+        }
         if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) {
             return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
         }
@@ -138,7 +195,7 @@ function createGameCard(data) {
         return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
     };
 
-    const scoreHtml = (status !== 'NS') 
+    const scoreHtml = (status !== 'NS' && !data.isFallback) 
         ? `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${data.goals.home} - ${data.goals.away}</div>` 
         : `<div class="text-muted mx-2" style="font-size: 0.8rem;">vs</div>`;
 
