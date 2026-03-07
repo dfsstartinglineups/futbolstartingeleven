@@ -1,7 +1,7 @@
 // ==========================================
 // CONFIGURATION
 // ==========================================
-const DEFAULT_DATE = new Date().toLocaleDateString('en-CA');
+const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 let ALL_GAMES_DATA = []; 
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
@@ -41,7 +41,7 @@ function getUrlParams() {
 
 function updateSEO(leagueKey, dateStr) {
     const leagueName = SUPPORTED_LEAGUES[leagueKey]?.name || "Top Matches";
-    const dateObj = new Date(dateStr + 'T00:00:00');
+    const dateObj = new Date(dateStr + 'T12:00:00'); // Force noon to prevent timezone date shifting
     const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     
     document.title = `${leagueName} Starting Lineups for ${formattedDate} | FutbolStartingEleven`;
@@ -80,7 +80,7 @@ async function init() {
         </div>`;
     
     try {
-        // --- STEP 1: TRY LOCAL API-FOOTBALL DATA (3-Day Window) ---
+        // --- STEP 1: TRY LOCAL API-FOOTBALL DATA ---
         const localRes = await fetch(`data/games_${params.date}.json?v=` + new Date().getTime());
         
         if (localRes.ok) {
@@ -94,13 +94,12 @@ async function init() {
             return;
         }
 
-        // --- STEP 2: FALLBACK TO ESPN API (Long-term Schedule) ---
+        // --- STEP 2: FALLBACK TO ESPN API ---
         console.log("Local data not found. Falling back to ESPN Schedule...");
         const espnDate = params.date.replace(/-/g, '');
         let espnUrl = "";
         
         if (params.league === 'top') {
-            // Default to EPL for "Top Matches" schedule fallback
             espnUrl = `https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=${espnDate}`;
         } else {
             const leagueId = SUPPORTED_LEAGUES[params.league].id;
@@ -132,9 +131,21 @@ async function init() {
                 goals: { home: home.score, away: away.score },
                 homeLineup: null,
                 awayLineup: null,
-                isFallback: true // Trigger "Match Day Only" UI note
+                isFallback: true 
             };
         });
+
+        // --- STRICT DATE FILTER (Anchored to EST) ---
+        ALL_GAMES_DATA = ALL_GAMES_DATA.filter(item => {
+            // Force ESPN data to group by US Eastern Time so international users don't lose late games
+            const gameDateEST = new Date(item.fixture.date).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+            return gameDateEST === params.date;
+        });
+
+        if (ALL_GAMES_DATA.length === 0) {
+            container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-light border shadow-sm py-4"><h5 class="text-muted mb-0">No matches found for ${params.date}.</h5></div></div>`;
+            return;
+        }
 
         renderGames();
 
@@ -164,8 +175,12 @@ function createGameCard(data) {
 
     const home = data.teams.home;
     const away = data.teams.away;
-    const matchTime = new Date(data.fixture.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     const status = data.fixture.status.short;
+
+    // --- TIMEZONE FIX ---
+    // Displays local time with weekday so late games in London show properly as "Sun 03:30 AM"
+    const dateObj = new Date(data.fixture.date);
+    const matchTime = dateObj.toLocaleDateString([], {weekday: 'short'}) + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
     let timeBadge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
     if (status !== 'NS' && status !== 'FT' && !data.isFallback) {
