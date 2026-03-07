@@ -253,13 +253,21 @@ function createGameCard(data) {
         
         const formatEvents = (evs) => evs.map(e => {
             let icon = e.type === 'Goal' ? '⚽' : '🟥';
-            return `<span class="d-inline-block px-1" title="${e.player}">${icon} ${e.time}'</span>`;
-        }).join('');
+            // Now actually prints the player's name and keeps the icon/name together when wrapping
+            return `<span class="d-inline-block me-1">${icon} <span class="text-dark fw-bold">${e.player}</span> ${e.time}'</span>`;
+        }).join(' ');
 
         eventsHtml = `
-        <div class="d-flex justify-content-between align-items-center w-100 mt-1" style="font-size: 0.70rem;">
-            <div class="w-50 text-start text-muted text-truncate">${formatEvents(homeEvents)}</div>
-            <div class="w-50 text-end text-muted text-truncate">${formatEvents(awayEvents)}</div>
+        <div class="w-100 px-2 pt-1 mt-1 border-top" 
+             style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" 
+             onclick="const cols = this.querySelectorAll('.event-col'); cols.forEach(c => c.classList.toggle('text-truncate'));"
+             onmouseover="this.style.backgroundColor='#f8f9fa'" 
+             onmouseout="this.style.backgroundColor='transparent'"
+             title="Click to expand/collapse goals and cards">
+            <div class="d-flex justify-content-between text-muted w-100">
+                <div class="event-col text-start pe-1 text-truncate" style="flex: 1; min-width: 0;">${formatEvents(homeEvents)}</div>
+                <div class="event-col text-end ps-1 text-truncate" style="flex: 1; min-width: 0;">${formatEvents(awayEvents)}</div>
+            </div>
         </div>`;
     }
 
