@@ -61,25 +61,46 @@ function getTimeBadgeHtml(data) {
     if (isDelayed) {
         badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
     } else if (!isPreGame && !isFinished && !data.isFallback) {
-        badge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${data.fixture.status.elapsed}'</span>`;
+        
+        let displayMin = data.fixture.status.elapsed;
+        
+        // --- SMART EXTRA TIME GLITCH FIX ---
+        // API-Football sometimes resets the clock to 90' at the start of the 2nd half of Extra Time
+        if (status === 'ET') {
+            // Let's see if we have any events that happened after the 105th minute
+            const maxEventTime = data.events ? Math.max(0, ...data.events.map(e => parseInt(e.time) || 0)) : 0;
+            
+            // If the clock says < 105, but we have events proving we are past 105', add the missing 15 mins!
+            if (displayMin < 105 && maxEventTime >= 105) {
+                displayMin += 15;
+            } 
+            // Fallback check: If it's been over 2 hours and 15 mins since kickoff, it's definitely 2nd half ET
+            else if (displayMin < 105 && (new Date() - dateObj) > (135 * 60 * 1000)) {
+                displayMin += 15;
+            }
+        }
+        
+        // Handle Break Time (Halftime of Extra Time) and Penalties cleanly
+        if (status === 'BT') displayMin = 'ET HT';
+        else if (status === 'P') displayMin = 'PEN';
+        else displayMin = `${displayMin}'`;
+
+        badge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${displayMin}</span>`;
+        
     } else if (isFinished) {
         badge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
     } else {
         badge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
     }
 
-    // UPDATED: LATEST EVENT SNIPPET (5-MINUTE TIMEOUT & CLEAR ON FT)
+    // LATEST EVENT SNIPPET (5-MINUTE TIMEOUT & CLEAR ON FT)
     let latestEvent = '';
-    
-    // Only show the event if the game is still active
     if (!isFinished && data.events && data.events.length > 0) {
         const lastEv = data.events[data.events.length - 1]; 
         
-        // Grab the current match minute and the event's match minute
         const currentMinute = data.fixture.status.elapsed || 0;
         const eventMinute = parseInt(lastEv.time) || 0;
 
-        // Display if the event happened within the last 5 match minutes
         if (currentMinute - eventMinute <= 5) {
             const icon = lastEv.type === 'Goal' ? '⚽' : '🟥';
             
@@ -97,7 +118,6 @@ function getTimeBadgeHtml(data) {
 
     return badge + latestEvent;
 }
-
 function getScoreHtml(data) {
     const status = data.fixture.status.short;
     const isFinished = ['FT', 'AET', 'PEN'].includes(status);
