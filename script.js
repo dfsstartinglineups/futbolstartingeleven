@@ -3,6 +3,7 @@
 // ==========================================
 const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 let ALL_GAMES_DATA = []; 
+let globalLineupsExpanded = true; // NEW: Tracks whether lineups should default to open or closed
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
 
@@ -65,22 +66,15 @@ function getTimeBadgeHtml(data) {
         let displayMin = data.fixture.status.elapsed;
         
         // --- SMART EXTRA TIME GLITCH FIX ---
-        // API-Football sometimes resets the clock to 90' at the start of the 2nd half of Extra Time
         if (status === 'ET') {
-            // Let's see if we have any events that happened after the 105th minute
             const maxEventTime = data.events ? Math.max(0, ...data.events.map(e => parseInt(e.time) || 0)) : 0;
-            
-            // If the clock says < 105, but we have events proving we are past 105', add the missing 15 mins!
             if (displayMin < 105 && maxEventTime >= 105) {
                 displayMin += 15;
-            } 
-            // Fallback check: If it's been over 2 hours and 15 mins since kickoff, it's definitely 2nd half ET
-            else if (displayMin < 105 && (new Date() - dateObj) > (135 * 60 * 1000)) {
+            } else if (displayMin < 105 && (new Date() - dateObj) > (135 * 60 * 1000)) {
                 displayMin += 15;
             }
         }
         
-        // Handle Break Time (Halftime of Extra Time) and Penalties cleanly
         if (status === 'BT') displayMin = 'ET HT';
         else if (status === 'P') displayMin = 'PEN';
         else displayMin = `${displayMin}'`;
@@ -93,7 +87,6 @@ function getTimeBadgeHtml(data) {
         badge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
     }
 
-    // LATEST EVENT SNIPPET (5-MINUTE TIMEOUT & CLEAR ON FT)
     let latestEvent = '';
     if (!isFinished && data.events && data.events.length > 0) {
         const lastEv = data.events[data.events.length - 1]; 
@@ -118,6 +111,7 @@ function getTimeBadgeHtml(data) {
 
     return badge + latestEvent;
 }
+
 function getScoreHtml(data) {
     const status = data.fixture.status.short;
     const isFinished = ['FT', 'AET', 'PEN'].includes(status);
@@ -135,13 +129,9 @@ function getEventsHtml(data) {
     const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id);
     const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
     
-    // UPDATED: Added teamName parameter so we have a fallback
     const formatEvents = (evs, teamName) => evs.map(e => {
         let icon = e.type === 'Goal' ? '⚽' : '🟥';
-        
-        // If player is null or "null", use the team name instead
         let playerName = (e.player && e.player !== "null") ? e.player : teamName;
-        
         return `<span class="d-inline-block me-1">${icon} <span class="text-dark fw-bold">${playerName}</span> ${e.time}'</span>`;
     }).join(' ');
 
@@ -287,7 +277,7 @@ async function fetchMatchesData(params) {
 }
 
 // ==========================================
-// 3. SILENT SYNC ENGINE (The Magic)
+// 3. SILENT SYNC ENGINE
 // ==========================================
 async function updateLiveGames() {
     const params = getUrlParams();
@@ -313,21 +303,18 @@ async function updateLiveGames() {
         const injuriesEl = document.getElementById(`injuries-${fixId}`);
         
         if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
-            // Generate the new HTML and trim any invisible whitespace
             const newTimeHtml = getTimeBadgeHtml(match).trim();
             const newScoreHtml = getScoreHtml(match).trim();
             const newEventsHtml = getEventsHtml(match).trim();
             const newOddsHtml = getOddsHtml(match).trim();
             const newInjuriesHtml = getInjuriesHtml(match).trim();
             
-            // Compare against the existing HTML (also trimmed of whitespace)
             if (timeEl.innerHTML.trim() !== newTimeHtml) timeEl.innerHTML = newTimeHtml;
             
-            // IF THE SCORE TRULY CHANGES, ADD THE FLASH ANIMATION
             if (scoreEl.innerHTML.trim() !== newScoreHtml) {
                 scoreEl.innerHTML = newScoreHtml;
                 scoreEl.classList.remove('flash-green');
-                void scoreEl.offsetWidth; // This forces the browser to restart the animation
+                void scoreEl.offsetWidth; 
                 scoreEl.classList.add('flash-green');
             }
             
@@ -443,26 +430,51 @@ function createGameCard(data) {
             <div id="odds-${fixId}" class="w-100">${getOddsHtml(data)}</div>
             <div id="injuries-${fixId}" class="w-100">${getInjuriesHtml(data)}</div>
             
-            <div class="bg-light border-bottom text-center py-1">
-                <span class="fw-bold text-muted" style="font-size: 0.7rem;">STARTING XI</span>
+            <div class="bg-light border-bottom text-center py-1" data-bs-toggle="collapse" data-bs-target="#lineup-collapse-${fixId}" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e9ecef'" onmouseout="this.style.backgroundColor='#f8f9fa'" title="Click to expand/collapse lineup">
+                <span class="fw-bold text-muted" style="font-size: 0.7rem;">STARTING XI <span style="font-size: 0.6rem;">▼</span></span>
             </div>
-            <div class="row g-0 bg-white">
-                <div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div>
-                <div class="col-6">${buildLineupList(data.awayLineup)}</div>
+            <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
+                <div class="row g-0 bg-white">
+                    <div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div>
+                    <div class="col-6">${buildLineupList(data.awayLineup)}</div>
+                </div>
             </div>
         </div>`;
     
     return gameCard;
 }
 
+// ==========================================
+// 5. EVENT LISTENERS
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     init();
+    
     const datePicker = document.getElementById('date-picker');
     if (datePicker) {
         datePicker.addEventListener('change', (e) => {
             if (e.target.value) { window.location.href = `?league=${getUrlParams().league}&date=${e.target.value}`; }
         });
     }
+    
     const searchInput = document.getElementById('team-search');
     if (searchInput) searchInput.addEventListener('input', renderGames);
+
+    // NEW GLOBAL COLLAPSE BUTTON LOGIC
+    const toggleAllBtn = document.getElementById('toggle-all-lineups');
+    if (toggleAllBtn) {
+        toggleAllBtn.addEventListener('click', () => {
+            globalLineupsExpanded = !globalLineupsExpanded;
+            toggleAllBtn.innerHTML = globalLineupsExpanded ? '🔼 COLLAPSE ALL LINEUPS' : '🔽 EXPAND ALL LINEUPS';
+            
+            const lineupContainers = document.querySelectorAll('.lineup-container');
+            lineupContainers.forEach(container => {
+                if (globalLineupsExpanded) {
+                    container.classList.add('show');
+                } else {
+                    container.classList.remove('show');
+                }
+            });
+        });
+    }
 });
