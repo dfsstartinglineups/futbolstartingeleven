@@ -7,12 +7,12 @@ from datetime import datetime, timezone, timedelta
 API_KEY = os.environ.get("FOOTBALL_API_KEY")
 API_HOST = "https://v3.football.api-sports.io"
 
-# The expanded global league list (Now 16 Leagues - K-League 292 removed)
+# The expanded global league list (16 Leagues - K-League 292 dropped)
 TOP_LEAGUE_IDS = [
     39, 40, 140, 135, 78, 61, 72, 94,  # Europe
     2, 13,                             # Continental
     253, 262, 71, 128,                 # Americas
-    307, 98                            # World 
+    307, 98                            # World
 ] 
 
 def fetch_data(endpoint):
@@ -41,17 +41,36 @@ def process_date(target_date):
     # Filter down to just our 16 leagues
     matches = [m for m in fixtures_data["response"] if m["league"]["id"] in TOP_LEAGUE_IDS]
 
-    # --- 2. THE FIX: FETCH ODDS BY ACTIVE LEAGUE ---
-    active_leagues = set()
+    # --- 2. LOAD MEMORY FIRST ---
+    existing_data = {}
+    if os.path.exists(filepath):
+        with open(filepath, "r") as f:
+            try:
+                loaded = json.load(f)
+                for game in loaded:
+                    existing_data[game["fixture"]["id"]] = game
+            except Exception:
+                pass
+
+    # --- 3. ONLY FETCH ODDS IF A LEAGUE HAS "TBD" GAMES ---
+    leagues_needing_odds = set()
     for match in matches:
+        fixture_id = match["fixture"]["id"]
         league_id = match["league"]["id"]
         season = match["league"]["season"] 
-        active_leagues.add((league_id, season))
+        
+        # Look at this specific game in our memory
+        existing_game = existing_data.get(fixture_id, {})
+        existing_odds = existing_game.get("odds", {"home": "TBD"})
+        
+        # If even ONE game in this league is missing odds, we add the league to our fetch list
+        if existing_odds.get("home") == "TBD":
+            leagues_needing_odds.add((league_id, season))
 
-    print(f"--- Found {len(active_leagues)} active leagues. Fetching Odds ---")
+    print(f"--- Found {len(leagues_needing_odds)} leagues that still need odds. ---")
     odds_dict = {}
     
-    for league_id, season in active_leagues:
+    for league_id, season in leagues_needing_odds:
         page = 1
         total_pages = 1
         
@@ -63,19 +82,17 @@ def process_date(target_date):
                 
             for odd_item in odds_res["response"]:
                 fix_id = odd_item["fixture"]["id"]
-                
-                # Default to TBD
                 match_odds = {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}
                 
                 if odd_item.get("bookmakers"):
                     bets = odd_item["bookmakers"][0].get("bets", [])
                     for bet in bets:
-                        if bet["id"] == 1: # Match Winner
+                        if bet["id"] == 1: 
                             for v in bet["values"]:
                                 if v["value"] == "Home": match_odds["home"] = str(v["odd"])
                                 if v["value"] == "Draw": match_odds["draw"] = str(v["odd"])
                                 if v["value"] == "Away": match_odds["away"] = str(v["odd"])
-                        elif bet["id"] == 5: # Over/Under
+                        elif bet["id"] == 5: 
                             for v in bet["values"]:
                                 if "Over 2.5" in str(v["value"]):
                                     match_odds["over"] = str(v["odd"])
@@ -89,17 +106,7 @@ def process_date(target_date):
             total_pages = odds_res.get("paging", {}).get("total", 1)
             page += 1
 
-    # 3. Load existing local data (The "Memory")
-    existing_data = {}
-    if os.path.exists(filepath):
-        with open(filepath, "r") as f:
-            try:
-                loaded = json.load(f)
-                for game in loaded:
-                    existing_data[game["fixture"]["id"]] = game
-            except Exception:
-                pass
-
+    # --- 4. MAP DATA AND FETCH LINEUPS ---
     all_game_data = []
     now_utc = datetime.now(timezone.utc)
     
