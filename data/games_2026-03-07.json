@@ -13447,7 +13447,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 57,
+                "elapsed": 58,
                 "extra": null
             }
         },
@@ -14059,7 +14059,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 62,
+                "elapsed": 63,
                 "extra": null
             }
         },
@@ -15182,7 +15182,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 46,
+                "elapsed": 47,
                 "extra": null
             }
         },
@@ -15201,20 +15201,20 @@
                 "id": 34,
                 "name": "Newcastle",
                 "logo": "https://media.api-sports.io/football/teams/34.png",
-                "winner": null,
+                "winner": false,
                 "rank": null
             },
             "away": {
                 "id": 50,
                 "name": "Manchester City",
                 "logo": "https://media.api-sports.io/football/teams/50.png",
-                "winner": null,
+                "winner": true,
                 "rank": null
             }
         },
         "goals": {
             "home": 1,
-            "away": 1
+            "away": 2
         },
         "homeLineup": {
             "team": {
@@ -15661,6 +15661,13 @@
                 "time": 39,
                 "team_id": 50,
                 "player": "Savinho",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            },
+            {
+                "time": 47,
+                "team_id": 50,
+                "player": null,
                 "type": "Goal",
                 "detail": "Normal Goal"
             }
@@ -16182,7 +16189,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 31,
+                "elapsed": 33,
                 "extra": null
             }
         },
@@ -16738,9 +16745,10 @@
             "away": "1.75",
             "total": "2.5",
             "over": "1.53",
-            "under": "2.40"
+            "under": "2.40",
+            "refreshed": true
         },
-        "odds_refreshed": false,
+        "odds_refreshed": true,
         "injuries": {
             "home": [
                 "A. Herrera",
