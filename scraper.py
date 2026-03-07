@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta
 API_KEY = os.environ.get("FOOTBALL_API_KEY")
 API_HOST = "https://v3.football.api-sports.io"
 
-# The expanded global league list (16 Leagues - K-League 292 dropped)
+# The expanded global league list (16 Leagues)
 TOP_LEAGUE_IDS = [
     39, 40, 45, 140, 135, 78, 61, 72, 94,  # Europe
     2, 13,                             # Continental
@@ -28,6 +28,7 @@ def fetch_data(endpoint):
 def process_date(target_date):
     date_str = target_date.strftime("%Y-%m-%d")
     filepath = f"data/games_{date_str}.json"
+    now_utc = datetime.now(timezone.utc)
     
     print(f"\n--- Fetching live fixtures & scores for {date_str} ---")
     
@@ -52,33 +53,43 @@ def process_date(target_date):
             except Exception:
                 pass
 
-    # --- 3. ONLY FETCH ODDS IF A LEAGUE HAS "TBD" GAMES ---
+    # --- 3. FETCH STANDINGS / RANKS ---
+    active_leagues = set()
     leagues_needing_odds = set()
+    
     for match in matches:
         fixture_id = match["fixture"]["id"]
         league_id = match["league"]["id"]
         season = match["league"]["season"] 
+        active_leagues.add((league_id, season))
         
-        # Look at this specific game in our memory
         existing_game = existing_data.get(fixture_id, {})
         existing_odds = existing_game.get("odds", {"home": "TBD"})
-        
-        # If even ONE game in this league is missing odds, we add the league to our fetch list
         if existing_odds.get("home") == "TBD":
             leagues_needing_odds.add((league_id, season))
 
-    print(f"--- Found {len(leagues_needing_odds)} leagues that still need odds. ---")
+    print(f"--- Fetching Standings Context ---")
+    ranks = {}
+    for league_id, season in active_leagues:
+        # Skip cup competitions where standard standings don't apply cleanly
+        if league_id in [2, 13, 45]: continue
+        
+        stand_data = fetch_data(f"standings?league={league_id}&season={season}")
+        if stand_data and stand_data.get("response"):
+            for lg in stand_data["response"]:
+                for group in lg["league"]["standings"]:
+                    for team in group:
+                        ranks[team["team"]["id"]] = team["rank"]
+
+    # --- 4. BULK ODDS FETCHING (Only if TBD) ---
+    print(f"--- Found {len(leagues_needing_odds)} leagues that still need baseline odds. ---")
     odds_dict = {}
-    
     for league_id, season in leagues_needing_odds:
         page = 1
         total_pages = 1
-        
         while page <= total_pages:
             odds_res = fetch_data(f"odds?league={league_id}&season={season}&date={date_str}&bookmaker=8&page={page}")
-            
-            if not odds_res or "response" not in odds_res:
-                break
+            if not odds_res or "response" not in odds_res: break
                 
             for odd_item in odds_res["response"]:
                 fix_id = odd_item["fixture"]["id"]
@@ -100,61 +111,122 @@ def process_date(target_date):
                                 elif "Under 2.5" in str(v["value"]):
                                     match_odds["under"] = str(v["odd"])
                                     match_odds["total"] = "2.5"
-                
                 odds_dict[fix_id] = match_odds
                 
             total_pages = odds_res.get("paging", {}).get("total", 1)
             page += 1
 
-    # --- 4. MAP DATA AND FETCH LINEUPS ---
+    # --- 5. MAP DATA AND FETCH LIVE/PRE-MATCH METADATA ---
     all_game_data = []
-    now_utc = datetime.now(timezone.utc)
     
     for match in matches:
         fixture_id = match["fixture"]["id"]
+        status = match["fixture"]["status"]["short"]
         
         existing_game = existing_data.get(fixture_id, {})
         home_lineup = existing_game.get("homeLineup")
         away_lineup = existing_game.get("awayLineup")
-        
-        # Grab the odds we just fetched for this specific fixture, or fallback to memory
         game_odds = odds_dict.get(fixture_id, existing_game.get("odds", {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}))
+        injuries = existing_game.get("injuries", {"home": [], "away": [], "fetched": False})
+        events = existing_game.get("events", [])
         
+        # Parse match time
         try:
             game_time_str = match['fixture']['date']
             if game_time_str.endswith('Z'):
                 game_time_str = game_time_str[:-1] + '+00:00'
             game_time = datetime.fromisoformat(game_time_str)
-        except Exception as e:
+        except Exception:
             game_time = now_utc + timedelta(days=1)
             
-        needs_lineups = not home_lineup or not away_lineup
+        time_to_kickoff = (game_time - now_utc).total_seconds() / 60
         within_window = now_utc >= (game_time - timedelta(minutes=60))
+        valid_status = status not in ['PST', 'CANC', 'ABD']
         
-        # Stop fetching if the game is postponed, canceled, finished, or reached Halftime
+        # A. LIVE ODDS REFRESH (30-45 mins before kickoff)
+        needs_odds_refresh = existing_game.get("odds_refreshed") != True and 10 <= time_to_kickoff <= 45
+        if needs_odds_refresh:
+            print(f"[{fixture_id}] Refreshing live odds before kickoff...")
+            odds_res = fetch_data(f"odds?fixture={fixture_id}&bookmaker=8")
+            if odds_res and "response" in odds_res and len(odds_res["response"]) > 0:
+                odd_item = odds_res["response"][0]
+                if odd_item.get("bookmakers"):
+                    for bet in odd_item["bookmakers"][0].get("bets", []):
+                        if bet["id"] == 1: 
+                            for v in bet["values"]:
+                                if v["value"] == "Home": game_odds["home"] = str(v["odd"])
+                                if v["value"] == "Draw": game_odds["draw"] = str(v["odd"])
+                                if v["value"] == "Away": game_odds["away"] = str(v["odd"])
+                        elif bet["id"] == 5: 
+                            for v in bet["values"]:
+                                if "Over 2.5" in str(v["value"]):
+                                    game_odds["over"] = str(v["odd"])
+                                    game_odds["total"] = "2.5"
+                                elif "Under 2.5" in str(v["value"]):
+                                    game_odds["under"] = str(v["odd"])
+                                    game_odds["total"] = "2.5"
+            game_odds["refreshed"] = True
+
+        # B. FETCH INJURIES (Once per game, exactly when we start looking for lineups)
+        if within_window and not injuries.get("fetched") and valid_status:
+            print(f"[{fixture_id}] Fetching injury reports...")
+            inj_res = fetch_data(f"injuries?fixture={fixture_id}")
+            if inj_res and "response" in inj_res:
+                for inj in inj_res["response"]:
+                    team_id = inj["team"]["id"]
+                    player_name = inj["player"]["name"]
+                    if team_id == match["teams"]["home"]["id"]:
+                        injuries["home"].append(player_name)
+                    else:
+                        injuries["away"].append(player_name)
+            injuries["fetched"] = True
+
+        # C. FETCH LINEUPS
+        needs_lineups = not home_lineup or not away_lineup
         stop_statuses = ['PST', 'CANC', 'ABD', 'HT', 'FT', 'AET', 'PEN']
-        valid_status = match["fixture"]["status"]["short"] not in stop_statuses
         
-        if needs_lineups and within_window and valid_status:
+        if needs_lineups and within_window and status not in stop_statuses:
             print(f"[{match['teams']['home']['name']} vs {match['teams']['away']['name']}] Fetching lineups...")
             lineups_data = fetch_data(f"fixtures/lineups?fixture={fixture_id}")
-            
             if lineups_data and "response" in lineups_data:
-                # Grab whatever we can find. If only one team's lineup is available, save it!
                 new_home = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["home"]["id"]), None)
                 new_away = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["away"]["id"]), None)
-                
                 if new_home: home_lineup = new_home
                 if new_away: away_lineup = new_away
-                
+
+        # D. FETCH LIVE EVENTS (Goals & Red Cards)
+        is_live = valid_status and status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE']
+        if is_live:
+            ev_res = fetch_data(f"fixtures/events?fixture={fixture_id}")
+            if ev_res and "response" in ev_res:
+                parsed_events = []
+                for ev in ev_res["response"]:
+                    # Only save Goals and Red Cards
+                    if ev["type"] == "Goal" or (ev["type"] == "Card" and "Red" in ev["detail"]):
+                        parsed_events.append({
+                            "time": ev["time"]["elapsed"],
+                            "team_id": ev["team"]["id"],
+                            "player": ev["player"]["name"],
+                            "type": ev["type"],
+                            "detail": ev["detail"]
+                        })
+                events = parsed_events
+
+        # E. COMPILE MATCH PAYLOAD
         all_game_data.append({
             "fixture": match["fixture"],
             "league": match["league"],
-            "teams": match["teams"],
+            "teams": {
+                "home": {**match["teams"]["home"], "rank": ranks.get(match["teams"]["home"]["id"])},
+                "away": {**match["teams"]["away"], "rank": ranks.get(match["teams"]["away"]["id"])}
+            },
             "goals": match["goals"],
             "homeLineup": home_lineup,
             "awayLineup": away_lineup,
-            "odds": game_odds 
+            "odds": game_odds,
+            "odds_refreshed": game_odds.get("refreshed", False),
+            "injuries": injuries,
+            "events": events
         })
 
     os.makedirs("data", exist_ok=True)
