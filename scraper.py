@@ -1,7 +1,7 @@
 import os
 import json
 import urllib.request
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Grab the secret key from GitHub Actions
 API_KEY = os.environ.get("FOOTBALL_API_KEY")
@@ -68,12 +68,9 @@ def main():
         print("CRITICAL ERROR: FOOTBALL_API_KEY environment variable not set.")
         return
 
+    # Only scrape TODAY to save API credits and build historical files organically
     today = datetime.now()
-    dates_to_fetch = [
-        today - timedelta(days=1), # Yesterday
-        today,                     # Today
-        today + timedelta(days=1)  # Tomorrow
-    ]
+    dates_to_fetch = [today] 
     
     for d in dates_to_fetch:
         process_date(d)
