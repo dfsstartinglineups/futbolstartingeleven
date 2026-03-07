@@ -10,6 +10,7 @@ const LEAGUE_GROUPS = {
     "priority": [
         { key: "top", id: "top", name: "Top Matches" },
         { key: "epl", id: 39, name: "Premier League" },
+        { key: "facup", id: 45, name: "FA Cup" }, // Added FA Cup
         { key: "laliga", id: 140, name: "La Liga" },
         { key: "mls", id: 253, name: "MLS" },
         { key: "ucl", id: 2, name: "Champions League" }
