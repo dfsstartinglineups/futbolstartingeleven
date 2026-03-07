@@ -1,9 +1,10 @@
 name: Scrape API-Football Lineups
 
 on:
-  schedule:
-    - cron: '*/15 * * * *' # Runs every 15 minutes
-  workflow_dispatch: # Allows you to run it manually
+  workflow_dispatch: # This makes it listen exclusively for your external ping!
+
+permissions:
+  contents: write
 
 jobs:
   update-data:
