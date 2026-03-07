@@ -7,12 +7,12 @@ from datetime import datetime, timezone, timedelta
 API_KEY = os.environ.get("FOOTBALL_API_KEY")
 API_HOST = "https://v3.football.api-sports.io"
 
-# The expanded global league list (17 Leagues)
+# The expanded global league list (Now 16 Leagues - K-League 292 removed)
 TOP_LEAGUE_IDS = [
     39, 40, 140, 135, 78, 61, 72, 94,  # Europe
     2, 13,                             # Continental
     253, 262, 71, 128,                 # Americas
-    307, 98, 292                       # World
+    307, 98                            # World 
 ] 
 
 def fetch_data(endpoint):
@@ -38,15 +38,14 @@ def process_date(target_date):
         print("No fixtures found or API error.")
         return
 
-    # Filter down to just our 17 leagues
+    # Filter down to just our 16 leagues
     matches = [m for m in fixtures_data["response"] if m["league"]["id"] in TOP_LEAGUE_IDS]
 
     # --- 2. THE FIX: FETCH ODDS BY ACTIVE LEAGUE ---
-    # Figure out which leagues actually have games playing today
     active_leagues = set()
     for match in matches:
         league_id = match["league"]["id"]
-        season = match["league"]["season"] # API requires season when querying odds by league
+        season = match["league"]["season"] 
         active_leagues.add((league_id, season))
 
     print(f"--- Found {len(active_leagues)} active leagues. Fetching Odds ---")
@@ -124,15 +123,22 @@ def process_date(target_date):
             
         needs_lineups = not home_lineup or not away_lineup
         within_window = now_utc >= (game_time - timedelta(minutes=60))
-        valid_status = match["fixture"]["status"]["short"] not in ['PST', 'CANC', 'ABD']
+        
+        # Stop fetching if the game is postponed, canceled, finished, or reached Halftime
+        stop_statuses = ['PST', 'CANC', 'ABD', 'HT', 'FT', 'AET', 'PEN']
+        valid_status = match["fixture"]["status"]["short"] not in stop_statuses
         
         if needs_lineups and within_window and valid_status:
-            print(f"[{match['teams']['home']['name']} vs {match['teams']['away']['name']}] within 60 mins. Fetching lineups...")
+            print(f"[{match['teams']['home']['name']} vs {match['teams']['away']['name']}] Fetching lineups...")
             lineups_data = fetch_data(f"fixtures/lineups?fixture={fixture_id}")
             
-            if lineups_data and "response" in lineups_data and len(lineups_data["response"]) == 2:
-                home_lineup = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["home"]["id"]), None)
-                away_lineup = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["away"]["id"]), None)
+            if lineups_data and "response" in lineups_data:
+                # Grab whatever we can find. If only one team's lineup is available, save it!
+                new_home = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["home"]["id"]), None)
+                new_away = next((l for l in lineups_data["response"] if l["team"]["id"] == match["teams"]["away"]["id"]), None)
+                
+                if new_home: home_lineup = new_home
+                if new_away: away_lineup = new_away
                 
         all_game_data.append({
             "fixture": match["fixture"],
