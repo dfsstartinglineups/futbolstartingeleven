@@ -167,6 +167,7 @@ def process_date(target_date):
         game_odds = odds_dict.get(fixture_id, existing_game.get("odds", {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}))
         injuries = existing_game.get("injuries", {"home": [], "away": [], "fetched": False})
         events = existing_game.get("events", [])
+        last_odds_check_str = existing_game.get("last_odds_check")
         
         # Parse match time
         try:
@@ -181,10 +182,19 @@ def process_date(target_date):
         within_window = now_utc >= (game_time - timedelta(minutes=60))
         valid_status = status not in ['PST', 'CANC', 'ABD']
         
-        # A. LIVE ODDS REFRESH (30-45 mins before kickoff)
-        needs_odds_refresh = existing_game.get("odds_refreshed") != True and 10 <= time_to_kickoff <= 45
-        if needs_odds_refresh:
-            print(f"[{fixture_id}] Refreshing live odds before kickoff...")
+        # A. LIVE ODDS REFRESH (5-Minute interval polling during the 45 mins before kickoff)
+        in_odds_window = 0 <= time_to_kickoff <= 45
+        mins_since_check = 999  # Default high value to force a check if never checked
+
+        if last_odds_check_str:
+            try:
+                last_check_time = datetime.fromisoformat(last_odds_check_str)
+                mins_since_check = (now_utc - last_check_time).total_seconds() / 60
+            except Exception:
+                pass
+
+        if in_odds_window and mins_since_check >= 5 and valid_status:
+            print(f"[{fixture_id}] Refreshing live odds before kickoff (T-{int(time_to_kickoff)} mins)...")
             odds_res = fetch_data(f"odds?fixture={fixture_id}&bookmaker=8")
             if odds_res and "response" in odds_res and len(odds_res["response"]) > 0:
                 odd_item = odds_res["response"][0]
@@ -203,7 +213,7 @@ def process_date(target_date):
                                 elif "Under 2.5" in str(v["value"]):
                                     game_odds["under"] = str(v["odd"])
                                     game_odds["total"] = "2.5"
-            game_odds["refreshed"] = True
+            last_odds_check_str = now_utc.isoformat()
 
         # B. FETCH INJURIES (Once per game, exactly when we start looking for lineups)
         if within_window and not injuries.get("fetched") and valid_status:
@@ -261,7 +271,7 @@ def process_date(target_date):
             "homeLineup": home_lineup,
             "awayLineup": away_lineup,
             "odds": game_odds,
-            "odds_refreshed": game_odds.get("refreshed", False),
+            "last_odds_check": last_odds_check_str,
             "injuries": injuries,
             "events": events
         })
