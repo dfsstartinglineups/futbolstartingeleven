@@ -91,32 +91,23 @@ window.checkOverflows = function() {
 
         let hasOverflow = false;
         targets.forEach(t => {
-            // Temporarily remove truncation to measure true mathematical width vs container
-            t.classList.remove('text-truncate');
-            t.style.whiteSpace = 'nowrap'; 
-            
-            if (t.scrollWidth > t.clientWidth) {
+            // Determine if native width exceeds visible width smoothly (+1 protects against decimal rounding)
+            if (t.scrollWidth > t.clientWidth + 1) {
                 hasOverflow = true;
             }
-            
-            // Restore truncation
-            t.classList.add('text-truncate');
-            t.style.whiteSpace = '';
         });
 
         if (hasOverflow) {
             indicator.classList.remove('d-none');
-            // Hide the default '...' and replace it with a sharp cut right before the arrow
+            // Hide the default '...' and replace it with a sharp cut so it doesn't bleed under the arrow
             targets.forEach(t => {
                 t.style.textOverflow = 'clip';
-                t.style.paddingRight = '4px'; 
             });
         } else {
             indicator.classList.add('d-none');
             // Restore defaults
             targets.forEach(t => {
                 t.style.textOverflow = '';
-                t.style.paddingRight = '';
             });
         }
     });
@@ -258,16 +249,16 @@ function getInjuriesHtml(data) {
     const aInj = data.injuries.away.join(', ') || 'None';
     
     return `
-    <div class="border-bottom px-2 py-1 expandable-section d-flex justify-content-center align-items-center" 
+    <div class="border-bottom px-2 py-1 expandable-section position-relative d-flex justify-content-center align-items-center" 
          style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545; cursor: pointer; transition: background-color 0.2s;" 
          onclick="toggleExpand(this)" 
          onmouseover="this.style.backgroundColor='#ffebeb'" 
          onmouseout="this.style.backgroundColor='#fff5f5'" 
          title="Click to expand/collapse injuries">
-        <div class="injury-text text-truncate truncate-target user-select-none" style="max-width: 95%; min-width: 0;">
+        <div class="injury-text text-truncate truncate-target user-select-none" style="max-width: 92%; min-width: 0;">
             <strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj} | <b>A:</b> ${aInj}</span>
         </div>
-        <div class="overflow-indicator d-none ms-1 text-danger" style="font-size: 0.6rem; flex-shrink: 0; padding-left: 2px;">▼</div>
+        <div class="overflow-indicator d-none position-absolute text-danger" style="right: 12px; font-size: 0.6rem; pointer-events: none;">▼</div>
     </div>`;
 }
 
@@ -543,7 +534,7 @@ async function updateLiveGames() {
         }
     });
 
-    setTimeout(checkOverflows, 100); // Re-calculate overflow indicators after DOM injection
+    requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
 }
 
 // ==========================================
@@ -608,7 +599,7 @@ function renderGames() {
 
     filteredGames.forEach(item => container.appendChild(createGameCard(item)));
     
-    setTimeout(checkOverflows, 100); // Check mathematical widths once cards hit the DOM
+    requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
 }
 
 function createGameCard(data) {
@@ -700,7 +691,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Automatically recalculate overflow arrows if the user rotates their phone or resizes their browser
     window.addEventListener('resize', () => {
         clearTimeout(window.resizeTimer);
-        window.resizeTimer = setTimeout(checkOverflows, 150);
+        window.resizeTimer = setTimeout(() => {
+            requestAnimationFrame(checkOverflows);
+        }, 150);
     });
 
     const datePicker = document.getElementById('date-picker');
