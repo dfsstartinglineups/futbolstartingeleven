@@ -735,10 +735,10 @@
                 "city": "London"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
-                "extra": 8
+                "extra": 9
             }
         },
         "league": {
@@ -1776,7 +1776,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 27,
+                "elapsed": 28,
                 "extra": null
             }
         },
@@ -1795,7 +1795,7 @@
                 "id": 1351,
                 "name": "Port Vale",
                 "logo": "https://media.api-sports.io/football/teams/1351.png",
-                "winner": null,
+                "winner": true,
                 "rank": null,
                 "record": null
             },
@@ -1803,13 +1803,13 @@
                 "id": 746,
                 "name": "Sunderland",
                 "logo": "https://media.api-sports.io/football/teams/746.png",
-                "winner": null,
+                "winner": false,
                 "rank": null,
                 "record": null
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -1854,7 +1854,15 @@
             "away": [],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 28,
+                "team_id": 1351,
+                "player": "B. Waine",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
