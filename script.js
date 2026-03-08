@@ -357,7 +357,7 @@ async function updateLiveGames() {
 }
 
 // ==========================================
-// 4. DEEP LINK SCROLLING
+// 4. DEEP LINK SCROLLING (FUTBOL GREEN THEME)
 // ==========================================
 function handleHashNavigation() {
     if (window.location.hash) {
@@ -373,8 +373,12 @@ function handleHashNavigation() {
                 // Apply the bold green highlight and slight zoom
                 targetCard.style.transition = 'all 0.4s ease-out';
                 targetCard.style.transform = 'scale(1.02)';
-                targetCard.style.boxShadow = '0 0 25px rgba(32, 201, 151, 0.8)';
-                targetCard.style.border = '2px solid #20c997';
+                
+                // Force overrides on Bootstrap's utility classes
+                targetCard.style.setProperty('border', '3px solid #20c997', 'important');
+                targetCard.style.setProperty('box-shadow', '0 0 25px rgba(32, 201, 151, 0.8)', 'important');
+                
+                targetCard.style.position = 'relative'; // Ensure z-index stacks properly
                 targetCard.style.zIndex = '10';
                 
                 if (innerHeader) {
@@ -385,8 +389,8 @@ function handleHashNavigation() {
                 // Hold the green highlight for 4 seconds, then fade it back to normal
                 setTimeout(() => {
                     targetCard.style.transform = 'scale(1)';
-                    targetCard.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                    targetCard.style.border = '1px solid #dee2e6';
+                    targetCard.style.removeProperty('border'); // Reverts to bootstrap border class
+                    targetCard.style.setProperty('box-shadow', '0 2px 4px rgba(0,0,0,0.05)', 'important');
                     targetCard.style.zIndex = '1';
                     
                     if (innerHeader) {
