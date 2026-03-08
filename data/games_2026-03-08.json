@@ -147,7 +147,7 @@
             },
             "venue": {
                 "id": null,
-                "name": "Via del Mare",
+                "name": "Stadio Ettore Giardiniero - Via del Mare",
                 "city": "Lecce"
             },
             "status": {
@@ -1783,7 +1783,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 84,
+                "elapsed": 85,
                 "extra": null
             }
         },
@@ -1890,7 +1890,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 53,
+                "elapsed": 54,
                 "extra": null
             }
         },
@@ -1909,7 +1909,7 @@
                 "id": 500,
                 "name": "Bologna",
                 "logo": "https://media.api-sports.io/football/teams/500.png",
-                "winner": true,
+                "winner": null,
                 "rank": 8,
                 "record": "11-6-10"
             },
@@ -1917,14 +1917,14 @@
                 "id": 504,
                 "name": "Hellas Verona",
                 "logo": "https://media.api-sports.io/football/teams/504.png",
-                "winner": false,
+                "winner": null,
                 "rank": 19,
                 "record": "2-9-16"
             }
         },
         "goals": {
             "home": 1,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -2424,6 +2424,13 @@
                 "player": "J. Rowe",
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 53,
+                "team_id": 504,
+                "player": "M. Frese",
+                "type": "Goal",
+                "detail": "Normal Goal"
             }
         ]
     },
@@ -2446,7 +2453,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 51,
+                "elapsed": 52,
                 "extra": null
             }
         },
@@ -2965,7 +2972,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 52,
+                "elapsed": 53,
                 "extra": null
             }
         },
@@ -2998,7 +3005,7 @@
             }
         },
         "goals": {
-            "home": 2,
+            "home": 3,
             "away": 0
         },
         "homeLineup": {
@@ -3462,6 +3469,13 @@
                 "player": "F. Thauvin",
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 52,
+                "team_id": 116,
+                "player": "A. Haidara",
+                "type": "Goal",
+                "detail": "Normal Goal"
             }
         ]
     },
@@ -3484,7 +3498,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 44,
+                "elapsed": 45,
                 "extra": null
             }
         },
@@ -4669,9 +4683,17 @@
         },
         "last_odds_check": null,
         "injuries": {
-            "home": [],
-            "away": [],
-            "fetched": false
+            "home": [
+                "M. Balde",
+                "D. Guindo"
+            ],
+            "away": [
+                "F. Doucoure",
+                "L. Nego",
+                "T. Pembele",
+                "A. Toure"
+            ],
+            "fetched": true
         },
         "events": []
     },
@@ -4742,9 +4764,22 @@
         },
         "last_odds_check": null,
         "injuries": {
-            "home": [],
-            "away": [],
-            "fetched": false
+            "home": [
+                "M. Caillard",
+                "H. Igamane",
+                "E. Mbappe",
+                "O. Sahraoui",
+                "O. Toure"
+            ],
+            "away": [
+                "L. Abergel",
+                "B. Fadiga",
+                "Igor Silva",
+                "P. Pagis",
+                "T. Sanusi",
+                "I. Toure"
+            ],
+            "fetched": true
         },
         "events": []
     },
@@ -4815,9 +4850,19 @@
         },
         "last_odds_check": null,
         "injuries": {
-            "home": [],
-            "away": [],
-            "fetched": false
+            "home": [
+                "M. Abdelmonem",
+                "A. Abdi",
+                "M. Bombito",
+                "I. Jansson",
+                "E. Pereira",
+                "E. Wahi"
+            ],
+            "away": [
+                "P. Frankowski",
+                "J. Jacquet"
+            ],
+            "fetched": true
         },
         "events": []
     },
