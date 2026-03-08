@@ -34,6 +34,46 @@ def process_date(target_date):
     # Ensure data directory exists early for our cache files
     os.makedirs("data", exist_ok=True)
     
+    # ==========================================
+    # 0. HIBERNATION CHECK (Save API Calls)
+    # ==========================================
+    if os.path.exists(filepath):
+        try:
+            with open(filepath, "r") as f:
+                local_games = json.load(f)
+                
+            needs_update = False
+            for game in local_games:
+                status = game.get("fixture", {}).get("status", {}).get("short", "")
+                
+                try:
+                    game_time_str = game['fixture']['date']
+                    if game_time_str.endswith('Z'):
+                        game_time_str = game_time_str[:-1] + '+00:00'
+                    game_time = datetime.fromisoformat(game_time_str)
+                except Exception:
+                    game_time = now_utc + timedelta(days=1)
+                    
+                time_to_kickoff = (game_time - now_utc).total_seconds() / 60
+                
+                # Condition A: Game is actively being played or paused
+                if status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP']:
+                    needs_update = True
+                    break
+                    
+                # Condition B: Game is coming up within 75 minutes (wake up to catch 60min lineups/odds)
+                # Or a game was supposed to start but is stuck in NS/TBD (time_to_kickoff <= 0)
+                if status in ['NS', 'TBD'] and time_to_kickoff <= 75:
+                    needs_update = True
+                    break
+
+            if not needs_update:
+                print(f"[{date_str}] 💤 Hibernating: No active games and next match is > 75 mins away.")
+                return
+
+        except Exception:
+            pass # If the file is corrupt or empty, we skip hibernation and fetch normally
+    
     print(f"\n--- Fetching live fixtures & scores for {date_str} ---")
     
     # 1. Fetch the master schedule
@@ -324,7 +364,12 @@ def process_date(target_date):
     with open(filepath, "w") as f:
         json.dump(all_game_data, f, indent=4)
     
-    print(f"Data successfully saved to {filepath}")
+    if not needs_update:
+        # We checked memory and knew we didn't have to fetch, but we do this print 
+        # inside the loop. If we bypass the API, the function actually returns early at step 0. 
+        pass 
+    else:
+        print(f"Data successfully saved to {filepath}")
 
 def main():
     if not API_KEY:
