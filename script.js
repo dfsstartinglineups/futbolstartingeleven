@@ -196,21 +196,28 @@ function getEventsHtml(data) {
 
     const renderEventSide = (evs, teamName, isHome) => {
         if (evs.length === 0) return '';
-        if (evs.length === 1) {
-            return `<div class="text-truncate">${formatSingleEvent(evs[0], teamName)}</div>`;
+        
+        // Reverse array so the most recent event is at the top/index 0
+        const reversedEvs = [...evs].reverse();
+
+        if (reversedEvs.length === 1) {
+            return `<div class="text-truncate">${formatSingleEvent(reversedEvs[0], teamName)}</div>`;
         }
 
-        // Multiple Events: Limit to 1 goal + arrow when collapsed.
-        const firstEvent = formatSingleEvent(evs[0], teamName);
-        const allEvents = evs.map(e => `<span style="white-space: nowrap;">${formatSingleEvent(e, teamName)}</span>`).join(' <span class="text-muted mx-1">•</span> ');
+        // Collapsed view shows just the most recent event
+        const firstEvent = formatSingleEvent(reversedEvs[0], teamName);
+        
+        // Expanded view stacks all events vertically descending
+        const allEvents = reversedEvs.map(e => `<div class="text-truncate" style="margin-bottom: 2px;">${formatSingleEvent(e, teamName)}</div>`).join('');
 
         return `
             <div class="event-collapsed d-flex align-items-center ${isHome ? 'justify-content-start' : 'justify-content-end'}">
                 <div class="text-truncate">${firstEvent}</div>
                 <div class="text-secondary ms-1" style="font-size: 0.6rem; flex-shrink: 0;">▼</div>
             </div>
-            <div class="event-expanded d-none" style="white-space: normal;">
-                ${allEvents} <span class="text-secondary ms-1 d-inline-block" style="font-size: 0.6rem;">▲</span>
+            <div class="event-expanded d-none">
+                ${allEvents}
+                <div class="text-secondary" style="font-size: 0.6rem; line-height: 1;">▲</div>
             </div>
         `;
     };
@@ -495,7 +502,7 @@ async function updateLiveGames() {
             if (eventsEl.innerHTML.trim() !== newEventsHtml) {
                 eventsEl.innerHTML = newEventsHtml;
                 if (eventsWasExpanded) {
-                    const toggleSection = eventsEl.querySelector('.expandable-section');
+                    const toggleSection = eventsEl.querySelector('.border-top');
                     if (toggleSection) {
                         toggleSection.classList.add('is-expanded');
                         toggleSection.querySelectorAll('.event-collapsed').forEach(el => el.classList.add('d-none'));
