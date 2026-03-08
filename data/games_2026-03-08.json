@@ -4008,7 +4008,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 80,
+                "elapsed": 82,
                 "extra": null
             }
         },
@@ -4558,7 +4558,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 64,
+                "elapsed": 66,
                 "extra": null
             }
         },
@@ -4673,7 +4673,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": null
+                "extra": 2
             }
         },
         "league": {
@@ -4691,7 +4691,7 @@
                 "id": 106,
                 "name": "Stade Brestois 29",
                 "logo": "https://media.api-sports.io/football/teams/106.png",
-                "winner": null,
+                "winner": true,
                 "rank": 9,
                 "record": "9-6-9"
             },
@@ -4699,13 +4699,13 @@
                 "id": 111,
                 "name": "Le Havre",
                 "logo": "https://media.api-sports.io/football/teams/111.png",
-                "winner": null,
+                "winner": false,
                 "rank": 13,
                 "record": "6-8-10"
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -5130,7 +5130,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 45,
+                "team_id": 106,
+                "player": "R. Del Castillo",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -5152,7 +5160,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": null
+                "extra": 2
             }
         },
         "league": {
@@ -5654,7 +5662,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": null
+                "extra": 2
             }
         },
         "league": {
@@ -6174,7 +6182,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 30,
+                "elapsed": 32,
                 "extra": null
             }
         },
@@ -6683,7 +6691,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 30,
+                "elapsed": 32,
                 "extra": null
             }
         },
@@ -6702,7 +6710,7 @@
                 "id": 182,
                 "name": "Union Berlin",
                 "logo": "https://media.api-sports.io/football/teams/182.png",
-                "winner": true,
+                "winner": null,
                 "rank": 11,
                 "record": "7-7-10"
             },
@@ -6710,14 +6718,14 @@
                 "id": 162,
                 "name": "Werder Bremen",
                 "logo": "https://media.api-sports.io/football/teams/162.png",
-                "winner": false,
+                "winner": null,
                 "rank": 16,
                 "record": "5-7-12"
             }
         },
         "goals": {
             "home": 1,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -7180,6 +7188,13 @@
                 "player": "A. Schafer",
                 "type": "Card",
                 "detail": "Red Card"
+            },
+            {
+                "time": 31,
+                "team_id": 162,
+                "player": "O. Deman",
+                "type": "Goal",
+                "detail": "Normal Goal"
             }
         ]
     },
@@ -7202,7 +7217,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 30,
+                "elapsed": 32,
                 "extra": null
             }
         },
@@ -7680,18 +7695,18 @@
             "date": "2026-03-08T13:00:00-04:00",
             "timestamp": 1772989200,
             "periods": {
-                "first": null,
+                "first": 1772989200,
                 "second": null
             },
             "venue": {
-                "id": null,
+                "id": 905,
                 "name": "Stadio Comunale Luigi Ferraris",
                 "city": "Genova"
             },
             "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
+                "long": "First Half",
+                "short": "1H",
+                "elapsed": 1,
                 "extra": null
             }
         },
@@ -7724,8 +7739,8 @@
             }
         },
         "goals": {
-            "home": null,
-            "away": null
+            "home": 0,
+            "away": 0
         },
         "homeLineup": {
             "team": {
