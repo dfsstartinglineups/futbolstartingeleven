@@ -347,7 +347,35 @@ async function updateLiveGames() {
 }
 
 // ==========================================
-// 4. MAIN APP LOGIC 
+// 4. DEEP LINK SCROLLING
+// ==========================================
+function handleHashNavigation() {
+    if (window.location.hash) {
+        setTimeout(() => {
+            const targetCard = document.querySelector(window.location.hash);
+            if (targetCard) {
+                // Scroll the card into the center of the view
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Add a smooth highlight glow to draw attention
+                targetCard.style.transition = 'box-shadow 0.5s ease-in-out, transform 0.5s ease';
+                targetCard.style.transform = 'scale(1.02)';
+                targetCard.style.boxShadow = '0 0 20px rgba(32, 201, 151, 0.8)';
+                targetCard.style.zIndex = '10';
+                
+                // Remove highlight after a few seconds
+                setTimeout(() => {
+                    targetCard.style.transform = 'scale(1)';
+                    targetCard.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                    targetCard.style.zIndex = '1';
+                }, 2500);
+            }
+        }, 500); // 500ms delay ensures DOM is fully rendered before trying to scroll
+    }
+}
+
+// ==========================================
+// 5. MAIN APP LOGIC 
 // ==========================================
 async function init() {
     const params = getUrlParams();
@@ -368,6 +396,7 @@ async function init() {
     }
 
     renderGames();
+    handleHashNavigation(); // <--- NEW: Process #card-ID deep links
     setInterval(updateLiveGames, 60000); 
 }
 
@@ -382,7 +411,7 @@ function renderGames() {
         return matchString.includes(searchText);
     });
 
-    // COMPLETELY RESTORED SORTING LOGIC
+    // SORTING LOGIC
     filteredGames.sort((a, b) => {
         const isFinishedA = ['FT', 'AET', 'PEN'].includes(a.fixture.status.short);
         const isFinishedB = ['FT', 'AET', 'PEN'].includes(b.fixture.status.short);
@@ -402,7 +431,7 @@ function createGameCard(data) {
     const away = data.teams.away;
     const fixId = data.fixture.id;
 
-    // UPDATED: Both ranks now have the space on the right side
+    // Both ranks now have the space on the right side
     const homeRank = home.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${home.rank}]</span> ` : '';
     const awayRank = away.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${away.rank}]</span> ` : '';
 
@@ -469,7 +498,7 @@ function createGameCard(data) {
 }
 
 // ==========================================
-// 5. EVENT LISTENERS
+// 6. EVENT LISTENERS
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     init();
