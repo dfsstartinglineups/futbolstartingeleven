@@ -458,6 +458,10 @@ function createGameCard(data) {
     const homeRank = home.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${home.rank}]</span> ` : '';
     const awayRank = away.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${away.rank}]</span> ` : '';
 
+    // Dynamically insert records right under the team names
+    const homeRecord = home.record ? `<div class="text-muted fw-normal" style="font-size: 0.65rem; margin-top: 2px;">(${home.record})</div>` : '';
+    const awayRecord = away.record ? `<div class="text-muted fw-normal" style="font-size: 0.65rem; margin-top: 2px;">(${away.record})</div>` : '';
+
     const buildLineupList = (lineupData) => {
         if (data.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
         if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
@@ -491,14 +495,16 @@ function createGameCard(data) {
                 <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1">
                     <div class="text-center" style="width: 38%;"> 
                         <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1">
-                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;">${homeRank}${home.name}</div>
+                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;" title="${home.name}">${homeRank}${home.name}</div>
+                        ${homeRecord}
                     </div>
                     <div id="score-${fixId}" class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 24%;">
                         ${getScoreHtml(data)}
                     </div>
                     <div class="text-center" style="width: 38%;"> 
                         <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
-                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;">${awayRank}${away.name}</div>
+                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;" title="${away.name}">${awayRank}${away.name}</div>
+                        ${awayRecord}
                     </div>
                 </div>
                 <div id="events-${fixId}" class="w-100">${getEventsHtml(data)}</div>
