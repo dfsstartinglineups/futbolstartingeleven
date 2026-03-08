@@ -24,15 +24,59 @@
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://futbolstartingeleven.com/">
-    <meta property="og:title" content="Live Soccer & Football Starting Lineups | FutbolStartingEleven">
+    <meta property="og:title" id="og-title" content="Live Soccer & Football Starting Lineups | FutbolStartingEleven">
     <meta property="og:description" content="Real-time soccer starting XIs, live scores, goalscorers, injuries, and matchup stats for the world's top leagues.">
     <meta property="og:image" content="https://futbolstartingeleven.com/futbol-social-share.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:domain" content="futbolstartingeleven.com">
     <meta property="twitter:url" content="https://futbolstartingeleven.com/">
-    <meta name="twitter:title" content="Live Soccer Starting Lineups | FutbolStartingEleven">
+    <meta name="twitter:title" id="twitter-title" content="Live Soccer Starting Lineups | FutbolStartingEleven">
     <meta name="twitter:description" content="Real-time soccer starting XIs, live match scores, injuries, and betting odds.">
     <meta name="twitter:image" content="https://futbolstartingeleven.com/futbol-social-share.png">
+    
+    <script>
+        (function() {
+            const leagueNames = {
+                "top": "Top Matches", "epl": "Premier League", "facup": "FA Cup",
+                "laliga": "La Liga", "mls": "MLS", "ucl": "Champions League",
+                "championship": "Championship", "seriea": "Serie A", "bundesliga": "Bundesliga",
+                "ligue1": "Ligue 1", "eredivisie": "Eredivisie", "portugal": "Primeira Liga",
+                "ligamx": "Liga MX", "brazil": "Brasileirão", "argentina": "Liga Profesional",
+                "libertadores": "Copa Libertadores", "saudi": "Saudi Pro League", "japan": "J1 League"
+            };
+            const params = new URLSearchParams(window.location.search);
+            const leagueKey = params.get('league') || 'top';
+            const leagueName = leagueNames[leagueKey] || "Top Matches";
+
+            let dateStr = params.get('date');
+            if (!dateStr) {
+                dateStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+            }
+            const dateObj = new Date(dateStr + 'T12:00:00');
+            const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+            const dynamicTitle = `Live ${leagueName} Soccer Lineups, Scores & Odds | FutbolStartingEleven`;
+            const dynamicDesc = `Real-time ${leagueName} starting XIs, live match scores, goalscorers, injuries, and betting odds for ${formattedDate}.`;
+
+            // Instantly update Head Tags
+            document.title = dynamicTitle;
+            const descEl = document.getElementById('dynamic-desc');
+            if(descEl) descEl.content = dynamicDesc;
+            
+            const ogTitle = document.getElementById('og-title');
+            if(ogTitle) ogTitle.content = dynamicTitle;
+            
+            const twTitle = document.getElementById('twitter-title');
+            if(twTitle) twTitle.content = dynamicTitle;
+
+            // Wait for body to load to update the hidden H1 tag
+            document.addEventListener('DOMContentLoaded', () => {
+                const seoEl = document.getElementById('seo-h1');
+                if(seoEl) seoEl.innerText = `Live ${leagueName} Soccer Starting Lineups, Live Scores, Injuries, and Match Odds for ${formattedDate}`;
+            });
+        })();
+    </script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
