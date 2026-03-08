@@ -18,7 +18,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 12,
+                "elapsed": 14,
                 "extra": null
             }
         },
@@ -37,19 +37,21 @@
                 "id": 293,
                 "name": "Gamba Osaka",
                 "logo": "https://media.api-sports.io/football/teams/293.png",
-                "winner": null,
-                "rank": 5
+                "winner": true,
+                "rank": 5,
+                "record": "3-0-1"
             },
             "away": {
                 "id": 285,
                 "name": "V-varen Nagasaki",
                 "logo": "https://media.api-sports.io/football/teams/285.png",
-                "winner": null,
-                "rank": 7
+                "winner": false,
+                "rank": 7,
+                "record": "2-0-2"
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -94,7 +96,15 @@
             "away": [],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 14,
+                "team_id": 293,
+                "player": "D. Hummet",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -135,14 +145,16 @@
                 "name": "Lecce",
                 "logo": "https://media.api-sports.io/football/teams/867.png",
                 "winner": null,
-                "rank": 18
+                "rank": 18,
+                "record": "6-6-15"
             },
             "away": {
                 "id": 520,
                 "name": "Cremonese",
                 "logo": "https://media.api-sports.io/football/teams/520.png",
                 "winner": null,
-                "rank": 17
+                "rank": 17,
+                "record": "5-9-13"
             }
         },
         "goals": {
@@ -206,14 +218,16 @@
                 "name": "Fulham",
                 "logo": "https://media.api-sports.io/football/teams/36.png",
                 "winner": null,
-                "rank": null
+                "rank": null,
+                "record": null
             },
             "away": {
                 "id": 41,
                 "name": "Southampton",
                 "logo": "https://media.api-sports.io/football/teams/41.png",
                 "winner": null,
-                "rank": null
+                "rank": 8,
+                "record": "14-11-10"
             }
         },
         "goals": {
@@ -277,14 +291,16 @@
                 "name": "Villarreal",
                 "logo": "https://media.api-sports.io/football/teams/533.png",
                 "winner": null,
-                "rank": 4
+                "rank": 4,
+                "record": "16-3-7"
             },
             "away": {
                 "id": 797,
                 "name": "Elche",
                 "logo": "https://media.api-sports.io/football/teams/797.png",
                 "winner": null,
-                "rank": 17
+                "rank": 17,
+                "record": "5-11-10"
             }
         },
         "goals": {
@@ -348,14 +364,16 @@
                 "name": "Port Vale",
                 "logo": "https://media.api-sports.io/football/teams/1351.png",
                 "winner": null,
-                "rank": null
+                "rank": null,
+                "record": null
             },
             "away": {
                 "id": 746,
                 "name": "Sunderland",
                 "logo": "https://media.api-sports.io/football/teams/746.png",
                 "winner": null,
-                "rank": null
+                "rank": null,
+                "record": null
             }
         },
         "goals": {
@@ -419,14 +437,16 @@
                 "name": "Bologna",
                 "logo": "https://media.api-sports.io/football/teams/500.png",
                 "winner": null,
-                "rank": 8
+                "rank": 8,
+                "record": "11-6-10"
             },
             "away": {
                 "id": 504,
                 "name": "Hellas Verona",
                 "logo": "https://media.api-sports.io/football/teams/504.png",
                 "winner": null,
-                "rank": 19
+                "rank": 19,
+                "record": "2-9-16"
             }
         },
         "goals": {
@@ -490,14 +510,16 @@
                 "name": "Fiorentina",
                 "logo": "https://media.api-sports.io/football/teams/502.png",
                 "winner": null,
-                "rank": 16
+                "rank": 16,
+                "record": "5-9-13"
             },
             "away": {
                 "id": 523,
                 "name": "Parma",
                 "logo": "https://media.api-sports.io/football/teams/523.png",
                 "winner": null,
-                "rank": 12
+                "rank": 12,
+                "record": "8-9-10"
             }
         },
         "goals": {
@@ -561,14 +583,16 @@
                 "name": "Lens",
                 "logo": "https://media.api-sports.io/football/teams/116.png",
                 "winner": null,
-                "rank": 2
+                "rank": 2,
+                "record": "17-2-5"
             },
             "away": {
                 "id": 112,
                 "name": "Metz",
                 "logo": "https://media.api-sports.io/football/teams/112.png",
                 "winner": null,
-                "rank": 18
+                "rank": 18,
+                "record": "3-4-17"
             }
         },
         "goals": {
@@ -632,14 +656,16 @@
                 "name": "FC St. Pauli",
                 "logo": "https://media.api-sports.io/football/teams/186.png",
                 "winner": null,
-                "rank": 15
+                "rank": 15,
+                "record": "6-5-13"
             },
             "away": {
                 "id": 169,
                 "name": "Eintracht Frankfurt",
                 "logo": "https://media.api-sports.io/football/teams/169.png",
                 "winner": null,
-                "rank": 7
+                "rank": 7,
+                "record": "9-7-8"
             }
         },
         "goals": {
@@ -703,14 +729,16 @@
                 "name": "Getafe",
                 "logo": "https://media.api-sports.io/football/teams/546.png",
                 "winner": null,
-                "rank": 11
+                "rank": 11,
+                "record": "9-5-12"
             },
             "away": {
                 "id": 543,
                 "name": "Real Betis",
                 "logo": "https://media.api-sports.io/football/teams/543.png",
                 "winner": null,
-                "rank": 5
+                "rank": 5,
+                "record": "11-10-5"
             }
         },
         "goals": {
@@ -774,14 +802,16 @@
                 "name": "Estrela",
                 "logo": "https://media.api-sports.io/football/teams/15130.png",
                 "winner": null,
-                "rank": 12
+                "rank": 12,
+                "record": "5-9-10"
             },
             "away": {
                 "id": 762,
                 "name": "GIL Vicente",
                 "logo": "https://media.api-sports.io/football/teams/762.png",
                 "winner": null,
-                "rank": 5
+                "rank": 5,
+                "record": "11-7-6"
             }
         },
         "goals": {
@@ -845,14 +875,16 @@
                 "name": "Stade Brestois 29",
                 "logo": "https://media.api-sports.io/football/teams/106.png",
                 "winner": null,
-                "rank": 9
+                "rank": 9,
+                "record": "9-6-9"
             },
             "away": {
                 "id": 111,
                 "name": "Le Havre",
                 "logo": "https://media.api-sports.io/football/teams/111.png",
                 "winner": null,
-                "rank": 13
+                "rank": 13,
+                "record": "6-8-10"
             }
         },
         "goals": {
@@ -916,14 +948,16 @@
                 "name": "Lille",
                 "logo": "https://media.api-sports.io/football/teams/79.png",
                 "winner": null,
-                "rank": 6
+                "rank": 6,
+                "record": "12-4-8"
             },
             "away": {
                 "id": 97,
                 "name": "Lorient",
                 "logo": "https://media.api-sports.io/football/teams/97.png",
                 "winner": null,
-                "rank": 10
+                "rank": 10,
+                "record": "8-9-7"
             }
         },
         "goals": {
@@ -987,14 +1021,16 @@
                 "name": "Nice",
                 "logo": "https://media.api-sports.io/football/teams/84.png",
                 "winner": null,
-                "rank": 15
+                "rank": 15,
+                "record": "6-6-12"
             },
             "away": {
                 "id": 94,
                 "name": "Rennes",
                 "logo": "https://media.api-sports.io/football/teams/94.png",
                 "winner": null,
-                "rank": 7
+                "rank": 7,
+                "record": "11-7-6"
             }
         },
         "goals": {
@@ -1058,14 +1094,16 @@
                 "name": "QPR",
                 "logo": "https://media.api-sports.io/football/teams/72.png",
                 "winner": null,
-                "rank": 16
+                "rank": 16,
+                "record": "13-8-14"
             },
             "away": {
                 "id": 70,
                 "name": "Middlesbrough",
                 "logo": "https://media.api-sports.io/football/teams/70.png",
                 "winner": null,
-                "rank": 2
+                "rank": 2,
+                "record": "19-9-7"
             }
         },
         "goals": {
@@ -1129,14 +1167,16 @@
                 "name": "Union Berlin",
                 "logo": "https://media.api-sports.io/football/teams/182.png",
                 "winner": null,
-                "rank": 11
+                "rank": 11,
+                "record": "7-7-10"
             },
             "away": {
                 "id": 162,
                 "name": "Werder Bremen",
                 "logo": "https://media.api-sports.io/football/teams/162.png",
                 "winner": null,
-                "rank": 16
+                "rank": 16,
+                "record": "5-7-12"
             }
         },
         "goals": {
@@ -1200,14 +1240,16 @@
                 "name": "Leeds",
                 "logo": "https://media.api-sports.io/football/teams/63.png",
                 "winner": null,
-                "rank": null
+                "rank": null,
+                "record": null
             },
             "away": {
                 "id": 71,
                 "name": "Norwich",
                 "logo": "https://media.api-sports.io/football/teams/71.png",
                 "winner": null,
-                "rank": null
+                "rank": 17,
+                "record": "13-6-16"
             }
         },
         "goals": {
@@ -1271,14 +1313,16 @@
                 "name": "Genoa",
                 "logo": "https://media.api-sports.io/football/teams/495.png",
                 "winner": null,
-                "rank": 15
+                "rank": 15,
+                "record": "6-9-12"
             },
             "away": {
                 "id": 497,
                 "name": "AS Roma",
                 "logo": "https://media.api-sports.io/football/teams/497.png",
                 "winner": null,
-                "rank": 4
+                "rank": 4,
+                "record": "16-3-8"
             }
         },
         "goals": {
@@ -1342,14 +1386,16 @@
                 "name": "Sevilla",
                 "logo": "https://media.api-sports.io/football/teams/536.png",
                 "winner": null,
-                "rank": 14
+                "rank": 14,
+                "record": "8-6-12"
             },
             "away": {
                 "id": 728,
                 "name": "Rayo Vallecano",
                 "logo": "https://media.api-sports.io/football/teams/728.png",
                 "winner": null,
-                "rank": 13
+                "rank": 13,
+                "record": "7-9-10"
             }
         },
         "goals": {
@@ -1413,14 +1459,16 @@
                 "name": "Benfica",
                 "logo": "https://media.api-sports.io/football/teams/211.png",
                 "winner": null,
-                "rank": 3
+                "rank": 3,
+                "record": "17-7-0"
             },
             "away": {
                 "id": 212,
                 "name": "FC Porto",
                 "logo": "https://media.api-sports.io/football/teams/212.png",
                 "winner": null,
-                "rank": 1
+                "rank": 1,
+                "record": "21-2-1"
             }
         },
         "goals": {
@@ -1484,14 +1532,16 @@
                 "name": "AC Milan",
                 "logo": "https://media.api-sports.io/football/teams/489.png",
                 "winner": null,
-                "rank": 2
+                "rank": 2,
+                "record": "16-9-2"
             },
             "away": {
                 "id": 505,
                 "name": "Inter",
                 "logo": "https://media.api-sports.io/football/teams/505.png",
                 "winner": null,
-                "rank": 1
+                "rank": 1,
+                "record": "22-1-4"
             }
         },
         "goals": {
@@ -1555,14 +1605,16 @@
                 "name": "Lyon",
                 "logo": "https://media.api-sports.io/football/teams/80.png",
                 "winner": null,
-                "rank": 4
+                "rank": 4,
+                "record": "14-3-7"
             },
             "away": {
                 "id": 114,
                 "name": "Paris FC",
                 "logo": "https://media.api-sports.io/football/teams/114.png",
                 "winner": null,
-                "rank": 14
+                "rank": 14,
+                "record": "6-8-10"
             }
         },
         "goals": {
@@ -1626,14 +1678,16 @@
                 "name": "Valencia",
                 "logo": "https://media.api-sports.io/football/teams/532.png",
                 "winner": null,
-                "rank": 15
+                "rank": 15,
+                "record": "7-8-11"
             },
             "away": {
                 "id": 542,
                 "name": "Alaves",
                 "logo": "https://media.api-sports.io/football/teams/542.png",
                 "winner": null,
-                "rank": 16
+                "rank": 16,
+                "record": "7-6-13"
             }
         },
         "goals": {
@@ -1697,14 +1751,16 @@
                 "name": "Santa Clara",
                 "logo": "https://media.api-sports.io/football/teams/227.png",
                 "winner": null,
-                "rank": 16
+                "rank": 16,
+                "record": "4-7-13"
             },
             "away": {
                 "id": 224,
                 "name": "Guimaraes",
                 "logo": "https://media.api-sports.io/football/teams/224.png",
                 "winner": null,
-                "rank": 9
+                "rank": 9,
+                "record": "9-5-10"
             }
         },
         "goals": {
@@ -1768,14 +1824,16 @@
                 "name": "New York Red Bulls",
                 "logo": "https://media.api-sports.io/football/teams/1602.png",
                 "winner": null,
-                "rank": 2
+                "rank": 3,
+                "record": "2-0-0"
             },
             "away": {
                 "id": 1614,
                 "name": "CF Montreal",
                 "logo": "https://media.api-sports.io/football/teams/1614.png",
                 "winner": null,
-                "rank": 15
+                "rank": 15,
+                "record": "0-0-2"
             }
         },
         "goals": {
@@ -1839,14 +1897,16 @@
                 "name": "FC Cincinnati",
                 "logo": "https://media.api-sports.io/football/teams/2242.png",
                 "winner": null,
-                "rank": 5
+                "rank": 7,
+                "record": "1-0-1"
             },
             "away": {
                 "id": 1601,
                 "name": "Toronto FC",
                 "logo": "https://media.api-sports.io/football/teams/1601.png",
                 "winner": null,
-                "rank": 11
+                "rank": 11,
+                "record": "0-0-2"
             }
         },
         "goals": {
@@ -1910,14 +1970,16 @@
                 "name": "Toluca",
                 "logo": "https://media.api-sports.io/football/teams/2281.png",
                 "winner": null,
-                "rank": 2
+                "rank": 2,
+                "record": "6-3-0"
             },
             "away": {
                 "id": 2298,
                 "name": "FC Juarez",
                 "logo": "https://media.api-sports.io/football/teams/2298.png",
                 "winner": null,
-                "rank": 12
+                "rank": 11,
+                "record": "3-1-4"
             }
         },
         "goals": {
@@ -1981,14 +2043,16 @@
                 "name": "Club Tijuana",
                 "logo": "https://media.api-sports.io/football/teams/2280.png",
                 "winner": null,
-                "rank": 15
+                "rank": 15,
+                "record": "1-6-2"
             },
             "away": {
                 "id": 2285,
                 "name": "Santos Laguna",
                 "logo": "https://media.api-sports.io/football/teams/2285.png",
                 "winner": null,
-                "rank": 18
+                "rank": 18,
+                "record": "0-2-7"
             }
         },
         "goals": {
