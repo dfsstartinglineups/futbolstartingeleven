@@ -90,20 +90,35 @@ def process_date(target_date):
             global_ranks[home_id] = None
             global_ranks[away_id] = None
         else:
-            # If either team is missing from our daily cache, flag the league to be fetched
-            if home_id not in global_ranks or away_id not in global_ranks:
+            # If either team is missing from our daily cache, OR if it's the old integer format, force a fetch
+            h_data = global_ranks.get(home_id)
+            a_data = global_ranks.get(away_id)
+            
+            if home_id not in global_ranks or isinstance(h_data, int):
+                leagues_needing_standings.add((league_id, season))
+            if away_id not in global_ranks or isinstance(a_data, int):
                 leagues_needing_standings.add((league_id, season))
 
     # --- 4. BULK STANDINGS FETCHING (Optimized: Once per day per league) ---
     if leagues_needing_standings:
-        print(f"--- Fetching Standings for {len(leagues_needing_standings)} missing leagues ---")
+        print(f"--- Fetching Standings for {len(leagues_needing_standings)} missing leagues to get Ranks & Records ---")
         for league_id, season in leagues_needing_standings:
             stand_data = fetch_data(f"standings?league={league_id}&season={season}")
             if stand_data and stand_data.get("response"):
                 for lg in stand_data["response"]:
                     for group in lg["league"]["standings"]:
                         for team in group:
-                            global_ranks[str(team["team"]["id"])] = team["rank"]
+                            tid = str(team["team"]["id"])
+                            rank = team.get("rank")
+                            wins = team.get("all", {}).get("win", 0)
+                            draws = team.get("all", {}).get("draw", 0)
+                            losses = team.get("all", {}).get("lose", 0)
+                            
+                            # Store both the Rank and the Record in a dictionary
+                            global_ranks[tid] = {
+                                "rank": rank,
+                                "record": f"{wins}-{draws}-{losses}"
+                            }
                             
         # Post-Fetch cleanup: If a team is still missing (e.g. API glitch), mark as None so we don't loop endlessly
         for match in matches:
@@ -259,13 +274,27 @@ def process_date(target_date):
                         })
                 events = parsed_events
 
+        # Extract Rank and Record smoothly to inject into final payload
+        h_id = str(match["teams"]["home"]["id"])
+        a_id = str(match["teams"]["away"]["id"])
+        
+        h_rank_data = global_ranks.get(h_id)
+        a_rank_data = global_ranks.get(a_id)
+        
+        # Fallback handling in case of old cache ghosts
+        h_rank = h_rank_data.get("rank") if isinstance(h_rank_data, dict) else h_rank_data
+        h_record = h_rank_data.get("record") if isinstance(h_rank_data, dict) else None
+        
+        a_rank = a_rank_data.get("rank") if isinstance(a_rank_data, dict) else a_rank_data
+        a_record = a_rank_data.get("record") if isinstance(a_rank_data, dict) else None
+
         # E. COMPILE MATCH PAYLOAD
         all_game_data.append({
             "fixture": match["fixture"],
             "league": match["league"],
             "teams": {
-                "home": {**match["teams"]["home"], "rank": global_ranks.get(str(match["teams"]["home"]["id"]))},
-                "away": {**match["teams"]["away"], "rank": global_ranks.get(str(match["teams"]["away"]["id"]))}
+                "home": {**match["teams"]["home"], "rank": h_rank, "record": h_record},
+                "away": {**match["teams"]["away"], "rank": a_rank, "record": a_record}
             },
             "goals": match["goals"],
             "homeLineup": home_lineup,
