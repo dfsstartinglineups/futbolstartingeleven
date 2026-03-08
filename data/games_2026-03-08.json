@@ -18,7 +18,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 83,
+                "elapsed": 84,
                 "extra": null
             }
         },
@@ -37,7 +37,7 @@
                 "id": 293,
                 "name": "Gamba Osaka",
                 "logo": "https://media.api-sports.io/football/teams/293.png",
-                "winner": null,
+                "winner": true,
                 "rank": 5,
                 "record": "3-0-1"
             },
@@ -45,13 +45,13 @@
                 "id": 285,
                 "name": "V-varen Nagasaki",
                 "logo": "https://media.api-sports.io/football/teams/285.png",
-                "winner": null,
+                "winner": false,
                 "rank": 7,
                 "record": "2-0-2"
             }
         },
         "goals": {
-            "home": 2,
+            "home": 3,
             "away": 2
         },
         "homeLineup": {
@@ -122,6 +122,13 @@
                 "time": 51,
                 "team_id": 293,
                 "player": "S. Nakatani",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            },
+            {
+                "time": 83,
+                "team_id": 293,
+                "player": "R. Handa",
                 "type": "Goal",
                 "detail": "Normal Goal"
             }
