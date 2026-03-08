@@ -49,8 +49,65 @@ const LEAGUE_MAP_ESPN = {
 };
 
 // ==========================================
-// 1. UI HELPER MODULES 
+// 1. UI HELPER MODULES & OVERFLOW LOGIC
 // ==========================================
+window.toggleExpand = function(el) {
+    const targets = el.querySelectorAll('.truncate-target');
+    const indicator = el.querySelector('.overflow-indicator');
+    let isExpanded = false;
+    
+    targets.forEach(t => {
+        t.classList.toggle('text-truncate');
+        if (!t.classList.contains('text-truncate')) {
+            isExpanded = true;
+            t.style.whiteSpace = 'normal'; // Force wrap when expanding
+        } else {
+            t.style.whiteSpace = ''; // Let Bootstrap handle nowrap
+        }
+    });
+    
+    if (indicator) {
+        indicator.innerHTML = isExpanded ? '▲' : '▼';
+    }
+};
+
+window.checkOverflows = function() {
+    document.querySelectorAll('.expandable-section').forEach(section => {
+        const targets = section.querySelectorAll('.truncate-target');
+        const indicator = section.querySelector('.overflow-indicator');
+        if (!indicator) return;
+
+        let hasOverflow = false;
+        targets.forEach(t => {
+            // Temporarily force truncate to measure true mathematical width
+            const wasExpanded = !t.classList.contains('text-truncate');
+            if (wasExpanded) {
+                t.classList.add('text-truncate');
+                t.style.whiteSpace = ''; 
+            }
+            
+            // Check if text exceeds container
+            if (t.scrollWidth > t.clientWidth) {
+                hasOverflow = true;
+            }
+            
+            // Restore previous state
+            if (wasExpanded) {
+                t.classList.remove('text-truncate');
+                t.style.whiteSpace = 'normal';
+            }
+        });
+
+        if (hasOverflow) {
+            indicator.classList.remove('d-none');
+            targets.forEach(t => t.style.textOverflow = 'clip'); // Replace '...' with a sharp cutoff right before the arrow
+        } else {
+            indicator.classList.add('d-none');
+            targets.forEach(t => t.style.textOverflow = ''); // Revert to default
+        }
+    });
+};
+
 function getTimeBadgeHtml(data) {
     const status = data.fixture.status.short;
     const dateObj = new Date(data.fixture.date);
@@ -124,16 +181,17 @@ function getEventsHtml(data) {
     }).join(' ');
 
     return `
-    <div class="w-100 px-2 pt-1 mt-1 border-top" 
+    <div class="w-100 px-2 pt-1 mt-1 border-top expandable-section d-flex align-items-center" 
          style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" 
-         onclick="const cols = this.querySelectorAll('.event-col'); cols.forEach(c => c.classList.toggle('text-truncate'));"
+         onclick="toggleExpand(this)"
          onmouseover="this.style.backgroundColor='#f8f9fa'" 
          onmouseout="this.style.backgroundColor='transparent'"
          title="Click to expand/collapse goals and cards">
-        <div class="d-flex justify-content-between text-muted w-100">
-            <div class="event-col text-start pe-1 text-truncate" style="flex: 1; min-width: 0;">${formatEvents(homeEvents, data.teams.home.name)}</div>
-            <div class="event-col text-end ps-1 text-truncate" style="flex: 1; min-width: 0;">${formatEvents(awayEvents, data.teams.away.name)}</div>
+        <div class="d-flex justify-content-between text-muted w-100" style="min-width: 0;">
+            <div class="event-col text-start pe-1 text-truncate truncate-target" style="flex: 1; min-width: 0;">${formatEvents(homeEvents, data.teams.home.name)}</div>
+            <div class="event-col text-end ps-1 text-truncate truncate-target" style="flex: 1; min-width: 0;">${formatEvents(awayEvents, data.teams.away.name)}</div>
         </div>
+        <div class="overflow-indicator d-none ms-1 text-secondary" style="font-size: 0.6rem; flex-shrink: 0; padding-left: 2px;">▼</div>
     </div>`;
 }
 
@@ -161,15 +219,16 @@ function getInjuriesHtml(data) {
     const aInj = data.injuries.away.join(', ') || 'None';
     
     return `
-    <div class="border-bottom px-2 py-1 text-center" 
+    <div class="border-bottom px-2 py-1 expandable-section d-flex justify-content-center align-items-center" 
          style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545; cursor: pointer; transition: background-color 0.2s;" 
-         onclick="this.querySelector('.injury-text').classList.toggle('text-truncate');" 
+         onclick="toggleExpand(this)" 
          onmouseover="this.style.backgroundColor='#ffebeb'" 
          onmouseout="this.style.backgroundColor='#fff5f5'" 
          title="Click to expand/collapse injuries">
-        <div class="injury-text text-truncate user-select-none px-1">
+        <div class="injury-text text-truncate truncate-target user-select-none" style="max-width: 95%; min-width: 0;">
             <strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj} | <b>A:</b> ${aInj}</span>
         </div>
+        <div class="overflow-indicator d-none ms-1 text-danger" style="font-size: 0.6rem; flex-shrink: 0; padding-left: 2px;">▼</div>
     </div>`;
 }
 
@@ -349,11 +408,24 @@ async function updateLiveGames() {
                 scoreEl.classList.add('flash-green');
             }
             
-            if (eventsEl.innerHTML.trim() !== newEventsHtml) eventsEl.innerHTML = newEventsHtml;
+            // Preserve expanded states during silent syncs
+            const eventsWasExpanded = eventsEl.querySelector('.overflow-indicator')?.innerHTML === '▲';
+            if (eventsEl.innerHTML.trim() !== newEventsHtml) {
+                eventsEl.innerHTML = newEventsHtml;
+                if (eventsWasExpanded) toggleExpand(eventsEl.querySelector('.expandable-section'));
+            }
+            
             if (oddsEl.innerHTML.trim() !== newOddsHtml) oddsEl.innerHTML = newOddsHtml;
-            if (injuriesEl.innerHTML.trim() !== newInjuriesHtml) injuriesEl.innerHTML = newInjuriesHtml;
+
+            const injuriesWasExpanded = injuriesEl.querySelector('.overflow-indicator')?.innerHTML === '▲';
+            if (injuriesEl.innerHTML.trim() !== newInjuriesHtml) {
+                injuriesEl.innerHTML = newInjuriesHtml;
+                if (injuriesWasExpanded) toggleExpand(injuriesEl.querySelector('.expandable-section'));
+            }
         }
     });
+
+    setTimeout(checkOverflows, 100); // Re-calculate overflow indicators after DOM injection
 }
 
 // ==========================================
@@ -448,6 +520,8 @@ function renderGames() {
     });
 
     filteredGames.forEach(item => container.appendChild(createGameCard(item)));
+    
+    setTimeout(checkOverflows, 100); // Check mathematical widths once cards hit the DOM
 }
 
 function createGameCard(data) {
@@ -536,6 +610,12 @@ function createGameCard(data) {
 document.addEventListener('DOMContentLoaded', () => {
     init();
     
+    // Automatically recalculate overflow arrows if the user rotates their phone or resizes their browser
+    window.addEventListener('resize', () => {
+        clearTimeout(window.resizeTimer);
+        window.resizeTimer = setTimeout(checkOverflows, 150);
+    });
+
     const datePicker = document.getElementById('date-picker');
     if (datePicker) {
         datePicker.addEventListener('change', (e) => {
