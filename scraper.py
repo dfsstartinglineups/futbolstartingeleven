@@ -1,6 +1,7 @@
 import os
 import json
 import urllib.request
+import zoneinfo
 from datetime import datetime, timezone, timedelta
 
 # Grab the secret key from GitHub Actions
@@ -376,8 +377,8 @@ def main():
         print("CRITICAL ERROR: FOOTBALL_API_KEY environment variable not set.")
         return
 
-    # Calculate current time in US Eastern Time (roughly UTC - 5 hours)
-    now_est = datetime.now(timezone.utc) - timedelta(hours=5)
+    # Automatically handles EST/EDT shifts
+    now_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
     
     # Always process the current EST date
     dates_to_process = [now_est]
