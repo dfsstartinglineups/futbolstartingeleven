@@ -652,7 +652,7 @@ function createGameCard(data) {
                 <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1">
                     <div class="text-center" style="width: 38%;"> 
                         <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1">
-                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;" title="${home.name}">${homeRank}${home.name}</div>
+                        <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;" title="${home.name}">${homeRank}${home.name}</div>
                         ${homeRecord}
                     </div>
                     <div id="score-${fixId}" class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 24%;">
@@ -660,7 +660,7 @@ function createGameCard(data) {
                     </div>
                     <div class="text-center" style="width: 38%;"> 
                         <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
-                        <div class="fw-bold lh-1 text-dark text-truncate" style="font-size: 0.9rem;" title="${away.name}">${awayRank}${away.name}</div>
+                        <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;" title="${away.name}">${awayRank}${away.name}</div>
                         ${awayRecord}
                     </div>
                 </div>
