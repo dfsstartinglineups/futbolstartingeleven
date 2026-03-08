@@ -22544,7 +22544,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 62,
+                "elapsed": 63,
                 "extra": null
             }
         },
@@ -23157,7 +23157,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 21,
+                "elapsed": 22,
                 "extra": null
             }
         },
@@ -23655,7 +23655,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 21,
+                "elapsed": 22,
                 "extra": null
             }
         },
@@ -23674,20 +23674,20 @@
                 "id": 1617,
                 "name": "Portland Timbers",
                 "logo": "https://media.api-sports.io/football/teams/1617.png",
-                "winner": null,
+                "winner": false,
                 "rank": 12
             },
             "away": {
                 "id": 1603,
                 "name": "Vancouver Whitecaps",
                 "logo": "https://media.api-sports.io/football/teams/1603.png",
-                "winner": null,
+                "winner": true,
                 "rank": 4
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -24119,7 +24119,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 22,
+                "team_id": 1603,
+                "player": "B. White",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -24129,7 +24137,7 @@
             "date": "2026-03-07T22:55:00-05:00",
             "timestamp": 1772942100,
             "periods": {
-                "first": null,
+                "first": 1772942100,
                 "second": null
             },
             "venue": {
@@ -24138,9 +24146,9 @@
                 "city": "Okayama"
             },
             "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
+                "long": "First Half",
+                "short": "1H",
+                "elapsed": 1,
                 "extra": null
             }
         },
@@ -24171,8 +24179,8 @@
             }
         },
         "goals": {
-            "home": null,
-            "away": null
+            "home": 0,
+            "away": 0
         },
         "homeLineup": {
             "team": {
