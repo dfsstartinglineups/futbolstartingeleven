@@ -738,7 +738,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 1
+                "extra": 2
             }
         },
         "league": {
@@ -756,7 +756,7 @@
                 "id": 36,
                 "name": "Fulham",
                 "logo": "https://media.api-sports.io/football/teams/36.png",
-                "winner": null,
+                "winner": false,
                 "rank": null,
                 "record": null
             },
@@ -764,14 +764,14 @@
                 "id": 41,
                 "name": "Southampton",
                 "logo": "https://media.api-sports.io/football/teams/41.png",
-                "winner": null,
+                "winner": true,
                 "rank": null,
                 "record": null
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -1205,7 +1205,15 @@
             "away": [],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 90,
+                "team_id": 41,
+                "player": "R. Stewart",
+                "type": "Goal",
+                "detail": "Penalty"
+            }
+        ]
     },
     {
         "fixture": {
@@ -1768,7 +1776,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 19,
+                "elapsed": 20,
                 "extra": null
             }
         },
