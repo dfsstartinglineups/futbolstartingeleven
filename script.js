@@ -181,15 +181,6 @@ function getUrlParams() {
     return { league: params.get('league') || 'top', date: params.get('date') || DEFAULT_DATE };
 }
 
-function updateSEO(leagueKey, dateStr) {
-    const leagueName = SUPPORTED_LEAGUES[leagueKey]?.name || "Top Matches";
-    const dateObj = new Date(dateStr + 'T12:00:00'); 
-    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    document.title = `Live ${leagueName} Soccer Lineups, Scores & Odds | FutbolStartingEleven`;
-    const seoEl = document.getElementById('seo-h1');
-    if(seoEl) seoEl.innerText = `Live ${leagueName} Soccer Starting Lineups, Live Scores, Injuries, and Match Odds for ${formattedDate}`;
-}
-
 function renderLeagueMenu(activeLeague, currentDate) {
     const desktopMenu = document.getElementById('league-menu-desktop');
     const mobileMenu = document.getElementById('league-menu-mobile');
@@ -415,7 +406,6 @@ function handleHashNavigation() {
 // ==========================================
 async function init() {
     const params = getUrlParams();
-    updateSEO(params.league, params.date);
     renderLeagueMenu(params.league, params.date);
     
     const container = document.getElementById('games-container');
@@ -432,7 +422,7 @@ async function init() {
     }
 
     renderGames();
-    handleHashNavigation(); // <--- NEW: Process #card-ID deep links
+    handleHashNavigation(); // <--- Process #card-ID deep links
     setInterval(updateLiveGames, 60000); 
 }
 
