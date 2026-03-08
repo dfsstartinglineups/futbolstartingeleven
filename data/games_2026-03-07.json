@@ -23186,7 +23186,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 57,
+                "elapsed": 58,
                 "extra": null
             }
         },
@@ -23205,19 +23205,19 @@
                 "id": 1616,
                 "name": "Los Angeles FC",
                 "logo": "https://media.api-sports.io/football/teams/1616.png",
-                "winner": null,
+                "winner": true,
                 "rank": 3
             },
             "away": {
                 "id": 1597,
                 "name": "FC Dallas",
                 "logo": "https://media.api-sports.io/football/teams/1597.png",
-                "winner": null,
+                "winner": false,
                 "rank": 6
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -23663,7 +23663,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 57,
+                "team_id": 1616,
+                "player": "D. Martinez",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -23684,7 +23692,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 57,
+                "elapsed": 58,
                 "extra": null
             }
         },
