@@ -226,32 +226,54 @@ function renderLeagueMenu(activeLeague, currentDate) {
         desktopMenu.appendChild(dropdownDiv);
     });
 
-    // --- 2. BUILD MOBILE MENU (FLAT RIBBON, NO DROPDOWNS) ---
-    LEAGUE_GROUPS["priority"].forEach(league => {
+    // --- 2. BUILD MOBILE MENU (3 Links + Dropdown) ---
+    const allPriority = LEAGUE_GROUPS["priority"];
+    const topThree = allPriority.slice(0, 3); // Grabs Top Matches, EPL, FA Cup
+    const restPriority = allPriority.slice(3);
+
+    // Shorten names so they fit on small phone screens
+    const mobileNames = {
+        "Top Matches": "Top",
+        "Premier League": "EPL"
+    };
+
+    // Add first 3 items directly to the bar
+    topThree.forEach(league => {
         const a = document.createElement('a');
         a.href = `?league=${league.key}&date=${currentDate}`;
         a.className = `league-pill ${league.key === activeLeague ? 'active' : ''}`;
-        a.textContent = league.name;
+        a.textContent = mobileNames[league.name] || league.name;
         mobileMenu.appendChild(a);
     });
 
+    // Check if the currently selected league is hidden inside the "More" menu
+    const isMoreActive = !topThree.some(l => l.key === activeLeague);
+
+    // Build the "More" Dropdown
+    let dropdownHtml = `
+        <div class="dropdown d-inline-block">
+            <button class="league-pill dropdown-toggle ${isMoreActive ? 'active' : ''}" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border: none; background: transparent; color: ${isMoreActive ? '#20c997' : '#adb5bd'}; padding-right: 0;">
+                More
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" style="background-color: #343a40; border-color: #495057; max-height: 65vh; overflow-y: auto;">
+    `;
+
+    // Add remaining priority leagues to the top of the dropdown
+    restPriority.forEach(league => {
+        dropdownHtml += `<li><a class="dropdown-item ${league.key === activeLeague ? 'text-success fw-bold' : 'text-light'}" href="?league=${league.key}&date=${currentDate}">${league.name}</a></li>`;
+    });
+
+    // Add remaining regions and their leagues
     ['Europe', 'Americas', 'World'].forEach(region => {
+        dropdownHtml += `<li><hr class="dropdown-divider border-secondary"></li>`;
+        dropdownHtml += `<li><h6 class="dropdown-header text-muted pb-0">${region}</h6></li>`;
         LEAGUE_GROUPS[region].forEach(league => {
-            const a = document.createElement('a');
-            a.href = `?league=${league.key}&date=${currentDate}`;
-            a.className = `league-pill ${league.key === activeLeague ? 'active' : ''}`;
-            a.textContent = league.name;
-            mobileMenu.appendChild(a);
+            dropdownHtml += `<li><a class="dropdown-item ${league.key === activeLeague ? 'text-success fw-bold' : 'text-light'}" href="?league=${league.key}&date=${currentDate}">${league.name}</a></li>`;
         });
     });
 
-    // Auto-scroll to active league pill (Mobile Only)
-    setTimeout(() => {
-        const activePill = mobileMenu.querySelector('.active');
-        if (activePill) {
-            mobileMenu.scrollLeft = activePill.offsetLeft - (mobileMenu.offsetWidth / 2) + (activePill.offsetWidth / 2);
-        }
-    }, 100);
+    dropdownHtml += `</ul></div>`;
+    mobileMenu.insertAdjacentHTML('beforeend', dropdownHtml);
 }
 
 async function fetchMatchesData(params) {
