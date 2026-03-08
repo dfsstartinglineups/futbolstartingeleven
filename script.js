@@ -14,20 +14,20 @@ const LEAGUE_GROUPS = {
     "priority": [
         { key: "top", id: "top", name: "Top Matches" },
         { key: "epl", id: 39, name: "Premier League" },
-        { key: "facup", id: 45, name: "FA Cup" }, 
         { key: "laliga", id: 140, name: "La Liga" },
-        { key: "mls", id: 253, name: "MLS" },
-        { key: "ucl", id: 2, name: "Champions League" }
+        { key: "seriea", id: 135, name: "Serie A" }
     ],
     "Europe": [
+        { key: "ucl", id: 2, name: "Champions League" },
+        { key: "facup", id: 45, name: "FA Cup" },
         { key: "championship", id: 40, name: "Championship" },
-        { key: "seriea", id: 135, name: "Serie A" },
         { key: "bundesliga", id: 78, name: "Bundesliga" },
         { key: "ligue1", id: 61, name: "Ligue 1" },
         { key: "eredivisie", id: 72, name: "Eredivisie" },
         { key: "portugal", id: 94, name: "Primeira Liga" }
     ],
     "Americas": [
+        { key: "mls", id: 253, name: "MLS" },
         { key: "ligamx", id: 262, name: "Liga MX" },
         { key: "brazil", id: 71, name: "Brasileirão" },
         { key: "argentina", id: 128, name: "Liga Profesional" },
@@ -217,19 +217,19 @@ function renderLeagueMenu(activeLeague, currentDate) {
         desktopMenu.appendChild(dropdownDiv);
     });
 
-    // --- 2. BUILD MOBILE MENU (3 Links + Dropdown) ---
-    const allPriority = LEAGUE_GROUPS["priority"];
-    const topThree = allPriority.slice(0, 3); // Grabs Top Matches, EPL, FA Cup
-    const restPriority = allPriority.slice(3);
+    // --- 2. BUILD MOBILE MENU (4 Links + Dropdown) ---
+    const topLinks = LEAGUE_GROUPS["priority"];
 
-    // Shorten names so they fit on small phone screens
+    // Shorten names so they fit perfectly on small phone screens
     const mobileNames = {
-        "Top Matches": "Top",
-        "Premier League": "EPL"
+        "Top Matches": "TOP",
+        "Premier League": "EPL",
+        "La Liga": "La Liga",
+        "Serie A": "Serie A"
     };
 
-    // Add first 3 items directly to the bar
-    topThree.forEach(league => {
+    // Add priority items directly to the bar
+    topLinks.forEach(league => {
         const a = document.createElement('a');
         a.href = `?league=${league.key}&date=${currentDate}`;
         a.className = `league-pill ${league.key === activeLeague ? 'active' : ''}`;
@@ -238,7 +238,7 @@ function renderLeagueMenu(activeLeague, currentDate) {
     });
 
     // Check if the currently selected league is hidden inside the "More" menu
-    const isMoreActive = !topThree.some(l => l.key === activeLeague);
+    const isMoreActive = !topLinks.some(l => l.key === activeLeague);
 
     // Build the "More" Dropdown
     let dropdownHtml = `
@@ -249,15 +249,12 @@ function renderLeagueMenu(activeLeague, currentDate) {
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" style="background-color: #343a40; border-color: #495057; max-height: 65vh; overflow-y: auto;">
     `;
 
-    // Add remaining priority leagues to the top of the dropdown
-    restPriority.forEach(league => {
-        dropdownHtml += `<li><a class="dropdown-item ${league.key === activeLeague ? 'text-success fw-bold' : 'text-light'}" href="?league=${league.key}&date=${currentDate}">${league.name}</a></li>`;
-    });
-
-    // Add remaining regions and their leagues
-    ['Europe', 'Americas', 'World'].forEach(region => {
-        dropdownHtml += `<li><hr class="dropdown-divider border-secondary"></li>`;
-        dropdownHtml += `<li><h6 class="dropdown-header text-muted pb-0">${region}</h6></li>`;
+    // Add remaining regions and their leagues with a bright, visible header
+    ['Europe', 'Americas', 'World'].forEach((region, idx) => {
+        if (idx !== 0) {
+            dropdownHtml += `<li><hr class="dropdown-divider border-secondary"></li>`;
+        }
+        dropdownHtml += `<li><h6 class="dropdown-header pb-0" style="color: #adb5bd; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;">${region}</h6></li>`;
         LEAGUE_GROUPS[region].forEach(league => {
             dropdownHtml += `<li><a class="dropdown-item ${league.key === activeLeague ? 'text-success fw-bold' : 'text-light'}" href="?league=${league.key}&date=${currentDate}">${league.name}</a></li>`;
         });
