@@ -1890,7 +1890,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 85,
+                "elapsed": 87,
                 "extra": null
             }
         },
@@ -1924,7 +1924,7 @@
         },
         "goals": {
             "home": 1,
-            "away": 2
+            "away": 3
         },
         "homeLineup": {
             "team": {
@@ -2438,6 +2438,13 @@
                 "player": "K. Bowie",
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 86,
+                "team_id": 504,
+                "player": "A. Sarr",
+                "type": "Goal",
+                "detail": "Normal Goal"
             }
         ]
     },
@@ -2460,7 +2467,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 83,
+                "elapsed": 85,
                 "extra": null
             }
         },
@@ -2979,7 +2986,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 84,
+                "elapsed": 86,
                 "extra": null
             }
         },
@@ -3505,7 +3512,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 55,
+                "elapsed": 57,
                 "extra": null
             }
         },
@@ -4008,7 +4015,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 29,
+                "elapsed": 31,
                 "extra": null
             }
         },
@@ -4551,7 +4558,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 14,
+                "elapsed": 16,
                 "extra": null
             }
         },
@@ -4570,7 +4577,7 @@
                 "id": 15130,
                 "name": "Estrela",
                 "logo": "https://media.api-sports.io/football/teams/15130.png",
-                "winner": null,
+                "winner": false,
                 "rank": 12,
                 "record": "5-9-10"
             },
@@ -4578,14 +4585,14 @@
                 "id": 762,
                 "name": "GIL Vicente",
                 "logo": "https://media.api-sports.io/football/teams/762.png",
-                "winner": null,
+                "winner": true,
                 "rank": 5,
                 "record": "11-7-6"
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -4629,7 +4636,15 @@
             "away": [],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 14,
+                "team_id": 762,
+                "player": "Murilo de Souza",
+                "type": "Goal",
+                "detail": "Penalty"
+            }
+        ]
     },
     {
         "fixture": {
@@ -5094,7 +5109,7 @@
             "over": "1.91",
             "under": "1.91"
         },
-        "last_odds_check": "2026-03-08T15:42:08.972846+00:00",
+        "last_odds_check": "2026-03-08T15:48:08.757693+00:00",
         "injuries": {
             "home": [
                 "M. Balde",
@@ -5175,7 +5190,7 @@
             "over": "1.80",
             "under": "2.00"
         },
-        "last_odds_check": "2026-03-08T15:42:08.972846+00:00",
+        "last_odds_check": "2026-03-08T15:48:08.757693+00:00",
         "injuries": {
             "home": [
                 "M. Caillard",
@@ -5677,7 +5692,7 @@
             "over": "1.67",
             "under": "2.20"
         },
-        "last_odds_check": "2026-03-08T15:42:08.972846+00:00",
+        "last_odds_check": "2026-03-08T15:48:08.757693+00:00",
         "injuries": {
             "home": [
                 "M. Abdelmonem",
@@ -6755,8 +6770,424 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
+        "homeLineup": {
+            "team": {
+                "id": 63,
+                "name": "Leeds",
+                "logo": "https://media.api-sports.io/football/teams/63.png",
+                "colors": {
+                    "player": {
+                        "primary": "ffffff",
+                        "number": "17277f",
+                        "border": "ffffff"
+                    },
+                    "goalkeeper": {
+                        "primary": "467cd2",
+                        "number": "f1f0ea",
+                        "border": "467cd2"
+                    }
+                }
+            },
+            "formation": "3-4-2-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 80296,
+                        "name": "Lucas Perri",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1408,
+                        "name": "Sebastiaan Bornauw",
+                        "number": 23,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 833,
+                        "name": "Jaka Bijol",
+                        "number": 15,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 47969,
+                        "name": "Gabriel Gudmundsson",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19329,
+                        "name": "Daniel James",
+                        "number": 7,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2279,
+                        "name": "Ethan Ampadu",
+                        "number": 4,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 18901,
+                        "name": "Sean Longstaff",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 162128,
+                        "name": "Wilfried Gnonto",
+                        "number": 29,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 250,
+                        "name": "Jo\u00ebl Piroe",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 32966,
+                        "name": "Ao Tanaka",
+                        "number": 22,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19461,
+                        "name": "Lukas Nmecha",
+                        "number": 14,
+                        "pos": "F",
+                        "grid": "5:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 18885,
+                        "name": "Karl Darlow",
+                        "number": 26,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19760,
+                        "name": "James Justin",
+                        "number": 24,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 64003,
+                        "name": "Pascal Struijk",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19201,
+                        "name": "Jayden Bogle",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19287,
+                        "name": "Sam Byram",
+                        "number": 25,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 177665,
+                        "name": "Anton Stach",
+                        "number": 18,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 129142,
+                        "name": "Ilia Gruev",
+                        "number": 44,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 50739,
+                        "name": "Brenden Aaronson",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 311334,
+                        "name": "Facundo Buonanotte",
+                        "number": 40,
+                        "pos": "M",
+                        "grid": null
+                    }
+                }
+            ],
+            "coach": {
+                "id": 2,
+                "name": "Daniel Farke",
+                "photo": "https://media.api-sports.io/football/coachs/2.png"
+            }
+        },
+        "awayLineup": {
+            "team": {
+                "id": 71,
+                "name": "Norwich",
+                "logo": "https://media.api-sports.io/football/teams/71.png",
+                "colors": {
+                    "player": {
+                        "primary": "ffff00",
+                        "number": "000000",
+                        "border": "ffff00"
+                    },
+                    "goalkeeper": {
+                        "primary": "e62569",
+                        "number": "f7f7f7",
+                        "border": "e62569"
+                    }
+                }
+            },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 615,
+                        "name": "Daniel Grimshaw",
+                        "number": 32,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 349755,
+                        "name": "Kellen Fisher",
+                        "number": 35,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 343209,
+                        "name": "Ruairi McConville",
+                        "number": 15,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 57739,
+                        "name": "Jos\u00e9 C\u00f3rdoba",
+                        "number": 33,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 134428,
+                        "name": "Ben Chrisene",
+                        "number": 14,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19156,
+                        "name": "Sam Field",
+                        "number": 26,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19077,
+                        "name": "Kenny McLean",
+                        "number": 23,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 171034,
+                        "name": "Liam Gibbs",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "4:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 162075,
+                        "name": "Edmond-Paris Maghoma",
+                        "number": 25,
+                        "pos": "M",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 362145,
+                        "name": "Ali Ahmed",
+                        "number": 21,
+                        "pos": "M",
+                        "grid": "4:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 265546,
+                        "name": "Mathias Kvistgaarden",
+                        "number": 30,
+                        "pos": "F",
+                        "grid": "5:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 70336,
+                        "name": "Vladan Kova\u010devi\u0107",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 80219,
+                        "name": "Jakov Medi\u0107",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 17943,
+                        "name": "Harry Darling",
+                        "number": 6,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19769,
+                        "name": "Jack Stacey",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 199310,
+                        "name": "Anis Ben Slimane",
+                        "number": 20,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 382355,
+                        "name": "Jacob Wright",
+                        "number": 16,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 304026,
+                        "name": "Forson Amankwah",
+                        "number": 18,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 434177,
+                        "name": "Errol Mundle-Smith",
+                        "number": 46,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 278064,
+                        "name": "Tony Springett",
+                        "number": 42,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
+            "coach": {
+                "id": 1518,
+                "name": "Philippe Clement",
+                "photo": "https://media.api-sports.io/football/coachs/1518.png"
+            }
+        },
         "odds": {
             "home": "1.50",
             "draw": "4.50",
