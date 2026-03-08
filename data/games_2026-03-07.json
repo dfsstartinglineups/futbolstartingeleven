@@ -23082,7 +23082,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 1
+                "extra": 2
             }
         },
         "league": {
@@ -23100,19 +23100,19 @@
                 "id": 2279,
                 "name": "Tigres UANL",
                 "logo": "https://media.api-sports.io/football/teams/2279.png",
-                "winner": null,
+                "winner": true,
                 "rank": 8
             },
             "away": {
                 "id": 2282,
                 "name": "Monterrey",
                 "logo": "https://media.api-sports.io/football/teams/2282.png",
-                "winner": null,
+                "winner": false,
                 "rank": 7
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -23157,7 +23157,15 @@
             "away": [],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 90,
+                "team_id": 2279,
+                "player": "A. Gignac",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -23178,7 +23186,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 52,
+                "elapsed": 53,
                 "extra": null
             }
         },
@@ -23676,7 +23684,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 52,
+                "elapsed": 53,
                 "extra": null
             }
         },
