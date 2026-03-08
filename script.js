@@ -357,20 +357,34 @@ function handleHashNavigation() {
                 // Scroll the card into the center of the view
                 targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 
-                // Add a smooth highlight glow to draw attention
-                targetCard.style.transition = 'box-shadow 0.5s ease-in-out, transform 0.5s ease';
+                // Grab the top section of the card so we can turn the background green
+                const innerHeader = targetCard.querySelector('.p-2.pb-1');
+                
+                // Apply the bold green highlight and slight zoom
+                targetCard.style.transition = 'all 0.4s ease-out';
                 targetCard.style.transform = 'scale(1.02)';
-                targetCard.style.boxShadow = '0 0 20px rgba(32, 201, 151, 0.8)';
+                targetCard.style.boxShadow = '0 0 25px rgba(32, 201, 151, 0.8)';
+                targetCard.style.border = '2px solid #20c997';
                 targetCard.style.zIndex = '10';
                 
-                // Remove highlight after a few seconds
+                if (innerHeader) {
+                    innerHeader.style.transition = 'background-color 0.4s ease-out';
+                    innerHeader.style.backgroundColor = '#d1e7dd'; // Light green fill
+                }
+                
+                // Hold the green highlight for 4 seconds, then fade it back to normal
                 setTimeout(() => {
                     targetCard.style.transform = 'scale(1)';
                     targetCard.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                    targetCard.style.border = '1px solid #dee2e6';
                     targetCard.style.zIndex = '1';
-                }, 2500);
+                    
+                    if (innerHeader) {
+                        innerHeader.style.backgroundColor = '#fcfcfc'; // Back to original gray
+                    }
+                }, 4000); // 4000ms = 4 seconds
             }
-        }, 500); // 500ms delay ensures DOM is fully rendered before trying to scroll
+        }, 600); // Slight delay to ensure games are fully rendered first
     }
 }
 
