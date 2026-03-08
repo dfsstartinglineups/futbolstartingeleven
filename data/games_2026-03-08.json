@@ -18,7 +18,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 27,
+                "elapsed": 28,
                 "extra": null
             }
         },
@@ -37,7 +37,7 @@
                 "id": 293,
                 "name": "Gamba Osaka",
                 "logo": "https://media.api-sports.io/football/teams/293.png",
-                "winner": null,
+                "winner": false,
                 "rank": 5,
                 "record": "3-0-1"
             },
@@ -45,14 +45,14 @@
                 "id": 285,
                 "name": "V-varen Nagasaki",
                 "logo": "https://media.api-sports.io/football/teams/285.png",
-                "winner": null,
+                "winner": true,
                 "rank": 7,
                 "record": "2-0-2"
             }
         },
         "goals": {
             "home": 1,
-            "away": 1
+            "away": 2
         },
         "homeLineup": {
             "team": {
@@ -106,6 +106,13 @@
             },
             {
                 "time": 21,
+                "team_id": 285,
+                "player": "Matheus Jesus",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            },
+            {
+                "time": 28,
                 "team_id": 285,
                 "player": "Matheus Jesus",
                 "type": "Goal",
