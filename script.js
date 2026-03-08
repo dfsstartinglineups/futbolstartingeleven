@@ -367,22 +367,44 @@ async function fetchMatchesData(params) {
         }
 
         const espnDate = params.date.replace(/-/g, '');
-        let espnUrl = params.league === 'top' 
-            ? `https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=${espnDate}`
-            : `https://site.api.espn.com/apis/site/v2/sports/soccer/${LEAGUE_MAP_ESPN[SUPPORTED_LEAGUES[params.league].id]}/scoreboard?dates=${espnDate}`;
+        let fetchUrls = [];
 
-        const espnRes = await fetch(espnUrl);
-        const espnData = await espnRes.json();
+        // Build array of URLs depending on the selected tab
+        if (params.league === 'top') {
+            // Grab all unique ESPN slugs for supported leagues
+            const allSlugs = [...new Set(Object.values(LEAGUE_MAP_ESPN))];
+            fetchUrls = allSlugs.map(slug => `https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${espnDate}`);
+        } else {
+            const slug = LEAGUE_MAP_ESPN[SUPPORTED_LEAGUES[params.league].id];
+            fetchUrls = [`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${espnDate}`];
+        }
 
-        if (!espnData.events || espnData.events.length === 0) return [];
+        // Fetch all requested leagues concurrently
+        const fetchPromises = fetchUrls.map(url => fetch(url).then(res => res.json()).catch(() => null));
+        const responses = await Promise.all(fetchPromises);
+        
+        let allEspnEvents = [];
+        
+        // Flatten the responses into a single list of games
+        responses.forEach(espnData => {
+            if (espnData && espnData.events && espnData.events.length > 0) {
+                // ESPN puts league info in the parent object, so we attach it to each event before mapping
+                const leagueName = espnData.leagues && espnData.leagues.length > 0 ? espnData.leagues[0].name : "Unknown League";
+                espnData.events.forEach(e => {
+                    allEspnEvents.push({ ...e, _leagueName: leagueName });
+                });
+            }
+        });
 
-        let mapped = espnData.events.map(e => {
+        if (allEspnEvents.length === 0) return [];
+
+        let mapped = allEspnEvents.map(e => {
             const comp = e.competitions[0];
             const home = comp.competitors.find(c => c.homeAway === 'home');
             const away = comp.competitors.find(c => c.homeAway === 'away');
             return {
                 fixture: { id: e.id, date: e.date, status: { short: e.status.type.shortDetail, elapsed: e.status.period } },
-                league: { name: espnData.leagues[0].name },
+                league: { name: e._leagueName }, // Use the injected league name
                 teams: {
                     home: { id: home.team.id, name: home.team.displayName, logo: home.team.logo },
                     away: { id: away.team.id, name: away.team.displayName, logo: away.team.logo }
@@ -727,3 +749,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+}
