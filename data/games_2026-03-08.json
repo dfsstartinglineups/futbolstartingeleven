@@ -3503,10 +3503,10 @@
                 "city": "Hamburg"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
-                "extra": 6
+                "extra": 8
             }
         },
         "league": {
@@ -4008,7 +4008,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 48,
+                "elapsed": 50,
                 "extra": null
             }
         },
@@ -4665,7 +4665,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 13,
+                "elapsed": 15,
                 "extra": null
             }
         },
@@ -5144,7 +5144,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 13,
+                "elapsed": 15,
                 "extra": null
             }
         },
@@ -5646,7 +5646,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 13,
+                "elapsed": 15,
                 "extra": null
             }
         },
@@ -5665,7 +5665,7 @@
                 "id": 84,
                 "name": "Nice",
                 "logo": "https://media.api-sports.io/football/teams/84.png",
-                "winner": null,
+                "winner": false,
                 "rank": 15,
                 "record": "6-6-12"
             },
@@ -5673,14 +5673,14 @@
                 "id": 94,
                 "name": "Rennes",
                 "logo": "https://media.api-sports.io/football/teams/94.png",
-                "winner": null,
+                "winner": true,
                 "rank": 7,
                 "record": "11-7-6"
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -8211,9 +8211,17 @@
         },
         "last_odds_check": null,
         "injuries": {
-            "home": [],
-            "away": [],
-            "fetched": false
+            "home": [
+                "Marcao",
+                "N. Maupay",
+                "Peque",
+                "G. Suazo"
+            ],
+            "away": [
+                "P. Ciss",
+                "D. Mendez"
+            ],
+            "fetched": true
         },
         "events": []
     },
