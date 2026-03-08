@@ -70,17 +70,20 @@
             padding-bottom: 4px;
         }
 
-        /* MOBILE HORIZONTAL SCROLL MENU */
+        /* MOBILE COMPACT MENU */
         #league-menu-mobile {
             display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 2px 0;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE 10+ */
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 4px 0;
         }
-        #league-menu-mobile::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+        #league-menu-mobile .league-pill {
+            padding: 6px 2px;
+            font-size: 0.80rem;
+            letter-spacing: 0px;
+            flex: 0 0 auto;
+        }
 
         .league-pill {
             display: inline-block;
