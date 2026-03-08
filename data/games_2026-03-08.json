@@ -9968,7 +9968,7 @@
             "timestamp": 1772999100,
             "periods": {
                 "first": 1772999100,
-                "second": null
+                "second": 1773002700
             },
             "venue": {
                 "id": 666,
@@ -9976,10 +9976,10 @@
                 "city": "Lyon"
             },
             "status": {
-                "long": "Halftime",
-                "short": "HT",
-                "elapsed": 45,
-                "extra": 2
+                "long": "Second Half",
+                "short": "2H",
+                "elapsed": 46,
+                "extra": null
             }
         },
         "league": {
@@ -10485,7 +10485,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 43,
+                "elapsed": 45,
                 "extra": null
             }
         },
@@ -11028,7 +11028,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 12,
+                "elapsed": 14,
                 "extra": null
             }
         },
@@ -11525,7 +11525,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 6,
+                "elapsed": 8,
                 "extra": null
             }
         },
@@ -11544,7 +11544,7 @@
                 "id": 1602,
                 "name": "New York Red Bulls",
                 "logo": "https://media.api-sports.io/football/teams/1602.png",
-                "winner": null,
+                "winner": false,
                 "rank": 3,
                 "record": "2-0-0"
             },
@@ -11552,14 +11552,14 @@
                 "id": 1614,
                 "name": "CF Montreal",
                 "logo": "https://media.api-sports.io/football/teams/1614.png",
-                "winner": null,
+                "winner": true,
                 "rank": 15,
                 "record": "0-0-2"
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -11997,7 +11997,15 @@
             "away": [],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 7,
+                "team_id": 1614,
+                "player": "P. Owusu",
+                "type": "Goal",
+                "detail": "Penalty"
+            }
+        ]
     },
     {
         "fixture": {
