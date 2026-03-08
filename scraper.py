@@ -78,10 +78,21 @@ def process_date(target_date):
         home_id = str(match["teams"]["home"]["id"])
         away_id = str(match["teams"]["away"]["id"])
         
-        # Check Odds Needs
         existing_game = existing_data.get(fixture_id, {})
         existing_odds = existing_game.get("odds", {"home": "TBD"})
-        if existing_odds.get("home") == "TBD":
+        last_odds_check_str = existing_game.get("last_odds_check")
+        
+        # Calculate time since we last checked this specific game's odds
+        mins_since_check = 999  
+        if last_odds_check_str:
+            try:
+                last_check_time = datetime.fromisoformat(last_odds_check_str)
+                mins_since_check = (now_utc - last_check_time).total_seconds() / 60
+            except Exception:
+                pass
+
+        # Check Odds Needs (Only request bulk odds if it's TBD AND we haven't checked in 60 mins)
+        if existing_odds.get("home") == "TBD" and mins_since_check > 60:
             leagues_needing_odds.add((league_id, season))
 
         # Check Standings Needs
@@ -133,47 +144,48 @@ def process_date(target_date):
             json.dump(global_ranks, f, indent=4)
 
     # --- 5. BULK ODDS FETCHING (Only if TBD) ---
-    if leagues_needing_odds:
-        print(f"--- Found {len(leagues_needing_odds)} leagues that still need baseline odds. ---")
-        
     odds_dict = {}
-    for league_id, season in leagues_needing_odds:
-        page = 1
-        total_pages = 1
-        while page <= total_pages:
-            odds_res = fetch_data(f"odds?league={league_id}&season={season}&date={date_str}&bookmaker=8&page={page}")
-            if not odds_res or "response" not in odds_res: break
-                
-            for odd_item in odds_res["response"]:
-                fix_id = odd_item["fixture"]["id"]
-                match_odds = {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}
-                
-                if odd_item.get("bookmakers"):
-                    bets = odd_item["bookmakers"][0].get("bets", [])
-                    for bet in bets:
-                        if bet["id"] == 1: 
-                            for v in bet["values"]:
-                                if v["value"] == "Home": match_odds["home"] = str(v["odd"])
-                                if v["value"] == "Draw": match_odds["draw"] = str(v["odd"])
-                                if v["value"] == "Away": match_odds["away"] = str(v["odd"])
-                        elif bet["id"] == 5: 
-                            for v in bet["values"]:
-                                if "Over 2.5" in str(v["value"]):
-                                    match_odds["over"] = str(v["odd"])
-                                    match_odds["total"] = "2.5"
-                                elif "Under 2.5" in str(v["value"]):
-                                    match_odds["under"] = str(v["odd"])
-                                    match_odds["total"] = "2.5"
-                odds_dict[fix_id] = match_odds
-                
-            total_pages = odds_res.get("paging", {}).get("total", 1)
-            page += 1
+    if leagues_needing_odds:
+        print(f"--- Fetching bulk odds for {len(leagues_needing_odds)} leagues. ---")
+        for league_id, season in leagues_needing_odds:
+            page = 1
+            total_pages = 1
+            while page <= total_pages:
+                odds_res = fetch_data(f"odds?league={league_id}&season={season}&date={date_str}&bookmaker=8&page={page}")
+                if not odds_res or "response" not in odds_res: break
+                    
+                for odd_item in odds_res["response"]:
+                    fix_id = odd_item["fixture"]["id"]
+                    match_odds = {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}
+                    
+                    if odd_item.get("bookmakers"):
+                        bets = odd_item["bookmakers"][0].get("bets", [])
+                        for bet in bets:
+                            if bet["id"] == 1: 
+                                for v in bet["values"]:
+                                    if v["value"] == "Home": match_odds["home"] = str(v["odd"])
+                                    if v["value"] == "Draw": match_odds["draw"] = str(v["odd"])
+                                    if v["value"] == "Away": match_odds["away"] = str(v["odd"])
+                            elif bet["id"] == 5: 
+                                for v in bet["values"]:
+                                    if "Over 2.5" in str(v["value"]):
+                                        match_odds["over"] = str(v["odd"])
+                                        match_odds["total"] = "2.5"
+                                    elif "Under 2.5" in str(v["value"]):
+                                        match_odds["under"] = str(v["odd"])
+                                        match_odds["total"] = "2.5"
+                    odds_dict[fix_id] = match_odds
+                    
+                total_pages = odds_res.get("paging", {}).get("total", 1)
+                page += 1
 
     # --- 6. MAP DATA AND FETCH LIVE/PRE-MATCH METADATA ---
     all_game_data = []
     
     for match in matches:
         fixture_id = match["fixture"]["id"]
+        league_id = match["league"]["id"]
+        season = match["league"]["season"]
         status = match["fixture"]["status"]["short"]
         
         existing_game = existing_data.get(fixture_id, {})
@@ -184,6 +196,10 @@ def process_date(target_date):
         events = existing_game.get("events", [])
         last_odds_check_str = existing_game.get("last_odds_check")
         
+        # Apply the cooldown timestamp if this game's league was part of the bulk fetch we just did
+        if (league_id, season) in leagues_needing_odds:
+            last_odds_check_str = now_utc.isoformat()
+            
         # Parse match time
         try:
             game_time_str = match['fixture']['date']
