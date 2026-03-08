@@ -5178,8 +5178,8 @@
                 "city": "Lille"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
                 "extra": 6
             }
@@ -5695,10 +5695,10 @@
                 "city": "Nice"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
-                "extra": 5
+                "extra": 6
             }
         },
         "league": {
@@ -6232,7 +6232,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 84,
+                "elapsed": 86,
                 "extra": null
             }
         },
@@ -6755,7 +6755,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 79,
+                "elapsed": 81,
                 "extra": null
             }
         },
@@ -7295,7 +7295,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 78,
+                "elapsed": 80,
                 "extra": null
             }
         },
@@ -7799,7 +7799,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 52,
+                "elapsed": 54,
                 "extra": null
             }
         },
@@ -7818,7 +7818,7 @@
                 "id": 495,
                 "name": "Genoa",
                 "logo": "https://media.api-sports.io/football/teams/495.png",
-                "winner": null,
+                "winner": true,
                 "rank": 15,
                 "record": "6-9-12"
             },
@@ -7826,13 +7826,13 @@
                 "id": 497,
                 "name": "AS Roma",
                 "logo": "https://media.api-sports.io/football/teams/497.png",
-                "winner": null,
+                "winner": false,
                 "rank": 4,
                 "record": "16-3-8"
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -8294,7 +8294,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 52,
+                "team_id": 495,
+                "player": "Junior Messias",
+                "type": "Goal",
+                "detail": "Penalty"
+            }
+        ]
     },
     {
         "fixture": {
@@ -8315,7 +8323,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 40,
+                "elapsed": 43,
                 "extra": null
             }
         },
@@ -8874,7 +8882,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 9,
+                "elapsed": 11,
                 "extra": null
             }
         },
@@ -8893,7 +8901,7 @@
                 "id": 211,
                 "name": "Benfica",
                 "logo": "https://media.api-sports.io/football/teams/211.png",
-                "winner": null,
+                "winner": false,
                 "rank": 3,
                 "record": "17-7-0"
             },
@@ -8901,14 +8909,14 @@
                 "id": 212,
                 "name": "FC Porto",
                 "logo": "https://media.api-sports.io/football/teams/212.png",
-                "winner": null,
+                "winner": true,
                 "rank": 1,
                 "record": "21-2-1"
             }
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -9324,7 +9332,15 @@
             "away": [],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 10,
+                "team_id": 212,
+                "player": "V. Froholdt",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
