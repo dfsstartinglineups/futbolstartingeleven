@@ -151,8 +151,8 @@
                 "city": "Lecce"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
                 "extra": 8
             }
@@ -737,7 +737,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 71,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -1226,7 +1226,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 30,
+                "elapsed": 32,
                 "extra": null
             }
         },
@@ -1245,7 +1245,7 @@
                 "id": 533,
                 "name": "Villarreal",
                 "logo": "https://media.api-sports.io/football/teams/533.png",
-                "winner": null,
+                "winner": true,
                 "rank": 4,
                 "record": "16-3-7"
             },
@@ -1253,13 +1253,13 @@
                 "id": 797,
                 "name": "Elche",
                 "logo": "https://media.api-sports.io/football/teams/797.png",
-                "winner": null,
+                "winner": false,
                 "rank": 17,
                 "record": "5-11-10"
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -1732,7 +1732,15 @@
             ],
             "fetched": true
         },
-        "events": []
+        "events": [
+            {
+                "time": 31,
+                "team_id": 533,
+                "player": "T. Buchanan",
+                "type": "Goal",
+                "detail": "Normal Goal"
+            }
+        ]
     },
     {
         "fixture": {
@@ -1742,7 +1750,7 @@
             "date": "2026-03-08T09:30:00-04:00",
             "timestamp": 1772976600,
             "periods": {
-                "first": null,
+                "first": 1772976600,
                 "second": null
             },
             "venue": {
@@ -1751,9 +1759,9 @@
                 "city": "Stoke on Trent"
             },
             "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
+                "long": "First Half",
+                "short": "1H",
+                "elapsed": 1,
                 "extra": null
             }
         },
@@ -1786,8 +1794,8 @@
             }
         },
         "goals": {
-            "home": null,
-            "away": null
+            "home": 0,
+            "away": 0
         },
         "homeLineup": {
             "team": {
