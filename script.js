@@ -19,6 +19,7 @@ const LEAGUE_GROUPS = {
     ],
     "Europe": [
         { key: "ucl", id: 2, name: "Champions League" },
+        { key: "europa", id: 3, name: "Europa League" },
         { key: "facup", id: 45, name: "FA Cup" },
         { key: "championship", id: 40, name: "Championship" },
         { key: "bundesliga", id: 78, name: "Bundesliga" },
@@ -44,7 +45,7 @@ Object.values(LEAGUE_GROUPS).flat().forEach(l => SUPPORTED_LEAGUES[l.key] = l);
 
 const LEAGUE_MAP_ESPN = {
     39: "eng.1", 40: "eng.2", 45: "eng.fa", 140: "esp.1", 135: "ita.1", 78: "ger.1", 
-    61: "fra.1", 72: "ned.1", 94: "por.1", 2: "uefa.champions", 253: "usa.1", 
+    61: "fra.1", 72: "ned.1", 94: "por.1", 2: "uefa.champions", 3: "uefa.europa", 253: "usa.1", 
     262: "mex.1", 71: "bra.1", 128: "arg.1", 13: "conmebol.libertadores", 307: "ksa.1", 98: "jpn.1"            
 };
 
