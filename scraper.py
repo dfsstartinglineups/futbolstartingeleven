@@ -184,7 +184,7 @@ def process_date(target_date):
         
         # A. LIVE ODDS REFRESH (5-Minute interval polling during the 45 mins before kickoff)
         in_odds_window = 0 <= time_to_kickoff <= 45
-        mins_since_check = 999  # Default high value to force a check if never checked
+        mins_since_check = 999  
 
         if last_odds_check_str:
             try:
@@ -286,8 +286,20 @@ def main():
         print("CRITICAL ERROR: FOOTBALL_API_KEY environment variable not set.")
         return
 
-    today = datetime.now()
-    process_date(today)
+    # Calculate current time in US Eastern Time (roughly UTC - 5 hours)
+    now_est = datetime.now(timezone.utc) - timedelta(hours=5)
+    
+    # Always process the current EST date
+    dates_to_process = [now_est]
+
+    # The Late Night Rule: 
+    # If it's between Midnight and 6 AM Eastern, games from "yesterday" (like West Coast MLS)
+    # might still be playing. We must update yesterday's file alongside today's.
+    if now_est.hour < 6:
+        dates_to_process.insert(0, now_est - timedelta(days=1))
+
+    for target_date in dates_to_process:
+        process_date(target_date)
 
 if __name__ == "__main__":
     main()
