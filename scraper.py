@@ -11,7 +11,7 @@ API_HOST = "https://v3.football.api-sports.io"
 # The expanded global league list (16 Leagues)
 TOP_LEAGUE_IDS = [
     39, 40, 45, 140, 135, 78, 61, 72, 94,  # Europe
-    2, 13,                             # Continental
+    2, 3, 13,                          # Continental (Added Europa League ID 3)
     253, 262, 71, 128,                 # Americas
     307, 98                            # World
 ] 
@@ -84,7 +84,7 @@ def process_date(target_date):
         print("No fixtures found or API error.")
         return
 
-    # Filter down to just our 16 leagues
+    # Filter down to just our leagues
     matches = [m for m in fixtures_data["response"] if m["league"]["id"] in TOP_LEAGUE_IDS]
 
     # --- 2. LOAD MEMORY ---
@@ -137,7 +137,7 @@ def process_date(target_date):
             leagues_needing_odds.add((league_id, season))
 
         # Check Standings Needs
-        if league_id in [2, 13, 45]:
+        if league_id in [2, 3, 13, 45]:
             # Cup competitions don't have standard global ranks, mark as None to prevent retries
             global_ranks[home_id] = None
             global_ranks[away_id] = None
@@ -254,8 +254,8 @@ def process_date(target_date):
         within_window = now_utc >= (game_time - timedelta(minutes=60))
         valid_status = status not in ['PST', 'CANC', 'ABD']
         
-        # A. LIVE ODDS REFRESH (5-Minute interval polling during the 45 mins before kickoff)
-        in_odds_window = 0 <= time_to_kickoff <= 45
+        # A. LIVE ODDS REFRESH (Every 10 mins during the 60 mins before kickoff)
+        in_odds_window = 0 <= time_to_kickoff <= 60
         mins_since_check = 999  
 
         if last_odds_check_str:
@@ -265,8 +265,8 @@ def process_date(target_date):
             except Exception:
                 pass
 
-        if in_odds_window and mins_since_check >= 5 and valid_status:
-            print(f"[{fixture_id}] Refreshing live odds before kickoff (T-{int(time_to_kickoff)} mins)...")
+        if in_odds_window and mins_since_check >= 10 and valid_status:
+            print(f"[{fixture_id}] Fetching live odds (T-{int(time_to_kickoff)} mins)...")
             odds_res = fetch_data(f"odds?fixture={fixture_id}&bookmaker=8")
             if odds_res and "response" in odds_res and len(odds_res["response"]) > 0:
                 odd_item = odds_res["response"][0]
