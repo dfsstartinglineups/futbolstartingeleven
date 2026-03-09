@@ -11,7 +11,7 @@ API_HOST = "https://v3.football.api-sports.io"
 # The expanded global league list (16 Leagues)
 TOP_LEAGUE_IDS = [
     39, 40, 45, 140, 135, 78, 61, 72, 94,  # Europe
-    2, 3, 13,                          # Continental (Added Europa League ID 3)
+    2, 3, 13,                          # Continental
     253, 262, 71, 128,                 # Americas
     307, 98                            # World
 ] 
@@ -26,70 +26,92 @@ def fetch_data(endpoint):
         print(f"Failed to fetch {endpoint}: {e}")
         return None
 
+def get_current_season(league_id, current_date):
+    # MLS, Brazil, Argentina, Japan run Spring-to-Fall (Season = Current Year)
+    if league_id in [253, 71, 128, 98]:
+        return current_date.year
+    # Europe, Liga MX, Saudi run Fall-to-Spring (Season = Year - 1 if before July)
+    else:
+        return current_date.year - 1 if current_date.month < 7 else current_date.year
+
 def process_date(target_date):
     date_str = target_date.strftime("%Y-%m-%d")
     filepath = f"data/games_{date_str}.json"
     ranks_filepath = f"data/ranks_{date_str}.json"
     now_utc = datetime.now(timezone.utc)
+    today_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
     
-    # Ensure data directory exists early for our cache files
     os.makedirs("data", exist_ok=True)
     
     # ==========================================
-    # 0. HIBERNATION CHECK (Independent Daily Logic)
+    # 0. HIBERNATION CHECK (Sequential Logic)
     # ==========================================
     needs_update = False
     
-    if os.path.exists(filepath):
+    # Step 0A: Check Yesterday's File First
+    yesterday_date = today_est.date() - timedelta(days=1)
+    yesterday_str = yesterday_date.strftime("%Y-%m-%d")
+    yesterday_file = f"data/games_{yesterday_str}.json"
+    
+    yesterday_needs_attention = False
+    if os.path.exists(yesterday_file):
         try:
-            with open(filepath, "r") as f:
-                local_games = json.load(f)
-                
-            for game in local_games:
-                status = game.get("fixture", {}).get("status", {}).get("short", "")
-                
-                try:
-                    game_time_str = game['fixture']['date']
-                    if game_time_str.endswith('Z'):
-                        game_time_str = game_time_str[:-1] + '+00:00'
-                    game_time = datetime.fromisoformat(game_time_str)
-                except Exception:
-                    game_time = now_utc + timedelta(days=1)
-                    
-                time_to_kickoff = (game_time - now_utc).total_seconds() / 60
-                
-                # Condition A: Game is actively being played or paused
-                if status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP']:
-                    needs_update = True
-                    break
-                    
-                # Condition B: Game is coming up within 75 minutes
-                if status in ['NS', 'TBD'] and time_to_kickoff <= 75:
-                    needs_update = True
-                    break
-                    
+            with open(yesterday_file, "r") as yf:
+                y_games = json.load(yf)
+                for y_game in y_games:
+                    y_status = y_game.get("fixture", {}).get("status", {}).get("short", "")
+                    if y_status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP', 'NS', 'TBD']:
+                        yesterday_needs_attention = True
+                        break
         except Exception:
-            needs_update = True # Corrupt file, force update
+            pass
+
+    if yesterday_needs_attention:
+        needs_update = True
     else:
-        needs_update = True # File doesn't exist (new day), force update
+        # Step 0B: Only if yesterday is complete, check today's criteria
+        if os.path.exists(filepath):
+            try:
+                with open(filepath, "r") as f:
+                    local_games = json.load(f)
+                    
+                for game in local_games:
+                    status = game.get("fixture", {}).get("status", {}).get("short", "")
+                    
+                    try:
+                        game_time_str = game['fixture']['date']
+                        if game_time_str.endswith('Z'):
+                            game_time_str = game_time_str[:-1] + '+00:00'
+                        game_time = datetime.fromisoformat(game_time_str)
+                    except Exception:
+                        game_time = now_utc + timedelta(days=1)
+                        
+                    time_to_kickoff = (game_time - now_utc).total_seconds() / 60
+                    
+                    if status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP']:
+                        needs_update = True
+                        break
+                        
+                    if status in ['NS', 'TBD'] and time_to_kickoff <= 75:
+                        needs_update = True
+                        break
+            except Exception:
+                needs_update = True 
+        else:
+            needs_update = True 
 
     if not needs_update:
-        print(f"[{date_str}] 💤 Hibernating: No active or upcoming games.")
+        print(f"[{date_str}] 💤 Hibernating: Yesterday is complete and today has no immediate games.")
         return
 
     print(f"\n--- Fetching live fixtures & scores for {date_str} ---")
     
-    # 1. Fetch the master schedule
     fixtures_data = fetch_data(f"fixtures?date={date_str}&timezone=America/New_York")
-    
     if not fixtures_data or "response" not in fixtures_data:
-        print("No fixtures found or API error.")
         return
 
-    # Filter down to just our leagues
     matches = [m for m in fixtures_data["response"] if m["league"]["id"] in TOP_LEAGUE_IDS]
 
-    # --- 2. LOAD MEMORY ---
     existing_data = {}
     if os.path.exists(filepath):
         with open(filepath, "r") as f:
@@ -100,7 +122,7 @@ def process_date(target_date):
             except Exception:
                 pass
                 
-    # Load Daily Ranks Cache
+    # --- 3. MASTER STANDINGS FETCHING (Once Per Day) ---
     global_ranks = {}
     if os.path.exists(ranks_filepath):
         with open(ranks_filepath, "r") as f:
@@ -109,55 +131,15 @@ def process_date(target_date):
             except Exception:
                 pass
 
-    # --- 3. IDENTIFY MISSING DATA (Odds & Standings) ---
-    leagues_needing_odds = set()
-    leagues_needing_standings = set()
-    
-    for match in matches:
-        fixture_id = match["fixture"]["id"]
-        league_id = match["league"]["id"]
-        season = match["league"]["season"] 
-        
-        home_id = str(match["teams"]["home"]["id"])
-        away_id = str(match["teams"]["away"]["id"])
-        
-        existing_game = existing_data.get(fixture_id, {})
-        existing_odds = existing_game.get("odds", {"home": "TBD"})
-        last_odds_check_str = existing_game.get("last_odds_check")
-        
-        # Calculate time since we last checked this specific game's odds
-        mins_since_check = 999  
-        if last_odds_check_str:
-            try:
-                last_check_time = datetime.fromisoformat(last_odds_check_str)
-                mins_since_check = (now_utc - last_check_time).total_seconds() / 60
-            except Exception:
-                pass
-
-        # Check Odds Needs (Only request bulk odds if it's TBD AND we haven't checked in 60 mins)
-        if existing_odds.get("home") == "TBD" and mins_since_check > 60:
-            leagues_needing_odds.add((league_id, season))
-
-        # Check Standings Needs
-        if league_id in [2, 3, 13, 45]:
-            # Cup competitions don't have standard global ranks, mark as None to prevent retries
-            global_ranks[home_id] = None
-            global_ranks[away_id] = None
-        else:
-            # If either team is missing from our daily cache, OR if it's the old integer format, force a fetch
-            h_data = global_ranks.get(home_id)
-            a_data = global_ranks.get(away_id)
+    if not global_ranks:
+        print(f"--- Fetching Master Standings Dictionary for all standard leagues ---")
+        for league_id in TOP_LEAGUE_IDS:
+            if league_id in [2, 3, 13, 45]: 
+                continue # Skip Cup Tournaments
             
-            if home_id not in global_ranks or isinstance(h_data, int):
-                leagues_needing_standings.add((league_id, season))
-            if away_id not in global_ranks or isinstance(a_data, int):
-                leagues_needing_standings.add((league_id, season))
-
-    # --- 4. BULK STANDINGS FETCHING (Optimized: Once per day per league) ---
-    if leagues_needing_standings:
-        print(f"--- Fetching Standings for {len(leagues_needing_standings)} missing leagues to get Ranks & Records ---")
-        for league_id, season in leagues_needing_standings:
+            season = get_current_season(league_id, today_est)
             stand_data = fetch_data(f"standings?league={league_id}&season={season}")
+            
             if stand_data and stand_data.get("response"):
                 for lg in stand_data["response"]:
                     for group in lg["league"]["standings"]:
@@ -168,25 +150,71 @@ def process_date(target_date):
                             draws = team.get("all", {}).get("draw", 0)
                             losses = team.get("all", {}).get("lose", 0)
                             
-                            # Store both the Rank and the Record in a dictionary
                             global_ranks[tid] = {
                                 "rank": rank,
                                 "record": f"{wins}-{draws}-{losses}"
                             }
                             
-        # Post-Fetch cleanup: If a team is still missing (e.g. API glitch), mark as None so we don't loop endlessly
-        for match in matches:
-            if match["league"]["id"] in [l[0] for l in leagues_needing_standings]:
-                h_id = str(match["teams"]["home"]["id"])
-                a_id = str(match["teams"]["away"]["id"])
-                if h_id not in global_ranks: global_ranks[h_id] = None
-                if a_id not in global_ranks: global_ranks[a_id] = None
-                
-        # Save the updated ranks to the daily cache
+        # Save the massive new master dictionary
         with open(ranks_filepath, "w") as f:
             json.dump(global_ranks, f, indent=4)
 
-    # --- 5. BULK ODDS FETCHING (Only if TBD) ---
+        # --- 3B. FUTURE FILE STANDINGS SYNC ---
+        # Update all 30 days of pre-populated future games with these fresh global standings!
+        print("--- Syncing fresh master standings to all future scheduled games... ---")
+        for filename in os.listdir("data"):
+            if filename.startswith("games_") and filename.endswith(".json"):
+                file_date_str = filename.replace("games_", "").replace(".json", "")
+                if file_date_str > date_str: # Only touch future files
+                    future_filepath = os.path.join("data", filename)
+                    try:
+                        with open(future_filepath, "r") as ff:
+                            future_games = json.load(ff)
+                        
+                        made_changes = False
+                        for fg in future_games:
+                            h_id = str(fg["teams"]["home"]["id"])
+                            a_id = str(fg["teams"]["away"]["id"])
+                            
+                            if h_id in global_ranks and isinstance(global_ranks[h_id], dict):
+                                fg["teams"]["home"]["rank"] = global_ranks[h_id].get("rank")
+                                fg["teams"]["home"]["record"] = global_ranks[h_id].get("record")
+                                made_changes = True
+                            if a_id in global_ranks and isinstance(global_ranks[a_id], dict):
+                                fg["teams"]["away"]["rank"] = global_ranks[a_id].get("rank")
+                                fg["teams"]["away"]["record"] = global_ranks[a_id].get("record")
+                                made_changes = True
+                                
+                        if made_changes:
+                            with open(future_filepath, "w") as ff:
+                                json.dump(future_games, ff, indent=4)
+                    except Exception:
+                        pass
+
+    # --- 4. IDENTIFY MISSING PRE-MATCH ODDS ---
+    leagues_needing_odds = set()
+    
+    for match in matches:
+        fixture_id = match["fixture"]["id"]
+        league_id = match["league"]["id"]
+        season = match["league"]["season"] 
+        
+        existing_game = existing_data.get(fixture_id, {})
+        existing_odds = existing_game.get("odds", {"home": "TBD"})
+        last_odds_check_str = existing_game.get("last_odds_check")
+        
+        mins_since_check = 999  
+        if last_odds_check_str:
+            try:
+                last_check_time = datetime.fromisoformat(last_odds_check_str)
+                mins_since_check = (now_utc - last_check_time).total_seconds() / 60
+            except Exception:
+                pass
+
+        if existing_odds.get("home") == "TBD" and mins_since_check > 60:
+            leagues_needing_odds.add((league_id, season))
+
+    # --- 5. BULK ODDS FETCHING ---
     odds_dict = {}
     if leagues_needing_odds:
         print(f"--- Fetching bulk odds for {len(leagues_needing_odds)} leagues. ---")
@@ -228,7 +256,6 @@ def process_date(target_date):
     for match in matches:
         fixture_id = match["fixture"]["id"]
         league_id = match["league"]["id"]
-        season = match["league"]["season"]
         status = match["fixture"]["status"]["short"]
         
         existing_game = existing_data.get(fixture_id, {})
@@ -239,11 +266,10 @@ def process_date(target_date):
         events = existing_game.get("events", [])
         last_odds_check_str = existing_game.get("last_odds_check")
         
-        # Apply the cooldown timestamp if this game's league was part of the bulk fetch we just did
-        if (league_id, season) in leagues_needing_odds:
-            last_odds_check_str = now_utc.isoformat()
+        # We mapped odds above, apply cooldown
+        if existing_game.get("odds", {}).get("home") == "TBD" and game_odds.get("home") != "TBD":
+             last_odds_check_str = now_utc.isoformat()
             
-        # Parse match time
         try:
             game_time_str = match['fixture']['date']
             if game_time_str.endswith('Z'):
@@ -256,7 +282,6 @@ def process_date(target_date):
         within_window = now_utc >= (game_time - timedelta(minutes=60))
         valid_status = status not in ['PST', 'CANC', 'ABD']
         
-        # A. LIVE ODDS REFRESH (Every 10 mins during the 60 mins before kickoff)
         in_odds_window = 0 <= time_to_kickoff <= 60
         mins_since_check = 999  
 
@@ -289,7 +314,6 @@ def process_date(target_date):
                                     game_odds["total"] = "2.5"
             last_odds_check_str = now_utc.isoformat()
 
-        # B. FETCH INJURIES (Once per game, exactly when we start looking for lineups)
         if within_window and not injuries.get("fetched") and valid_status:
             print(f"[{fixture_id}] Fetching injury reports...")
             inj_res = fetch_data(f"injuries?fixture={fixture_id}")
@@ -303,7 +327,6 @@ def process_date(target_date):
                         injuries["away"].append(player_name)
             injuries["fetched"] = True
 
-        # C. FETCH LINEUPS
         needs_lineups = not home_lineup or not away_lineup
         stop_statuses = ['PST', 'CANC', 'ABD', 'HT', 'FT', 'AET', 'PEN']
         
@@ -316,7 +339,6 @@ def process_date(target_date):
                 if new_home: home_lineup = new_home
                 if new_away: away_lineup = new_away
 
-        # D. FETCH LIVE EVENTS (Goals & Red Cards)
         is_live = valid_status and status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE']
         if is_live:
             ev_res = fetch_data(f"fixtures/events?fixture={fixture_id}")
@@ -333,21 +355,18 @@ def process_date(target_date):
                         })
                 events = parsed_events
 
-        # Extract Rank and Record smoothly to inject into final payload
         h_id = str(match["teams"]["home"]["id"])
         a_id = str(match["teams"]["away"]["id"])
         
         h_rank_data = global_ranks.get(h_id)
         a_rank_data = global_ranks.get(a_id)
         
-        # Fallback handling in case of old cache ghosts
         h_rank = h_rank_data.get("rank") if isinstance(h_rank_data, dict) else h_rank_data
         h_record = h_rank_data.get("record") if isinstance(h_rank_data, dict) else None
         
         a_rank = a_rank_data.get("rank") if isinstance(a_rank_data, dict) else a_rank_data
         a_record = a_rank_data.get("record") if isinstance(a_rank_data, dict) else None
 
-        # E. COMPILE MATCH PAYLOAD
         all_game_data.append({
             "fixture": match["fixture"],
             "league": match["league"],
@@ -369,20 +388,61 @@ def process_date(target_date):
         
     print(f"Data successfully saved to {filepath}")
 
+
+def prepopulate_future_days(days_out=30):
+    """
+    Ensures that we always have basic schedule JSON files generated for the next X days.
+    Costs exactly 1 API call per missing day.
+    """
+    now_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
+    os.makedirs("data", exist_ok=True)
+    
+    for i in range(1, days_out + 1):
+        future_date = now_est + timedelta(days=i)
+        future_str = future_date.strftime("%Y-%m-%d")
+        future_filepath = f"data/games_{future_str}.json"
+        
+        if not os.path.exists(future_filepath):
+            print(f"--- Pre-populating future schedule for {future_str} ---")
+            fixtures_data = fetch_data(f"fixtures?date={future_str}&timezone=America/New_York")
+            
+            if fixtures_data and "response" in fixtures_data:
+                future_matches = [m for m in fixtures_data["response"] if m["league"]["id"] in TOP_LEAGUE_IDS]
+                future_game_data = []
+                
+                for match in future_matches:
+                    future_game_data.append({
+                        "fixture": match["fixture"],
+                        "league": match["league"],
+                        "teams": {
+                            "home": {**match["teams"]["home"], "rank": None, "record": None},
+                            "away": {**match["teams"]["away"], "rank": None, "record": None}
+                        },
+                        "goals": match["goals"],
+                        "homeLineup": None,
+                        "awayLineup": None,
+                        "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
+                        "last_odds_check": None,
+                        "injuries": {"home": [], "away": [], "fetched": False},
+                        "events": []
+                    })
+                with open(future_filepath, "w") as f:
+                    json.dump(future_game_data, f, indent=4)
+
+
 def main():
     if not API_KEY:
         print("CRITICAL ERROR: FOOTBALL_API_KEY environment variable not set.")
         return
 
-    # Automatically handles EST/EDT shifts
     now_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
     
-    # Always process the current EST date
+    # Run the prepopulator to ensure the rolling 30-day calendar exists
+    prepopulate_future_days(30)
+
     dates_to_process = [now_est]
 
-    # The Late Night Rule: 
-    # If it's between Midnight and 6 AM Eastern, games from "yesterday" (like West Coast MLS)
-    # might still be playing. We must update yesterday's file alongside today's.
+    # Late Night Rule
     if now_est.hour < 6:
         dates_to_process.insert(0, now_est - timedelta(days=1))
 
