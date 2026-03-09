@@ -124,9 +124,7 @@ def build_daily_games(date_str):
     
     for game in premium_games:
         fixture_id = game['fixture']['id']
-        status_short = game['fixture']['status']['short']
         
-        # Inject Master Team Dict data dynamically!
         home_id = str(game['teams']['home']['id'])
         away_id = str(game['teams']['away']['id'])
         
@@ -148,39 +146,11 @@ def build_daily_games(date_str):
             "lineup_checks": 0,  
             "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
             "last_odds_check": None,
-            "injuries": {"home": [], "away": [], "fetched": False},
+            "injuries": {"home": [], "away": [], "checks": 0}, # NEW INJURY TRACKER
             "events": [],
             "match_ended_at": None,
             "post_game_sync": False
         }
-
-        # Check time to Kickoff
-        kickoff_time = datetime.fromisoformat(game['fixture']['date'])
-        now = datetime.now(timezone.utc)
-        time_to_kickoff_minutes = (kickoff_time - now).total_seconds() / 60
-
-        if status_short not in ['FT', 'AET', 'PEN', 'CANC', 'PST']:
-            # Lineups Initial Pull (Aggressive Polling)
-            if time_to_kickoff_minutes <= 60 and game_entry['lineup_checks'] == 0:
-                lineups_data = fetch_lineups(fixture_id)
-                if lineups_data and lineups_data.get("response") and len(lineups_data["response"]) >= 2:
-                    enriched_lineups = inject_player_stats(lineups_data["response"])
-                    game_entry['homeLineup'] = enriched_lineups[0]
-                    game_entry['awayLineup'] = enriched_lineups[1]
-                    game_entry['lineup_checks'] = 1  
-                        
-            # Injuries check
-            if time_to_kickoff_minutes <= (24 * 60) and not game_entry['injuries']['fetched']:
-                inj_data = fetch_injuries(fixture_id)
-                if inj_data and inj_data.get("response"):
-                    for injury in inj_data["response"]:
-                        player_name = injury["player"]["name"]
-                        team_id = injury["team"]["id"]
-                        if team_id == game_entry["teams"]["home"]["id"]:
-                            game_entry["injuries"]["home"].append(player_name)
-                        elif team_id == game_entry["teams"]["away"]["id"]:
-                            game_entry["injuries"]["away"].append(player_name)
-                game_entry['injuries']['fetched'] = True
                 
         formatted_games.append(game_entry)
 
@@ -257,26 +227,43 @@ def process_date(target_date):
             now = datetime.now(timezone.utc)
             time_to_kickoff_minutes = (kickoff_time - now).total_seconds() / 60
 
-            # --- 3. INJURY VERIFICATION SYSTEM ---
-            # Fetches once and stops to prevent API spam while lineups poll
-            if time_to_kickoff_minutes <= (24 * 60) and not game.get('injuries', {}).get('fetched', False):
-                print(f"[{fixture_id}] Match within 24 hours. Fetching injuries...")
-                inj_data = fetch_injuries(fixture_id)
+            # --- 3. INJURY VERIFICATION SYSTEM (7 Checkpoints) ---
+            if latest_status == 'NS':
+                INJURY_THRESHOLDS = [1440, 1080, 720, 360, 60, 15, 5]
+                inj_checks = game.get("injuries", {}).get("checks", 0)
                 
-                game["injuries"]["home"] = []
-                game["injuries"]["away"] = []
-                
-                if inj_data and inj_data.get("response"):
-                    for injury in inj_data["response"]:
-                        player_name = injury["player"]["name"]
-                        team_id = injury["team"]["id"]
-                        if team_id == game["teams"]["home"]["id"]:
-                            game["injuries"]["home"].append(player_name)
-                        elif team_id == game["teams"]["away"]["id"]:
-                            game["injuries"]["away"].append(player_name)
-                
-                game["injuries"]["fetched"] = True
-                updated = True
+                # Backwards compatibility if updating from the old JSON structure
+                if inj_checks == 0 and game.get("injuries", {}).get("fetched") is True:
+                    inj_checks = 1 
+
+                # Find the target check level based on current time countdown
+                target_check_level = 0
+                for threshold in INJURY_THRESHOLDS:
+                    if time_to_kickoff_minutes <= threshold:
+                        target_check_level += 1
+                    else:
+                        break # Break early since thresholds are descending
+
+                # If the target level is higher than our current checks, we owe the system an update
+                if inj_checks < target_check_level:
+                    print(f"[{fixture_id}] Reaching Injury Checkpoint {target_check_level}/7. Fetching injuries...")
+                    inj_data = fetch_injuries(fixture_id)
+                    
+                    game["injuries"]["home"] = []
+                    game["injuries"]["away"] = []
+                    
+                    if inj_data and inj_data.get("response"):
+                        for injury in inj_data["response"]:
+                            player_name = injury["player"]["name"]
+                            team_id = injury["team"]["id"]
+                            if team_id == game["teams"]["home"]["id"]:
+                                game["injuries"]["home"].append(player_name)
+                            elif team_id == game["teams"]["away"]["id"]:
+                                game["injuries"]["away"].append(player_name)
+                    
+                    game["injuries"]["checks"] = target_check_level
+                    game["injuries"].pop("fetched", None) # Clean up old key if it exists
+                    updated = True
 
             # --- 4. LINEUP VERIFICATION SYSTEM (Aggressive Polling) ---
             checks = game.get("lineup_checks", 0)
@@ -411,7 +398,7 @@ def prepopulate_future_days(days_ahead=30):
                         "lineup_checks": 0,  
                         "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
                         "last_odds_check": None,
-                        "injuries": {"home": [], "away": [], "fetched": False},
+                        "injuries": {"home": [], "away": [], "checks": 0}, # NEW INJURY TRACKER
                         "events": [],
                         "match_ended_at": None,
                         "post_game_sync": False
