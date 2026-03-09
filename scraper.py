@@ -362,6 +362,40 @@ def process_date(target_date):
             "events": events
         })
 
+    # --- 7. ORPHAN INJECTION (Late Night Crossover) ---
+    today_est_date = datetime.now(zoneinfo.ZoneInfo("America/New_York")).date()
+    if target_date.date() == today_est_date:
+        yesterday_date = target_date - timedelta(days=1)
+        yesterday_file = f"data/games_{yesterday_date.strftime('%Y-%m-%d')}.json"
+        
+        if os.path.exists(yesterday_file):
+            try:
+                with open(yesterday_file, "r") as f:
+                    yesterday_games = json.load(f)
+                    
+                for y_game in yesterday_games:
+                    status = y_game.get("fixture", {}).get("status", {}).get("short", "")
+                    try:
+                        g_time_str = y_game['fixture']['date']
+                        if g_time_str.endswith('Z'):
+                            g_time_str = g_time_str[:-1] + '+00:00'
+                        g_time = datetime.fromisoformat(g_time_str)
+                    except Exception:
+                        g_time = now_utc - timedelta(hours=10)
+                        
+                    hours_since_kickoff = (now_utc - g_time).total_seconds() / 3600
+                    
+                    # Keep it if it is actively playing
+                    is_active = status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP']
+                    # Keep it on the board if it finished within the last 8 hours
+                    is_recent_finish = status in ['FT', 'AET', 'PEN'] and hours_since_kickoff < 8
+                    
+                    if is_active or is_recent_finish:
+                        y_game["is_orphan"] = True
+                        all_game_data.append(y_game)
+            except Exception as e:
+                print(f"Failed to inject orphans: {e}")
+
     with open(filepath, "w") as f:
         json.dump(all_game_data, f, indent=4)
     
