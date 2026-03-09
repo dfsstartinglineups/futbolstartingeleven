@@ -114,6 +114,84 @@ window.checkOverflows = function() {
     });
 };
 
+function shortenPlayerName(fullName) {
+    if (!fullName) return "Unknown";
+    const parts = fullName.split(' ');
+    if (parts.length === 1) return fullName;
+    const initial = parts[0].charAt(0).toUpperCase() + '.';
+    const lastName = parts.slice(1).join(' ');
+    return `${initial} ${lastName}`;
+}
+
+// --- NEW MODAL RENDER FUNCTION ---
+window.openPlayerModal = function(el) {
+    const playerDataStr = el.getAttribute('data-player');
+    if (!playerDataStr) return;
+    
+    const p = JSON.parse(decodeURIComponent(playerDataStr));
+    
+    // Elements
+    const nameEl = document.getElementById('modal-player-name');
+    const bioEl = document.getElementById('modal-player-bio');
+    const photoEl = document.getElementById('modal-player-photo');
+    const initialsEl = document.getElementById('modal-player-initials');
+    const statsContainer = document.getElementById('modal-player-stats-container');
+    const noStatsEl = document.getElementById('modal-no-stats');
+
+    // Populate Bio
+    nameEl.textContent = p.name || 'Unknown Player';
+    
+    const pos = p.pos || '?';
+    const age = p.age ? `${p.age}y` : 'Age N/A';
+    const nat = p.nationality || 'N/A';
+    bioEl.innerHTML = `<span class="fw-bold text-dark">${pos}</span> &nbsp;•&nbsp; ${age} &nbsp;•&nbsp; ${nat}`;
+
+    // Populate Photo
+    if (p.photo && p.photo.includes("http")) {
+        photoEl.src = p.photo;
+        photoEl.style.display = 'block';
+        initialsEl.style.display = 'none';
+    } else {
+        photoEl.style.display = 'none';
+        initialsEl.textContent = p.name ? p.name.charAt(0).toUpperCase() : '?';
+        initialsEl.style.display = 'flex';
+    }
+
+    // Populate Stats
+    statsContainer.innerHTML = '';
+    
+    if (p.season_stats && p.season_stats.games > 0) {
+        noStatsEl.classList.add('d-none');
+        
+        const stats = [
+            { label: "Matches", val: p.season_stats.games, color: "text-dark" },
+            { label: "Goals", val: p.season_stats.goals, color: "text-success" },
+            { label: "Assists", val: p.season_stats.assists, color: "text-primary" },
+            { label: "Yellows", val: p.season_stats.yellow_cards, color: "text-warning" },
+            { label: "Reds", val: p.season_stats.red_cards, color: "text-danger" },
+            { label: "Rating", val: p.season_stats.rating || "-", color: "text-info" }
+        ];
+
+        stats.forEach(s => {
+            statsContainer.innerHTML += `
+                <div class="col-4 mb-2">
+                    <div class="border rounded bg-light p-2 h-100">
+                        <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">${s.label}</div>
+                        <div class="fw-bold ${s.color}" style="font-size: 1.1rem;">${s.val}</div>
+                    </div>
+                </div>
+            `;
+        });
+    } else {
+        noStatsEl.classList.remove('d-none');
+    }
+
+    // Show Modal
+    const modal = new bootstrap.Modal(document.getElementById('playerProfileModal'));
+    modal.show();
+};
+
+
 function getTimeBadgeHtml(data) {
     const status = data.fixture.status.short;
     const dateObj = new Date(data.fixture.date);
@@ -182,7 +260,7 @@ function getEventsHtml(data) {
     
     const formatSingleEvent = (e, teamName) => {
         let icon = e.type === 'Goal' ? '⚽' : '🟥';
-        let playerName = (e.player && e.player !== "null") ? e.player : teamName;
+        let playerName = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : teamName;
         return `${icon} <span class="text-dark fw-bold">${playerName}</span> ${e.time}'`;
     };
 
@@ -246,8 +324,13 @@ function getOddsHtml(data) {
 
 function getInjuriesHtml(data) {
     if (!data.injuries || (data.injuries.home.length === 0 && data.injuries.away.length === 0)) return '';
-    const hInj = data.injuries.home.join(', ') || 'None';
-    const aInj = data.injuries.away.join(', ') || 'None';
+    
+    // Shorten names for the injury report too
+    const cleanHomeInj = data.injuries.home.map(n => shortenPlayerName(n));
+    const cleanAwayInj = data.injuries.away.map(n => shortenPlayerName(n));
+    
+    const hInj = cleanHomeInj.join(', ') || 'None';
+    const aInj = cleanAwayInj.join(', ') || 'None';
     
     return `
     <div class="border-bottom px-2 py-1 expandable-section position-relative d-flex justify-content-center align-items-center" 
@@ -624,16 +707,29 @@ function createGameCard(data) {
         if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
         
         const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation} FORMATION</div>`;
+        
         const listItems = lineupData.startXI.map(p => {
             const safePos = p.player.pos || '-';
-            const safeName = p.player.name || 'Unknown';
+            const originalName = p.player.name || 'Unknown';
+            const displaySafeName = shortenPlayerName(originalName);
             const safeNum = p.player.number || '';
+            const photoUrl = p.player.photo || '';
+            
+            // Encode the player object to pass to the modal easily
+            const encodedPlayer = encodeURIComponent(JSON.stringify(p.player));
             
             let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
+            
+            // Fallback to initials if photo is missing
+            const photoHtml = photoUrl && photoUrl.includes("http") 
+                ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
+                : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
+
             return `
-                <li class="d-flex w-100 px-2 py-1 border-bottom">
-                    <span class="text-muted fw-bold d-inline-block text-start" style="font-size: 0.7rem; width: 25px; color: ${posColor} !important;">${safePos}</span>
-                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${safeName}">${safeName}</span>
+                <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" data-player="${encodedPlayer}" onclick="openPlayerModal(this)">
+                    <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
+                    <div class="me-2">${photoHtml}</div>
+                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">${displaySafeName}</span>
                     <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
                 </li>`;
         }).join('');
