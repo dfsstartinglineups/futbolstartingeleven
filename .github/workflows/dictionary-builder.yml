@@ -21,13 +21,12 @@ jobs:
         with:
           python-version: '3.10'
 
-      # No pip install step needed because our script only uses built-in Python libraries!
-
       - name: Run Harvester Script
         env:
           FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
+        # Updated to point to the new scripts folder!
         run: |
-          python harvester_players.py
+          python scripts/harvester_players.py
 
       - name: Commit and Push Dictionary Data
         run: |
