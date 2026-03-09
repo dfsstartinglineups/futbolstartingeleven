@@ -398,13 +398,8 @@ def process_date(target_date):
 
     with open(filepath, "w") as f:
         json.dump(all_game_data, f, indent=4)
-    
-    if not needs_update:
-        # We checked memory and knew we didn't have to fetch, but we do this print 
-        # inside the loop. If we bypass the API, the function actually returns early at step 0. 
-        pass 
-    else:
-        print(f"Data successfully saved to {filepath}")
+        
+    print(f"Data successfully saved to {filepath}")
 
 def main():
     if not API_KEY:
