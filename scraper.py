@@ -45,6 +45,10 @@ def process_date(target_date):
                 
             needs_update = False
             for game in local_games:
+                # We only base native hibernation on NATIVE games, not orphans. 
+                if game.get("is_orphan"):
+                    continue
+                    
                 status = game.get("fixture", {}).get("status", {}).get("short", "")
                 
                 try:
@@ -62,18 +66,36 @@ def process_date(target_date):
                     needs_update = True
                     break
                     
-                # Condition B: Game is coming up within 75 minutes (wake up to catch 60min lineups/odds)
-                # Or a game was supposed to start but is stuck in NS/TBD (time_to_kickoff <= 0)
+                # Condition B: Game is coming up within 75 minutes
                 if status in ['NS', 'TBD'] and time_to_kickoff <= 75:
                     needs_update = True
                     break
+
+            # Condition C: (The Fix) Check if yesterday has a live game. If yes, DO NOT hibernate today.
+            if not needs_update:
+                today_est_date = datetime.now(zoneinfo.ZoneInfo("America/New_York")).date()
+                if target_date.date() == today_est_date:
+                    yesterday_date = target_date - timedelta(days=1)
+                    yesterday_file = f"data/games_{yesterday_date.strftime('%Y-%m-%d')}.json"
+                    
+                    if os.path.exists(yesterday_file):
+                        try:
+                            with open(yesterday_file, "r") as yf:
+                                y_games = json.load(yf)
+                                for y_game in y_games:
+                                    y_status = y_game.get("fixture", {}).get("status", {}).get("short", "")
+                                    if y_status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP']:
+                                        needs_update = True
+                                        break
+                        except Exception:
+                            pass
 
             if not needs_update:
                 print(f"[{date_str}] 💤 Hibernating: No active games and next match is > 75 mins away.")
                 return
 
         except Exception:
-            pass # If the file is corrupt or empty, we skip hibernation and fetch normally
+            pass 
     
     print(f"\n--- Fetching live fixtures & scores for {date_str} ---")
     
