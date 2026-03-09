@@ -160,28 +160,60 @@ window.openPlayerModal = function(el) {
     // Populate Stats
     statsContainer.innerHTML = '';
     
-    if (p.season_stats && p.season_stats.games > 0) {
-        noStatsEl.classList.add('d-none');
+    if (p.season_stats) {
+        // Backwards compatibility check: did we use the new nested format or the old flat format?
+        const isNested = p.season_stats.total !== undefined;
+        const mainStats = isNested ? p.season_stats.total : p.season_stats;
         
-        const stats = [
-            { label: "Matches", val: p.season_stats.games, color: "text-dark" },
-            { label: "Goals", val: p.season_stats.goals, color: "text-success" },
-            { label: "Assists", val: p.season_stats.assists, color: "text-primary" },
-            { label: "Yellows", val: p.season_stats.yellow_cards, color: "text-warning" },
-            { label: "Reds", val: p.season_stats.red_cards, color: "text-danger" },
-            { label: "Rating", val: p.season_stats.rating || "-", color: "text-info" }
-        ];
+        if (mainStats.games > 0) {
+            noStatsEl.classList.add('d-none');
+            
+            // 1. Build the Top Grid (Totals)
+            const stats = [
+                { label: "Matches", val: mainStats.games, color: "text-dark" },
+                { label: "Goals", val: mainStats.goals, color: "text-success" },
+                { label: "Assists", val: mainStats.assists, color: "text-primary" },
+                { label: "Yellows", val: mainStats.yellow_cards, color: "text-warning" },
+                { label: "Reds", val: mainStats.red_cards, color: "text-danger" },
+                { label: "Rating", val: mainStats.rating || "-", color: "text-info" }
+            ];
 
-        stats.forEach(s => {
-            statsContainer.innerHTML += `
-                <div class="col-4 mb-2">
-                    <div class="border rounded bg-light p-2 h-100">
-                        <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">${s.label}</div>
-                        <div class="fw-bold ${s.color}" style="font-size: 1.1rem;">${s.val}</div>
+            let gridHtml = '';
+            stats.forEach(s => {
+                gridHtml += `
+                    <div class="col-4 mb-2">
+                        <div class="border rounded bg-light p-2 h-100">
+                            <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">${s.label}</div>
+                            <div class="fw-bold ${s.color}" style="font-size: 1.1rem;">${s.val}</div>
+                        </div>
                     </div>
-                </div>
-            `;
-        });
+                `;
+            });
+            statsContainer.innerHTML = gridHtml;
+
+            // 2. Build the Competition Breakdown list (if data exists)
+            if (isNested && p.season_stats.competitions) {
+                let breakdownHtml = `<div class="mt-2 text-start w-100 px-1">
+                                        <div class="text-muted mb-1 border-bottom pb-1" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Competition Breakdown</div>`;
+                
+                for (const [compName, compStats] of Object.entries(p.season_stats.competitions)) {
+                    if (compStats.games > 0) { // Only show competitions they actually played in
+                        breakdownHtml += `
+                        <div class="d-flex justify-content-between align-items-center py-1" style="font-size: 0.75rem; border-bottom: 1px dashed #f1f3f5;">
+                            <span class="fw-bold text-dark text-truncate pe-2" style="max-width: 55%;">${compName}</span>
+                            <span class="text-muted text-end" style="font-size: 0.70rem;">
+                                <b>${compStats.games}</b>M &nbsp; <b>${compStats.goals}</b>G &nbsp; <b>${compStats.assists}</b>A
+                            </span>
+                        </div>`;
+                    }
+                }
+                breakdownHtml += `</div>`;
+                statsContainer.innerHTML += breakdownHtml;
+            }
+            
+        } else {
+            noStatsEl.classList.remove('d-none');
+        }
     } else {
         noStatsEl.classList.remove('d-none');
     }
