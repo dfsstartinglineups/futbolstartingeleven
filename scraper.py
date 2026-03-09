@@ -31,71 +31,78 @@ def process_date(target_date):
     filepath = f"data/games_{date_str}.json"
     ranks_filepath = f"data/ranks_{date_str}.json"
     now_utc = datetime.now(timezone.utc)
+    today_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
     
     # Ensure data directory exists early for our cache files
     os.makedirs("data", exist_ok=True)
     
     # ==========================================
-    # 0. HIBERNATION CHECK (Save API Calls)
+    # 0. HIBERNATION CHECK (Sequential Logic)
     # ==========================================
-    if os.path.exists(filepath):
+    needs_update = False
+    
+    # Step 0A: Check Yesterday's File First
+    # As long as there are still active games or games waiting to start from yesterday, do NOT hibernate.
+    yesterday_date = today_est.date() - timedelta(days=1)
+    yesterday_str = yesterday_date.strftime("%Y-%m-%d")
+    yesterday_file = f"data/games_{yesterday_str}.json"
+    
+    yesterday_needs_attention = False
+    if os.path.exists(yesterday_file):
         try:
-            with open(filepath, "r") as f:
-                local_games = json.load(f)
-                
-            needs_update = False
-            for game in local_games:
-                # We only base native hibernation on NATIVE games, not orphans. 
-                if game.get("is_orphan"):
-                    continue
-                    
-                status = game.get("fixture", {}).get("status", {}).get("short", "")
-                
-                try:
-                    game_time_str = game['fixture']['date']
-                    if game_time_str.endswith('Z'):
-                        game_time_str = game_time_str[:-1] + '+00:00'
-                    game_time = datetime.fromisoformat(game_time_str)
-                except Exception:
-                    game_time = now_utc + timedelta(days=1)
-                    
-                time_to_kickoff = (game_time - now_utc).total_seconds() / 60
-                
-                # Condition A: Game is actively being played or paused
-                if status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP']:
-                    needs_update = True
-                    break
-                    
-                # Condition B: Game is coming up within 75 minutes
-                if status in ['NS', 'TBD'] and time_to_kickoff <= 75:
-                    needs_update = True
-                    break
-
-            # Condition C: (The Fix) Check if yesterday has a live game. If yes, DO NOT hibernate today.
-            if not needs_update:
-                today_est_date = datetime.now(zoneinfo.ZoneInfo("America/New_York")).date()
-                if target_date.date() == today_est_date:
-                    yesterday_date = target_date - timedelta(days=1)
-                    yesterday_file = f"data/games_{yesterday_date.strftime('%Y-%m-%d')}.json"
-                    
-                    if os.path.exists(yesterday_file):
-                        try:
-                            with open(yesterday_file, "r") as yf:
-                                y_games = json.load(yf)
-                                for y_game in y_games:
-                                    y_status = y_game.get("fixture", {}).get("status", {}).get("short", "")
-                                    if y_status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP']:
-                                        needs_update = True
-                                        break
-                        except Exception:
-                            pass
-
-            if not needs_update:
-                print(f"[{date_str}] 💤 Hibernating: No active games and next match is > 75 mins away.")
-                return
-
+            with open(yesterday_file, "r") as yf:
+                y_games = json.load(yf)
+                for y_game in y_games:
+                    y_status = y_game.get("fixture", {}).get("status", {}).get("short", "")
+                    # If any game from yesterday is active OR hasn't started yet
+                    if y_status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP', 'NS', 'TBD']:
+                        yesterday_needs_attention = True
+                        break
         except Exception:
-            pass 
+            pass
+
+    if yesterday_needs_attention:
+        # If yesterday isn't finished, DO NOT hibernate under any circumstances.
+        needs_update = True
+    else:
+        # Step 0B: Only if yesterday is complete, check today's criteria
+        if os.path.exists(filepath):
+            try:
+                with open(filepath, "r") as f:
+                    local_games = json.load(f)
+                    
+                for game in local_games:
+                    status = game.get("fixture", {}).get("status", {}).get("short", "")
+                    
+                    try:
+                        game_time_str = game['fixture']['date']
+                        if game_time_str.endswith('Z'):
+                            game_time_str = game_time_str[:-1] + '+00:00'
+                        game_time = datetime.fromisoformat(game_time_str)
+                    except Exception:
+                        game_time = now_utc + timedelta(days=1)
+                        
+                    time_to_kickoff = (game_time - now_utc).total_seconds() / 60
+                    
+                    # Condition A: Game is actively being played or paused
+                    if status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP']:
+                        needs_update = True
+                        break
+                        
+                    # Condition B: Game is coming up within 75 minutes
+                    if status in ['NS', 'TBD'] and time_to_kickoff <= 75:
+                        needs_update = True
+                        break
+
+            except Exception:
+                needs_update = True # Corrupt file, force update
+        else:
+            needs_update = True # File doesn't exist, force update
+
+    if not needs_update:
+        print(f"[{date_str}] 💤 Hibernating: Yesterday is complete and today has no immediate games.")
+        return
+
     
     print(f"\n--- Fetching live fixtures & scores for {date_str} ---")
     
@@ -383,40 +390,6 @@ def process_date(target_date):
             "injuries": injuries,
             "events": events
         })
-
-    # --- 7. ORPHAN INJECTION (Late Night Crossover) ---
-    today_est_date = datetime.now(zoneinfo.ZoneInfo("America/New_York")).date()
-    if target_date.date() == today_est_date:
-        yesterday_date = target_date - timedelta(days=1)
-        yesterday_file = f"data/games_{yesterday_date.strftime('%Y-%m-%d')}.json"
-        
-        if os.path.exists(yesterday_file):
-            try:
-                with open(yesterday_file, "r") as f:
-                    yesterday_games = json.load(f)
-                    
-                for y_game in yesterday_games:
-                    status = y_game.get("fixture", {}).get("status", {}).get("short", "")
-                    try:
-                        g_time_str = y_game['fixture']['date']
-                        if g_time_str.endswith('Z'):
-                            g_time_str = g_time_str[:-1] + '+00:00'
-                        g_time = datetime.fromisoformat(g_time_str)
-                    except Exception:
-                        g_time = now_utc - timedelta(hours=10)
-                        
-                    hours_since_kickoff = (now_utc - g_time).total_seconds() / 3600
-                    
-                    # Keep it if it is actively playing
-                    is_active = status in ['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE', 'INT', 'SUSP']
-                    # Keep it on the board if it finished within the last 8 hours
-                    is_recent_finish = status in ['FT', 'AET', 'PEN'] and hours_since_kickoff < 8
-                    
-                    if is_active or is_recent_finish:
-                        y_game["is_orphan"] = True
-                        all_game_data.append(y_game)
-            except Exception as e:
-                print(f"Failed to inject orphans: {e}")
 
     with open(filepath, "w") as f:
         json.dump(all_game_data, f, indent=4)
