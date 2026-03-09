@@ -50,6 +50,10 @@ def fetch_lineups(fixture_id):
 def fetch_injuries(fixture_id):
     return fetch_data(f"injuries?fixture={fixture_id}")
 
+# --- NEW: FETCH EVENTS FUNCTION ---
+def fetch_events(fixture_id):
+    return fetch_data(f"fixtures/events?fixture={fixture_id}")
+
 # --- INJECTION FUNCTION ---
 def inject_player_stats(lineups):
     """Enriches lineup data with photos and season stats from the master dictionary."""
@@ -134,7 +138,7 @@ def build_daily_games(date_str):
             "goals": game['goals'],
             "homeLineup": None,
             "awayLineup": None,
-            "lineup_checks": 0,  # <-- NEW TRACKER INITIALIZED HERE
+            "lineup_checks": 0,  
             "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
             "last_odds_check": None,
             "injuries": {"home": [], "away": [], "fetched": False},
@@ -156,13 +160,21 @@ def build_daily_games(date_str):
                     if len(enriched_lineups) >= 2:
                         game_entry['homeLineup'] = enriched_lineups[0]
                         game_entry['awayLineup'] = enriched_lineups[1]
-                        game_entry['lineup_checks'] = 1  # Successfully pulled once
+                        game_entry['lineup_checks'] = 1  
                         print(f"[{fixture_id}] Lineups & Stats Injected (Check 1/3)!")
                         
             # Injuries check
             if time_to_kickoff_minutes <= (24 * 60) and not game_entry['injuries']['fetched']:
                 print(f"[{fixture_id}] Fetching injuries...")
                 inj_data = fetch_injuries(fixture_id)
+                if inj_data and inj_data.get("response"):
+                    for injury in inj_data["response"]:
+                        player_name = injury["player"]["name"]
+                        team_id = injury["team"]["id"]
+                        if team_id == game_entry["teams"]["home"]["id"]:
+                            game_entry["injuries"]["home"].append(player_name)
+                        elif team_id == game_entry["teams"]["away"]["id"]:
+                            game_entry["injuries"]["away"].append(player_name)
                 game_entry['injuries']['fetched'] = True
                 
         formatted_games.append(game_entry)
@@ -203,13 +215,30 @@ def process_date(target_date):
                 
             latest_status = latest_data['fixture']['status']['short']
             
-            # Update Live Match Data
+            # --- NEW: FETCH LIVE EVENTS IF GAME IS ACTIVE ---
             if latest_status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']:
                 game['fixture']['status'] = latest_data['fixture']['status']
                 game['goals'] = latest_data['goals']
+                
+                print(f"[{fixture_id}] Match is live. Fetching events...")
+                events_data = fetch_events(fixture_id)
+                if events_data and events_data.get("response"):
+                    # We map only the specific fields the frontend needs to keep the JSON light
+                    cleaned_events = []
+                    for ev in events_data["response"]:
+                        if ev["type"] in ["Goal", "Card"]: # We only care about Goals and Cards
+                            cleaned_events.append({
+                                "time": ev["time"]["elapsed"],
+                                "team_id": ev["team"]["id"],
+                                "player": ev["player"]["name"],
+                                "type": ev["type"],
+                                "detail": ev["detail"]
+                            })
+                    game["events"] = cleaned_events
+                
                 updated = True
                 
-            # --- THE 3-CHECKPOINT LINEUP VERIFICATION SYSTEM ---
+            # Lineup Verification System
             kickoff_time = datetime.fromisoformat(game['fixture']['date'])
             now = datetime.now(timezone.utc)
             time_to_kickoff_minutes = (kickoff_time - now).total_seconds() / 60
@@ -228,7 +257,7 @@ def process_date(target_date):
                     if len(enriched_lineups) >= 2:
                         game['homeLineup'] = enriched_lineups[0]
                         game['awayLineup'] = enriched_lineups[1]
-                        game['lineup_checks'] = checks + 1  # Increment the tracker
+                        game['lineup_checks'] = checks + 1  
                         updated = True
                         print(f"[{fixture_id}] Lineups & Stats Injected (Check {checks + 1}/3)!")
 
@@ -266,7 +295,7 @@ def prepopulate_future_days(days_ahead=30):
                         "goals": match["goals"],
                         "homeLineup": None,
                         "awayLineup": None,
-                        "lineup_checks": 0,  # <-- NEW TRACKER INITIALIZED HERE
+                        "lineup_checks": 0,  
                         "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
                         "last_odds_check": None,
                         "injuries": {"home": [], "away": [], "fetched": False},
