@@ -1,45 +1,30 @@
-import os
 import json
+import os
 import urllib.request
 import zoneinfo
+import re
 from datetime import datetime, timezone, timedelta
 
-# Grab the secret key from GitHub Actions
-API_KEY = os.environ.get("FOOTBALL_API_KEY")
+# --- CONFIGURATION ---
 API_HOST = "https://v3.football.api-sports.io"
-DATA_DIR = "data"
+API_KEY = os.environ.get("FOOTBALL_API_KEY")
 
-# Ensure data directory exists
+DATA_DIR = "data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
-# --- LOAD MASTER DICTIONARIES ---
-MASTER_PLAYER_DICT = {}
-PLAYER_DICT_PATH = os.path.join(DATA_DIR, "player_stats_dict.json")
-if os.path.exists(PLAYER_DICT_PATH):
-    try:
-        with open(PLAYER_DICT_PATH, "r") as f:
-            MASTER_PLAYER_DICT = json.load(f)
-        print(f"Loaded Master Player Dictionary ({len(MASTER_PLAYER_DICT)} players).")
-    except Exception as e:
-        print(f"Warning: Could not load player dictionary: {e}")
+TEAM_DICT_PATH = os.path.join(DATA_DIR, "master_teams.json")
+PLAYER_DICT_PATH = os.path.join(DATA_DIR, "master_players.json")
 
-MASTER_TEAM_DICT = {}
-TEAM_DICT_PATH = os.path.join(DATA_DIR, "team_stats_dict.json")
-if os.path.exists(TEAM_DICT_PATH):
-    try:
-        with open(TEAM_DICT_PATH, "r") as f:
-            MASTER_TEAM_DICT = json.load(f)
-        print(f"Loaded Master Team Dictionary ({len(MASTER_TEAM_DICT)} teams).")
-    except Exception as e:
-        pass
+# Load persistent dictionaries
+def load_json(path):
+    if os.path.exists(path):
+        with open(path, "r") as f: return json.load(f)
+    return {}
 
-# The expanded global league list (16 Leagues)
-TOP_LEAGUE_IDS = [
-    39, 40, 45, 140, 135, 78, 61, 72, 94,  # Europe
-    2, 3, 13,                          # Continental
-    253, 262, 71, 128,                 # Americas
-    307, 98                            # World
-] 
+MASTER_TEAM_DICT = load_json(TEAM_DICT_PATH)
+MASTER_PLAYER_DICT = load_json(PLAYER_DICT_PATH)
+
+TOP_LEAGUE_IDS = [39, 140, 61, 135, 78, 262, 2, 3, 848, 1, 4, 9, 45, 48, 528]
 
 def fetch_data(endpoint):
     req = urllib.request.Request(f"{API_HOST}/{endpoint}")
@@ -52,7 +37,6 @@ def fetch_data(endpoint):
         return None
 
 def fetch_fixtures_by_date(date_str):
-    # Forcing API into EST/EDT to prevent midnight UTC day-crossover bugs
     return fetch_data(f"fixtures?date={date_str}&timezone=America/New_York")
 
 def fetch_lineups(fixture_id):
@@ -61,27 +45,55 @@ def fetch_lineups(fixture_id):
 def fetch_injuries(fixture_id):
     return fetch_data(f"injuries?fixture={fixture_id}")
 
+def fetch_odds(fixture_id):
+    """Fetches Match Winner and Over/Under odds for a fixture."""
+    data = fetch_data(f"odds?fixture={fixture_id}")
+    if not data or not data.get("response"):
+        return None
+    
+    odds_result = {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}
+    
+    try:
+        bookmakers = data["response"][0].get("bookmakers", [])
+        if not bookmakers: return None
+            
+        # Use the first bookmaker provided
+        for bet in bookmakers[0].get("bets", []):
+            if bet["name"] == "Match Winner":
+                for val in bet["values"]:
+                    if val["value"] == "Home": odds_result["home"] = val["odd"]
+                    elif val["value"] == "Draw": odds_result["draw"] = val["odd"]
+                    elif val["value"] == "Away": odds_result["away"] = val["odd"]
+            
+            elif bet["name"] == "Goals Over/Under":
+                for val in bet["values"]:
+                    if val["value"] == "Over 2.5": 
+                        odds_result["over"] = val["odd"]
+                        odds_result["total"] = "2.5"
+                    elif val["value"] == "Under 2.5":
+                        odds_result["under"] = val["odd"]
+    except (IndexError, KeyError):
+        return None
+        
+    return odds_result
+
 def fetch_events(fixture_id):
     return fetch_data(f"fixtures/events?fixture={fixture_id}")
 
 def fetch_all_players(team_id, season):
-    """Handles API pagination to get an entire roster's season stats."""
     all_players = []
     page = 1
     total_pages = 1
     while page <= total_pages:
         data = fetch_data(f"players?team={team_id}&season={season}&page={page}")
-        if not data or not data.get("response"):
-            break
+        if not data or not data.get("response"): break
         all_players.extend(data["response"])
         total_pages = data.get("paging", {}).get("total", 1)
         page += 1
     return all_players
 
-# --- INJECTION FUNCTION ---
 def inject_player_stats(lineups):
-    if not MASTER_PLAYER_DICT:
-        return lineups 
+    if not MASTER_PLAYER_DICT: return lineups 
     
     for team_lineup in lineups:
         for section in ["startXI", "substitutes"]:
@@ -94,18 +106,12 @@ def inject_player_stats(lineups):
                     player_bio = cached_data.get("player", {})
                     stats_list = cached_data.get("statistics", [])
                     
-                    total_games = 0
-                    total_goals = 0
-                    total_assists = 0
-                    total_yellows = 0
-                    total_reds = 0
+                    total_games, total_goals, total_assists, total_yellows, total_reds = 0, 0, 0, 0, 0
                     ratings = []
-                    
                     competitions = {}
                     
                     for stat in stats_list:
                         league_name = stat.get("league", {}).get("name", "Unknown")
-                        
                         c_games = stat.get("games", {}).get("appearences") or 0
                         c_goals = stat.get("goals", {}).get("total") or 0
                         c_assists = stat.get("goals", {}).get("assists") or 0
@@ -113,7 +119,6 @@ def inject_player_stats(lineups):
                         c_reds = stat.get("cards", {}).get("red") or 0
                         c_rating = stat.get("games", {}).get("rating")
                         
-                        # Add to totals
                         total_games += c_games
                         total_goals += c_goals
                         total_assists += c_assists
@@ -121,36 +126,19 @@ def inject_player_stats(lineups):
                         total_reds += c_reds
                         
                         if c_rating:
-                            try:
-                                ratings.append(float(c_rating))
-                            except ValueError:
-                                pass
+                            try: ratings.append(float(c_rating))
+                            except ValueError: pass
                                 
-                        # Save specific competition stats
                         competitions[league_name] = {
-                            "games": c_games,
-                            "goals": c_goals,
-                            "assists": c_assists,
-                            "yellow_cards": c_yellows,
-                            "red_cards": c_reds,
+                            "games": c_games, "goals": c_goals, "assists": c_assists,
+                            "yellow_cards": c_yellows, "red_cards": c_reds,
                             "rating": f"{float(c_rating):.2f}" if c_rating else "N/A"
                         }
                             
                     avg_rating = f"{sum(ratings)/len(ratings):.2f}" if ratings else "N/A"
-                    
-                    player_info["photo"] = player_bio.get("photo")
-                    player_info["age"] = player_bio.get("age")
-                    player_info["nationality"] = player_bio.get("nationality")
-                    
+                    player_info.update({"photo": player_bio.get("photo"), "age": player_bio.get("age"), "nationality": player_bio.get("nationality")})
                     player_info["season_stats"] = {
-                        "total": {
-                            "games": total_games,
-                            "goals": total_goals,
-                            "assists": total_assists,
-                            "yellow_cards": total_yellows,
-                            "red_cards": total_reds,
-                            "rating": avg_rating
-                        },
+                        "total": {"games": total_games, "goals": total_goals, "assists": total_assists, "yellow_cards": total_yellows, "red_cards": total_reds, "rating": avg_rating},
                         "competitions": competitions
                     }
     return lineups
@@ -158,122 +146,67 @@ def inject_player_stats(lineups):
 def build_daily_games(date_str):
     print(f"\n--- Building Initial Board for {date_str} ---")
     fixtures_data = fetch_fixtures_by_date(date_str)
-    
-    if not fixtures_data or not fixtures_data.get("response"):
-        print("No fixtures found or API error.")
-        return []
+    if not fixtures_data or not fixtures_data.get("response"): return []
 
-    all_games = fixtures_data["response"]
-    premium_games = [g for g in all_games if g['league']['id'] in TOP_LEAGUE_IDS]
-    
     formatted_games = []
-    
-    for game in premium_games:
-        fixture_id = game['fixture']['id']
+    for game in [g for g in fixtures_data["response"] if g['league']['id'] in TOP_LEAGUE_IDS]:
+        home_id, away_id, league_id_str = str(game['teams']['home']['id']), str(game['teams']['away']['id']), str(game['league']['id'])
         
-        # Inject Master Team Dict data dynamically with composite keys
-        home_id = str(game['teams']['home']['id'])
-        away_id = str(game['teams']['away']['id'])
-        league_id_str = str(game['league']['id'])
+        home_data = MASTER_TEAM_DICT.get(f"{home_id}_{league_id_str}") or MASTER_TEAM_DICT.get(home_id, {})
+        away_data = MASTER_TEAM_DICT.get(f"{away_id}_{league_id_str}") or MASTER_TEAM_DICT.get(away_id, {})
         
-        h_key = f"{home_id}_{league_id_str}"
-        a_key = f"{away_id}_{league_id_str}"
-        
-        home_data = MASTER_TEAM_DICT.get(h_key) or MASTER_TEAM_DICT.get(home_id, {})
-        away_data = MASTER_TEAM_DICT.get(a_key) or MASTER_TEAM_DICT.get(away_id, {})
-        
-        home_rank = home_data.get("rank", None)
-        home_record = home_data.get("record", None)
-        away_rank = away_data.get("rank", None)
-        away_record = away_data.get("record", None)
-        
-        game_entry = {
-            "fixture": game['fixture'],
-            "league": game['league'],
+        formatted_games.append({
+            "fixture": game['fixture'], "league": game['league'],
             "teams": {
-                "home": {**game['teams']['home'], "rank": home_rank, "record": home_record},
-                "away": {**game['teams']['away'], "rank": away_rank, "record": away_record}
+                "home": {**game['teams']['home'], "rank": home_data.get("rank"), "record": home_data.get("record")},
+                "away": {**game['teams']['away'], "rank": away_data.get("rank"), "record": away_data.get("record")}
             },
-            "goals": game['goals'],
-            "homeLineup": None,
-            "awayLineup": None,
-            "lineup_checks": 0,  
+            "goals": game['goals'], "homeLineup": None, "awayLineup": None, "lineup_checks": 0,  
             "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
-            "last_odds_check": None,
-            "injuries": {"home": [], "away": [], "checks": 0},
-            "events": [],
-            "match_ended_at": None,
-            "post_game_sync": False
-        }
-                
-        formatted_games.append(game_entry)
-
+            "last_odds_check": None, "injuries": {"home": [], "away": [], "checks": 0},
+            "events": [], "match_ended_at": None, "post_game_sync": False
+        })
     return formatted_games
 
 def process_date(target_date):
-    # Safety Check: Never process historical files (allows yesterday for late games)
     now_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
-    if target_date.date() < (now_est.date() - timedelta(days=1)):
-        return
+    if target_date.date() < (now_est.date() - timedelta(days=1)): return
 
     date_str = target_date.strftime("%Y-%m-%d")
     games_file = os.path.join(DATA_DIR, f"games_{date_str}.json")
 
     if not os.path.exists(games_file):
         daily_games = build_daily_games(date_str)
-        with open(games_file, 'w') as f:
-            json.dump(daily_games, f, indent=4)
-        print(f"Created initial {games_file}")
+        with open(games_file, 'w') as f: json.dump(daily_games, f, indent=4)
     else:
         print(f"\n--- Updating Live Board for {date_str} ---")
-        with open(games_file, 'r') as f:
-            daily_games = json.load(f)
+        with open(games_file, 'r') as f: daily_games = json.load(f)
 
-        current_fixtures_data = fetch_fixtures_by_date(date_str)
-        if not current_fixtures_data or not current_fixtures_data.get("response"):
-            return
-            
-        current_fixtures_map = {g['fixture']['id']: g for g in current_fixtures_data["response"]}
+        fixtures_data = fetch_fixtures_by_date(date_str)
+        if not fixtures_data or not fixtures_data.get("response"): return
+        current_fixtures_map = {g['fixture']['id']: g for g in fixtures_data["response"]}
         updated = False
         
         for game in daily_games:
             fixture_id = game['fixture']['id']
-            status_short = game['fixture']['status']['short']
-            
             latest_data = current_fixtures_map.get(fixture_id)
-            if not latest_data:
-                continue
+            if not latest_data: continue
                 
             latest_status = latest_data['fixture']['status']['short']
             
-            # --- 1. FETCH LIVE EVENTS (Goals & Cards) ---
+            # 1. LIVE EVENTS
             if latest_status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']:
-                game['fixture']['status'] = latest_data['fixture']['status']
-                game['goals'] = latest_data['goals']
-                
+                game['fixture']['status'], game['goals'] = latest_data['fixture']['status'], latest_data['goals']
                 events_data = fetch_events(fixture_id)
                 if events_data and events_data.get("response"):
-                    cleaned_events = []
-                    for ev in events_data["response"]:
-                        if ev["type"] in ["Goal", "Card"]: 
-                            cleaned_events.append({
-                                "time": ev["time"]["elapsed"],
-                                "team_id": ev["team"]["id"],
-                                "player": ev["player"]["name"],
-                                "type": ev["type"],
-                                "detail": ev["detail"]
-                            })
-                    game["events"] = cleaned_events
+                    game["events"] = [{"time": ev["time"]["elapsed"], "team_id": ev["team"]["id"], "player": ev["player"]["name"], "type": ev["type"], "detail": ev["detail"]} for ev in events_data["response"] if ev["type"] in ["Goal", "Card"]]
                 updated = True
 
-            # --- 2. MARK END TIME ONCE FINISHED ---
+            # 2. MATCH COMPLETION
             is_finished = latest_status in ['FT', 'AET', 'PEN']
             if is_finished:
-                game['fixture']['status'] = latest_data['fixture']['status']
-                game['goals'] = latest_data['goals']
-                
+                game['fixture']['status'], game['goals'] = latest_data['fixture']['status'], latest_data['goals']
                 if not game.get("match_ended_at"):
-                    print(f"[{fixture_id}] Match just finished! Starting 90-min cooldown timer.")
                     game["match_ended_at"] = datetime.now(timezone.utc).isoformat()
                     updated = True
                 
@@ -281,243 +214,63 @@ def process_date(target_date):
             now = datetime.now(timezone.utc)
             time_to_kickoff_minutes = (kickoff_time - now).total_seconds() / 60
 
-            # --- 3. INJURY VERIFICATION SYSTEM (7 Checkpoints) ---
+            # 3. PRE-GAME DATA (INJURIES & ODDS) - 7 Checkpoints
             if latest_status == 'NS':
-                INJURY_THRESHOLDS = [1440, 1080, 720, 360, 60, 15, 5]
-                inj_checks = game.get("injuries", {}).get("checks", 0)
-                
-                if inj_checks == 0 and game.get("injuries", {}).get("fetched") is True:
-                    inj_checks = 1 
+                THRESHOLDS = [1440, 1080, 720, 360, 60, 15, 5]
+                checks = game.get("injuries", {}).get("checks", 0)
+                target_level = sum(1 for t in THRESHOLDS if time_to_kickoff_minutes <= t)
 
-                target_check_level = 0
-                for threshold in INJURY_THRESHOLDS:
-                    if time_to_kickoff_minutes <= threshold:
-                        target_check_level += 1
-                    else:
-                        break 
-
-                if inj_checks < target_check_level:
-                    print(f"[{fixture_id}] Reaching Injury Checkpoint {target_check_level}/7. Fetching injuries...")
+                if checks < target_level:
+                    print(f"[{fixture_id}] Checkpoint {target_level}/7: Polling Injuries & Odds...")
                     inj_data = fetch_injuries(fixture_id)
-                    
-                    game["injuries"]["home"] = []
-                    game["injuries"]["away"] = []
-                    
+                    game["injuries"]["home"], game["injuries"]["away"] = [], []
                     if inj_data and inj_data.get("response"):
-                        for injury in inj_data["response"]:
-                            player_name = injury["player"]["name"]
-                            team_id = injury["team"]["id"]
-                            if team_id == game["teams"]["home"]["id"]:
-                                game["injuries"]["home"].append(player_name)
-                            elif team_id == game["teams"]["away"]["id"]:
-                                game["injuries"]["away"].append(player_name)
+                        for inj in inj_data["response"]:
+                            team_key = "home" if inj["team"]["id"] == game["teams"]["home"]["id"] else "away"
+                            game["injuries"][team_key].append(inj["player"]["name"])
                     
-                    game["injuries"]["checks"] = target_check_level
-                    game["injuries"].pop("fetched", None)
+                    new_odds = fetch_odds(fixture_id)
+                    if new_odds:
+                        game["odds"] = new_odds
+                        game["last_odds_check"] = now.isoformat()
+                    
+                    game["injuries"]["checks"] = target_level
                     updated = True
 
-            # --- 4. LINEUP VERIFICATION SYSTEM (Aggressive Polling) ---
-            checks = game.get("lineup_checks", 0)
-            needs_lineup_pull = False
-            
-            if latest_status == 'NS':
-                if time_to_kickoff_minutes <= 60 and checks == 0:
-                    needs_lineup_pull = True
-                elif time_to_kickoff_minutes <= 15 and checks == 1:
-                    needs_lineup_pull = True
-                elif time_to_kickoff_minutes <= 5 and checks == 2:
-                    needs_lineup_pull = True
+            # 4. LINEUPS (Polling 60, 15, 5 mins before)
+            l_checks = game.get("lineup_checks", 0)
+            needs_lineup = (time_to_kickoff_minutes <= 60 and l_checks == 0) or (time_to_kickoff_minutes <= 15 and l_checks == 1) or (time_to_kickoff_minutes <= 5 and l_checks == 2)
 
-            if needs_lineup_pull:
-                print(f"[{fixture_id}] Polling for lineups (Target Check {checks + 1}/3)...")
+            if latest_status == 'NS' and needs_lineup:
                 lineups_data = fetch_lineups(fixture_id)
-                
                 if lineups_data and lineups_data.get("response") and len(lineups_data["response"]) >= 2:
-                    enriched_lineups = inject_player_stats(lineups_data["response"])
-                    game['homeLineup'] = enriched_lineups[0]
-                    game['awayLineup'] = enriched_lineups[1]
-                    
-                    game['lineup_checks'] = checks + 1  
+                    enriched = inject_player_stats(lineups_data["response"])
+                    game['homeLineup'], game['awayLineup'], game['lineup_checks'] = enriched[0], enriched[1], l_checks + 1
                     updated = True
-                    print(f"[{fixture_id}] SUCCESS! Lineups acquired and injected (Check {checks + 1}/3 completed).")
-                else:
-                    print(f"[{fixture_id}] Lineups not released yet. Will retry next minute.")
-
-            # --- 5. POST-GAME GRAND SYNC (Canary Check + DB Update) ---
-            needs_sync = not game.get("post_game_sync", False)
-            if is_finished and needs_sync and game.get("match_ended_at"):
-                ended_time = datetime.fromisoformat(game["match_ended_at"])
                 
-                if (now - ended_time).total_seconds() >= (90 * 60):
-                    print(f"[{fixture_id}] Cooldown complete. Running Canary Check...")
-                    
-                    league_id = game['league']['id']
-                    league_id_str = str(league_id)
-                    season = game['league']['season']
-                    home_id = game['teams']['home']['id']
-                    away_id = game['teams']['away']['id']
-                    
-                    old_record = game['teams']['home'].get('record') or '0-0-0'
-                    old_games_played = sum(int(x) for x in old_record.split('-')) if old_record != '0-0-0' else 0
-                    
-                    standings_data = fetch_data(f"standings?league={league_id}&season={season}")
-                    is_fresh = False
-                    
+            # 5. POST-GAME SYNC
+            if is_finished and not game.get("post_game_sync") and game.get("match_ended_at"):
+                if (now - datetime.fromisoformat(game["match_ended_at"])).total_seconds() >= 5400:
+                    standings_data = fetch_data(f"standings?league={game['league']['id']}&season={game['league']['season']}")
                     if standings_data and standings_data.get("response"):
-                        league_info = standings_data["response"][0]["league"]
-                        if league_info.get("standings") and len(league_info["standings"]) > 0:
-                            for row in league_info["standings"][0]:
-                                t_id = str(row["team"]["id"])
-                                t_key = f"{t_id}_{league_id_str}"
-                                MASTER_TEAM_DICT[t_key] = {
-                                    "rank": row["rank"],
-                                    "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"
-                                }
-                                if t_id == str(home_id) and row["all"]["played"] > old_games_played:
-                                    is_fresh = True
-                        else:
-                            is_fresh = True # Cup tournament with no standings
-                    else:
-                        is_fresh = True # Fallback
-
-                    if is_fresh:
-                        print(f"[{fixture_id}] Canary ALIVE! Syncing data to Master Dictionaries...")
-                        
-                        with open(TEAM_DICT_PATH, "w") as f:
-                            json.dump(MASTER_TEAM_DICT, f, indent=4)
-                            
-                        for t_id in [home_id, away_id]:
-                            roster_data = fetch_all_players(t_id, season)
-                            for p_data in roster_data:
-                                p_id = str(p_data["player"]["id"])
-                                MASTER_PLAYER_DICT[p_id] = p_data
-                        
-                        with open(PLAYER_DICT_PATH, "w") as f:
-                            json.dump(MASTER_PLAYER_DICT, f, indent=4)
-
+                        for row in standings_data["response"][0]["league"]["standings"][0]:
+                            MASTER_TEAM_DICT[f"{row['team']['id']}_{game['league']['id']}"] = {"rank": row["rank"], "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"}
+                        with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
+                        for t_id in [game['teams']['home']['id'], game['teams']['away']['id']]:
+                            for p in fetch_all_players(t_id, game['league']['season']): MASTER_PLAYER_DICT[str(p["player"]["id"])] = p
+                        with open(PLAYER_DICT_PATH, "w") as f: json.dump(MASTER_PLAYER_DICT, f, indent=4)
                         game["post_game_sync"] = True
                         updated = True
-                        print(f"[{fixture_id}] Grand Sync Complete!")
-                    else:
-                        print(f"[{fixture_id}] Canary DEAD (Data Stale). Will retry later.")
 
         if updated:
-            with open(games_file, 'w') as f:
-                json.dump(daily_games, f, indent=4)
-            print(f"Daily JSON for {date_str} updated successfully.")
-        else:
-            print(f"No live updates needed for {date_str}.")
-
-def prepopulate_future_days(days_ahead=30):
-    now_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
-    for i in range(1, days_ahead + 1):
-        future_date = now_est + timedelta(days=i)
-        date_str = future_date.strftime("%Y-%m-%d")
-        future_filepath = os.path.join(DATA_DIR, f"games_{date_str}.json")
-        
-        if not os.path.exists(future_filepath):
-            print(f"Pre-populating board for {date_str}...")
-            fixtures_data = fetch_fixtures_by_date(date_str)
-            
-            if fixtures_data and fixtures_data.get("response"):
-                all_games = fixtures_data["response"]
-                premium_games = [g for g in all_games if g['league']['id'] in TOP_LEAGUE_IDS]
-                
-                future_game_data = []
-                for match in premium_games:
-                    # Look up current records dynamically for future matches
-                    home_id = str(match['teams']['home']['id'])
-                    away_id = str(match['teams']['away']['id'])
-                    league_id_str = str(match['league']['id'])
-                    
-                    h_key = f"{home_id}_{league_id_str}"
-                    a_key = f"{away_id}_{league_id_str}"
-                    
-                    home_data = MASTER_TEAM_DICT.get(h_key) or MASTER_TEAM_DICT.get(home_id, {})
-                    away_data = MASTER_TEAM_DICT.get(a_key) or MASTER_TEAM_DICT.get(away_id, {})
-                    
-                    home_rank = home_data.get("rank", None)
-                    home_rec = home_data.get("record", None)
-                    away_rank = away_data.get("rank", None)
-                    away_rec = away_data.get("record", None)
-                    
-                    future_game_data.append({
-                        "fixture": match["fixture"],
-                        "league": match["league"],
-                        "teams": {
-                            "home": {**match["teams"]["home"], "rank": home_rank, "record": home_rec},
-                            "away": {**match["teams"]["away"], "rank": away_rank, "record": away_rec}
-                        },
-                        "goals": match["goals"],
-                        "homeLineup": None,
-                        "awayLineup": None,
-                        "lineup_checks": 0,  
-                        "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
-                        "last_odds_check": None,
-                        "injuries": {"home": [], "away": [], "checks": 0},
-                        "events": [],
-                        "match_ended_at": None,
-                        "post_game_sync": False
-                    })
-                with open(future_filepath, "w") as f:
-                    json.dump(future_game_data, f, indent=4)
-        else:
-            # THE FILE EXISTS: Silently update the ranks & records if they changed!
-            try:
-                with open(future_filepath, 'r') as f:
-                    future_games = json.load(f)
-                
-                changed = False
-                for game in future_games:
-                    home_id = str(game['teams']['home']['id'])
-                    away_id = str(game['teams']['away']['id'])
-                    league_id_str = str(game['league']['id'])
-                    
-                    h_key = f"{home_id}_{league_id_str}"
-                    a_key = f"{away_id}_{league_id_str}"
-                    
-                    home_data = MASTER_TEAM_DICT.get(h_key) or MASTER_TEAM_DICT.get(home_id, {})
-                    away_data = MASTER_TEAM_DICT.get(a_key) or MASTER_TEAM_DICT.get(away_id, {})
-                    
-                    new_h_rank = home_data.get("rank")
-                    new_h_rec = home_data.get("record")
-                    if game['teams']['home'].get('rank') != new_h_rank or game['teams']['home'].get('record') != new_h_rec:
-                        game['teams']['home']['rank'] = new_h_rank
-                        game['teams']['home']['record'] = new_h_rec
-                        changed = True
-                        
-                    new_a_rank = away_data.get("rank")
-                    new_a_rec = away_data.get("record")
-                    if game['teams']['away'].get('rank') != new_a_rank or game['teams']['away'].get('record') != new_a_rec:
-                        game['teams']['away']['rank'] = new_a_rank
-                        game['teams']['away']['record'] = new_a_rec
-                        changed = True
-                        
-                if changed:
-                    with open(future_filepath, 'w') as f:
-                        json.dump(future_games, f, indent=4)
-            except Exception as e:
-                print(f"Error updating future file {date_str}: {e}")
+            with open(games_file, 'w') as f: json.dump(daily_games, f, indent=4)
 
 def main():
-    if not API_KEY:
-        print("CRITICAL ERROR: FOOTBALL_API_KEY environment variable not set.")
-        return
-
+    if not API_KEY: return
     now_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
-    
-    # Run the prepopulator to ensure the rolling 30-day calendar exists and future ranks are synced
-    prepopulate_future_days(30)
-
-    dates_to_process = [now_est]
-
-    # Extended Late Night Rule: Process yesterday's file up until NOON EST 
-    # to guarantee 90-minute cooldowns finish for late West Coast / Liga MX games
-    if now_est.hour < 12:
-        dates_to_process.insert(0, now_est - timedelta(days=1))
-
-    for target_date in dates_to_process:
-        process_date(target_date)
+    dates = [now_est]
+    if now_est.hour < 12: dates.insert(0, now_est - timedelta(days=1))
+    for d in dates: process_date(d)
 
 if __name__ == "__main__":
     main()
