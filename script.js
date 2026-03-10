@@ -537,7 +537,7 @@ function triggerCardHighlight(targetCard, type) {
         borderColor = '#20c997';
         boxShadowColor = 'rgba(32, 201, 151, 0.8)';
         headerBgColor = '#d1e7dd';
-    } } else if (type === 'red_card') { // NBA Red
+    } else if (type === 'red_card') { // NBA Red
         borderColor = '#dc3545';
         boxShadowColor = 'rgba(220, 53, 69, 0.8)';
         headerBgColor = '#f8d7da';
