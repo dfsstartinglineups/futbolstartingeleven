@@ -17,26 +17,37 @@ const LEAGUE_GROUPS = {
         { key: "laliga", id: 140, name: "La Liga" },
         { key: "seriea", id: 135, name: "Serie A" }
     ],
-    "Europe": [
-        { key: "ucl", id: 2, name: "Champions League" },
-        { key: "europa", id: 3, name: "Europa League" },
-        { key: "facup", id: 45, name: "FA Cup" },
-        { key: "championship", id: 40, name: "Championship" },
+    "europe_other": [
         { key: "bundesliga", id: 78, name: "Bundesliga" },
         { key: "ligue1", id: 61, name: "Ligue 1" },
-        { key: "eredivisie", id: 72, name: "Eredivisie" },
-        { key: "portugal", id: 94, name: "Primeira Liga" }
+        { key: "eredivisie", id: 88, name: "Eredivisie" },
+        { key: "primeira", id: 94, name: "Primeira Liga" },
+        { key: "superlig", id: 203, name: "Süper Lig" },
+        { key: "championship", id: 40, name: "Championship" }
     ],
-    "Americas": [
+    "champions": [
+        { key: "ucl", id: 2, name: "Champions League" },
+        { key: "uel", id: 3, name: "Europa League" },
+        { key: "uecl", id: 848, name: "Conference League" }
+    ],
+    "americas": [
         { key: "mls", id: 253, name: "MLS" },
         { key: "ligamx", id: 262, name: "Liga MX" },
         { key: "brazil", id: 71, name: "Brasileirão" },
-        { key: "argentina", id: 128, name: "Liga Profesional" },
+        { key: "argentina", id: 128, name: "Primera División" },
         { key: "libertadores", id: 13, name: "Copa Libertadores" }
     ],
-    "World": [
-        { key: "saudi", id: 307, name: "Saudi Pro League" },
-        { key: "japan", id: 98, name: "J1 League" }
+    "cups": [
+        { key: "euro", id: 4, name: "Euro" },
+        { key: "facup", id: 45, name: "FA Cup" },
+        { key: "copa", id: 9, name: "Copa America" },
+        { key: "carabao", id: 48, name: "Carabao Cup" },
+        { key: "leaguescup", id: 528, name: "Leagues Cup" },
+        { key: "worldcup", id: 1, name: "World Cup" }
+    ],
+    "international": [
+        { key: "saudi", id: 307, name: "Saudi Pro League" }       
+        
     ]
 };
 
