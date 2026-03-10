@@ -260,7 +260,12 @@ function getTimeBadgeHtml(data) {
         const currentMinute = data.fixture.status.elapsed || 0;
         const eventMinute = parseInt(lastEv.time) || 0;
         if (currentMinute - eventMinute <= 5) {
-            const icon = lastEv.type === 'Goal' ? '⚽' : '🟥';
+            let icon = '🟥';
+            if (lastEv.type === 'Goal') {
+                icon = '⚽';
+            } else if (lastEv.detail && lastEv.detail.includes('Yellow')) {
+                icon = lastEv.detail.includes('Red') || lastEv.detail.includes('Second') ? '🟨🟥' : '🟨';
+            }
             const isHomeTeam = lastEv.team_id === data.teams.home.id;
             const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
             const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo; 
@@ -291,7 +296,12 @@ function getEventsHtml(data) {
     const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
     
     const formatSingleEvent = (e, teamName) => {
-        let icon = e.type === 'Goal' ? '⚽' : '🟥';
+        let icon = '🟥';
+        if (e.type === 'Goal') {
+            icon = '⚽';
+        } else if (e.detail && e.detail.includes('Yellow')) {
+            icon = e.detail.includes('Red') || e.detail.includes('Second') ? '🟨🟥' : '🟨';
+        }
         let playerName = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : teamName;
         return `${icon} <span class="text-dark fw-bold">${playerName}</span> ${e.time}'`;
     };
@@ -527,10 +537,14 @@ function triggerCardHighlight(targetCard, type) {
         borderColor = '#20c997';
         boxShadowColor = 'rgba(32, 201, 151, 0.8)';
         headerBgColor = '#d1e7dd';
-    } else if (type === 'red_card') { // NBA Red
+    } } else if (type === 'red_card') { // NBA Red
         borderColor = '#dc3545';
         boxShadowColor = 'rgba(220, 53, 69, 0.8)';
         headerBgColor = '#f8d7da';
+    } else if (type === 'yellow_card') { // Yellow Card
+        borderColor = '#ffc107';
+        boxShadowColor = 'rgba(255, 193, 7, 0.8)';
+        headerBgColor = '#fff3cd';
     }
 
     // Apply the bold highlight and slight zoom directly to the card
@@ -642,8 +656,17 @@ async function updateLiveGames() {
                 if (cardEl && latestEvent) {
                     if (latestEvent.type === 'Goal') {
                         triggerCardHighlight(cardEl, 'goal');
-                    } else if (latestEvent.type === 'Card' && latestEvent.detail && latestEvent.detail.includes('Red')) {
-                        triggerCardHighlight(cardEl, 'red_card');
+                    } else if (latestEvent.type === 'Card' && latestEvent.detail) {
+                        if (latestEvent.detail.includes('Second') || latestEvent.detail.includes('Yellow / Red')) {
+                            triggerCardHighlight(cardEl, 'yellow_card');
+                            setTimeout(() => {
+                                triggerCardHighlight(cardEl, 'red_card');
+                            }, 4500); 
+                        } else if (latestEvent.detail.includes('Red')) {
+                            triggerCardHighlight(cardEl, 'red_card');
+                        } else if (latestEvent.detail.includes('Yellow')) {
+                            triggerCardHighlight(cardEl, 'yellow_card');
+                        }
                     }
                 }
             }
