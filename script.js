@@ -10,33 +10,6 @@ let globalLineupsExpanded = savedLineupState !== null ? savedLineupState === 'tr
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
 
-const LEAGUE_GROUPS = {
-    "priority": [
-        { key: "top", id: "top", name: "Top Matches" },
-        { key: "epl", id: 39, name: "Premier League" },
-        { key: "laliga", id: 140, name: "La Liga" },
-        { key: "seriea", id: 135, name: "Serie A" },
-        { key: "bundesliga", id: 78, name: "Bundesliga" },
-        { key: "ligue1", id: 61, name: "Ligue 1" }
-    ],
-    "champions": [
-        { key: "ucl", id: 2, name: "Champions League" },
-        { key: "uel", id: 3, name: "Europa League" },
-        { key: "uecl", id: 848, name: "Conference League" }
-    ],
-    "americas": [
-        { key: "mls", id: 253, name: "MLS" },
-        { key: "ligamx", id: 262, name: "Liga MX" },
-        { key: "brazil", id: 71, name: "Brasileirão" },
-        { key: "argentina", id: 128, name: "Primera División" }
-    ],
-    "international": [
-        { key: "worldcup", id: 1, name: "World Cup" },
-        { key: "euro", id: 4, name: "Euro" },
-        { key: "copa", id: 9, name: "Copa America" }
-    ]
-};
-
 // ==========================================
 // 1. URL & FILTER STATE MANAGEMENT
 // ==========================================
@@ -57,67 +30,6 @@ function updateUrlParams(date, league) {
 // 2. MAIN APP LOGIC 
 // ==========================================
 
-function populateLeagueFilter() {
-    const filterContainer = document.getElementById('league-filter-container');
-    if (!filterContainer) return;
-
-    let html = '<ul class="nav nav-pills nav-fill flex-nowrap" style="overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 5px;">';
-    
-    // Flatten all groups into a single horizontal scrollable list
-    Object.values(LEAGUE_GROUPS).forEach(group => {
-        group.forEach(l => {
-            html += `
-                <li class="nav-item me-1">
-                    <button class="nav-link border btn-sm text-nowrap league-btn" data-league="${l.key}" style="border-radius: 20px; font-weight: 600; font-size: 0.8rem; padding: 0.25rem 0.75rem; color: #495057; background-color: #f8f9fa;">
-                        ${l.name}
-                    </button>
-                </li>
-            `;
-        });
-    });
-    
-    html += '</ul>';
-    filterContainer.innerHTML = html;
-
-    // Attach click events to the new buttons
-    document.querySelectorAll('.league-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.league-btn').forEach(b => {
-                b.style.backgroundColor = '#f8f9fa';
-                b.style.color = '#495057';
-                b.style.borderColor = '#dee2e6';
-            });
-            
-            const selectedBtn = e.target;
-            selectedBtn.style.backgroundColor = '#212529'; // Dark active state
-            selectedBtn.style.color = '#fff';
-            selectedBtn.style.borderColor = '#212529';
-            
-            const selectedLeague = selectedBtn.getAttribute('data-league');
-            const dateStr = document.getElementById('date-picker').value || DEFAULT_DATE;
-            
-            updateUrlParams(dateStr, selectedLeague);
-            renderGames();
-        });
-    });
-}
-
-function selectActiveLeagueButton(leagueKey) {
-    document.querySelectorAll('.league-btn').forEach(b => {
-        if (b.getAttribute('data-league') === leagueKey) {
-            b.style.backgroundColor = '#212529';
-            b.style.color = '#fff';
-            b.style.borderColor = '#212529';
-            // Auto-scroll the horizontal list to show the active button
-            b.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        } else {
-            b.style.backgroundColor = '#f8f9fa';
-            b.style.color = '#495057';
-            b.style.borderColor = '#dee2e6';
-        }
-    });
-}
-
 function getActiveLeagueIds() {
     const currentLeagueKey = getUrlParams().league;
     
@@ -126,15 +38,15 @@ function getActiveLeagueIds() {
         return [39, 140, 135, 78, 61, 2];
     }
     
-    // Otherwise find the specific league ID
-    for (const group in LEAGUE_GROUPS) {
-        for (const l of LEAGUE_GROUPS[group]) {
-            if (l.key === currentLeagueKey) {
-                return [l.id];
-            }
-        }
-    }
-    return [39]; // Default fallback
+    // Mapping of filter buttons to Football API League IDs
+    const map = {
+        'epl': [39], 'laliga': [140], 'seriea': [135], 'bundesliga': [78], 'ligue1': [61],
+        'ucl': [2], 'uel': [3], 'uecl': [848],
+        'mls': [253], 'ligamx': [262],
+        'worldcup': [1], 'euro': [4], 'copa': [9]
+    };
+    
+    return map[currentLeagueKey] || [39];
 }
 
 // ==========================================
@@ -192,9 +104,21 @@ async function init(dateToFetch) {
     const datePicker = document.getElementById('date-picker');
     if (datePicker) datePicker.value = dateToFetch;
 
-    // Build the horizontal nav
-    populateLeagueFilter();
-    selectActiveLeagueButton(getUrlParams().league);
+    // Highlight the correct filter button on load based on URL
+    const activeLeagueKey = getUrlParams().league;
+    document.querySelectorAll('.league-btn').forEach(btn => {
+        if (btn.getAttribute('data-league') === activeLeagueKey) {
+            btn.classList.add('active');
+            btn.style.backgroundColor = '#20c997';
+            btn.style.borderColor = '#20c997';
+            btn.style.color = 'white';
+        } else {
+            btn.classList.remove('active');
+            btn.style.backgroundColor = '';
+            btn.style.borderColor = '';
+            btn.style.color = '';
+        }
+    });
 
     if (container) {
         container.innerHTML = `
@@ -245,45 +169,21 @@ function renderGames() {
         return matchSearch && matchLeague;
     });
     
-    // Group games by League
-    const gamesByLeague = {};
-    filteredGames.forEach(game => {
-        const lName = game.league.name;
-        if (!gamesByLeague[lName]) gamesByLeague[lName] = { logo: game.league.logo, matches: [] };
-        gamesByLeague[lName].matches.push(game);
+    // Sort matches: Live first, then by time
+    filteredGames.sort((a, b) => {
+        const aLive = ["1H", "HT", "2H", "ET", "P"].includes(a.fixture.status.short);
+        const bLive = ["1H", "HT", "2H", "ET", "P"].includes(b.fixture.status.short);
+        
+        if (aLive && !bLive) return -1;
+        if (!aLive && bLive) return 1;
+        
+        return a.fixture.timestamp - b.fixture.timestamp;
     });
-    
-    if (Object.keys(gamesByLeague).length === 0) {
+
+    if (filteredGames.length === 0) {
         container.innerHTML = `<div class="col-12 text-center mt-5 text-muted">No matches match your filter criteria.</div>`;
-        return;
-    }
-    
-    // Render leagues and their games
-    for (const [leagueName, leagueData] of Object.entries(gamesByLeague)) {
-        // Sort matches: Live first, then by time
-        leagueData.matches.sort((a, b) => {
-            const aLive = ["1H", "HT", "2H", "ET", "P"].includes(a.fixture.status.short);
-            const bLive = ["1H", "HT", "2H", "ET", "P"].includes(b.fixture.status.short);
-            if (aLive && !bLive) return -1;
-            if (!aLive && bLive) return 1;
-            return a.fixture.timestamp - b.fixture.timestamp;
-        });
-
-        // League Header
-        const header = document.createElement('div');
-        header.className = 'col-12 mt-4 mb-2 d-flex align-items-center';
-        header.innerHTML = `
-            <img src="${leagueData.logo}" alt="${leagueName}" style="width: 24px; height: 24px; object-fit: contain; margin-right: 8px;">
-            <h5 class="fw-bold m-0" style="color: #212529;">${leagueName}</h5>
-            <div style="flex-grow: 1; height: 1px; background-color: #dee2e6; margin-left: 15px;"></div>
-        `;
-        container.appendChild(header);
-
-        // Games Grid
-        const grid = document.createElement('div');
-        grid.className = 'row g-3 w-100 m-0';
-        leagueData.matches.forEach(item => grid.appendChild(createGameCard(item)));
-        container.appendChild(grid);
+    } else {
+        filteredGames.forEach(item => container.appendChild(createGameCard(item)));
     }
 }
 
@@ -399,11 +299,11 @@ function createGameCard(data) {
         
         const formatSingleEvent = (e, teamName) => {
             let icon = '🟥';
-            if (e.type === 'Goal') {
-                icon = '⚽';
-            } else if (e.detail && e.detail.includes('Yellow')) {
-                icon = e.detail.includes('Red') || e.detail.includes('Second') ? '🟨🟥' : '🟨';
-            }
+        if (e.type === 'Goal') {
+            icon = '⚽';
+        } else if (e.detail && e.detail.includes('Yellow')) {
+            icon = e.detail.includes('Red') || e.detail.includes('Second') ? '🟨🟥' : '🟨';
+        }
             let playerName = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : teamName;
             return `${icon} <span class="text-dark fw-bold">${playerName}</span> ${e.time}'`;
         };
@@ -464,6 +364,19 @@ function createGameCard(data) {
         </div>`;
     }
 
+    // Modal Builder Buttons
+    const gameDateShort = new Date(data.fixture.date).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+    const shareHtml = `
+        <div class="d-flex justify-content-between p-2 bg-light border-top" style="font-size: 0.75rem;">
+            <button class="btn btn-sm btn-outline-dark py-0 px-2 fw-bold" onclick='generateTweet(${JSON.stringify(data.teams.home.name)}, ${JSON.stringify(data.teams.away.name)}, ${JSON.stringify(data.homeLineup)}, "${gameDateShort}", "${data.fixture.id}")'>
+               <i class="fab fa-twitter text-primary"></i> ${data.teams.home.name}
+            </button>
+            <button class="btn btn-sm btn-outline-dark py-0 px-2 fw-bold" onclick='generateTweet(${JSON.stringify(data.teams.away.name)}, ${JSON.stringify(data.teams.home.name)}, ${JSON.stringify(data.awayLineup)}, "${gameDateShort}", "${data.fixture.id}")'>
+               <i class="fab fa-twitter text-primary"></i> ${data.teams.away.name}
+            </button>
+        </div>
+    `;
+
     const showClass = globalLineupsExpanded ? 'show' : '';
 
     gameCard.innerHTML = `
@@ -473,6 +386,10 @@ function createGameCard(data) {
                     <div class="d-flex align-items-center">
                         <span class="badge ${statusBadgeColor} text-white px-2 py-1" style="font-size: 0.70rem;">${statusText}</span>
                         ${latestEvent}
+                    </div>
+                    <div class="text-muted fw-bold d-flex align-items-center gap-1" style="font-size: 0.65rem;">
+                        <img src="${data.league.logo}" style="height: 12px; width: 12px; object-fit: contain;">
+                        ${data.league.name}
                     </div>
                 </div>
             </div>
@@ -505,6 +422,7 @@ function createGameCard(data) {
                     <div class="col-6">${awayLineupHtml}</div>
                 </div>
             </div>
+            ${shareHtml}
         </div>`;
         
     return gameCard;
@@ -528,6 +446,45 @@ window.toggleEvents = function(element) {
         icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
     }
 };
+
+window.generateTweet = function(team, opp, lineupData, gameDate, gameId) {
+    if (!lineupData || !lineupData.startXI) {
+        alert("Cannot share unverified lineups. Wait for ✅ OFFICIAL status.");
+        return;
+    }
+    
+    let tweetText = `⚽ ${gameDate} ${team} Starting XI vs ${opp}\n\n`;
+    
+    // Sort players by position logic (GK -> DEF -> MID -> ATT)
+    const posOrder = { 'G': 1, 'D': 2, 'M': 3, 'F': 4 };
+    const sortedPlayers = [...lineupData.startXI].sort((a, b) => posOrder[a.player.pos] - posOrder[b.player.pos]);
+    
+    sortedPlayers.forEach(slot => {
+        tweetText += `${slot.player.pos} ${slot.player.name}\n`;
+    });
+    
+    const teamHash = team.replace(/[^a-zA-Z]/g, '');
+    tweetText += `\n\nFull stats & subs: https://futbolstartingeleven.com/#card-${gameId}\n\n#${teamHash} #${teamHash}Lineup #StartingXI #Soccer`;
+    
+    document.getElementById('tweet-textarea').value = tweetText;
+    
+    const copyBtn = document.getElementById('copy-tweet-btn');
+    copyBtn.innerHTML = '📋 Copy to Clipboard';
+    copyBtn.classList.remove('btn-success');
+    copyBtn.classList.add('btn-dark');
+    
+    const modal = new bootstrap.Modal(document.getElementById('tweetModal'));
+    modal.show();
+};
+
+document.getElementById('copy-tweet-btn')?.addEventListener('click', function() {
+    const text = document.getElementById('tweet-textarea').value;
+    navigator.clipboard.writeText(text).then(() => {
+        this.innerHTML = '✅ Copied!';
+        this.classList.remove('btn-dark');
+        this.classList.add('btn-success');
+    });
+});
 
 window.showPlayerModal = function(playerDataStr) {
     try {
@@ -641,7 +598,6 @@ function startPolling(dateStr) {
 
             if (needsRender) {
                 ALL_GAMES_DATA = newGamesData;
-                const activeLeagueIds = getActiveLeagueIds();
                 const container = document.getElementById('games-container');
                 const scrollPos = window.scrollY;
                 
@@ -660,21 +616,28 @@ function startPolling(dateStr) {
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     init(getUrlParams().date);
-    
-    function checkOverflows() {
-        document.querySelectorAll('.league-btn').forEach(btn => {
-            if (btn.scrollWidth > btn.clientWidth) {
-                btn.classList.remove('text-truncate');
-                btn.style.whiteSpace = 'normal';
-            }
-        });
-    }
 
-    window.addEventListener('resize', () => {
-        clearTimeout(window.resizeTimer);
-        window.resizeTimer = setTimeout(() => {
-            requestAnimationFrame(checkOverflows);
-        }, 150);
+    // League filtering buttons
+    document.querySelectorAll('.league-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.league-btn').forEach(b => {
+                b.classList.remove('active');
+                b.style.backgroundColor = '';
+                b.style.borderColor = '';
+                b.style.color = '';
+            });
+            const selectedBtn = e.target;
+            selectedBtn.classList.add('active');
+            selectedBtn.style.backgroundColor = '#20c997';
+            selectedBtn.style.borderColor = '#20c997';
+            selectedBtn.style.color = 'white';
+            
+            const selectedLeague = selectedBtn.getAttribute('data-league');
+            const dateStr = document.getElementById('date-picker').value || DEFAULT_DATE;
+            
+            updateUrlParams(dateStr, selectedLeague);
+            renderGames();
+        });
     });
 
     const datePicker = document.getElementById('date-picker');
