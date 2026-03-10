@@ -24,7 +24,7 @@ def load_json(path):
 MASTER_TEAM_DICT = load_json(TEAM_DICT_PATH)
 MASTER_PLAYER_DICT = load_json(PLAYER_DICT_PATH)
 
-TOP_LEAGUE_IDS = [39, 140, 61, 135, 78, 262, 2, 3, 848, 1, 4, 9, 45, 48, 528]
+TOP_LEAGUE_IDS = [39,40, 140, 61, 135, 78, 262, 2, 3, 848, 1, 4, 9, 45, 48, 528]
 
 def fetch_data(endpoint):
     req = urllib.request.Request(f"{API_HOST}/{endpoint}")
