@@ -32,7 +32,8 @@ const LEAGUE_GROUPS = {
         { key: "ligamx", id: 262, name: "Liga MX" },
         { key: "brazil", id: 71, name: "Brasileirão" },
         { key: "argentina", id: 128, name: "Liga Profesional" },
-        { key: "libertadores", id: 13, name: "Copa Libertadores" }
+        { key: "libertadores", id: 13, name: "Copa Libertadores" },
+        { key: "concacaf", id: 16, name: "Champions Cup" }
     ],
     "World": [
         { key: "saudi", id: 307, name: "Saudi Pro League" },
