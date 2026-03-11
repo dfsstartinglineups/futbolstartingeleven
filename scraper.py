@@ -287,16 +287,29 @@ def process_date(target_date):
             # 5. POST-GAME SYNC
             if is_finished and not game.get("post_game_sync") and game.get("match_ended_at"):
                 if (now - datetime.fromisoformat(game["match_ended_at"])).total_seconds() >= 5400:
+                    
+                    # A. Try to fetch Standings (Knockout Cups might be empty/different)
                     standings_data = fetch_data(f"standings?league={game['league']['id']}&season={game['league']['season']}")
                     if standings_data and standings_data.get("response"):
-                        for row in standings_data["response"][0]["league"]["standings"][0]:
-                            MASTER_TEAM_DICT[f"{row['team']['id']}_{game['league']['id']}"] = {"rank": row["rank"], "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"}
-                        with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
+                        try:
+                            for row in standings_data["response"][0]["league"]["standings"][0]:
+                                MASTER_TEAM_DICT[f"{row['team']['id']}_{game['league']['id']}"] = {"rank": row["rank"], "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"}
+                            with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
+                        except Exception as e:
+                            pass # Silently handle weird cup structures
+                    
+                    # B. Fetch Player Data (We want this even if Standings fail!)
+                    try:
                         for t_id in [game['teams']['home']['id'], game['teams']['away']['id']]:
-                            for p in fetch_all_players(t_id, game['league']['season']): MASTER_PLAYER_DICT[str(p["player"]["id"])] = p
+                            for p in fetch_all_players(t_id, game['league']['season']): 
+                                MASTER_PLAYER_DICT[str(p["player"]["id"])] = p
                         with open(PLAYER_DICT_PATH, "w") as f: json.dump(MASTER_PLAYER_DICT, f, indent=4)
-                        game["post_game_sync"] = True
-                        updated = True
+                    except Exception as e:
+                        print(f"[{fixture_id}] Post-game player sync error: {e}")
+
+                    # C. MARK AS COMPLETE SO WE DON'T GET STUCK IN A LOOP
+                    game["post_game_sync"] = True
+                    updated = True
 
         if updated:
             with open(games_file, 'w') as f: json.dump(daily_games, f, indent=4)
