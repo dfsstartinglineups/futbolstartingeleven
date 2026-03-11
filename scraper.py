@@ -197,6 +197,31 @@ def process_date(target_date):
         if not fixtures_data or not fixtures_data.get("response"): return
         current_fixtures_map = {g['fixture']['id']: g for g in fixtures_data["response"]}
         updated = False
+
+        # --- THE NEW SCHEDULE ADDITION CHECK ---
+        existing_fixture_ids = {g['fixture']['id'] for g in daily_games}
+        new_games_to_add = [g for g in fixtures_data["response"] if g['league']['id'] in TOP_LEAGUE_IDS and g['fixture']['id'] not in existing_fixture_ids]
+        
+        if new_games_to_add:
+            print(f"[{date_str}] Found {len(new_games_to_add)} newly scheduled games from API. Injecting into local file...")
+            for game in new_games_to_add:
+                home_id, away_id, league_id_str = str(game['teams']['home']['id']), str(game['teams']['away']['id']), str(game['league']['id'])
+                home_data = MASTER_TEAM_DICT.get(f"{home_id}_{league_id_str}") or MASTER_TEAM_DICT.get(home_id, {})
+                away_data = MASTER_TEAM_DICT.get(f"{away_id}_{league_id_str}") or MASTER_TEAM_DICT.get(away_id, {})
+                
+                daily_games.append({
+                    "fixture": game['fixture'], "league": game['league'],
+                    "teams": {
+                        "home": {**game['teams']['home'], "rank": home_data.get("rank"), "record": home_data.get("record")},
+                        "away": {**game['teams']['away'], "rank": away_data.get("rank"), "record": away_data.get("record")}
+                    },
+                    "goals": game['goals'], "homeLineup": None, "awayLineup": None, "lineup_checks": 0,  
+                    "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
+                    "last_odds_check": None, "injuries": {"home": [], "away": [], "checks": 0},
+                    "events": [], "match_ended_at": None, "post_game_sync": False
+                })
+            updated = True
+        # ---------------------------------------
         
         for game in daily_games:
             fixture_id = game['fixture']['id']
