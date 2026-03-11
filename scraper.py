@@ -190,13 +190,25 @@ def process_date(target_date):
         daily_games = build_daily_games(date_str)
         with open(games_file, 'w') as f: json.dump(daily_games, f, indent=4)
     else:
-        print(f"\n--- Updating Live Board for {date_str} ---")
         with open(games_file, 'r') as f: daily_games = json.load(f)
 
+        # -------------------------------------------------------------
+        # THE EFFICIENCY CHECK: Are all games completely finished and synced?
+        # If yes, we don't need to make any API calls for this day!
+        # -------------------------------------------------------------
+        if daily_games and all(game.get("post_game_sync") for game in daily_games):
+            # Print is optional, but helps you see it working!
+            # print(f"[{date_str}] All games fully synced. Skipping API call.") 
+            return
+            
+        print(f"\n--- Updating Live Board for {date_str} ---")
+        
         fixtures_data = fetch_fixtures_by_date(date_str)
         if not fixtures_data or not fixtures_data.get("response"): return
         current_fixtures_map = {g['fixture']['id']: g for g in fixtures_data["response"]}
         updated = False
+
+        # --- THE NEW SCHEDULE ADDITION CHECK ---
 
         # --- THE NEW SCHEDULE ADDITION CHECK ---
         existing_fixture_ids = {g['fixture']['id'] for g in daily_games}
