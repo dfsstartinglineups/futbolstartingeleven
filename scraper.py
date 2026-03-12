@@ -246,8 +246,28 @@ def process_date(target_date):
             if latest_status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']:
                 game['fixture']['status'], game['goals'] = latest_data['fixture']['status'], latest_data['goals']
                 events_data = fetch_events(fixture_id)
+                
                 if events_data and events_data.get("response"):
-                    game["events"] = [{"time": ev["time"]["elapsed"], "team_id": ev["team"]["id"], "player": ev["player"]["name"], "type": ev["type"], "detail": ev["detail"]} for ev in events_data["response"] if ev["type"] in ["Goal", "Card"]]
+                    parsed_events = []
+                    for ev in events_data["response"]:
+                        if ev["type"] in ["Goal", "Card", "subst"]:
+                            event_obj = {
+                                "time": ev["time"]["elapsed"],
+                                "team_id": ev["team"]["id"],
+                                "player": ev["player"]["name"] if ev.get("player") else None,
+                                "player_id": ev["player"]["id"] if ev.get("player") else None,
+                                "type": ev["type"],
+                                "detail": ev["detail"]
+                            }
+                            
+                            # If it's a substitution, grab the player coming OUT
+                            if ev["type"] == "subst":
+                                event_obj["player_out"] = ev["assist"]["name"] if ev.get("assist") else None
+                                event_obj["player_out_id"] = ev["assist"]["id"] if ev.get("assist") else None
+                                
+                            parsed_events.append(event_obj)
+                            
+                    game["events"] = parsed_events
                 updated = True
 
             # 2. MATCH COMPLETION
