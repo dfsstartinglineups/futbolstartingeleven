@@ -552,7 +552,7 @@ function triggerCardHighlight(targetCard, type) {
         borderColor = '#20c997';
         boxShadowColor = 'rgba(32, 201, 151, 0.8)';
         headerBgColor = '#d1e7dd';
-    } else if (type === 'red_card') { // NBA Red
+    } else if (type === 'red_card') { // Red Card
         borderColor = '#dc3545';
         boxShadowColor = 'rgba(220, 53, 69, 0.8)';
         headerBgColor = '#f8d7da';
@@ -560,6 +560,10 @@ function triggerCardHighlight(targetCard, type) {
         borderColor = '#ffc107';
         boxShadowColor = 'rgba(255, 193, 7, 0.8)';
         headerBgColor = '#fff3cd';
+    } else if (type === 'subst') { // Substitution Black Highlight
+        borderColor = '#212529'; // Dark gray/black
+        boxShadowColor = 'rgba(33, 37, 41, 0.6)'; // Soft black glow
+        headerBgColor = '#e9ecef'; // Very light gray header background
     }
 
     // Apply the bold highlight and slight zoom directly to the card
@@ -587,7 +591,6 @@ function triggerCardHighlight(targetCard, type) {
         }
     }, 4000); 
 }
-
 // ==========================================
 // 4. SILENT SYNC ENGINE
 // ==========================================
@@ -659,7 +662,7 @@ async function updateLiveGames() {
             }
         }
 
-        // --- NEW: GOAL & RED CARD HIGHLIGHT DETECTOR ---
+        // --- NEW: GOAL, CARD, & SUB HIGHLIGHT DETECTOR ---
         if (oldMatch) {
             const oldLen = oldMatch.events ? oldMatch.events.length : 0;
             const newLen = match.events ? match.events.length : 0;
@@ -682,10 +685,13 @@ async function updateLiveGames() {
                         } else if (latestEvent.detail.includes('Yellow')) {
                             triggerCardHighlight(cardEl, 'yellow_card');
                         }
+                    } else if (latestEvent.type === 'subst') {
+                        triggerCardHighlight(cardEl, 'subst');
                     }
                 }
             }
         }
+        
     });
 
     requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
