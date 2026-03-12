@@ -25,7 +25,8 @@ const LEAGUE_GROUPS = {
         { key: "bundesliga", id: 78, name: "Bundesliga" },
         { key: "ligue1", id: 61, name: "Ligue 1" },
         { key: "eredivisie", id: 72, name: "Eredivisie" },
-        { key: "portugal", id: 94, name: "Primeira Liga" }
+        { key: "portugal", id: 94, name: "Primeira Liga" },
+        { key: "conference", id: 848, name: "Conference League" }
     ],
     "Americas": [
         { key: "mls", id: 253, name: "MLS" },
@@ -48,7 +49,8 @@ Object.values(LEAGUE_GROUPS).flat().forEach(l => SUPPORTED_LEAGUES[l.key] = l);
 const LEAGUE_MAP_ESPN = {
     39: "eng.1", 40: "eng.2", 45: "eng.fa", 140: "esp.1", 135: "ita.1", 78: "ger.1", 
     61: "fra.1", 72: "ned.1", 94: "por.1", 2: "uefa.champions", 3: "uefa.europa", 253: "usa.1", 
-    262: "mex.1", 71: "bra.1", 128: "arg.1", 13: "conmebol.libertadores", 307: "ksa.1", 98: "jpn.1"            
+    262: "mex.1", 71: "bra.1", 128: "arg.1", 13: "conmebol.libertadores", 307: "ksa.1", 98: "jpn.1",
+    848: "uefa.conf"
 };
 
 // ==========================================
