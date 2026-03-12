@@ -4968,7 +4968,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 5
+                "extra": 6
             }
         },
         "league": {
@@ -5664,10 +5664,10 @@
                 "city": "Buenos Aires"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
-                "extra": 4
+                "extra": 5
             }
         },
         "league": {
@@ -5897,7 +5897,8 @@
         ],
         "lineup_checks": 16,
         "refreshed_15m": true,
-        "refreshed_5m": true
+        "refreshed_5m": true,
+        "match_ended_at": "2026-03-12T21:55:12.770341+00:00"
     },
     {
         "fixture": {
@@ -5919,7 +5920,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 7
+                "extra": 8
             }
         },
         "league": {
@@ -6689,7 +6690,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 4
+                "extra": 5
             }
         },
         "league": {
@@ -7291,6 +7292,14 @@
                 "detail": "Substitution 5",
                 "player_out": "D. Bakwa",
                 "player_out_id": 129695
+            },
+            {
+                "time": 90,
+                "team_id": 397,
+                "player": null,
+                "player_id": null,
+                "type": "Card",
+                "detail": "Yellow Card"
             }
         ],
         "lineup_checks": 4,
@@ -9131,7 +9140,7 @@
             "over": "1.93",
             "under": "1.85"
         },
-        "last_odds_check": "2026-03-12T21:45:13.681495+00:00",
+        "last_odds_check": "2026-03-12T21:55:13.197078+00:00",
         "injuries": {
             "home": [
                 "Eduardo Melo",
@@ -9144,11 +9153,12 @@
                 "G. Cano"
             ],
             "fetched": false,
-            "checks": 6
+            "checks": 7
         },
         "events": [],
-        "lineup_checks": 6,
-        "refreshed_15m": true
+        "lineup_checks": 7,
+        "refreshed_15m": true,
+        "refreshed_5m": true
     },
     {
         "fixture": {
@@ -9249,7 +9259,7 @@
             "checks": 5
         },
         "events": [],
-        "lineup_checks": 8
+        "lineup_checks": 9
     },
     {
         "fixture": {
@@ -9311,28 +9321,463 @@
                 "id": 456,
                 "name": "Talleres Cordoba",
                 "logo": "https://media.api-sports.io/football/teams/456.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "ffffff",
+                        "number": "ffffff",
+                        "border": "10072d"
+                    },
+                    "goalkeeper": {
+                        "primary": "411034",
+                        "number": "ffffff",
+                        "border": "411034"
+                    }
+                }
             },
+            "formation": "3-4-1-2",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 6225,
+                        "name": "Guido Herrera",
+                        "number": 22,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 30428,
+                        "name": "Jos\u00e9 Luis Palomino",
+                        "number": 19,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 406489,
+                        "name": "Santiago Fernandez",
+                        "number": 44,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 162520,
+                        "name": "Rodrigo Guth",
+                        "number": 14,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 129883,
+                        "name": "Augusto Schott",
+                        "number": 20,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 237089,
+                        "name": "Juan Sforza",
+                        "number": 13,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 306548,
+                        "name": "Matias Galarza",
+                        "number": 5,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 425020,
+                        "name": "Alexandro Maidana",
+                        "number": 3,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 6546,
+                        "name": "Franco Cristaldo",
+                        "number": 18,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 501779,
+                        "name": "Valentin Davila",
+                        "number": 49,
+                        "pos": "F",
+                        "grid": "5:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 95314,
+                        "name": "Ronaldo Martinez",
+                        "number": 77,
+                        "pos": "F",
+                        "grid": "5:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 465150,
+                        "name": "Santino Barbi",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 636309,
+                        "name": "Lucio Ferrari",
+                        "number": 32,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 6645,
+                        "name": "Alex Vigo",
+                        "number": 28,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 36035,
+                        "name": "Mat\u00edas Catal\u00e1n",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 514291,
+                        "name": "Timoteo Chamorro",
+                        "number": 45,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 5887,
+                        "name": "Ulises Ortegoza",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 516787,
+                        "name": "Giovanni Baroni",
+                        "number": 30,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 278604,
+                        "name": "Mateo Caceres",
+                        "number": 26,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 119666,
+                        "name": "Rick",
+                        "number": 37,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 304382,
+                        "name": "Mart\u00edn Rio",
+                        "number": 55,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 516785,
+                        "name": "Emiliano Chiavassa",
+                        "number": 36,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
             "coach": {
                 "id": 25835,
                 "name": "Carlos Tevez",
                 "photo": "https://media.api-sports.io/football/coachs/25835.png"
-            },
-            "formation": null
+            }
         },
         "awayLineup": {
             "team": {
                 "id": 478,
                 "name": "Instituto Cordoba",
                 "logo": "https://media.api-sports.io/football/teams/478.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "000000",
+                        "number": "f00000",
+                        "border": "000000"
+                    },
+                    "goalkeeper": {
+                        "primary": "f5567b",
+                        "number": "0d0e0f",
+                        "border": "f5567b"
+                    }
+                }
             },
+            "formation": "4-3-3",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 5961,
+                        "name": "Manuel Roffo",
+                        "number": 28,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 119683,
+                        "name": "Giuliano Cerato",
+                        "number": 44,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 5510,
+                        "name": "Fernando Alarc\u00f3n",
+                        "number": 6,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 48479,
+                        "name": "Leonel Mosevich",
+                        "number": 26,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 6158,
+                        "name": "Diego Sosa",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 6240,
+                        "name": "Ignacio M\u00e9ndez",
+                        "number": 13,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 6670,
+                        "name": "Gustavo Abreg\u00fa",
+                        "number": 55,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 6211,
+                        "name": "Gast\u00f3n Lodico",
+                        "number": 19,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 161860,
+                        "name": "Mat\u00edas Fonseca",
+                        "number": 11,
+                        "pos": "F",
+                        "grid": "4:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 35670,
+                        "name": "Franco Jara",
+                        "number": 29,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 294787,
+                        "name": "Alex Luna",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 156128,
+                        "name": "Emanuel Sittaro",
+                        "number": 35,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 6398,
+                        "name": "Iv\u00e1n Erquiaga",
+                        "number": 33,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 456286,
+                        "name": "Agust\u00edn Massaccesi",
+                        "number": 22,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 6049,
+                        "name": "Hern\u00e1n de la Fuente",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 296491,
+                        "name": "Agust\u00edn Bravo",
+                        "number": 32,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 413142,
+                        "name": "Mat\u00edas Gallardo",
+                        "number": 15,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 6721,
+                        "name": "Franco Moyano",
+                        "number": 5,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 455045,
+                        "name": "Jerem\u00edas L\u00e1zaro",
+                        "number": 21,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 6612,
+                        "name": "Jonas Acevedo",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 560419,
+                        "name": "Luca Rafaelli",
+                        "number": 72,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 11839,
+                        "name": "Nicol\u00e1s Guerra",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 5396,
+                        "name": "Mat\u00edas Tissera",
+                        "number": 27,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
             "coach": {
                 "id": 27664,
                 "name": "Diego Flores",
                 "photo": "https://media.api-sports.io/football/coachs/27664.png"
-            },
-            "formation": null
+            }
         },
         "odds": {
             "home": "2.25",
@@ -9350,7 +9795,7 @@
             "checks": 5
         },
         "events": [],
-        "lineup_checks": 8
+        "lineup_checks": 9
     },
     {
         "fixture": {
@@ -13695,7 +14140,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 5
+                "extra": 6
             }
         },
         "league": {
@@ -15075,7 +15520,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 6
+                "extra": 7
             }
         },
         "league": {
