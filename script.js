@@ -799,9 +799,46 @@ function createGameCard(data) {
         if (data.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
         if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
         
-        const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation} FORMATION</div>`;
+        // 1. Determine if the game has started to change "Starting XI" to "LIVE XI"
+        const status = data.fixture.status.short;
+        const isPreGame = ['NS', 'TBD'].includes(status);
+        const headerText = isPreGame ? "STARTING XI" : "LIVE XI";
         
-        const listItems = lineupData.startXI.map(p => {
+        const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation} ${headerText}</div>`;
+        
+        // 2. Clone the startXI array so we don't modify the original JSON data
+        let currentXI = [...lineupData.startXI];
+        
+        // 3. Apply Substitutions dynamically if the game has started
+        if (!isPreGame && data.events && data.events.length > 0) {
+            const teamId = lineupData.team.id;
+            const subs = data.events.filter(e => e.type === 'subst' && e.team_id === teamId);
+            
+            subs.forEach(subEvent => {
+                // Find the player being subbed out
+                const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
+                
+                if (outIndex !== -1) {
+                    // Find the player coming in from the substitutes list
+                    const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
+                    
+                    if (subPlayer) {
+                        // Create a modified copy of the sub player with the original position and an indicator flag
+                        currentXI[outIndex] = {
+                            ...subPlayer,
+                            player: {
+                                ...subPlayer.player,
+                                pos: currentXI[outIndex].player.pos, // Keep the starter's original position on the field
+                                isSubbedIn: true,
+                                subMinute: subEvent.time
+                            }
+                        };
+                    }
+                }
+            });
+        }
+        
+        const listItems = currentXI.map(p => {
             const safePos = p.player.pos || '-';
             const originalName = p.player.name || 'Unknown';
             const displaySafeName = shortenPlayerName(originalName);
@@ -818,11 +855,18 @@ function createGameCard(data) {
                 ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
                 : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
+            // NEW: Add substitution indicator next to the name if they subbed in
+            const subIndicator = p.player.isSubbedIn 
+                ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.player.subMinute}'</span>` 
+                : '';
+
             return `
                 <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" data-player="${encodedPlayer}" onclick="openPlayerModal(this)">
                     <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
                     <div class="me-2">${photoHtml}</div>
-                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">${displaySafeName}</span>
+                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">
+                        ${displaySafeName}${subIndicator}
+                    </span>
                     <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
                 </li>`;
         }).join('');
