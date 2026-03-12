@@ -678,7 +678,95 @@ async function updateLiveGames() {
                 }
             }
         }
+        // --- NEW: DYNAMIC TOP BANNER TEXT ---
+            const bannerEl = document.getElementById(`lineup-banner-text-${fixId}`);
+            if (bannerEl) {
+                const liveStatus = match.fixture.status.short;
+                let newBannerText = "STARTING XI";
+                if (['FT', 'AET', 'PEN'].includes(liveStatus)) newBannerText = "FINAL XI";
+                else if (!['NS', 'TBD'].includes(liveStatus)) newBannerText = "LIVE XI";
+                
+                const newBannerHtml = `${newBannerText} <span style="font-size: 0.6rem;">▼</span>`;
+                if (bannerEl.innerHTML.trim() !== newBannerHtml) bannerEl.innerHTML = newBannerHtml;
+            }
+        // --- NEW: REAL-TIME LINEUP REFRESHER FOR SUBS ---
+            // If the events array length changed, a new event (like a sub) happened. We need to redraw the lineups!
+            if (oldMatch) {
+                const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
+                const newEvLen = match.events ? match.events.length : 0;
+                
+                if (newEvLen > oldEvLen) {
+                    const latestEvent = match.events[newEvLen - 1];
+                    // If the new event was a substitution, instantly re-render the starting XIs!
+                    if (latestEvent.type === 'subst') {
+                        const lineupContainer = document.getElementById(`lineup-collapse-${fixId}`);
+                        if (lineupContainer) {
+                            // Find the row holding the two lineup columns
+                            const rowEl = lineupContainer.querySelector('.row.g-0.bg-white');
+                            if (rowEl) {
+                                // Redraw both lists using our updated buildLineupList logic
+                                // Note: Because buildLineupList is defined inside createGameCard, we have to recreate the HTML structure here
+                                
+                                // We extract the helper function logic to redraw the lists without redefining the function
+                                const getLineupHtml = (lineupData, gameData) => {
+                                    if (gameData.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
+                                    if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
+                                    
+                                    const statusShort = gameData.fixture.status.short;
+                                    const isPreGame = ['NS', 'TBD'].includes(statusShort);
+                                    const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation}</div>`;
+                                    
+                                    let currentXI = [...lineupData.startXI];
+                                    if (!isPreGame && gameData.events && gameData.events.length > 0) {
+                                        const teamId = lineupData.team.id;
+                                        const subs = gameData.events.filter(e => e.type === 'subst' && e.team_id === teamId);
+                                        subs.forEach(subEvent => {
+                                            const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
+                                            if (outIndex !== -1) {
+                                                const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
+                                                if (subPlayer) {
+                                                    currentXI[outIndex] = { ...subPlayer, player: { ...subPlayer.player, pos: currentXI[outIndex].player.pos, isSubbedIn: true, subMinute: subEvent.time } };
+                                                }
+                                            }
+                                        });
+                                    }
+                                    
+                                    const listItems = currentXI.map(p => {
+                                        const safePos = p.player.pos || '-';
+                                        const originalName = p.player.name || 'Unknown';
+                                        const displaySafeName = shortenPlayerName(originalName);
+                                        const safeNum = p.player.number || '';
+                                        const photoUrl = p.player.photo || '';
+                                        const encodedPlayer = encodeURIComponent(JSON.stringify(p.player));
+                                        let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
+                                        
+                                        const photoHtml = photoUrl && photoUrl.includes("http") 
+                                            ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
+                                            : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
+                                        const subIndicator = p.player.isSubbedIn ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.player.subMinute}'</span>` : '';
+
+                                        return `
+                                            <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" data-player="${encodedPlayer}" onclick="openPlayerModal(this)">
+                                                <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
+                                                <div class="me-2">${photoHtml}</div>
+                                                <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">${displaySafeName}${subIndicator}</span>
+                                                <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
+                                            </li>`;
+                                    }).join('');
+                                    return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
+                                };
+
+                                // Overwrite the two columns with the fresh HTML
+                                rowEl.innerHTML = `
+                                    <div class="col-6 border-end">${getLineupHtml(match.homeLineup, match)}</div>
+                                    <div class="col-6">${getLineupHtml(match.awayLineup, match)}</div>
+                                `;
+                            }
+                        }
+                    }
+                }
+            }
         // --- NEW: GOAL, CARD, & SUB HIGHLIGHT DETECTOR ---
         if (oldMatch) {
             const oldLen = oldMatch.events ? oldMatch.events.length : 0;
@@ -799,12 +887,12 @@ function createGameCard(data) {
         if (data.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
         if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
         
-        // 1. Determine if the game has started to change "Starting XI" to "LIVE XI"
+        // 1. Determine if the game has started so we know if we need to apply subs
         const status = data.fixture.status.short;
         const isPreGame = ['NS', 'TBD'].includes(status);
-        const headerText = isPreGame ? "STARTING XI" : "LIVE XI";
         
-        const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation} ${headerText}</div>`;
+        // We removed the dynamic text here to keep it clean!
+        const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation}</div>`;
         
         // 2. Clone the startXI array so we don't modify the original JSON data
         let currentXI = [...lineupData.startXI];
@@ -872,7 +960,11 @@ function createGameCard(data) {
         }).join('');
         return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
     };
-
+    // Calculate what the top lineup banner should say
+    const statusShort = data.fixture.status.short;
+    let topBannerText = "STARTING XI";
+    if (['FT', 'AET', 'PEN'].includes(statusShort)) topBannerText = "FINAL XI";
+    else if (!['NS', 'TBD'].includes(statusShort)) topBannerText = "LIVE XI";
     gameCard.innerHTML = `
         <div class="lineup-card shadow-sm" style="margin-bottom: 8px;" id="card-${fixId}">
             <div class="p-2 pb-1" style="background-color: #fcfcfc;">
@@ -903,7 +995,7 @@ function createGameCard(data) {
             <div id="injuries-${fixId}" class="w-100">${getInjuriesHtml(data)}</div>
             
             <div class="bg-light border-bottom text-center py-1" data-bs-toggle="collapse" data-bs-target="#lineup-collapse-${fixId}" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e9ecef'" onmouseout="this.style.backgroundColor='#f8f9fa'" title="Click to expand/collapse lineup">
-                <span class="fw-bold text-muted" style="font-size: 0.7rem;">STARTING XI <span style="font-size: 0.6rem;">▼</span></span>
+                <span id="lineup-banner-text-${fixId}" class="fw-bold text-muted" style="font-size: 0.7rem;">${topBannerText} <span style="font-size: 0.6rem;">▼</span></span>
             </div>
             <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
                 <div class="row g-0 bg-white">
