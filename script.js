@@ -261,20 +261,37 @@ function getTimeBadgeHtml(data) {
         const lastEv = data.events[data.events.length - 1]; 
         const currentMinute = data.fixture.status.elapsed || 0;
         const eventMinute = parseInt(lastEv.time) || 0;
+        
+        // Show the alert if the event happened in the last 5 minutes
         if (currentMinute - eventMinute <= 5) {
-            let icon = '🟥';
-            if (lastEv.type === 'Goal') {
-                icon = '⚽';
-            } else if (lastEv.detail && lastEv.detail.includes('Yellow')) {
-                icon = lastEv.detail.includes('Red') || lastEv.detail.includes('Second') ? '🟨🟥' : '🟨';
-            }
             const isHomeTeam = lastEv.team_id === data.teams.home.id;
             const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
             const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo; 
-            const playerName = (lastEv.player && lastEv.player !== "null") ? lastEv.player : teamName;
-            latestEvent = `<span class="ms-2 text-success fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
-                ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} (${lastEv.time}')
-            </span>`;
+            
+            if (lastEv.type === 'subst') {
+                // Substitution Alert Format (Two Lines)
+                let pIn = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : 'Unknown';
+                let pOut = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
+                
+                latestEvent = `<div class="ms-2 text-dark fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
+                    <span class="text-truncate" style="max-width: 160px;">🔄 <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${lastEv.time}' ${pIn} IN</span>
+                    <span class="text-truncate text-muted" style="max-width: 160px; padding-left: 18px;">${pOut} OUT</span>
+                </div>`;
+            } else {
+                // Goal and Card Alert Format
+                let icon = '🟥';
+                if (lastEv.type === 'Goal') {
+                    icon = '⚽';
+                } else if (lastEv.detail && lastEv.detail.includes('Yellow')) {
+                    icon = lastEv.detail.includes('Red') || lastEv.detail.includes('Second') ? '🟨🟥' : '🟨';
+                }
+                const playerName = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : teamName;
+                const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
+                
+                latestEvent = `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
+                    ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} (${lastEv.time}')
+                </span>`;
+            }
         }
     }
     return badge + latestEvent;
