@@ -292,7 +292,7 @@ def process_date(target_date):
             has_full_lineup = bool(game.get('homeLineup') and game.get('homeLineup').get('startXI'))
             
             # Check every 5 minutes in the final hour
-            checkpoints = [60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5]
+            checkpoints = [60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 4, 3, 2, 1]
             target_checks = sum(1 for c in checkpoints if time_to_kickoff_minutes <= c)
             
             # Late Scratch Checks: Force a re-check at 15m and 5m even if we have the lineup
