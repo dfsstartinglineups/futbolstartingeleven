@@ -16,8 +16,8 @@
                 "city": null
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
                 "extra": 3
             }
@@ -1243,7 +1243,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 1
+                "extra": 2
             }
         },
         "league": {
@@ -3516,28 +3516,418 @@
                 "id": 10513,
                 "name": "NEOM",
                 "logo": "https://media.api-sports.io/football/teams/10513.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "000000",
+                        "number": "222226",
+                        "border": "808080"
+                    },
+                    "goalkeeper": {
+                        "primary": "000000",
+                        "number": "222226",
+                        "border": "808080"
+                    }
+                }
             },
+            "formation": "4-4-2",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 1470,
+                        "name": "Lu\u00eds Maximiano",
+                        "number": 81,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44329,
+                        "name": "Mohammed Al-Burayk",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44684,
+                        "name": "Khalifah Al-Dawsari",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 343359,
+                        "name": "Nathan Zeze",
+                        "number": 44,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 71272,
+                        "name": "Faris Abdi",
+                        "number": 25,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 437760,
+                        "name": "Rayane Messi Tanfouri",
+                        "number": 80,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 18805,
+                        "name": "Abdoulaye Doucour\u00e9",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 437482,
+                        "name": "Amadou Kon\u00e9",
+                        "number": 72,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19361,
+                        "name": "Sa\u00efd Benrahma",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1467,
+                        "name": "Alexandre Lacazette",
+                        "number": 91,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 297749,
+                        "name": "Luciano Rodr\u00edguez",
+                        "number": 19,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 485668,
+                        "name": "Mohammed Al Hakim",
+                        "number": 88,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2626,
+                        "name": "Mustafa Malaika",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44598,
+                        "name": "Awn Al Saluli",
+                        "number": 93,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 306383,
+                        "name": "Islam Ahmed Hawsawi",
+                        "number": 27,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44341,
+                        "name": "Salman Al-Faraj",
+                        "number": 7,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 43953,
+                        "name": "Ala'a Al-Hejji",
+                        "number": 18,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 442322,
+                        "name": "Ayman Fallatah",
+                        "number": 95,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44496,
+                        "name": "Ahmed Abdu",
+                        "number": 71,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 278140,
+                        "name": "Hassan Hashim Al-Ali",
+                        "number": 11,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
             "coach": {
                 "id": 36,
                 "name": "Christophe Galtier",
                 "photo": "https://media.api-sports.io/football/coachs/36.png"
-            },
-            "formation": null
+            }
         },
         "awayLineup": {
             "team": {
                 "id": 2936,
                 "name": "Al Taawon",
                 "logo": "https://media.api-sports.io/football/teams/2936.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "f2f22c",
+                        "number": "000000",
+                        "border": "f2f22c"
+                    },
+                    "goalkeeper": {
+                        "primary": "fe724d",
+                        "number": "ffffff",
+                        "border": "fe724d"
+                    }
+                }
             },
+            "formation": "5-4-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 9557,
+                        "name": "Mailson",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 326984,
+                        "name": "Mohammed Mahzari",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": "2:5"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2628,
+                        "name": "Muteb Al-Mufarrij",
+                        "number": 32,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 43940,
+                        "name": "Qasim Lajami",
+                        "number": 87,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 21097,
+                        "name": "Andrei Girotto",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 178904,
+                        "name": "Marin Petkov",
+                        "number": 88,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 305817,
+                        "name": "Biel",
+                        "number": 20,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 10033,
+                        "name": "Fl\u00e1vio",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 61408,
+                        "name": "Ashraf El Mahdioui",
+                        "number": 18,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 21146,
+                        "name": "Angelo Fulgini",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 35604,
+                        "name": "Roger Mart\u00ednez",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 44473,
+                        "name": "Abdulquddus Atiah",
+                        "number": 13,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 443365,
+                        "name": "Mohammed Al Dossari",
+                        "number": 55,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 286511,
+                        "name": "Bassam Al-Hurayji",
+                        "number": 66,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 420689,
+                        "name": "Meshal Alaeli",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 328403,
+                        "name": "Mohammed Al-Qahtani",
+                        "number": 15,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 431891,
+                        "name": "Abduleallah Hawsawi",
+                        "number": 77,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 310391,
+                        "name": "Ahmed Bahusayn",
+                        "number": 29,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44585,
+                        "name": "Mohammed Al-Kuwaykibi",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 442416,
+                        "name": "Keshim Al-Qahtani",
+                        "number": 70,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
             "coach": {
                 "id": 1171,
                 "name": "Pericles Chamusca",
                 "photo": "https://media.api-sports.io/football/coachs/1171.png"
-            },
-            "formation": null
+            }
         },
         "odds": {
             "home": "2.30",
@@ -3555,7 +3945,7 @@
             "checks": 5
         },
         "events": [],
-        "lineup_checks": 7
+        "lineup_checks": 8
     },
     {
         "fixture": {
@@ -5223,7 +5613,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 4
+                "extra": 5
             }
         },
         "league": {
@@ -5785,7 +6175,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 1
+                "extra": 2
             }
         },
         "league": {
@@ -6406,8 +6796,8 @@
                 "city": null
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
                 "extra": 4
             }
