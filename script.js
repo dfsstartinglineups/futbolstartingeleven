@@ -298,6 +298,19 @@ function getEventsHtml(data) {
     const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
     
     const formatSingleEvent = (e, teamName) => {
+        // 1. Handle Substitutions
+        if (e.type === 'subst') {
+            let pIn = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : 'Unknown';
+            let pOut = (e.player_out && e.player_out !== "null") ? shortenPlayerName(e.player_out) : 'Unknown';
+            return `
+                <div style="line-height: 1.2; margin-bottom: 2px;">
+                    🔄 ${e.time}' <span class="text-dark fw-bold">${pIn}</span> IN<br>
+                    <span class="text-muted">🔄 ${e.time}' ${pOut} OUT</span>
+                </div>
+            `;
+        }
+
+        // 2. Handle Goals & Cards
         let icon = '🟥';
         if (e.type === 'Goal') {
             icon = '⚽';
