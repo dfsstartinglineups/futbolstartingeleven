@@ -116,12 +116,37 @@ def fetch_odds(fixture_id):
                     elif val["value"] == "Away": odds_result["away"] = val["odd"]
             
             elif bet["name"] == "Goals Over/Under":
+                ou_pairs = {}
+                # 1. Group all alternate lines by their total (e.g., "2.5")
                 for val in bet["values"]:
-                    if val["value"] == "Over 2.5": 
-                        odds_result["over"] = val["odd"]
-                        odds_result["total"] = "2.5"
-                    elif val["value"] == "Under 2.5":
-                        odds_result["under"] = val["odd"]
+                    parts = str(val["value"]).split(" ")
+                    if len(parts) == 2:
+                        side = parts[0].lower() # "over" or "under"
+                        total = parts[1]        # "2.5", "3.5", etc.
+                        if total not in ou_pairs:
+                            ou_pairs[total] = {}
+                        try:
+                            ou_pairs[total][side] = float(val["odd"])
+                        except ValueError:
+                            pass
+                            
+                # 2. Find the main total (where Over and Under odds are closest to each other)
+                best_total = None
+                min_diff = float('inf')
+                
+                for total, odds in ou_pairs.items():
+                    if "over" in odds and "under" in odds:
+                        diff = abs(odds["over"] - odds["under"])
+                        if diff < min_diff:
+                            min_diff = diff
+                            best_total = total
+                            
+                # 3. Apply the winning game total to our result
+                if best_total:
+                    odds_result["total"] = best_total
+                    odds_result["over"] = str(ou_pairs[best_total]["over"])
+                    odds_result["under"] = str(ou_pairs[best_total]["under"])
+                    
     except (IndexError, KeyError):
         return None
         
