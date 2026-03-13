@@ -240,44 +240,66 @@ def process_date(target_date):
             # print(f"[{date_str}] All games fully synced. Skipping API call.") 
             return
             
-        print(f"\n--- Updating Live Board for {date_str} ---")
-        
-        fixtures_data = fetch_fixtures_by_date(date_str)
-        if not fixtures_data or not fixtures_data.get("response"): return
-        current_fixtures_map = {g['fixture']['id']: g for g in fixtures_data["response"]}
+        now = datetime.now(timezone.utc)
         updated = False
-
-        # --- THE NEW SCHEDULE ADDITION CHECK ---
-
-        # --- THE NEW SCHEDULE ADDITION CHECK ---
-        existing_fixture_ids = {g['fixture']['id'] for g in daily_games}
-        new_games_to_add = [g for g in fixtures_data["response"] if g['league']['id'] in TOP_LEAGUE_IDS and g['fixture']['id'] not in existing_fixture_ids]
         
-        if new_games_to_add:
-            print(f"[{date_str}] Found {len(new_games_to_add)} newly scheduled games from API. Injecting into local file...")
-            for game in new_games_to_add:
-                home_id, away_id, league_id_str = str(game['teams']['home']['id']), str(game['teams']['away']['id']), str(game['league']['id'])
-                home_data = MASTER_TEAM_DICT.get(f"{home_id}_{league_id_str}") or MASTER_TEAM_DICT.get(home_id, {})
-                away_data = MASTER_TEAM_DICT.get(f"{away_id}_{league_id_str}") or MASTER_TEAM_DICT.get(away_id, {})
+        # -------------------------------------------------------------
+        # THE DEEP SLEEP CHECK: Do we need the live master schedule?
+        # Only if a game is live, or kicking off in the next 75 minutes.
+        # -------------------------------------------------------------
+        needs_live_board = not bool(daily_games)
+        for g in daily_games:
+            status = g.get('fixture', {}).get('status', {}).get('short', '')
+            if status not in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']:
+                kickoff = datetime.fromisoformat(g['fixture']['date'])
+                mins_to_kickoff = (kickoff - now).total_seconds() / 60
+                if status != 'NS' or mins_to_kickoff <= 75:
+                    needs_live_board = True
+                    break
+
+        current_fixtures_map = {}
+        if needs_live_board:
+            print(f"\n--- Fetching Live Master Board for {date_str} ---")
+            fixtures_data = fetch_fixtures_by_date(date_str)
+            if fixtures_data and fixtures_data.get("response"):
+                current_fixtures_map = {g['fixture']['id']: g for g in fixtures_data["response"]}
+
+                # --- NEW SCHEDULE ADDITION CHECK ---
+                existing_fixture_ids = {g['fixture']['id'] for g in daily_games}
+                new_games_to_add = [g for g in fixtures_data["response"] if g['league']['id'] in TOP_LEAGUE_IDS and g['fixture']['id'] not in existing_fixture_ids]
                 
-                daily_games.append({
-                    "fixture": game['fixture'], "league": game['league'],
-                    "teams": {
-                        "home": {**game['teams']['home'], "rank": home_data.get("rank"), "record": home_data.get("record")},
-                        "away": {**game['teams']['away'], "rank": away_data.get("rank"), "record": away_data.get("record")}
-                    },
-                    "goals": game['goals'], "homeLineup": None, "awayLineup": None, "lineup_checks": 0,  
-                    "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
-                    "last_odds_check": None, "injuries": {"home": [], "away": [], "checks": 0},
-                    "events": [], "match_ended_at": None, "post_game_sync": False
-                })
-            updated = True
-        # ---------------------------------------
-        
+                if new_games_to_add:
+                    print(f"[{date_str}] Found {len(new_games_to_add)} newly scheduled games. Injecting...")
+                    for game in new_games_to_add:
+                        home_id, away_id, league_id_str = str(game['teams']['home']['id']), str(game['teams']['away']['id']), str(game['league']['id'])
+                        home_data = MASTER_TEAM_DICT.get(f"{home_id}_{league_id_str}") or MASTER_TEAM_DICT.get(home_id, {})
+                        away_data = MASTER_TEAM_DICT.get(f"{away_id}_{league_id_str}") or MASTER_TEAM_DICT.get(away_id, {})
+                        
+                        daily_games.append({
+                            "fixture": game['fixture'], "league": game['league'],
+                            "teams": {
+                                "home": {**game['teams']['home'], "rank": home_data.get("rank"), "record": home_data.get("record")},
+                                "away": {**game['teams']['away'], "rank": away_data.get("rank"), "record": away_data.get("record")}
+                            },
+                            "goals": game['goals'], "homeLineup": None, "awayLineup": None, "lineup_checks": 0,  
+                            "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
+                            "last_odds_check": None, "injuries": {"home": [], "away": [], "checks": 0},
+                            "events": [], "match_ended_at": None, "post_game_sync": False
+                        })
+                    updated = True
+        else:
+            # Print is optional, just confirms it is working
+            # print(f"[{date_str}] Pre-Game Deep Sleep. Next kickoff is > 75 mins away. Skipping Master Board API.")
+            pass
+
         for game in daily_games:
             fixture_id = game['fixture']['id']
-            latest_data = current_fixtures_map.get(fixture_id)
-            if not latest_data: continue
+            
+            # Use live data if we woke up to fetch it, otherwise use our local memory
+            if current_fixtures_map and fixture_id in current_fixtures_map:
+                latest_data = current_fixtures_map[fixture_id]
+            else:
+                latest_data = {"fixture": game["fixture"], "goals": game["goals"]}
                 
             latest_status = latest_data['fixture']['status']['short']
             
