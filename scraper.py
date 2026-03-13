@@ -61,6 +61,7 @@ MASTER_PLAYER_DICT = load_json(PLAYER_DICT_PATH)
 # 307 : Saudi Pro League (Saudi Arabia)
 #  94 : Primeira Liga (Portugal)
 #  88 : Eredivisie (Netherlands)
+#  98 : J1 League (Japan)
 # =========================================================
 TOP_LEAGUE_IDS = [# Top 5 Europe + Championship
     39, 40, 140, 61, 135, 78, 
@@ -72,8 +73,8 @@ TOP_LEAGUE_IDS = [# Top 5 Europe + Championship
     1, 4, 9, 
     # English Cups
     45, 48,
-    # Best of the Rest (Saudi, Portugal, Netherlands)
-    307, 94, 88]
+    # Best of the Rest (Saudi, Portugal, Netherlands, Japan)
+    307, 94, 88,98]
 
 def fetch_data(endpoint):
     req = urllib.request.Request(f"{API_HOST}/{endpoint}")
