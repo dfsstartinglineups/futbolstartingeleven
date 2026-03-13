@@ -10,6 +10,50 @@ let globalLineupsExpanded = savedLineupState !== null ? savedLineupState === 'tr
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
 
+/**
+ * =========================================================
+ * API-FOOTBALL LEAGUE ID MAPPING
+ * =========================================================
+ * * --- Top 5 Europe + Championship ---
+ * 39 : Premier League (England)
+ * 40 : Championship (England)
+ * 140 : La Liga (Spain)
+ * 61 : Ligue 1 (France)
+ * 135 : Serie A (Italy)
+ * 78 : Bundesliga (Germany)
+ *
+ * --- Euro Tournaments ---
+ * 2 : UEFA Champions League
+ * 3 : UEFA Europa League
+ * 848 : UEFA Conference League
+ *
+ * --- Americas (North & South) ---
+ * 262 : Liga MX (Mexico)
+ * 253 : Major League Soccer / MLS (USA)
+ * 71 : Serie A / Brasileirão (Brazil)
+ * 128 : Liga Profesional (Argentina)
+ * 528 : Leagues Cup (CONCACAF)
+ * 13 : Copa Libertadores (CONMEBOL)
+ * 16 : Copa Sudamericana (CONMEBOL)
+ *
+ * --- International ---
+ * 1 : FIFA World Cup
+ * 4 : UEFA European Championship (Euros)
+ * 9 : Copa America
+ *
+ * --- English Cups ---
+ * 45 : FA Cup (England)
+ * 48 : League Cup / Carabao Cup (England)
+ *
+ * --- Best of the Rest ---
+ * 307 : Saudi Pro League (Saudi Arabia)
+ * 94 : Primeira Liga (Portugal)
+ * 88 : Eredivisie (Netherlands)
+ * 98 : J1 League (Japan)
+ * =========================================================
+ */
+
+
 const LEAGUE_GROUPS = {
     "priority": [
         { key: "top", id: "top", name: "Top Matches" },
@@ -24,7 +68,7 @@ const LEAGUE_GROUPS = {
         { key: "championship", id: 40, name: "Championship" },
         { key: "bundesliga", id: 78, name: "Bundesliga" },
         { key: "ligue1", id: 61, name: "Ligue 1" },
-        { key: "eredivisie", id: 72, name: "Eredivisie" },
+        { key: "eredivisie", id: 88, name: "Eredivisie" },
         { key: "portugal", id: 94, name: "Primeira Liga" },
         { key: "conference", id: 848, name: "Conference League" }
     ],
