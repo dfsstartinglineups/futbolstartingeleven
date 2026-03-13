@@ -23,10 +23,48 @@ def load_json(path):
 
 MASTER_TEAM_DICT = load_json(TEAM_DICT_PATH)
 MASTER_PLAYER_DICT = load_json(PLAYER_DICT_PATH)
-
+# =========================================================
+# API-FOOTBALL LEAGUE ID MAPPING
+# =========================================================
+# --- Top 5 Europe + Championship ---
+#  39 : Premier League (England)
+#  40 : Championship (England)
+# 140 : La Liga (Spain)
+#  61 : Ligue 1 (France)
+# 135 : Serie A (Italy)
+#  78 : Bundesliga (Germany)
+#
+# --- Euro Tournaments ---
+#   2 : UEFA Champions League
+#   3 : UEFA Europa League
+# 848 : UEFA Conference League
+#
+# --- Americas (North & South) ---
+# 262 : Liga MX (Mexico)
+# 253 : Major League Soccer / MLS (USA)
+#  71 : Serie A / Brasileirão (Brazil)
+# 128 : Liga Profesional (Argentina)
+# 528 : Leagues Cup (CONCACAF)
+#  13 : Copa Libertadores (CONMEBOL)
+#  16 : Copa Sudamericana (CONMEBOL)
+#
+# --- International ---
+#   1 : FIFA World Cup
+#   4 : UEFA European Championship (Euros)
+#   9 : Copa America
+#
+# --- English Cups ---
+#  45 : FA Cup (England)
+#  48 : League Cup / Carabao Cup (England)
+#
+# --- Best of the Rest ---
+# 307 : Saudi Pro League (Saudi Arabia)
+#  94 : Primeira Liga (Portugal)
+#  88 : Eredivisie (Netherlands)
+# =========================================================
 TOP_LEAGUE_IDS = [# Top 5 Europe + Championship
     39, 40, 140, 61, 135, 78, 
-    # Euro Tournaments
+    # Euro Tournaments 
     2, 3, 848, 
     # Americas (Mexico, MLS, Brazil, Argentina, Leagues Cup, Copa Lib)
     262, 253, 71, 128, 528, 13,16, 
