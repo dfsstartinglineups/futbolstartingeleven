@@ -9320,7 +9320,8 @@
         "lineup_checks": 7,
         "refreshed_15m": true,
         "refreshed_5m": true,
-        "match_ended_at": "2026-03-12T23:59:12.524632+00:00"
+        "match_ended_at": "2026-03-12T23:59:12.524632+00:00",
+        "post_game_sync": true
     },
     {
         "fixture": {
@@ -18543,7 +18544,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 60,
+                "elapsed": 61,
                 "extra": null
             }
         },
@@ -18718,9 +18719,465 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
-        "lineup_checks": 6,
+        "homeLineup": {
+            "team": {
+                "id": 1603,
+                "name": "Vancouver Whitecaps",
+                "logo": "https://media.api-sports.io/football/teams/1603.png",
+                "colors": {
+                    "player": {
+                        "primary": "ffffff",
+                        "number": "ffffff",
+                        "border": "112042"
+                    },
+                    "goalkeeper": {
+                        "primary": "e3e26d",
+                        "number": "0d0d0d",
+                        "border": "e3e26d"
+                    }
+                }
+            },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 33385,
+                        "name": "Yohei Takaoka",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 369284,
+                        "name": "\u00c9dier Ocampo",
+                        "number": 18,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 51027,
+                        "name": "Tristan Blackmon",
+                        "number": 33,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 363155,
+                        "name": "Tate Johnson",
+                        "number": 28,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 51569,
+                        "name": "Math\u00edas Laborda",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 201713,
+                        "name": "Sebastian Berhalter",
+                        "number": 16,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 203206,
+                        "name": "Oliver Larraz",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 15783,
+                        "name": "Emmanuel Sabbi",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": "4:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 522,
+                        "name": "Thomas M\u00fcller",
+                        "number": 13,
+                        "pos": "M",
+                        "grid": "4:2",
+                        "photo": "https://media.api-sports.io/football/players/522.png",
+                        "age": 36,
+                        "nationality": "Germany",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 1,
+                                "assists": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.03"
+                            },
+                            "competitions": {
+                                "FIFA Club World Cup": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.57"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.50"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 288295,
+                        "name": "Kenji Cabrera",
+                        "number": 17,
+                        "pos": "M",
+                        "grid": "4:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 566059,
+                        "name": "Rayan Elloumi",
+                        "number": 19,
+                        "pos": "F",
+                        "grid": "5:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 51248,
+                        "name": "Adrian Zendejas",
+                        "number": 30,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 276531,
+                        "name": "Isaac Boehmer",
+                        "number": 32,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 515777,
+                        "name": "Nikola Djordjevic",
+                        "number": 41,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 374157,
+                        "name": "Mihail Gherasimencov",
+                        "number": 29,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 203436,
+                        "name": "Ralph Priso",
+                        "number": 6,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 191369,
+                        "name": "Jean-Claude Ngando",
+                        "number": 26,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 407583,
+                        "name": "Jeevan Badwal",
+                        "number": 59,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 312998,
+                        "name": "Aziel Jackson",
+                        "number": 22,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 20534,
+                        "name": "Cheick Tidiane Sabaly",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 50969,
+                        "name": "Brian White",
+                        "number": 24,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
+            "coach": {
+                "id": 25884,
+                "name": "Jesper Sorensen",
+                "photo": "https://media.api-sports.io/football/coachs/25884.png"
+            }
+        },
+        "awayLineup": {
+            "team": {
+                "id": 1595,
+                "name": "Seattle Sounders",
+                "logo": "https://media.api-sports.io/football/teams/1595.png",
+                "colors": {
+                    "player": {
+                        "primary": "3c5e7a",
+                        "number": "c5e7e9",
+                        "border": "3c5e7a"
+                    },
+                    "goalkeeper": {
+                        "primary": "e3e26e",
+                        "number": "0d0d0d",
+                        "border": "e3e26e"
+                    }
+                }
+            },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 51099,
+                        "name": "Stefan Frei",
+                        "number": 24,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 51113,
+                        "name": "Alex Rold\u00e1n",
+                        "number": 16,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 415232,
+                        "name": "Kalani Kossa-Rienzi",
+                        "number": 85,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 103292,
+                        "name": "Jackson Ragen",
+                        "number": 25,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 51107,
+                        "name": "Nouhou Tolo",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 51212,
+                        "name": "Albert Rusn\u00e1k",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 51114,
+                        "name": "Cristian Rold\u00e1n",
+                        "number": 7,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 362164,
+                        "name": "Snyder Brunell",
+                        "number": 37,
+                        "pos": "M",
+                        "grid": "4:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 50772,
+                        "name": "Paul Arriola",
+                        "number": 17,
+                        "pos": "M",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 51142,
+                        "name": "Jes\u00fas Ferreira",
+                        "number": 9,
+                        "pos": "M",
+                        "grid": "4:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 335553,
+                        "name": "Osaze De Rosario",
+                        "number": 95,
+                        "pos": "F",
+                        "grid": "5:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 367611,
+                        "name": "Max Anchor",
+                        "number": 50,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 318917,
+                        "name": "Andrew Thomas",
+                        "number": 26,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 542150,
+                        "name": "Antino Lopez",
+                        "number": 35,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 313381,
+                        "name": "Cody Baker",
+                        "number": 33,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 314420,
+                        "name": "Nikola Petkovi\u0107",
+                        "number": 44,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 460353,
+                        "name": "Yu Tsukanome",
+                        "number": 36,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 103203,
+                        "name": "Paul Rothrock",
+                        "number": 14,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 413227,
+                        "name": "Sebastian Gomez",
+                        "number": 90,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 102373,
+                        "name": "Daniel Musovski",
+                        "number": 19,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
+            "coach": {
+                "id": 1976,
+                "name": "Brian Schmetzer",
+                "photo": "https://media.api-sports.io/football/coachs/1976.png"
+            }
+        },
+        "lineup_checks": 7,
         "odds": {
             "home": "1.76",
             "draw": "3.70",
