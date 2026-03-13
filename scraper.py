@@ -191,15 +191,40 @@ def inject_player_stats(lineups):
                     player_bio = cached_data.get("player", {})
                     stats_list = cached_data.get("statistics", [])
                     
-                    total_games, total_goals, total_assists, total_yellows, total_reds = 0, 0, 0, 0, 0
+                    # --- NEW EXPANDED STATS TRACKING ---
+                    total_games, total_goals, total_assists = 0, 0, 0
+                    total_yellows, total_reds = 0, 0
+                    total_saves, total_conceded = 0, 0
+                    total_shots_on, total_key_passes = 0, 0
+                    total_tackles, total_interceptions = 0, 0
+                    
+                    total_pass_acc_sum = 0
+                    total_pass_acc_games = 0
+                    
                     ratings = []
                     competitions = {}
                     
                     for stat in stats_list:
                         league_name = stat.get("league", {}).get("name", "Unknown")
                         c_games = stat.get("games", {}).get("appearences") or 0
+                        
+                        if c_games == 0: continue # Skip comps where they didn't play
+                        
                         c_goals = stat.get("goals", {}).get("total") or 0
                         c_assists = stat.get("goals", {}).get("assists") or 0
+                        
+                        # New extracted stats
+                        c_saves = stat.get("goals", {}).get("saves") or 0
+                        c_conceded = stat.get("goals", {}).get("conceded") or 0
+                        c_shots_on = stat.get("shots", {}).get("on") or 0
+                        c_key_passes = stat.get("passes", {}).get("key") or 0
+                        
+                        c_pass_acc_raw = stat.get("passes", {}).get("accuracy")
+                        c_pass_acc = int(c_pass_acc_raw) if c_pass_acc_raw else 0
+                        
+                        c_tackles = stat.get("tackles", {}).get("total") or 0
+                        c_interceptions = stat.get("tackles", {}).get("interceptions") or 0
+                        
                         c_yellows = stat.get("cards", {}).get("yellow") or 0
                         c_reds = stat.get("cards", {}).get("red") or 0
                         c_rating = stat.get("games", {}).get("rating")
@@ -207,8 +232,16 @@ def inject_player_stats(lineups):
                         total_games += c_games
                         total_goals += c_goals
                         total_assists += c_assists
-                        total_yellows += c_yellows
-                        total_reds += c_reds
+                        total_saves += c_saves
+                        total_conceded += c_conceded
+                        total_shots_on += c_shots_on
+                        total_key_passes += c_key_passes
+                        total_tackles += c_tackles
+                        total_interceptions += c_interceptions
+                        
+                        if c_pass_acc > 0:
+                            total_pass_acc_sum += (c_pass_acc * c_games)
+                            total_pass_acc_games += c_games
                         
                         if c_rating:
                             try: ratings.append(float(c_rating))
@@ -216,14 +249,26 @@ def inject_player_stats(lineups):
                                 
                         competitions[league_name] = {
                             "games": c_games, "goals": c_goals, "assists": c_assists,
+                            "saves": c_saves, "conceded": c_conceded,
+                            "shots_on": c_shots_on, "key_passes": c_key_passes,
+                            "pass_acc": c_pass_acc, "tackles": c_tackles, "interceptions": c_interceptions,
                             "yellow_cards": c_yellows, "red_cards": c_reds,
                             "rating": f"{float(c_rating):.2f}" if c_rating else "N/A"
                         }
                             
                     avg_rating = f"{sum(ratings)/len(ratings):.2f}" if ratings else "N/A"
+                    avg_pass_acc = round(total_pass_acc_sum / total_pass_acc_games) if total_pass_acc_games > 0 else 0
+                    
                     player_info.update({"photo": player_bio.get("photo"), "age": player_bio.get("age"), "nationality": player_bio.get("nationality")})
+                    
                     player_info["season_stats"] = {
-                        "total": {"games": total_games, "goals": total_goals, "assists": total_assists, "yellow_cards": total_yellows, "red_cards": total_reds, "rating": avg_rating},
+                        "total": {
+                            "games": total_games, "goals": total_goals, "assists": total_assists,
+                            "saves": total_saves, "conceded": total_conceded,
+                            "shots_on": total_shots_on, "key_passes": total_key_passes,
+                            "pass_acc": avg_pass_acc, "tackles": total_tackles, "interceptions": total_interceptions,
+                            "yellow_cards": total_yellows, "red_cards": total_reds, "rating": avg_rating
+                        },
                         "competitions": competitions
                     }
     return lineups
