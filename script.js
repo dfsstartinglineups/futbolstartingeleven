@@ -209,29 +209,72 @@ window.openPlayerModal = function(el) {
     statsContainer.innerHTML = '';
     
     if (p.season_stats) {
-        // Backwards compatibility check: did we use the new nested format or the old flat format?
         const isNested = p.season_stats.total !== undefined;
         const mainStats = isNested ? p.season_stats.total : p.season_stats;
         
         if (mainStats.games > 0) {
             noStatsEl.classList.add('d-none');
             
-            // 1. Build the Top Grid (Totals)
-            const stats = [
-                { label: "Matches", val: mainStats.games, color: "text-dark" },
-                { label: "Goals", val: mainStats.goals, color: "text-success" },
-                { label: "Assists", val: mainStats.assists, color: "text-primary" },
-                { label: "Yellows", val: mainStats.yellow_cards, color: "text-warning" },
-                { label: "Reds", val: mainStats.red_cards, color: "text-danger" },
-                { label: "Rating", val: mainStats.rating || "-", color: "text-info" }
-            ];
+            // Fallbacks for older cached data so the UI doesn't crash on old players
+            const goals = mainStats.goals || 0;
+            const assists = mainStats.assists || 0;
+            const saves = mainStats.saves || 0;
+            const conceded = mainStats.conceded || 0;
+            const shotsOn = mainStats.shots_on || 0;
+            const keyPasses = mainStats.key_passes || 0;
+            const passAcc = mainStats.pass_acc ? `${mainStats.pass_acc}%` : "-";
+            const tackles = mainStats.tackles || 0;
+            const ints = mainStats.interceptions || 0;
+            const yel = mainStats.yellow_cards || 0;
+            const rat = mainStats.rating || "-";
+
+            let stats = [];
+            
+            // --- DYNAMIC STAT GRID BY POSITION ---
+            if (pos === 'G') {
+                stats = [
+                    { label: "Matches", val: mainStats.games, color: "text-dark" },
+                    { label: "Saves", val: saves, color: "text-success" },
+                    { label: "Conceded", val: conceded, color: "text-danger" },
+                    { label: "Pass Acc", val: passAcc, color: "text-primary" },
+                    { label: "Yellows", val: yel, color: "text-warning" },
+                    { label: "Rating", val: rat, color: "text-info" }
+                ];
+            } else if (pos === 'D') {
+                stats = [
+                    { label: "Matches", val: mainStats.games, color: "text-dark" },
+                    { label: "Tackles", val: tackles, color: "text-success" },
+                    { label: "Intercepts", val: ints, color: "text-primary" },
+                    { label: "Pass Acc", val: passAcc, color: "text-dark" },
+                    { label: "Yellows", val: yel, color: "text-warning" },
+                    { label: "Rating", val: rat, color: "text-info" }
+                ];
+            } else if (pos === 'M') {
+                stats = [
+                    { label: "Matches", val: mainStats.games, color: "text-dark" },
+                    { label: "Goals", val: goals, color: "text-success" },
+                    { label: "Assists", val: assists, color: "text-primary" },
+                    { label: "Key Passes", val: keyPasses, color: "text-dark" },
+                    { label: "Pass Acc", val: passAcc, color: "text-dark" },
+                    { label: "Rating", val: rat, color: "text-info" }
+                ];
+            } else { // 'F' (Forwards)
+                stats = [
+                    { label: "Matches", val: mainStats.games, color: "text-dark" },
+                    { label: "Goals", val: goals, color: "text-success" },
+                    { label: "Assists", val: assists, color: "text-primary" },
+                    { label: "Shots (On)", val: shotsOn, color: "text-dark" },
+                    { label: "Yellows", val: yel, color: "text-warning" },
+                    { label: "Rating", val: rat, color: "text-info" }
+                ];
+            }
 
             let gridHtml = '';
             stats.forEach(s => {
                 gridHtml += `
                     <div class="col-4 mb-2">
                         <div class="border rounded bg-light p-2 h-100">
-                            <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">${s.label}</div>
+                            <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.label}</div>
                             <div class="fw-bold ${s.color}" style="font-size: 1.1rem;">${s.val}</div>
                         </div>
                     </div>
@@ -239,18 +282,30 @@ window.openPlayerModal = function(el) {
             });
             statsContainer.innerHTML = gridHtml;
 
-            // 2. Build the Competition Breakdown list (if data exists)
+            // --- BUILD DYNAMIC COMPETITION BREAKDOWN ---
             if (isNested && p.season_stats.competitions) {
                 let breakdownHtml = `<div class="mt-2 text-start w-100 px-1">
                                         <div class="text-muted mb-1 border-bottom pb-1" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Competition Breakdown</div>`;
                 
                 for (const [compName, compStats] of Object.entries(p.season_stats.competitions)) {
-                    if (compStats.games > 0) { // Only show competitions they actually played in
+                    if (compStats.games > 0) { 
+                        
+                        let compDisplay = "";
+                        if (pos === 'G') {
+                            compDisplay = `<b>${compStats.games}</b>M &nbsp; <b>${compStats.saves || 0}</b>SV &nbsp; <b>${compStats.conceded || 0}</b>GC`;
+                        } else if (pos === 'D') {
+                            compDisplay = `<b>${compStats.games}</b>M &nbsp; <b>${compStats.tackles || 0}</b>TK &nbsp; <b>${compStats.interceptions || 0}</b>IN`;
+                        } else if (pos === 'M') {
+                            compDisplay = `<b>${compStats.games}</b>M &nbsp; <b>${compStats.goals || 0}</b>G &nbsp; <b>${compStats.key_passes || 0}</b>KP`;
+                        } else {
+                            compDisplay = `<b>${compStats.games}</b>M &nbsp; <b>${compStats.goals || 0}</b>G &nbsp; <b>${compStats.assists || 0}</b>A`;
+                        }
+
                         breakdownHtml += `
                         <div class="d-flex justify-content-between align-items-center py-1" style="font-size: 0.75rem; border-bottom: 1px dashed #f1f3f5;">
                             <span class="fw-bold text-dark text-truncate pe-2" style="max-width: 55%;">${compName}</span>
                             <span class="text-muted text-end" style="font-size: 0.70rem;">
-                                <b>${compStats.games}</b>M &nbsp; <b>${compStats.goals}</b>G &nbsp; <b>${compStats.assists}</b>A
+                                ${compDisplay}
                             </span>
                         </div>`;
                     }
