@@ -107,46 +107,56 @@ def fetch_odds(fixture_id):
         bookmakers = data["response"][0].get("bookmakers", [])
         if not bookmakers: return None
             
-        # Use the first bookmaker provided
-        for bet in bookmakers[0].get("bets", []):
-            if bet["name"] == "Match Winner":
-                for val in bet["values"]:
-                    if val["value"] == "Home": odds_result["home"] = val["odd"]
-                    elif val["value"] == "Draw": odds_result["draw"] = val["odd"]
-                    elif val["value"] == "Away": odds_result["away"] = val["odd"]
-            
-            elif bet["name"] == "Goals Over/Under":
-                ou_pairs = {}
-                # 1. Group all alternate lines by their total (e.g., "2.5")
-                for val in bet["values"]:
-                    parts = str(val["value"]).split(" ")
-                    if len(parts) == 2:
-                        side = parts[0].lower() # "over" or "under"
-                        total = parts[1]        # "2.5", "3.5", etc.
-                        if total not in ou_pairs:
-                            ou_pairs[total] = {}
-                        try:
-                            ou_pairs[total][side] = float(val["odd"])
-                        except ValueError:
-                            pass
-                            
-                # 2. Find the main total (where Over and Under odds are closest to each other)
-                best_total = None
-                min_diff = float('inf')
+        found_mw = False
+        found_ou = False
+        
+        # Loop through ALL bookmakers instead of just bookmakers[0]
+        for bookmaker in bookmakers:
+            for bet in bookmaker.get("bets", []):
                 
-                for total, odds in ou_pairs.items():
-                    if "over" in odds and "under" in odds:
-                        diff = abs(odds["over"] - odds["under"])
-                        if diff < min_diff:
-                            min_diff = diff
-                            best_total = total
-                            
-                # 3. Apply the winning game total to our result
-                if best_total:
-                    odds_result["total"] = best_total
-                    odds_result["over"] = str(ou_pairs[best_total]["over"])
-                    odds_result["under"] = str(ou_pairs[best_total]["under"])
+                # Check Match Winner
+                if bet["name"] == "Match Winner" and not found_mw:
+                    for val in bet["values"]:
+                        if val["value"] == "Home": odds_result["home"] = val["odd"]
+                        elif val["value"] == "Draw": odds_result["draw"] = val["odd"]
+                        elif val["value"] == "Away": odds_result["away"] = val["odd"]
+                    found_mw = True
+            
+                # Check Over/Under (using multiple valid names just to be safe)
+                elif bet["name"] in ["Goals Over/Under", "Over/Under"] and not found_ou:
+                    ou_pairs = {}
+                    for val in bet["values"]:
+                        parts = str(val["value"]).split(" ")
+                        if len(parts) == 2:
+                            side = parts[0].lower() # "over" or "under"
+                            total = parts[1]        # "2.5", "3.5", etc.
+                            if total not in ou_pairs:
+                                ou_pairs[total] = {}
+                            try:
+                                ou_pairs[total][side] = float(val["odd"])
+                            except ValueError:
+                                pass
+                                
+                    best_total = None
+                    min_diff = float('inf')
                     
+                    for total, odds in ou_pairs.items():
+                        if "over" in odds and "under" in odds:
+                            diff = abs(odds["over"] - odds["under"])
+                            if diff < min_diff:
+                                min_diff = diff
+                                best_total = total
+                                
+                    if best_total:
+                        odds_result["total"] = best_total
+                        odds_result["over"] = str(ou_pairs[best_total]["over"])
+                        odds_result["under"] = str(ou_pairs[best_total]["under"])
+                        found_ou = True
+                        
+            # If we successfully found both lines, stop looping to save processing time
+            if found_mw and found_ou:
+                break
+                
     except (IndexError, KeyError):
         return None
         
@@ -398,7 +408,7 @@ def process_date(target_date):
                     needs_odds = False
                     
                     # 1. If we don't have odds yet, fetch them.
-                    if game.get("odds", {}).get("home") == "TBD":
+                    if game.get("odds", {}).get("home") == "TBD" or game.get("odds", {}).get("total") == "TBD":
                         needs_odds = True
                         
                     # 2. If we are within 60 mins and haven't done our final check, fetch them again.
