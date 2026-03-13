@@ -235,10 +235,13 @@ def process_date(target_date):
         # THE EFFICIENCY CHECK: Are all games completely finished and synced?
         # If yes, we don't need to make any API calls for this day!
         # -------------------------------------------------------------
-        if daily_games and all(game.get("post_game_sync") for game in daily_games):
-            # Print is optional, but helps you see it working!
-            # print(f"[{date_str}] All games fully synced. Skipping API call.") 
-            return
+        if isinstance(daily_games, list):
+            if len(daily_games) == 0:
+                # print(f"[{date_str}] No games scheduled. Skipping API call.")
+                return # Hibernate immediately on empty days
+            if all(game.get("post_game_sync") for game in daily_games):
+                # print(f"[{date_str}] All games fully synced. Skipping API call.")
+                return # Hibernate when all games are fully synced
             
         now = datetime.now(timezone.utc)
         updated = False
@@ -333,11 +336,19 @@ def process_date(target_date):
 
             # 2. MATCH COMPLETION
             is_finished = latest_status in ['FT', 'AET', 'PEN']
+            is_dead = latest_status in ['PST', 'CANC', 'ABD', 'AWD', 'WO'] # Postponed, Cancelled, Abandoned
+            
             if is_finished:
                 game['fixture']['status'], game['goals'] = latest_data['fixture']['status'], latest_data['goals']
                 if not game.get("match_ended_at"):
                     game["match_ended_at"] = datetime.now(timezone.utc).isoformat()
                     updated = True
+                    
+            # If the game is postponed or cancelled, instantly mark it synced so we can hibernate
+            elif is_dead and not game.get("post_game_sync"):
+                game['fixture']['status'] = latest_data['fixture']['status']
+                game["post_game_sync"] = True
+                updated = True
                 
             kickoff_time = datetime.fromisoformat(game['fixture']['date'])
             now = datetime.now(timezone.utc)
