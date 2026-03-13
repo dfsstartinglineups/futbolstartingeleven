@@ -361,7 +361,7 @@ def process_date(target_date):
                 target_level = sum(1 for t in THRESHOLDS if time_to_kickoff_minutes <= t)
 
                 if checks < target_level:
-                    print(f"[{fixture_id}] Checkpoint {target_level}/7: Polling Injuries & Odds...")
+                    print(f"[{fixture_id}] Checkpoint {target_level}/7: Polling Injuries...")
                     inj_data = fetch_injuries(fixture_id)
                     game["injuries"]["home"], game["injuries"]["away"] = [], []
                     if inj_data and inj_data.get("response"):
@@ -369,10 +369,25 @@ def process_date(target_date):
                             team_key = "home" if inj["team"]["id"] == game["teams"]["home"]["id"] else "away"
                             game["injuries"][team_key].append(inj["player"]["name"])
                     
-                    new_odds = fetch_odds(fixture_id)
-                    if new_odds:
-                        game["odds"] = new_odds
-                        game["last_odds_check"] = now.isoformat()
+                    # --- OPTIMIZED ODDS POLLING LOGIC ---
+                    needs_odds = False
+                    
+                    # 1. If we don't have odds yet, fetch them.
+                    if game.get("odds", {}).get("home") == "TBD":
+                        needs_odds = True
+                        
+                    # 2. If we are within 60 mins and haven't done our final check, fetch them again.
+                    elif time_to_kickoff_minutes <= 60 and not game.get("final_odds_check"):
+                        needs_odds = True
+                        game["final_odds_check"] = True  # Mark that we attempted the final check
+                        
+                    if needs_odds:
+                        print(f"[{fixture_id}] Polling Odds...")
+                        new_odds = fetch_odds(fixture_id)
+                        if new_odds:
+                            game["odds"] = new_odds
+                            game["last_odds_check"] = now.isoformat()
+                    # ------------------------------------
                     
                     game["injuries"]["checks"] = target_level
                     updated = True
