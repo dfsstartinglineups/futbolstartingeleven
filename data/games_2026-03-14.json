@@ -48327,7 +48327,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 73,
+                "elapsed": 76,
                 "extra": null
             }
         },
@@ -49123,7 +49123,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 65,
+                "elapsed": 67,
                 "extra": null
             }
         },
@@ -56609,10 +56609,10 @@
                 "city": "Hamburg"
             },
             "status": {
-                "long": "Halftime",
-                "short": "HT",
-                "elapsed": 45,
-                "extra": 3
+                "long": "Second Half",
+                "short": "2H",
+                "elapsed": 47,
+                "extra": null
             }
         },
         "league": {
@@ -57384,6 +57384,16 @@
                 "player_id": 432310,
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 46,
+                "team_id": 192,
+                "player": "Y. Niang",
+                "player_id": 632022,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "player_out": "L. Maina",
+                "player_out_id": 25380
             }
         ],
         "final_odds_check": true,
@@ -57408,10 +57418,10 @@
                 "city": "Oviedo"
             },
             "status": {
-                "long": "Halftime",
-                "short": "HT",
-                "elapsed": 45,
-                "extra": 2
+                "long": "Second Half",
+                "short": "2H",
+                "elapsed": 46,
+                "extra": null
             }
         },
         "league": {
@@ -58141,7 +58151,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 33,
+                "elapsed": 35,
                 "extra": null
             }
         },
@@ -58696,7 +58706,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 32,
+                "elapsed": 34,
                 "extra": null
             }
         },
@@ -58729,7 +58739,7 @@
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 0
         },
         "homeLineup": {
@@ -59243,8 +59253,8 @@
             {
                 "time": 32,
                 "team_id": 762,
-                "player": null,
-                "player_id": null,
+                "player": "A. Moreira",
+                "player_id": 361337,
                 "type": "Goal",
                 "detail": "Normal Goal"
             }
@@ -60102,28 +60112,528 @@
                 "id": 2928,
                 "name": "Al Khaleej Saihat",
                 "logo": "https://media.api-sports.io/football/teams/2928.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "eadd04",
+                        "number": "006938",
+                        "border": "eadd04"
+                    },
+                    "goalkeeper": {
+                        "primary": "10e700",
+                        "number": "ffffff",
+                        "border": "10e700"
+                    }
+                }
             },
+            "formation": "4-4-2",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 55878,
+                        "name": "Anthony Moris",
+                        "number": 49,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44014,
+                        "name": "Saeed Al Hamsal",
+                        "number": 39,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44599,
+                        "name": "Ahmad Asiri",
+                        "number": 13,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2627,
+                        "name": "Mohammed Al-Khabrani",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 21486,
+                        "name": "Pedro Rebocho",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 38707,
+                        "name": "Paolo Fernandes",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2643,
+                        "name": "Mansour Hamzi",
+                        "number": 15,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 26751,
+                        "name": "Dimitrios Kourbelis",
+                        "number": 21,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1610,
+                        "name": "Giorgos Masouras",
+                        "number": 9,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 18881,
+                        "name": "Joshua King",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1609,
+                        "name": "Kostas Fortounis",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 104726,
+                        "name": "Marwan Al-Haidari",
+                        "number": 96,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 134763,
+                        "name": "Ali Al-Salem",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 104667,
+                        "name": "Hamad Al-Jayzani",
+                        "number": 28,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44558,
+                        "name": "Abdullah Al-Hafith",
+                        "number": 17,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2629,
+                        "name": "Bandar Al Mutairi",
+                        "number": 33,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44495,
+                        "name": "Saleh Al-Amri",
+                        "number": 93,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 134767,
+                        "name": "Hussain Ahmed Al Issa",
+                        "number": 20,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 301657,
+                        "name": "Bader Munshi",
+                        "number": 16,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 440696,
+                        "name": "Thamer Al Khaibri",
+                        "number": 90,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/440696.png",
+                        "age": 20,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.50"
+                            },
+                            "competitions": {
+                                "King's Cup": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.50"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
             "coach": {
                 "id": 1106,
                 "name": "Georgios Donis",
                 "photo": "https://media.api-sports.io/football/coachs/1106.png"
-            },
-            "formation": null
+            }
         },
         "awayLineup": {
             "team": {
                 "id": 2939,
                 "name": "Al-Nassr",
                 "logo": "https://media.api-sports.io/football/teams/2939.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "ffff00",
+                        "number": "000099",
+                        "border": "ffff00"
+                    },
+                    "goalkeeper": {
+                        "primary": "60c960",
+                        "number": "ffffff",
+                        "border": "60c960"
+                    }
+                }
             },
+            "formation": "4-4-2",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 10111,
+                        "name": "Bento",
+                        "number": 24,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 134995,
+                        "name": "Nawaf Boushal",
+                        "number": 12,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 22250,
+                        "name": "Mohamed Simakan",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44475,
+                        "name": "Abdulelah Al-Amri",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/44475.png",
+                        "age": 28,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2670,
+                        "name": "I\u00f1igo Mart\u00ednez",
+                        "number": 26,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 508,
+                        "name": "Kingsley Coman",
+                        "number": 21,
+                        "pos": "M",
+                        "grid": "3:4",
+                        "photo": "https://media.api-sports.io/football/players/508.png",
+                        "age": 29,
+                        "nationality": "France",
+                        "season_stats": {
+                            "total": {
+                                "games": 7,
+                                "goals": 2,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 4,
+                                "shots_on": 6,
+                                "key_passes": 5,
+                                "pass_acc": 88,
+                                "tackles": 1,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.58"
+                            },
+                            "competitions": {
+                                "FIFA Club World Cup": {
+                                    "games": 4,
+                                    "goals": 2,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 4,
+                                    "shots_on": 5,
+                                    "key_passes": 5,
+                                    "pass_acc": 88,
+                                    "tackles": 1,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.96"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.20"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 201,
+                        "name": "Marcelo Brozovi\u0107",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 288055,
+                        "name": "\u00c2ngelo",
+                        "number": 20,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 147812,
+                        "name": "Ayman Yahya",
+                        "number": 23,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 583,
+                        "name": "Jo\u00e3o F\u00e9lix",
+                        "number": 79,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44382,
+                        "name": "Abdullah Al-Hamdan",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 193288,
+                        "name": "Nawaf Al-Aqidi",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44309,
+                        "name": "Sultan Al-Ghannam",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 296940,
+                        "name": "Saad Fahad Al Nasser",
+                        "number": 96,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44260,
+                        "name": "Nader Al Sharari",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 350381,
+                        "name": "Salem Alnajdi",
+                        "number": 83,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44315,
+                        "name": "Abdullah Al-Khaibari",
+                        "number": 17,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44509,
+                        "name": "Ali Al-Hassan",
+                        "number": 19,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 193289,
+                        "name": "Mohammed Khalil Marran",
+                        "number": 16,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44447,
+                        "name": "Abdulrahman Ghareeb",
+                        "number": 29,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
             "coach": {
                 "id": 123,
                 "name": "Jorge Jesus",
                 "photo": "https://media.api-sports.io/football/coachs/123.png"
-            },
-            "formation": null
+            }
         },
         "odds": {
             "home": "5.80",
@@ -60142,7 +60652,7 @@
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 7
+        "lineup_checks": 8
     },
     {
         "fixture": {
@@ -60810,8 +61320,1335 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
+        "homeLineup": {
+            "team": {
+                "id": 1608,
+                "name": "Atlanta United FC",
+                "logo": "https://media.api-sports.io/football/teams/1608.png",
+                "colors": {
+                    "player": {
+                        "primary": "000000",
+                        "number": "b7aa77",
+                        "border": "000000"
+                    },
+                    "goalkeeper": {
+                        "primary": "d266bd",
+                        "number": "f8f6f6",
+                        "border": "d266bd"
+                    }
+                }
+            },
+            "formation": "4-3-3",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 6046,
+                        "name": "Lucas Hoyos",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 342727,
+                        "name": "Tom\u00e1s Jacob",
+                        "number": 55,
+                        "pos": "D",
+                        "grid": "2:4",
+                        "photo": "https://media.api-sports.io/football/players/342727.png",
+                        "age": 21,
+                        "nationality": "Argentina",
+                        "season_stats": {
+                            "total": {
+                                "games": 17,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 2,
+                                "pass_acc": 0,
+                                "tackles": 37,
+                                "interceptions": 10,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.56"
+                            },
+                            "competitions": {
+                                "Leagues Cup": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                },
+                                "Liga MX": {
+                                    "games": 14,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 32,
+                                    "interceptions": 9,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.52"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 48066,
+                        "name": "Stian Gregersen",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 26772,
+                        "name": "Enea Mihaj",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 414528,
+                        "name": "El\u00edas B\u00e1ez",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 414128,
+                        "name": "Cooper Sanchez",
+                        "number": 48,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 87301,
+                        "name": "Tristan Muyumba",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 305832,
+                        "name": "Mat\u00edas Galarza",
+                        "number": 88,
+                        "pos": "M",
+                        "grid": "3:1",
+                        "photo": "https://media.api-sports.io/football/players/305832.png",
+                        "age": 23,
+                        "nationality": "Paraguay",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 484,
+                        "name": "Aleksei Miranchuk",
+                        "number": 59,
+                        "pos": "F",
+                        "grid": "4:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 32137,
+                        "name": "Emmanuel Latte Lath",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2507,
+                        "name": "Miguel Almir\u00f3n",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 455599,
+                        "name": "Jayden Hibbert",
+                        "number": 42,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2442,
+                        "name": "Ronald Hern\u00e1ndez",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 265734,
+                        "name": "Matthew Edwards",
+                        "number": 47,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 41967,
+                        "name": "Pedro Amador",
+                        "number": 18,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 15698,
+                        "name": "Saba Lobjanidze",
+                        "number": 11,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 17715,
+                        "name": "Steven Alzate",
+                        "number": 7,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 50751,
+                        "name": "Sergio Santos",
+                        "number": 19,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 50749,
+                        "name": "Faf\u00e0 Picault",
+                        "number": 22,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 33894,
+                        "name": "Cayman Togashi",
+                        "number": 30,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
+            "coach": {
+                "id": 331,
+                "name": "Gerardo Martino",
+                "photo": "https://media.api-sports.io/football/coachs/331.png"
+            }
+        },
+        "awayLineup": {
+            "team": {
+                "id": 1599,
+                "name": "Philadelphia Union",
+                "logo": "https://media.api-sports.io/football/teams/1599.png",
+                "colors": {
+                    "player": {
+                        "primary": "233243",
+                        "number": "dcc07e",
+                        "border": "233243"
+                    },
+                    "goalkeeper": {
+                        "primary": "d96bc3",
+                        "number": "ffffff",
+                        "border": "d96bc3"
+                    }
+                }
+            },
+            "formation": "4-4-2",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 50725,
+                        "name": "Andre Blake",
+                        "number": 18,
+                        "pos": "G",
+                        "grid": "1:1",
+                        "photo": "https://media.api-sports.io/football/players/50725.png",
+                        "age": 35,
+                        "nationality": "Jamaica",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 10,
+                                "conceded": 4,
+                                "shots_on": 0,
+                                "key_passes": 1,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.17"
+                            },
+                            "competitions": {
+                                "Major League Soccer": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 10,
+                                    "conceded": 4,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.17"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 362085,
+                        "name": "Frankie Westfield",
+                        "number": 39,
+                        "pos": "D",
+                        "grid": "2:4",
+                        "photo": "https://media.api-sports.io/football/players/362085.png",
+                        "age": 20,
+                        "nationality": "USA",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 4,
+                                "pass_acc": 0,
+                                "tackles": 2,
+                                "interceptions": 8,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.35"
+                            },
+                            "competitions": {
+                                "Major League Soccer": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 8,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.35"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 102524,
+                        "name": "Nathan Harriel",
+                        "number": 26,
+                        "pos": "D",
+                        "grid": "2:3",
+                        "photo": "https://media.api-sports.io/football/players/102524.png",
+                        "age": 24,
+                        "nationality": "USA",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 5,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.70"
+                            },
+                            "competitions": {
+                                "Major League Soccer": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 5,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 392387,
+                        "name": "Olwethu Makhanya",
+                        "number": 29,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/392387.png",
+                        "age": 21,
+                        "nationality": "South Africa",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 0,
+                                "pass_acc": 51,
+                                "tackles": 9,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.47"
+                            },
+                            "competitions": {
+                                "CONCACAF Champions League": {
+                                    "games": 1,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 42,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "8.00"
+                                },
+                                "Major League Soccer": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 55,
+                                    "tackles": 7,
+                                    "interceptions": 2,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.95"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 406867,
+                        "name": "Philippe Ndinga",
+                        "number": 20,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 199406,
+                        "name": "Milan Iloski",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": "3:4",
+                        "photo": "https://media.api-sports.io/football/players/199406.png",
+                        "age": 26,
+                        "nationality": "USA",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 4,
+                                "pass_acc": 0,
+                                "tackles": 2,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.63"
+                            },
+                            "competitions": {
+                                "Major League Soccer": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 338367,
+                        "name": "Danley Jean Jacques",
+                        "number": 21,
+                        "pos": "M",
+                        "grid": "3:3",
+                        "photo": "https://media.api-sports.io/football/players/338367.png",
+                        "age": 25,
+                        "nationality": "Haiti",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 1,
+                                "pass_acc": 0,
+                                "tackles": 5,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.90"
+                            },
+                            "competitions": {
+                                "Major League Soccer": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 263510,
+                        "name": "Jovan Luki\u0107",
+                        "number": 4,
+                        "pos": "M",
+                        "grid": "3:2",
+                        "photo": "https://media.api-sports.io/football/players/263510.png",
+                        "age": 23,
+                        "nationality": "Serbia",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 3,
+                                "pass_acc": 49,
+                                "tackles": 5,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.12"
+                            },
+                            "competitions": {
+                                "CONCACAF Champions League": {
+                                    "games": 1,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 0,
+                                    "pass_acc": 49,
+                                    "tackles": 4,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.90"
+                                },
+                                "Major League Soccer": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.35"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 153506,
+                        "name": "Indiana Vassilev",
+                        "number": 19,
+                        "pos": "M",
+                        "grid": "3:1",
+                        "photo": "https://media.api-sports.io/football/players/153506.png",
+                        "age": 24,
+                        "nationality": "USA",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 3,
+                                "pass_acc": 0,
+                                "tackles": 3,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.93"
+                            },
+                            "competitions": {
+                                "Major League Soccer": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.93"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 321839,
+                        "name": "Bruno Damiani",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "4:2",
+                        "photo": "https://media.api-sports.io/football/players/321839.png",
+                        "age": 23,
+                        "nationality": "Uruguay",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 3,
+                                "pass_acc": 0,
+                                "tackles": 4,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.67"
+                            },
+                            "competitions": {
+                                "Major League Soccer": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 4,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.67"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 512951,
+                        "name": "Stas Kornzeniowski",
+                        "number": 37,
+                        "pos": "F",
+                        "grid": "4:1",
+                        "photo": "https://media.api-sports.io/football/players/512951.png",
+                        "age": 22,
+                        "nationality": "USA",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 2,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 1,
+                                "pass_acc": 0,
+                                "tackles": 3,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.85"
+                            },
+                            "competitions": {
+                                "CONCACAF Champions League": {
+                                    "games": 1,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 5,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.10"
+                                },
+                                "Major League Soccer": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 364116,
+                        "name": "Andrew Rick",
+                        "number": 76,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/364116.png",
+                        "age": 19,
+                        "nationality": "USA",
+                        "season_stats": {
+                            "total": {
+                                "games": 1,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 1,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.05"
+                            },
+                            "competitions": {
+                                "CONCACAF Champions League": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 1,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.05"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 474752,
+                        "name": "Geiner Mart\u00ednez",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/474752.png",
+                        "age": 22,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 0,
+                                "pass_acc": 70,
+                                "tackles": 5,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.62"
+                            },
+                            "competitions": {
+                                "CONCACAF Champions League": {
+                                    "games": 1,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 70,
+                                    "tackles": 3,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "8.70"
+                                },
+                                "Major League Soccer": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.55"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 64339,
+                        "name": "Japhet Sery Larsen",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/64339.png",
+                        "age": 25,
+                        "nationality": "Denmark",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 1,
+                                "pass_acc": 0,
+                                "tackles": 8,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.77"
+                            },
+                            "competitions": {
+                                "Major League Soccer": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 8,
+                                    "interceptions": 5,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.77"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 52709,
+                        "name": "Jesus Bueno",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/52709.png",
+                        "age": 26,
+                        "nationality": "Venezuela",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 3,
+                                "pass_acc": 0,
+                                "tackles": 10,
+                                "interceptions": 4,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.00"
+                            },
+                            "competitions": {
+                                "CONCACAF Champions League": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.10"
+                                },
+                                "Major League Soccer": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 7,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 50740,
+                        "name": "Alejandro Bedoya",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/50740.png",
+                        "age": 38,
+                        "nationality": "USA",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 6,
+                                "pass_acc": 0,
+                                "tackles": 5,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.25"
+                            },
+                            "competitions": {
+                                "CONCACAF Champions League": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 6,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.90"
+                                },
+                                "Major League Soccer": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 462853,
+                        "name": "Cavan Sullivan",
+                        "number": 6,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/462853.png",
+                        "age": 16,
+                        "nationality": "USA",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 2,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 5,
+                                "pass_acc": 0,
+                                "tackles": 6,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.68"
+                            },
+                            "competitions": {
+                                "CONCACAF Champions League": {
+                                    "games": 1,
+                                    "goals": 2,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "8.65"
+                                },
+                                "Major League Soccer": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 351568,
+                        "name": "Ben Bender",
+                        "number": 16,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/351568.png",
+                        "age": 24,
+                        "nationality": "USA",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 4,
+                                "pass_acc": 0,
+                                "tackles": 3,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.28"
+                            },
+                            "competitions": {
+                                "CONCACAF Champions League": {
+                                    "games": 1,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.60"
+                                },
+                                "Major League Soccer": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.95"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 301465,
+                        "name": "Agustin Anello",
+                        "number": 28,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/301465.png",
+                        "age": 23,
+                        "nationality": "USA",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 1,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.57"
+                            },
+                            "competitions": {
+                                "Major League Soccer": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.57"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 508068,
+                        "name": "Ezekiel Alladoh",
+                        "number": 23,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/508068.png",
+                        "age": 20,
+                        "nationality": "Ghana",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 1,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 6,
+                                "pass_acc": 0,
+                                "tackles": 1,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.65"
+                            },
+                            "competitions": {
+                                "CONCACAF Champions League": {
+                                    "games": 1,
+                                    "goals": 1,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.10"
+                                },
+                                "Major League Soccer": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 1,
+                                    "rating": "6.20"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "coach": {
+                "id": 12556,
+                "name": "Bradley Carnell",
+                "photo": "https://media.api-sports.io/football/coachs/12556.png"
+            }
+        },
         "odds": {
             "home": "2.78",
             "draw": "3.40",
@@ -60835,7 +62672,7 @@
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 4
+        "lineup_checks": 5
     },
     {
         "fixture": {
@@ -63501,7 +65338,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 2
+                "extra": 4
             }
         },
         "league": {
