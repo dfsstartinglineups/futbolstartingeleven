@@ -539,10 +539,24 @@ def process_date(target_date):
 
 def main():
     if not API_KEY: return
+    
+    # Establish Current Time
     now_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
-    dates = [now_est]
-    if now_est.hour < 12: dates.insert(0, now_est - timedelta(days=1))
-    for d in dates: process_date(d)
+    
+    # Start with Today's Date
+    dates_to_process = [now_est]
+    
+    # MORNING RULE (Midnight to Noon): Check Yesterday (for late night west coast/international games that are finishing up)
+    if now_est.hour < 12: 
+        dates_to_process.insert(0, now_est - timedelta(days=1))
+        
+    # EVENING RULE (8:00 PM to Midnight): Check Tomorrow (for midnight or early AM kickoffs so we can pull pre-game lineups)
+    if now_est.hour >= 20: 
+        dates_to_process.append(now_est + timedelta(days=1))
+        
+    # Run the scraper on the determined dates
+    for d in dates_to_process: 
+        process_date(d)
 
 if __name__ == "__main__":
     main()
