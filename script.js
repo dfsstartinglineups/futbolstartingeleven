@@ -347,9 +347,13 @@ function getTimeBadgeHtml(data) {
             if (displayMin < 105 && maxEventTime >= 105) { displayMin += 15; } 
             else if (displayMin < 105 && (new Date() - dateObj) > (135 * 60 * 1000)) { displayMin += 15; }
         }
-        if (status === 'BT') displayMin = 'ET HT';
+        
+        // Handle special break periods (including our new HT logic)
+        if (status === 'HT') displayMin = 'HT';
+        else if (status === 'BT') displayMin = 'ET HT';
         else if (status === 'P') displayMin = 'PEN';
         else displayMin = `${displayMin}'`;
+        
         badge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${displayMin}</span>`;
     } else if (isFinished) {
         badge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
