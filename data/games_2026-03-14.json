@@ -64126,7 +64126,8 @@
         "lineup_checks": 7,
         "refreshed_15m": true,
         "refreshed_5m": true,
-        "match_ended_at": "2026-03-14T21:30:15.435528+00:00"
+        "match_ended_at": "2026-03-14T21:30:15.435528+00:00",
+        "post_game_sync": true
     },
     {
         "fixture": {
@@ -71278,7 +71279,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 53,
+                "elapsed": 63,
                 "extra": null
             }
         },
@@ -73355,6 +73356,26 @@
                 "detail": "Substitution 1",
                 "player_out": "A. Preciado",
                 "player_out_id": 2583
+            },
+            {
+                "time": 58,
+                "team_id": 1062,
+                "player": "Cuello",
+                "player_id": 6031,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "player_out": "Dudu",
+                "player_out_id": 9939
+            },
+            {
+                "time": 58,
+                "team_id": 1062,
+                "player": "T. Perez",
+                "player_id": 414544,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "player_out": "Hulk",
+                "player_out_id": 12705
             }
         ],
         "final_odds_check": true,
@@ -73381,7 +73402,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 25,
+                "elapsed": 35,
                 "extra": null
             }
         },
@@ -74851,12 +74872,13 @@
             "home": [],
             "away": [],
             "fetched": false,
-            "checks": 6
+            "checks": 7
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 11,
-        "refreshed_15m": true
+        "lineup_checks": 16,
+        "refreshed_15m": true,
+        "refreshed_5m": true
     },
     {
         "fixture": {
@@ -75451,12 +75473,13 @@
             "home": [],
             "away": [],
             "fetched": false,
-            "checks": 6
+            "checks": 7
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 6,
-        "refreshed_15m": true
+        "lineup_checks": 7,
+        "refreshed_15m": true,
+        "refreshed_5m": true
     },
     {
         "fixture": {
@@ -76103,11 +76126,12 @@
             "home": [],
             "away": [],
             "fetched": false,
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 3
+        "lineup_checks": 4,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -77324,7 +77348,7 @@
             "checks": 5
         },
         "events": [],
-        "lineup_checks": 5
+        "lineup_checks": 7
     },
     {
         "fixture": {
@@ -77977,8 +78001,2847 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
+        "homeLineup": {
+            "team": {
+                "id": 120,
+                "name": "Botafogo",
+                "logo": "https://media.api-sports.io/football/teams/120.png",
+                "colors": {
+                    "player": {
+                        "primary": "f7f7f7",
+                        "number": "ffffff",
+                        "border": "f7f7f7"
+                    },
+                    "goalkeeper": {
+                        "primary": "317dc8",
+                        "number": "fafafa",
+                        "border": "317dc8"
+                    }
+                }
+            },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 80188,
+                        "name": "Ra\u00fal",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": "1:1",
+                        "photo": "https://media.api-sports.io/football/players/80188.png",
+                        "age": 28,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 14,
+                                "conceded": 3,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.14"
+                            },
+                            "competitions": {
+                                "Carioca - 1": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 14,
+                                    "conceded": 3,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.14"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 8661,
+                        "name": "Vitinho",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": "2:4",
+                        "photo": "https://media.api-sports.io/football/players/8661.png",
+                        "age": 26,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 8,
+                                "pass_acc": 0,
+                                "tackles": 15,
+                                "interceptions": 6,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.89"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 4,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.93"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 5,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "Carioca - 1": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 7,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.85"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1845,
+                        "name": "Bastos",
+                        "number": 15,
+                        "pos": "D",
+                        "grid": "2:3",
+                        "photo": "https://media.api-sports.io/football/players/1845.png",
+                        "age": 34,
+                        "nationality": "Angola",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 44,
+                                "tackles": 6,
+                                "interceptions": 6,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.80"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 48,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "Carioca - 1": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 41,
+                                    "tackles": 3,
+                                    "interceptions": 4,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 5933,
+                        "name": "Alexander Barboza",
+                        "number": 20,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/5933.png",
+                        "age": 30,
+                        "nationality": "Argentina",
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 1,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 10,
+                                "pass_acc": 49,
+                                "tackles": 16,
+                                "interceptions": 8,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.00"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 48,
+                                    "tackles": 7,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.83"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 2,
+                                    "pass_acc": 50,
+                                    "tackles": 7,
+                                    "interceptions": 4,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.00"
+                                },
+                                "Carioca - 1": {
+                                    "games": 4,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 5,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 3,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "7.18"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 378,
+                        "name": "Alex Telles",
+                        "number": 13,
+                        "pos": "D",
+                        "grid": "2:1",
+                        "photo": "https://media.api-sports.io/football/players/378.png",
+                        "age": 33,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 13,
+                                "goals": 3,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 4,
+                                "key_passes": 9,
+                                "pass_acc": 0,
+                                "tackles": 8,
+                                "interceptions": 8,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.97"
+                            },
+                            "competitions": {
+                                "Carioca": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.57"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 6,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.33"
+                                },
+                                "Carioca - 1": {
+                                    "games": 4,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.00"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 326,
+                        "name": "Allan",
+                        "number": 25,
+                        "pos": "M",
+                        "grid": "3:2",
+                        "photo": "https://media.api-sports.io/football/players/326.png",
+                        "age": 34,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 3,
+                                "pass_acc": 42,
+                                "tackles": 6,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.68"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 0,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.53"
+                                },
+                                "Carioca - 1": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 3,
+                                    "pass_acc": 42,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 1,
+                                    "rating": "6.83"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 237186,
+                        "name": "Cristian Medina",
+                        "number": 6,
+                        "pos": "M",
+                        "grid": "3:1",
+                        "photo": "https://media.api-sports.io/football/players/237186.png",
+                        "age": 23,
+                        "nationality": "Argentina",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 5,
+                                "pass_acc": 88,
+                                "tackles": 11,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.98"
+                            },
+                            "competitions": {
+                                "Liga Profesional Argentina": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 5,
+                                    "pass_acc": 88,
+                                    "tackles": 11,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.98"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 410843,
+                        "name": "Jordan Barrera",
+                        "number": 14,
+                        "pos": "M",
+                        "grid": "4:3",
+                        "photo": "https://media.api-sports.io/football/players/410843.png",
+                        "age": 19,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 13,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 10,
+                                "pass_acc": 0,
+                                "tackles": 11,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.70"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.65"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 5,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                },
+                                "Carioca - 1": {
+                                    "games": 7,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 6,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.72"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 275170,
+                        "name": "Danilo",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "4:2",
+                        "photo": "https://media.api-sports.io/football/players/275170.png",
+                        "age": 24,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 11,
+                                "goals": 5,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 12,
+                                "pass_acc": 51,
+                                "tackles": 5,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.56"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 4,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "8.07"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 2,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 3,
+                                    "pass_acc": 51,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.90"
+                                },
+                                "Carioca - 1": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 5,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 305821,
+                        "name": "Matheus Martins",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": "4:1",
+                        "photo": "https://media.api-sports.io/football/players/305821.png",
+                        "age": 22,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 13,
+                                "goals": 2,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 10,
+                                "key_passes": 4,
+                                "pass_acc": 0,
+                                "tackles": 9,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.85"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.97"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.87"
+                                },
+                                "Carioca - 1": {
+                                    "games": 7,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 6,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 9938,
+                        "name": "Arthur Cabral",
+                        "number": 19,
+                        "pos": "F",
+                        "grid": "5:1",
+                        "photo": "https://media.api-sports.io/football/players/9938.png",
+                        "age": 27,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 1,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 7,
+                                "key_passes": 6,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.70"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.20"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.45"
+                                },
+                                "Carioca - 1": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.44"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 292166,
+                        "name": "L\u00e9o Linck",
+                        "number": 24,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/292166.png",
+                        "age": 24,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 15,
+                                "conceded": 5,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.96"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 6,
+                                    "conceded": 2,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                },
+                                "Carioca - 1": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 9,
+                                    "conceded": 3,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.33"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 544707,
+                        "name": "Gabriel Justino",
+                        "number": 34,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/544707.png",
+                        "age": 19,
+                        "nationality": null,
+                        "season_stats": {
+                            "total": {
+                                "games": 7,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 1,
+                                "pass_acc": 47,
+                                "tackles": 8,
+                                "interceptions": 4,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.88"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                },
+                                "Carioca - 1": {
+                                    "games": 6,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 47,
+                                    "tackles": 8,
+                                    "interceptions": 4,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "7.05"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2440,
+                        "name": "Nahuel Ferraresi",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/2440.png",
+                        "age": 27,
+                        "nationality": "Venezuela",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 1,
+                                "pass_acc": 90,
+                                "tackles": 10,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.77"
+                            },
+                            "competitions": {
+                                "Paulista - A1": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 9,
+                                    "interceptions": 1,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                },
+                                "Serie A": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 90,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 297687,
+                        "name": "Mateo Ponte",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/297687.png",
+                        "age": 22,
+                        "nationality": "Uruguay",
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 1,
+                                "pass_acc": 46,
+                                "tackles": 13,
+                                "interceptions": 6,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.66"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.45"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 1,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.93"
+                                },
+                                "Carioca - 1": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 1,
+                                    "pass_acc": 46,
+                                    "tackles": 8,
+                                    "interceptions": 4,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 308798,
+                        "name": "Lucas Villalba",
+                        "number": 77,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/308798.png",
+                        "age": 24,
+                        "nationality": "Uruguay",
+                        "season_stats": {
+                            "total": {
+                                "games": 7,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 4,
+                                "pass_acc": 0,
+                                "tackles": 6,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.43"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.30"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.35"
+                                },
+                                "Carioca - 1": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 6,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 10387,
+                        "name": "Edenilson",
+                        "number": 88,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/10387.png",
+                        "age": 36,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 1,
+                                "pass_acc": 90,
+                                "tackles": 0,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.73"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 90,
+                                    "tackles": 0,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 10040,
+                        "name": "Artur",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/10040.png",
+                        "age": 27,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 2,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 10,
+                                "pass_acc": 0,
+                                "tackles": 6,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.01"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.27"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "Carioca - 1": {
+                                    "games": 6,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 9,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.87"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 506276,
+                        "name": "Caio Valle",
+                        "number": 45,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/506276.png",
+                        "age": 18,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 2,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 1,
+                                "pass_acc": 0,
+                                "tackles": 6,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.83"
+                            },
+                            "competitions": {
+                                "Carioca - 1": {
+                                    "games": 6,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 6,
+                                    "interceptions": 5,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.83"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 277169,
+                        "name": "Newton",
+                        "number": 28,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/277169.png",
+                        "age": 25,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 11,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 2,
+                                "pass_acc": 41,
+                                "tackles": 19,
+                                "interceptions": 6,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.68"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 41,
+                                    "tackles": 7,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 6,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                },
+                                "Carioca - 1": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 6,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.72"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 455130,
+                        "name": "\u00c1lvaro Montoro",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/455130.png",
+                        "age": 18,
+                        "nationality": "Argentina",
+                        "season_stats": {
+                            "total": {
+                                "games": 11,
+                                "goals": 1,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 10,
+                                "pass_acc": 0,
+                                "tackles": 5,
+                                "interceptions": 4,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.77"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                },
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 3,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.50"
+                                },
+                                "Carioca - 1": {
+                                    "games": 5,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "7.18"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1854,
+                        "name": "Joaqu\u00edn Correa",
+                        "number": 30,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/1854.png",
+                        "age": 31,
+                        "nationality": "Argentina",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 2,
+                                "pass_acc": 0,
+                                "tackles": 1,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.25"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                },
+                                "Carioca - 1": {
+                                    "games": 2,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.90"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 10432,
+                        "name": "J\u00fanior Santos",
+                        "number": 17,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
+            "coach": {
+                "id": 25742,
+                "name": "Martin Anselmi",
+                "photo": "https://media.api-sports.io/football/coachs/25742.png"
+            }
+        },
+        "awayLineup": {
+            "team": {
+                "id": 127,
+                "name": "Flamengo",
+                "logo": "https://media.api-sports.io/football/teams/127.png",
+                "colors": {
+                    "player": {
+                        "primary": "ab1b10",
+                        "number": "ffffff",
+                        "border": "ab1b10"
+                    },
+                    "goalkeeper": {
+                        "primary": "dfff00",
+                        "number": "000000",
+                        "border": "dfff00"
+                    }
+                }
+            },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 11756,
+                        "name": "Agust\u00edn Rossi",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": "1:1",
+                        "photo": "https://media.api-sports.io/football/players/11756.png",
+                        "age": 30,
+                        "nationality": "Argentina",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 9,
+                                "conceded": 4,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.88"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 8,
+                                    "conceded": 4,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.87"
+                                },
+                                "Carioca - 1": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 1,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1290,
+                        "name": "Guillermo Varela",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": "2:4",
+                        "photo": "https://media.api-sports.io/football/players/1290.png",
+                        "age": 32,
+                        "nationality": "Uruguay",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 1,
+                                "pass_acc": 0,
+                                "tackles": 3,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.72"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.75"
+                                },
+                                "Carioca - 1": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 9458,
+                        "name": "L\u00e9o Ortiz",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:3",
+                        "photo": "https://media.api-sports.io/football/players/9458.png",
+                        "age": 29,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 7,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 2,
+                                "pass_acc": 55,
+                                "tackles": 4,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.00"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 62,
+                                    "tackles": 3,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.77"
+                                },
+                                "Carioca - 1": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 50,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.23"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 10124,
+                        "name": "L\u00e9o Pereira",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/10124.png",
+                        "age": 29,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 4,
+                                "pass_acc": 56,
+                                "tackles": 3,
+                                "interceptions": 6,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.95"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 64,
+                                    "tackles": 2,
+                                    "interceptions": 4,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.80"
+                                },
+                                "Carioca - 1": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 1,
+                                    "pass_acc": 47,
+                                    "tackles": 1,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.10"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 860,
+                        "name": "Alex Sandro",
+                        "number": 26,
+                        "pos": "D",
+                        "grid": "2:1",
+                        "photo": "https://media.api-sports.io/football/players/860.png",
+                        "age": 34,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 7,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 9,
+                                "pass_acc": 44,
+                                "tackles": 8,
+                                "interceptions": 6,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.86"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 47,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.43"
+                                },
+                                "Carioca - 1": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 6,
+                                    "pass_acc": 42,
+                                    "tackles": 5,
+                                    "interceptions": 4,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.28"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2560,
+                        "name": "Erick Pulgar",
+                        "number": 5,
+                        "pos": "M",
+                        "grid": "3:2",
+                        "photo": "https://media.api-sports.io/football/players/2560.png",
+                        "age": 32,
+                        "nationality": "Chile",
+                        "season_stats": {
+                            "total": {
+                                "games": 11,
+                                "goals": 2,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 9,
+                                "pass_acc": 48,
+                                "tackles": 9,
+                                "interceptions": 7,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.96"
+                            },
+                            "competitions": {
+                                "Carioca": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "Supercopa do Brasil": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 2,
+                                    "pass_acc": 45,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.93"
+                                },
+                                "Carioca - 1": {
+                                    "games": 5,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 7,
+                                    "pass_acc": 50,
+                                    "tackles": 6,
+                                    "interceptions": 5,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.98"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2289,
+                        "name": "Jorginho",
+                        "number": 21,
+                        "pos": "M",
+                        "grid": "3:1",
+                        "photo": "https://media.api-sports.io/football/players/2289.png",
+                        "age": 34,
+                        "nationality": "Italy",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 1,
+                                "pass_acc": 55,
+                                "tackles": 2,
+                                "interceptions": 4,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.95"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 1,
+                                    "rating": "6.70"
+                                },
+                                "Carioca - 1": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 55,
+                                    "tackles": 1,
+                                    "interceptions": 4,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.20"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 5994,
+                        "name": "Jorge Carrascal",
+                        "number": 15,
+                        "pos": "M",
+                        "grid": "4:3",
+                        "photo": "https://media.api-sports.io/football/players/5994.png",
+                        "age": 27,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 1,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 4,
+                                "key_passes": 16,
+                                "pass_acc": 0,
+                                "tackles": 7,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.82"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                },
+                                "Carioca - 1": {
+                                    "games": 7,
+                                    "goals": 1,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 14,
+                                    "pass_acc": 0,
+                                    "tackles": 6,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1646,
+                        "name": "Lucas Paquet\u00e1",
+                        "number": 20,
+                        "pos": "M",
+                        "grid": "4:2",
+                        "photo": "https://media.api-sports.io/football/players/1646.png",
+                        "age": 28,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 7,
+                                "goals": 3,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 5,
+                                "key_passes": 8,
+                                "pass_acc": 0,
+                                "tackles": 7,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.97"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.30"
+                                },
+                                "Carioca - 1": {
+                                    "games": 5,
+                                    "goals": 3,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 8,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.65"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 126936,
+                        "name": "Samuel Lino",
+                        "number": 16,
+                        "pos": "M",
+                        "grid": "4:1",
+                        "photo": "https://media.api-sports.io/football/players/126936.png",
+                        "age": 26,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 2,
+                                "shots_on": 1,
+                                "key_passes": 1,
+                                "pass_acc": 83,
+                                "tackles": 2,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.92"
+                            },
+                            "competitions": {
+                                "FIFA Club World Cup": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 2,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 83,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.92"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 10321,
+                        "name": "Pedro",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "5:1",
+                        "photo": "https://media.api-sports.io/football/players/10321.png",
+                        "age": 28,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 9,
+                                "goals": 6,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 12,
+                                "key_passes": 8,
+                                "pass_acc": 0,
+                                "tackles": 7,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.97"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 4,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.47"
+                                },
+                                "Carioca - 1": {
+                                    "games": 6,
+                                    "goals": 6,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 11,
+                                    "key_passes": 7,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.47"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 372083,
+                        "name": "Dyogo Alves",
+                        "number": 49,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/372083.png",
+                        "age": 21,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 80528,
+                        "name": "Andrew",
+                        "number": 42,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/80528.png",
+                        "age": 24,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 17,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 43,
+                                "conceded": 12,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 1,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.11"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 17,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 43,
+                                    "conceded": 12,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 2,
+                                    "red_cards": 1,
+                                    "rating": "7.11"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1771,
+                        "name": "Ayrton Lucas",
+                        "number": 6,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/1771.png",
+                        "age": 28,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 2,
+                                "pass_acc": 45,
+                                "tackles": 3,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.73"
+                            },
+                            "competitions": {
+                                "Carioca - 1": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 2,
+                                    "pass_acc": 45,
+                                    "tackles": 3,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 618,
+                        "name": "Danilo",
+                        "number": 13,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/618.png",
+                        "age": 34,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 1,
+                                "pass_acc": 53,
+                                "tackles": 1,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.00"
+                            },
+                            "competitions": {
+                                "Carioca - 1": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 53,
+                                    "tackles": 1,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.00"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 9909,
+                        "name": "Vit\u00e3o",
+                        "number": 44,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/9909.png",
+                        "age": 25,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 3,
+                                "pass_acc": 56,
+                                "tackles": 3,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.23"
+                            },
+                            "competitions": {
+                                "Carioca - 1": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 56,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.23"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1566,
+                        "name": "Emerson Royal",
+                        "number": 22,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/1566.png",
+                        "age": 26,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 8,
+                                "goals": 0,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 11,
+                                "pass_acc": 40,
+                                "tackles": 14,
+                                "interceptions": 8,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.68"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 4,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.45"
+                                },
+                                "Carioca - 1": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 9,
+                                    "pass_acc": 40,
+                                    "tackles": 12,
+                                    "interceptions": 4,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 332654,
+                        "name": "Evertton Araujo",
+                        "number": 52,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/332654.png",
+                        "age": 22,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 9,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 7,
+                                "pass_acc": 47,
+                                "tackles": 5,
+                                "interceptions": 7,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.62"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.47"
+                                },
+                                "Carioca - 1": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 5,
+                                    "pass_acc": 47,
+                                    "tackles": 3,
+                                    "interceptions": 6,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.78"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 22238,
+                        "name": "Luiz Ara\u00fajo",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/22238.png",
+                        "age": 29,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 4,
+                                "key_passes": 4,
+                                "pass_acc": 0,
+                                "tackles": 5,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.50"
+                            },
+                            "competitions": {
+                                "Carioca - 1": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.50"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 16369,
+                        "name": "Gonzalo Plata",
+                        "number": 19,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/16369.png",
+                        "age": 25,
+                        "nationality": "Ecuador",
+                        "season_stats": {
+                            "total": {
+                                "games": 8,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 4,
+                                "key_passes": 4,
+                                "pass_acc": 0,
+                                "tackles": 4,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.64"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 2,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                },
+                                "Carioca - 1": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.58"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2612,
+                        "name": "Giorgian De Arrascaeta",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/2612.png",
+                        "age": 31,
+                        "nationality": "Uruguay",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 9,
+                                "pass_acc": 0,
+                                "tackles": 4,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.59"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 6,
+                                    "pass_acc": 0,
+                                    "tackles": 4,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                },
+                                "Carioca - 1": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.45"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2414,
+                        "name": "Everton",
+                        "number": 11,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/2414.png",
+                        "age": 29,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 3,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 8,
+                                "key_passes": 6,
+                                "pass_acc": 0,
+                                "tackles": 11,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.03"
+                            },
+                            "competitions": {
+                                "Serie A": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 6,
+                                    "pass_acc": 0,
+                                    "tackles": 4,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.00"
+                                },
+                                "Carioca - 1": {
+                                    "games": 7,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 7,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.06"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 405160,
+                        "name": "Wallace Yan",
+                        "number": 64,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/405160.png",
+                        "age": 20,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 1,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.75"
+                            },
+                            "competitions": {
+                                "Carioca - 1": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.75"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "coach": {
+                "id": 27985,
+                "name": "Leonardo Jardim",
+                "photo": "https://media.api-sports.io/football/coachs/27985.png"
+            }
+        },
         "odds": {
             "home": "3.70",
             "draw": "3.35",
@@ -78008,7 +80871,7 @@
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 5
+        "lineup_checks": 7
     },
     {
         "fixture": {
