@@ -71,7 +71,7 @@
 
             // Wait for body to load to update the hidden H1 tag
             document.addEventListener('DOMContentLoaded', () => {
-                const seoEl = document.getElementById('seo-h1');
+                const seoEl = document.getElementById('main-header');
                 if(seoEl) seoEl.innerText = `Live ${leagueName} Soccer Starting Lineups, Live Scores, Injuries, and Match Odds for ${formattedDate}`;
             });
         })();
@@ -230,7 +230,7 @@
 </head>
 <body>
 
-<h1 id="seo-h1" class="sr-only">Live Soccer Starting Lineups, Live Football Scores, Match Injuries, and Betting Odds</h1>
+<h1 id="main-header" class="sr-only">Live Soccer Starting Lineups, Live Football Scores, Match Injuries, and Betting Odds</h1>
 
 <nav class="navbar sticky-top shadow-sm pt-2 pb-0 mb-0" style="background-color: #212529; z-index: 1050;">
     <div class="container d-flex justify-content-between align-items-center flex-wrap pb-2">
