@@ -1244,8 +1244,8 @@
                 "city": "Kameoka"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
                 "extra": 8
             }
@@ -1876,7 +1876,8 @@
         "final_odds_check": true,
         "lineup_checks": 10,
         "refreshed_15m": true,
-        "refreshed_5m": true
+        "refreshed_5m": true,
+        "match_ended_at": "2026-03-14T07:05:13.203900+00:00"
     },
     {
         "fixture": {
@@ -1895,10 +1896,10 @@
                 "city": "Mito"
             },
             "status": {
-                "long": "Break Time",
-                "short": "BT",
+                "long": "Penalty in progress",
+                "short": "P",
                 "elapsed": null,
-                "extra": 7
+                "extra": null
             }
         },
         "league": {
@@ -3762,9 +3763,25 @@
             },
             {
                 "time": 120,
+                "team_id": 310,
+                "player": "K. Ichimi",
+                "player_id": 33588,
+                "type": "Goal",
+                "detail": "Penalty"
+            },
+            {
+                "time": 120,
                 "team_id": 283,
-                "player": null,
-                "player_id": null,
+                "player": "Oh Se-Hun",
+                "player_id": 99186,
+                "type": "Goal",
+                "detail": "Penalty"
+            },
+            {
+                "time": 120,
+                "team_id": 310,
+                "player": "Werik Popo",
+                "player_id": 318170,
                 "type": "Goal",
                 "detail": "Penalty"
             }
@@ -4285,10 +4302,10 @@
                 "city": "Hiroshima"
             },
             "status": {
-                "long": "Halftime",
-                "short": "HT",
-                "elapsed": 45,
-                "extra": 3
+                "long": "Second Half",
+                "short": "2H",
+                "elapsed": 46,
+                "extra": null
             }
         },
         "league": {
@@ -4817,9 +4834,9 @@
                 "city": "Tokyo"
             },
             "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
+                "long": "First Half",
+                "short": "1H",
+                "elapsed": 2,
                 "extra": null
             }
         },
@@ -4852,8 +4869,8 @@
             }
         },
         "goals": {
-            "home": null,
-            "away": null
+            "home": 0,
+            "away": 0
         },
         "homeLineup": {
             "team": {
