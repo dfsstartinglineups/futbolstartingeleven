@@ -47569,7 +47569,8 @@
         "lineup_checks": 5,
         "refreshed_15m": true,
         "refreshed_5m": true,
-        "match_ended_at": "2026-03-14T17:27:12.666703+00:00"
+        "match_ended_at": "2026-03-14T17:27:12.666703+00:00",
+        "post_game_sync": true
     },
     {
         "fixture": {
@@ -49165,8 +49166,8 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 87,
-                "extra": null
+                "elapsed": 90,
+                "extra": 1
             }
         },
         "league": {
@@ -49861,6 +49862,26 @@
                 "detail": "Substitution 3",
                 "player_out": "O. Valencia",
                 "player_out_id": 371081
+            },
+            {
+                "time": 82,
+                "team_id": 1601,
+                "player": "R. Edwards",
+                "player_id": 50906,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "player_out": "K. Franklin",
+                "player_out_id": 237109
+            },
+            {
+                "time": 87,
+                "team_id": 1601,
+                "player": "D. Mihailovic",
+                "player_id": 50913,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "player_out": "A. Coello",
+                "player_out_id": 362774
             }
         ],
         "lineup_checks": 6,
@@ -49886,7 +49907,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 66,
+                "elapsed": 70,
                 "extra": null
             }
         },
@@ -52533,6 +52554,16 @@
                 "detail": "Substitution 3",
                 "player_out": "G. Martinelli",
                 "player_out_id": 127769
+            },
+            {
+                "time": 69,
+                "team_id": 45,
+                "player": "Beto",
+                "player_id": 125743,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "player_out": "T. Barry",
+                "player_out_id": 343684
             }
         ],
         "final_odds_check": true,
@@ -52559,7 +52590,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 67,
+                "elapsed": 70,
                 "extra": null
             }
         },
@@ -56707,6 +56738,16 @@
                 "detail": "Substitution 2",
                 "player_out": "R. Lavia",
                 "player_out_id": 282125
+            },
+            {
+                "time": 67,
+                "team_id": 34,
+                "player": "N. Woltemade",
+                "player_id": 158054,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "player_out": "Joelinton",
+                "player_out_id": 723
             }
         ],
         "final_odds_check": true,
@@ -56733,7 +56774,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 68,
+                "elapsed": 72,
                 "extra": null
             }
         },
@@ -57562,7 +57603,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 68,
+                "elapsed": 71,
                 "extra": null
             }
         },
@@ -58916,16 +58957,16 @@
                 "name": "GIL Vicente",
                 "logo": "https://media.api-sports.io/football/teams/762.png",
                 "winner": null,
-                "rank": null,
-                "record": null
+                "rank": 6,
+                "record": "11-8-6"
             },
             "away": {
                 "id": 4724,
                 "name": "Alverca",
                 "logo": "https://media.api-sports.io/football/teams/4724.png",
                 "winner": null,
-                "rank": null,
-                "record": null
+                "rank": 10,
+                "record": "7-7-11"
             }
         },
         "goals": {
@@ -62932,11 +62973,12 @@
                 "Q. Sullivan"
             ],
             "fetched": false,
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 5
+        "lineup_checks": 6,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -63020,7 +63062,7 @@
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 3
+        "lineup_checks": 4
     },
     {
         "fixture": {
@@ -63080,14 +63122,14 @@
         "homeLineup": null,
         "awayLineup": null,
         "odds": {
-            "home": "4.33",
+            "home": "4.50",
             "draw": "4.00",
-            "away": "1.70",
-            "total": "2.5",
-            "over": "1.57",
-            "under": "2.38"
+            "away": "1.67",
+            "total": "3.5",
+            "over": "2.38",
+            "under": "1.57"
         },
-        "last_odds_check": "2026-03-14T03:12:26.212598+00:00",
+        "last_odds_check": "2026-03-14T19:00:28.573044+00:00",
         "injuries": {
             "home": [
                 "L. Fabianski",
@@ -63099,9 +63141,11 @@
                 "R. Lewis"
             ],
             "fetched": false,
-            "checks": 4
+            "checks": 5
         },
-        "events": []
+        "events": [],
+        "final_odds_check": true,
+        "lineup_checks": 1
     },
     {
         "fixture": {
@@ -63161,17 +63205,18 @@
         "homeLineup": null,
         "awayLineup": null,
         "odds": {
-            "home": "1.30",
-            "draw": "5.50",
-            "away": "7.50",
+            "home": "1.36",
+            "draw": "5.00",
+            "away": "7.00",
             "total": "3.5",
-            "over": "2.1",
-            "under": "1.73"
+            "over": "2.2",
+            "under": "1.67"
         },
-        "last_odds_check": "2026-03-14T03:12:26.568791+00:00",
+        "last_odds_check": "2026-03-14T19:00:30.583944+00:00",
         "injuries": {
             "home": [
                 "D. Alaba",
+                "R. Asencio",
                 "J. Bellingham",
                 "A. Carreras",
                 "D. Ceballos",
@@ -63186,9 +63231,11 @@
                 "H. Fort"
             ],
             "fetched": false,
-            "checks": 4
+            "checks": 5
         },
-        "events": []
+        "events": [],
+        "final_odds_check": true,
+        "lineup_checks": 1
     },
     {
         "fixture": {
@@ -63255,14 +63302,16 @@
             "over": "1.73",
             "under": "2.0"
         },
-        "last_odds_check": "2026-03-14T03:12:26.930422+00:00",
+        "last_odds_check": "2026-03-14T19:00:32.136300+00:00",
         "injuries": {
             "home": [],
             "away": [],
             "fetched": false,
-            "checks": 4
+            "checks": 5
         },
-        "events": []
+        "events": [],
+        "final_odds_check": true,
+        "lineup_checks": 1
     },
     {
         "fixture": {
@@ -63389,16 +63438,16 @@
                 "name": "Arouca",
                 "logo": "https://media.api-sports.io/football/teams/240.png",
                 "winner": null,
-                "rank": null,
-                "record": null
+                "rank": 11,
+                "record": "7-5-13"
             },
             "away": {
                 "id": 211,
                 "name": "Benfica",
                 "logo": "https://media.api-sports.io/football/teams/211.png",
                 "winner": null,
-                "rank": null,
-                "record": null
+                "rank": 3,
+                "record": "17-8-0"
             }
         },
         "goals": {
@@ -64452,7 +64501,7 @@
             "home": [],
             "away": [],
             "fetched": false,
-            "checks": 3
+            "checks": 4
         },
         "events": []
     },
@@ -64526,7 +64575,7 @@
             "home": [],
             "away": [],
             "fetched": false,
-            "checks": 3
+            "checks": 4
         },
         "events": []
     },
@@ -65603,7 +65652,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 49,
+                "elapsed": 52,
                 "extra": null
             }
         },
@@ -66915,32 +66964,31 @@
         },
         "homeLineup": null,
         "awayLineup": null,
-        "lineup_checks": 0,
+        "lineup_checks": 1,
         "odds": {
-            "home": "1.62",
-            "draw": "4.00",
-            "away": "4.60",
+            "home": "1.73",
+            "draw": "3.80",
+            "away": "4.00",
             "total": "3.5",
             "over": "2.2",
             "under": "1.62"
         },
-        "last_odds_check": "2026-03-14T03:12:34.955018+00:00",
+        "last_odds_check": "2026-03-14T19:00:35.573734+00:00",
         "injuries": {
             "home": [
+                "O. Edvardsen",
                 "K. Itakura",
                 "V. Jaros",
                 "W. Weghorst",
                 "O. Zinchenko",
-                "M. Ibrahimovic"
+                "K. Dolberg"
             ],
-            "away": [
-                "L. Martes",
-                "M. Kleijn"
-            ],
-            "checks": 4
+            "away": [],
+            "checks": 5
         },
         "events": [],
         "match_ended_at": null,
-        "post_game_sync": false
+        "post_game_sync": false,
+        "final_odds_check": true
     }
 ]
