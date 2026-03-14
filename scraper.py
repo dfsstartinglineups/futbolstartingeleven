@@ -273,6 +273,44 @@ def inject_player_stats(lineups):
                     }
     return lineups
 
+def update_future_files_for_league(league_id):
+    """Updates rank/record for a specific league in all future daily JSON files."""
+    league_id_str = str(league_id)
+    now_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
+    today_str = now_est.strftime("%Y-%m-%d")
+    
+    for filename in os.listdir(DATA_DIR):
+        if filename.startswith("games_") and filename.endswith(".json"):
+            file_date_str = filename.replace("games_", "").replace(".json", "")
+            
+            # Process files for tomorrow or later (today is handled by the live loop)
+            if file_date_str > today_str:
+                filepath = os.path.join(DATA_DIR, filename)
+                try:
+                    with open(filepath, 'r') as f:
+                        day_games = json.load(f)
+                    
+                    file_updated = False
+                    for g in day_games:
+                        # Check if this future game is in the league we just updated
+                        if str(g.get("league", {}).get("id")) == league_id_str:
+                            for side in ['home', 'away']:
+                                t_id = str(g['teams'][side]['id'])
+                                t_data = MASTER_TEAM_DICT.get(f"{t_id}_{league_id_str}")
+                                
+                                if t_data and t_data.get("rank"):
+                                    # If the rank or record has changed, update it
+                                    if g['teams'][side].get("rank") != t_data["rank"] or g['teams'][side].get("record") != t_data["record"]:
+                                        g['teams'][side]['rank'] = t_data["rank"]
+                                        g['teams'][side]['record'] = t_data["record"]
+                                        file_updated = True
+                                        
+                    if file_updated:
+                        with open(filepath, 'w') as f:
+                            json.dump(day_games, f, indent=4)
+                except Exception as e:
+                    print(f"Error updating future file {filename}: {e}")
+
 def build_daily_games(date_str):
     print(f"\n--- Building Initial Board for {date_str} ---")
     fixtures_data = fetch_fixtures_by_date(date_str)
@@ -527,9 +565,14 @@ def process_date(target_date):
                     standings_data = fetch_data(f"standings?league={game['league']['id']}&season={game['league']['season']}")
                     if standings_data and standings_data.get("response"):
                         try:
+                            # 1. Update the entire league in the Master Dict
                             for row in standings_data["response"][0]["league"]["standings"][0]:
                                 MASTER_TEAM_DICT[f"{row['team']['id']}_{game['league']['id']}"] = {"rank": row["rank"], "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"}
                             with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
+                            
+                            # 2. Push the league-wide update to all future files!
+                            update_future_files_for_league(game['league']['id'])
+                            
                         except Exception as e:
                             pass # Silently handle weird cup structures
                     
