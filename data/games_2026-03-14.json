@@ -48318,7 +48318,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 58,
+                "elapsed": 61,
                 "extra": null
             }
         },
@@ -49050,6 +49050,16 @@
                 "player_id": 288006,
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 59,
+                "team_id": 867,
+                "player": "N. Stulic",
+                "player_id": 264122,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "player_out": "W. Cheddira",
+                "player_out_id": 128478
             }
         ],
         "final_odds_check": true,
@@ -49076,7 +49086,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 49,
+                "elapsed": 52,
                 "extra": null
             }
         },
@@ -49758,7 +49768,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 2
+                "extra": 5
             }
         },
         "league": {
@@ -52408,10 +52418,10 @@
                 "city": "London"
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
-                "extra": 2
+                "extra": 4
             }
         },
         "league": {
@@ -56562,10 +56572,10 @@
                 "city": "Hamburg"
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
-                "extra": 2
+                "extra": 3
             }
         },
         "league": {
@@ -57361,10 +57371,10 @@
                 "city": "Oviedo"
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
-                "extra": 1
+                "extra": 2
             }
         },
         "league": {
@@ -58094,7 +58104,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 17,
+                "elapsed": 20,
                 "extra": null
             }
         },
@@ -58638,7 +58648,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 16,
+                "elapsed": 19,
                 "extra": null
             }
         },
@@ -60075,7 +60085,7 @@
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 4
+        "lineup_checks": 5
     },
     {
         "fixture": {
@@ -60137,28 +60147,537 @@
                 "id": 2931,
                 "name": "Al-Fateh",
                 "logo": "https://media.api-sports.io/football/teams/2931.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "0052a4",
+                        "number": "93d067",
+                        "border": "0052a4"
+                    },
+                    "goalkeeper": {
+                        "primary": "000000",
+                        "number": "ffffff",
+                        "border": "000000"
+                    }
+                }
             },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 47352,
+                        "name": "Fernando Pacheco",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 432078,
+                        "name": "Saeed Baattia",
+                        "number": 15,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 270784,
+                        "name": "Ziyad Aljari",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 41441,
+                        "name": "Jorge Fernandes",
+                        "number": 44,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 612944,
+                        "name": "Abdulaziz Al-Swealem",
+                        "number": 78,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1272,
+                        "name": "Zaydou Youssouf",
+                        "number": 33,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 483804,
+                        "name": "Mahdi Al Obod",
+                        "number": 24,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 50395,
+                        "name": "Mourad Batna",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": "4:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 50042,
+                        "name": "Marwane Saadane",
+                        "number": 17,
+                        "pos": "M",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 449351,
+                        "name": "Wesley Delgado",
+                        "number": 23,
+                        "pos": "M",
+                        "grid": "4:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 4455,
+                        "name": "Sofiane Bendebka",
+                        "number": 28,
+                        "pos": "F",
+                        "grid": "5:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 44589,
+                        "name": "Amin Al-Bukhari",
+                        "number": 97,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 626179,
+                        "name": "Fawaz Al-Hamad",
+                        "number": 55,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44571,
+                        "name": "Hussain Qasim",
+                        "number": 12,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 529141,
+                        "name": "Mohammed Al-Sahihi",
+                        "number": 25,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 296657,
+                        "name": "Othman Al-Othman",
+                        "number": 88,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 403086,
+                        "name": "Naif Masoud",
+                        "number": 6,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 576337,
+                        "name": "Jefferson Ramos",
+                        "number": 21,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 420235,
+                        "name": "Saad Al-Shurafa",
+                        "number": 49,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 350377,
+                        "name": "Ali Al Masoud",
+                        "number": 29,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
             "coach": {
                 "id": 94,
                 "name": "Jose Gomes",
                 "photo": "https://media.api-sports.io/football/coachs/94.png"
-            },
-            "formation": null
+            }
         },
         "awayLineup": {
             "team": {
                 "id": 2932,
                 "name": "Al-Hilal Saudi FC",
                 "logo": "https://media.api-sports.io/football/teams/2932.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "dfdac5",
+                        "number": "000000",
+                        "border": "dfdac5"
+                    },
+                    "goalkeeper": {
+                        "primary": "5d13b1",
+                        "number": "c0a20c",
+                        "border": "5d13b1"
+                    }
+                }
             },
+            "formation": "4-4-2",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 2701,
+                        "name": "Bono",
+                        "number": 37,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 202381,
+                        "name": "Moteb Al-Harbi",
+                        "number": 24,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 318,
+                        "name": "Kalidou Koulibaly",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44362,
+                        "name": "Hassan Al Tambakti",
+                        "number": 87,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 47300,
+                        "name": "Theo Hern\u00e1ndez",
+                        "number": 19,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1856,
+                        "name": "Sergej Milinkovi\u0107-Savi\u0107",
+                        "number": 22,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44349,
+                        "name": "Mohamed Kanno",
+                        "number": 28,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2676,
+                        "name": "R\u00faben Neves",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44340,
+                        "name": "Salem Al-Dawsari",
+                        "number": 29,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 156,
+                        "name": "Malcom",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 759,
+                        "name": "Karim Benzema",
+                        "number": 90,
+                        "pos": "F",
+                        "grid": "4:1",
+                        "photo": "https://media.api-sports.io/football/players/759.png",
+                        "age": 38,
+                        "nationality": "France",
+                        "season_stats": {
+                            "total": {
+                                "games": 66,
+                                "goals": 50,
+                                "assists": 6,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 125,
+                                "key_passes": 115,
+                                "pass_acc": 78,
+                                "tackles": 22,
+                                "interceptions": 4,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.45"
+                            },
+                            "competitions": {
+                                "King's Cup": {
+                                    "games": 24,
+                                    "goals": 19,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 46,
+                                    "key_passes": 48,
+                                    "pass_acc": 0,
+                                    "tackles": 9,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.49"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 24,
+                                    "goals": 19,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 46,
+                                    "key_passes": 48,
+                                    "pass_acc": 0,
+                                    "tackles": 9,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.49"
+                                },
+                                "AFC Champions League": {
+                                    "games": 4,
+                                    "goals": 4,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 3,
+                                    "pass_acc": 79,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.70"
+                                },
+                                "Pro League": {
+                                    "games": 14,
+                                    "goals": 8,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 27,
+                                    "key_passes": 16,
+                                    "pass_acc": 78,
+                                    "tackles": 4,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.12"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 543009,
+                        "name": "Mohammed Al-Rubaie",
+                        "number": 17,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 576285,
+                        "name": "Meshal Al Dawood",
+                        "number": 55,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 423683,
+                        "name": "Saad Al Mutairy",
+                        "number": 44,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44507,
+                        "name": "Ali Lajami",
+                        "number": 78,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 576181,
+                        "name": "Mohammed Al-Zaid",
+                        "number": 39,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 442343,
+                        "name": "Murad Al Hawsawi",
+                        "number": 18,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 442321,
+                        "name": "Abdulkarim Darisi",
+                        "number": 14,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 267771,
+                        "name": "Marcos Leonardo",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2639,
+                        "name": "Sultan Mandash",
+                        "number": 23,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/2639.png",
+                        "age": 31,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 13,
+                                "goals": 2,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 9,
+                                "key_passes": 15,
+                                "pass_acc": 0,
+                                "tackles": 23,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.80"
+                            },
+                            "competitions": {
+                                "Pro League": {
+                                    "games": 13,
+                                    "goals": 2,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 9,
+                                    "key_passes": 15,
+                                    "pass_acc": 0,
+                                    "tackles": 23,
+                                    "interceptions": 5,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.80"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
             "coach": {
                 "id": 2392,
                 "name": "Simone Inzaghi",
                 "photo": "https://media.api-sports.io/football/coachs/2392.png"
-            },
-            "formation": null
+            }
         },
         "odds": {
             "home": "8.00",
@@ -60177,7 +60696,7 @@
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 4
+        "lineup_checks": 5
     },
     {
         "fixture": {
@@ -60259,7 +60778,7 @@
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 1
+        "lineup_checks": 2
     },
     {
         "fixture": {
@@ -62924,7 +63443,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 32,
+                "elapsed": 34,
                 "extra": null
             }
         },
@@ -63549,6 +64068,14 @@
                 "player_id": 37134,
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": 33,
+                "team_id": 413,
+                "player": "D. Nejasmic",
+                "player_id": 14343,
+                "type": "Card",
+                "detail": "Yellow Card"
             }
         ],
         "match_ended_at": null,
