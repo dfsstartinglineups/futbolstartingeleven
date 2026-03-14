@@ -438,11 +438,12 @@ def process_date(target_date):
             local_status = game.get('fixture', {}).get('status', {}).get('short', '')
             
             # 1. LIVE EVENTS
-            # Actively poll if the game is playing, OR if it literally JUST hit halftime (to catch 45+3' goals)
+            # Actively poll if playing, OR if it JUST hit HT, OR if it JUST ended (to catch stoppage-time goals!)
             is_active_half = latest_status in ['1H', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
             just_hit_ht = (latest_status == 'HT' and local_status != 'HT')
+            just_ended = (latest_status in ['FT', 'AET', 'PEN'] and local_status not in ['FT', 'AET', 'PEN'])
             
-            if is_active_half or just_hit_ht:
+            if is_active_half or just_hit_ht or just_ended:
                 game['fixture']['status'], game['goals'] = latest_data['fixture']['status'], latest_data['goals']
                 events_data = fetch_events(fixture_id)
                 
