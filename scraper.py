@@ -435,9 +435,14 @@ def process_date(target_date):
                 latest_data = {"fixture": game["fixture"], "goals": game["goals"]}
                 
             latest_status = latest_data['fixture']['status']['short']
+            local_status = game.get('fixture', {}).get('status', {}).get('short', '')
             
             # 1. LIVE EVENTS
-            if latest_status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']:
+            # Actively poll if the game is playing, OR if it literally JUST hit halftime (to catch 45+3' goals)
+            is_active_half = latest_status in ['1H', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
+            just_hit_ht = (latest_status == 'HT' and local_status != 'HT')
+            
+            if is_active_half or just_hit_ht:
                 game['fixture']['status'], game['goals'] = latest_data['fixture']['status'], latest_data['goals']
                 events_data = fetch_events(fixture_id)
                 
@@ -463,6 +468,13 @@ def process_date(target_date):
                             
                     game["events"] = parsed_events
                 updated = True
+                
+            elif latest_status == 'HT':
+                # The game is resting at halftime. Just sync the UI status, don't waste API calls on events!
+                if game['fixture']['status'] != latest_data['fixture']['status']:
+                    game['fixture']['status'] = latest_data['fixture']['status']
+                    game['goals'] = latest_data['goals']
+                    updated = True
 
             # 2. MATCH COMPLETION
             is_finished = latest_status in ['FT', 'AET', 'PEN']
