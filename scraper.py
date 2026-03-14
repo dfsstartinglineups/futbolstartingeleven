@@ -377,6 +377,18 @@ def process_date(target_date):
 
         for game in daily_games:
             fixture_id = game['fixture']['id']
+            league_id_str = str(game['league']['id'])
+            
+            # --- HEAL MISSING RANKS/RECORDS FOR TODAY (0 API Cost) ---
+            for side in ['home', 'away']:
+                team = game['teams'][side]
+                if team.get('rank') is None or team.get('rank') == "null":
+                    t_data = MASTER_TEAM_DICT.get(f"{team['id']}_{league_id_str}")
+                    if t_data and t_data.get("rank"):
+                        team['rank'] = t_data["rank"]
+                        team['record'] = t_data["record"]
+                        updated = True
+            # ---------------------------------------------------------
             
             # Use live data if we woke up to fetch it, otherwise use our local memory
             if current_fixtures_map and fixture_id in current_fixtures_map:
