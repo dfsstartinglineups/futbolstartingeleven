@@ -451,8 +451,15 @@ def process_date(target_date):
                     parsed_events = []
                     for ev in events_data["response"]:
                         if ev["type"] in ["Goal", "Card", "subst"]:
+                            # Grab both parts of the time
+                            elapsed_time = ev["time"]["elapsed"]
+                            extra_time = ev["time"].get("extra")
+                            
+                            # Combine them if extra exists (e.g., "90+4"), otherwise just use elapsed
+                            display_time = f"{elapsed_time}+{extra_time}" if extra_time else str(elapsed_time)
+
                             event_obj = {
-                                "time": ev["time"]["elapsed"],
+                                "time": display_time,
                                 "team_id": ev["team"]["id"],
                                 "player": ev["player"]["name"] if ev.get("player") else None,
                                 "player_id": ev["player"]["id"] if ev.get("player") else None,
