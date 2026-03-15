@@ -34419,7 +34419,8 @@
         "lineup_checks": 5,
         "refreshed_15m": true,
         "refreshed_5m": true,
-        "match_ended_at": "2026-03-15T19:29:14.971576+00:00"
+        "match_ended_at": "2026-03-15T19:29:14.971576+00:00",
+        "post_game_sync": true
     },
     {
         "fixture": {
@@ -40483,7 +40484,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 3
+                "extra": 4
             }
         },
         "league": {
@@ -40515,7 +40516,7 @@
             }
         },
         "goals": {
-            "home": 2,
+            "home": 3,
             "away": 2
         },
         "homeLineup": {
@@ -42218,6 +42219,14 @@
                 "detail": "Substitution 4",
                 "player_out": "Felipinho",
                 "player_out_id": 140507
+            },
+            {
+                "time": "90+4",
+                "team_id": 124,
+                "player": null,
+                "player_id": null,
+                "type": "Goal",
+                "detail": "Normal Goal"
             }
         ],
         "final_odds_check": true,
@@ -42245,7 +42254,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 5
+                "extra": 6
             }
         },
         "league": {
@@ -44758,7 +44767,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": null
+                "extra": 1
             }
         },
         "league": {
@@ -47682,6 +47691,16 @@
                 "player_id": 71,
                 "type": "Card",
                 "detail": "Red Card"
+            },
+            {
+                "time": "90",
+                "team_id": 131,
+                "player": "Raniele",
+                "player_id": 160436,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "player_out": "Pedro Raul",
+                "player_out_id": 9329
             }
         ],
         "final_odds_check": true,
@@ -47708,7 +47727,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 55,
+                "elapsed": 57,
                 "extra": null
             }
         },
@@ -48547,6 +48566,14 @@
                 "player_id": 135519,
                 "type": "Goal",
                 "detail": "Normal Goal"
+            },
+            {
+                "time": "55",
+                "team_id": 489,
+                "player": "P. Estupinan",
+                "player_id": 46731,
+                "type": "Card",
+                "detail": "Yellow Card"
             }
         ],
         "final_odds_check": true,
@@ -48572,7 +48599,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 57,
+                "elapsed": 59,
                 "extra": null
             }
         },
@@ -51557,7 +51584,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 28,
+                "elapsed": 30,
                 "extra": null
             }
         },
@@ -53553,7 +53580,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 19,
+                "elapsed": 20,
                 "extra": null
             }
         },
@@ -55044,7 +55071,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 23,
+                "elapsed": 25,
                 "extra": null
             }
         },
@@ -66108,7 +66135,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 28,
+                "elapsed": 29,
                 "extra": null
             }
         },
@@ -66569,6 +66596,16 @@
                 "detail": "Substitution 1",
                 "player_out": "A. Salazar",
                 "player_out_id": 577878
+            },
+            {
+                "time": "26",
+                "team_id": 1462,
+                "player": "A. Plata",
+                "player_id": 10148,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "player_out": "J. Largacha",
+                "player_out_id": 348333
             }
         ],
         "match_ended_at": null,
@@ -66637,30 +66674,1225 @@
                 "id": 1138,
                 "name": "America de Cali",
                 "logo": "https://media.api-sports.io/football/teams/1138.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "ed303b",
+                        "number": "ffffff",
+                        "border": "ed303b"
+                    },
+                    "goalkeeper": {
+                        "primary": "70bed8",
+                        "number": "fcfcfc",
+                        "border": "70bed8"
+                    }
+                }
             },
+            "formation": "4-4-2",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 9942,
+                        "name": "Jean",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 375842,
+                        "name": "Mateo Castillo M\u00e1rquez",
+                        "number": 13,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 13177,
+                        "name": "Marlon Torres",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 303136,
+                        "name": "Jan Lucum\u00ed",
+                        "number": 17,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 13634,
+                        "name": "Omar Bertel",
+                        "number": 30,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 13363,
+                        "name": "Rafael Carrascal",
+                        "number": 15,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 13286,
+                        "name": "Nicol\u00e1s Hern\u00e1ndez",
+                        "number": 22,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 434034,
+                        "name": "Josen Escobar",
+                        "number": 5,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 531423,
+                        "name": "Yeison Guzm\u00e1n",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 16790,
+                        "name": "Daniel Valencia",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 538255,
+                        "name": "Tilman Palacios",
+                        "number": 19,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 79249,
+                        "name": "Jorge Soto",
+                        "number": 12,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 439969,
+                        "name": "Brayan Correa",
+                        "number": 16,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 35483,
+                        "name": "Andr\u00e9s Mosquera",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": null,
+                        "name": "Camilo Amu",
+                        "number": 29,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 538160,
+                        "name": "Jos\u00e9 Cavadia",
+                        "number": 6,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 506562,
+                        "name": "Joel Romero",
+                        "number": 25,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2459,
+                        "name": "Darwin Mach\u00eds",
+                        "number": 11,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 46695,
+                        "name": "Adri\u00e1n Ramos",
+                        "number": 20,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 297577,
+                        "name": "Tom\u00e1s \u00c1ngel",
+                        "number": 21,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
             "coach": {
                 "id": 25851,
                 "name": "David Gonzalez",
                 "photo": "https://media.api-sports.io/football/coachs/25851.png"
-            },
-            "formation": null
+            }
         },
         "awayLineup": {
             "team": {
                 "id": 1142,
                 "name": "Deportes Tolima",
                 "logo": "https://media.api-sports.io/football/teams/1142.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "800000",
+                        "number": "f0c561",
+                        "border": "800000"
+                    },
+                    "goalkeeper": {
+                        "primary": "7a7a7c",
+                        "number": "030202",
+                        "border": "7a7a7c"
+                    }
+                }
             },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 13417,
+                        "name": "Neto Volpi",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": "1:1",
+                        "photo": "https://media.api-sports.io/football/players/13417.png",
+                        "age": 33,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 9,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 19,
+                                "conceded": 5,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.77"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 4,
+                                    "conceded": 2,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                },
+                                "Primera A": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 15,
+                                    "conceded": 3,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.80"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 13460,
+                        "name": "Cristian Arrieta",
+                        "number": 17,
+                        "pos": "D",
+                        "grid": "2:4",
+                        "photo": "https://media.api-sports.io/football/players/13460.png",
+                        "age": 29,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 11,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 5,
+                                "pass_acc": 0,
+                                "tackles": 13,
+                                "interceptions": 9,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.82"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 3,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.80"
+                                },
+                                "Primera A": {
+                                    "games": 8,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 10,
+                                    "interceptions": 6,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.84"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 538222,
+                        "name": "Juan Mera",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": "2:3",
+                        "photo": "https://media.api-sports.io/football/players/538222.png",
+                        "age": 23,
+                        "nationality": null,
+                        "season_stats": {
+                            "total": {
+                                "games": 7,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 43,
+                                "tackles": 8,
+                                "interceptions": 7,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.83"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                },
+                                "Primera A": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 43,
+                                    "tackles": 6,
+                                    "interceptions": 7,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.96"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 373765,
+                        "name": "Kelvin Florez",
+                        "number": 18,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/373765.png",
+                        "age": 21,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 12,
+                                "goals": 4,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 9,
+                                "key_passes": 12,
+                                "pass_acc": 0,
+                                "tackles": 5,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.56"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 4,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 1,
+                                    "rating": "6.13"
+                                },
+                                "Primera A": {
+                                    "games": 9,
+                                    "goals": 3,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 8,
+                                    "key_passes": 8,
+                                    "pass_acc": 0,
+                                    "tackles": 4,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.99"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 127601,
+                        "name": "Junior Hern\u00e1ndez",
+                        "number": 20,
+                        "pos": "D",
+                        "grid": "2:1",
+                        "photo": "https://media.api-sports.io/football/players/127601.png",
+                        "age": 26,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 9,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 3,
+                                "pass_acc": 0,
+                                "tackles": 8,
+                                "interceptions": 6,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.18"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.53"
+                                },
+                                "Primera A": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 2,
+                                    "rating": "5.83"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 13679,
+                        "name": "Sebasti\u00e1n Guzm\u00e1n",
+                        "number": 32,
+                        "pos": "M",
+                        "grid": "3:2",
+                        "photo": "https://media.api-sports.io/football/players/13679.png",
+                        "age": 28,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 11,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 6,
+                                "pass_acc": 52,
+                                "tackles": 5,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.87"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                },
+                                "Primera A": {
+                                    "games": 8,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 6,
+                                    "pass_acc": 52,
+                                    "tackles": 4,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.03"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 13304,
+                        "name": "Brayan Rovira",
+                        "number": 80,
+                        "pos": "M",
+                        "grid": "3:1",
+                        "photo": "https://media.api-sports.io/football/players/13304.png",
+                        "age": 29,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 3,
+                                "pass_acc": 0,
+                                "tackles": 6,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.95"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 4,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.97"
+                                },
+                                "Primera A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.93"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 207764,
+                        "name": "Jersson Gonz\u00e1lez",
+                        "number": 7,
+                        "pos": "M",
+                        "grid": "4:3",
+                        "photo": "https://media.api-sports.io/football/players/207764.png",
+                        "age": 24,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 11,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 8,
+                                "key_passes": 8,
+                                "pass_acc": 0,
+                                "tackles": 9,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.75"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 6,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.80"
+                                },
+                                "Primera A": {
+                                    "games": 8,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 8,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 356516,
+                        "name": "Juan Torres",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": "4:2",
+                        "photo": "https://media.api-sports.io/football/players/356516.png",
+                        "age": 21,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 3,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 8,
+                                "key_passes": 6,
+                                "pass_acc": 0,
+                                "tackles": 5,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.72"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                },
+                                "Primera A": {
+                                    "games": 7,
+                                    "goals": 3,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 7,
+                                    "key_passes": 5,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 1,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.84"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 59642,
+                        "name": "Adri\u00e1n Parra",
+                        "number": 24,
+                        "pos": "M",
+                        "grid": "4:1",
+                        "photo": "https://media.api-sports.io/football/players/59642.png",
+                        "age": 28,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 2,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 4,
+                                "key_passes": 7,
+                                "pass_acc": 0,
+                                "tackles": 11,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.66"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.33"
+                                },
+                                "Primera A": {
+                                    "games": 7,
+                                    "goals": 2,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 7,
+                                    "pass_acc": 0,
+                                    "tackles": 8,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.99"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 59414,
+                        "name": "Luis Sandoval",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "5:1",
+                        "photo": "https://media.api-sports.io/football/players/59414.png",
+                        "age": 26,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 8,
+                                "goals": 0,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 14,
+                                "pass_acc": 0,
+                                "tackles": 3,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.94"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 5,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.97"
+                                },
+                                "Primera A": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 9,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 2,
+                                    "red_cards": 1,
+                                    "rating": "6.90"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 306717,
+                        "name": "Luis Marquinez",
+                        "number": 22,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/306717.png",
+                        "age": 22,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 10,
+                                "conceded": 4,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.10"
+                            },
+                            "competitions": {
+                                "Primera A": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 10,
+                                    "conceded": 4,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.10"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": null,
+                        "name": "Nilder Zapata",
+                        "number": 25,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 200156,
+                        "name": "Daniel Pedrozo",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/200156.png",
+                        "age": 21,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 491473,
+                        "name": "Victor Reyes",
+                        "number": 16,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/491473.png",
+                        "age": 18,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 13663,
+                        "name": "Jader Valencia",
+                        "number": 11,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/13663.png",
+                        "age": 26,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 2,
+                                "pass_acc": 0,
+                                "tackles": 4,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.46"
+                            },
+                            "competitions": {
+                                "CONMEBOL Libertadores": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 4,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.33"
+                                },
+                                "Primera A": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 364816,
+                        "name": "Elan Ricardo",
+                        "number": 14,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/364816.png",
+                        "age": 21,
+                        "nationality": "Colombia",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 5,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.15"
+                            },
+                            "competitions": {
+                                "Primera A": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 5,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 1,
+                                    "rating": "6.15"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 538281,
+                        "name": "Yoimar Moreno",
+                        "number": 31,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/538281.png",
+                        "age": 17,
+                        "nationality": null,
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 1,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.35"
+                            },
+                            "competitions": {
+                                "Primera A": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.35"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 538333,
+                        "name": "Yimar Parra",
+                        "number": 21,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/538333.png",
+                        "age": 18,
+                        "nationality": null,
+                        "season_stats": {
+                            "total": {
+                                "games": 1,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.50"
+                            },
+                            "competitions": {
+                                "Primera A": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.50"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
             "coach": {
                 "id": 25775,
                 "name": "Lucas Gonzalez",
                 "photo": "https://media.api-sports.io/football/coachs/25775.png"
-            },
-            "formation": null
+            }
         },
-        "lineup_checks": 10,
+        "lineup_checks": 11,
         "odds": {
             "home": "1.91",
             "draw": "3.20",
