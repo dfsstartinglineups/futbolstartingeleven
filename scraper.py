@@ -434,6 +434,14 @@ def process_date(target_date):
             else:
                 latest_data = {"fixture": game["fixture"], "goals": game["goals"]}
                 
+            # --- 🕒 FIX: SYNC SCHEDULED KICKOFF TIMES ---
+            # If the league moved the kickoff time (common in South America), update our local file
+            latest_date = latest_data['fixture'].get('date')
+            if latest_date and game['fixture'].get('date') != latest_date:
+                print(f"[{fixture_id}] Kickoff time changed from {game['fixture'].get('date')} to {latest_date}. Updating...")
+                game['fixture']['date'] = latest_date
+                updated = True
+                
             latest_status = latest_data['fixture']['status']['short']
             local_status = game.get('fixture', {}).get('status', {}).get('short', '')
             
