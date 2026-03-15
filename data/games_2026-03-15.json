@@ -1615,7 +1615,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 43,
+                "elapsed": 44,
                 "extra": null
             }
         },
@@ -2782,20 +2782,11 @@
                 },
                 {
                     "player": {
-                        "id": 383018,
-                        "name": "Marco Palestra",
-                        "number": 2,
-                        "pos": "D",
-                        "grid": "2:4"
-                    }
-                },
-                {
-                    "player": {
                         "id": 41964,
                         "name": "Z\u00e9 Pedro",
                         "number": 32,
                         "pos": "D",
-                        "grid": "2:3",
+                        "grid": "2:4",
                         "photo": "https://media.api-sports.io/football/players/41964.png",
                         "age": 28,
                         "nationality": "Portugal",
@@ -2856,7 +2847,7 @@
                         "name": "Yerry Mina",
                         "number": 26,
                         "pos": "D",
-                        "grid": "2:2"
+                        "grid": "2:3"
                     }
                 },
                 {
@@ -2865,7 +2856,7 @@
                         "name": "Alberto Dossena",
                         "number": 22,
                         "pos": "D",
-                        "grid": "2:1"
+                        "grid": "2:2"
                     }
                 },
                 {
@@ -2873,8 +2864,8 @@
                         "id": 321744,
                         "name": "Adam Obert",
                         "number": 33,
-                        "pos": "M",
-                        "grid": "3:3"
+                        "pos": "D",
+                        "grid": "2:1"
                     }
                 },
                 {
@@ -2883,16 +2874,7 @@
                         "name": "Michel Adopo",
                         "number": 8,
                         "pos": "M",
-                        "grid": "3:2"
-                    }
-                },
-                {
-                    "player": {
-                        "id": 325,
-                        "name": "Gianluca Gaetano",
-                        "number": 10,
-                        "pos": "M",
-                        "grid": "3:1"
+                        "grid": "3:3"
                     }
                 },
                 {
@@ -2900,8 +2882,8 @@
                         "id": 353609,
                         "name": "Ibrahim Sulemana",
                         "number": 25,
-                        "pos": "F",
-                        "grid": "4:3",
+                        "pos": "M",
+                        "grid": "3:2",
                         "photo": "https://media.api-sports.io/football/players/353609.png",
                         "age": 22,
                         "nationality": "Ghana",
@@ -2923,6 +2905,24 @@
                             },
                             "competitions": {}
                         }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 325,
+                        "name": "Gianluca Gaetano",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 383018,
+                        "name": "Marco Palestra",
+                        "number": 2,
+                        "pos": "F",
+                        "grid": "4:3"
                     }
                 },
                 {
@@ -3141,11 +3141,12 @@
                 "R. Idrissi"
             ],
             "fetched": false,
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 5
+        "lineup_checks": 6,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -5798,11 +5799,12 @@
                 "L. Ferguson"
             ],
             "fetched": false,
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 6
+        "lineup_checks": 7,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -7791,11 +7793,12 @@
                 "N. Okafor"
             ],
             "fetched": false,
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 3
+        "lineup_checks": 4,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -9826,11 +9829,12 @@
                 "M. Cash"
             ],
             "fetched": false,
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 3
+        "lineup_checks": 4,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -9892,7 +9896,18 @@
                 "id": 65,
                 "name": "Nottingham Forest",
                 "logo": "https://media.api-sports.io/football/teams/65.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "e4232c",
+                        "number": "ffffff",
+                        "border": "e4232c"
+                    },
+                    "goalkeeper": {
+                        "primary": "09a7e2",
+                        "number": "d8c3c2",
+                        "border": "09a7e2"
+                    }
+                }
             },
             "formation": "4-2-3-1",
             "startXI": [
@@ -11430,7 +11445,18 @@
                 "id": 36,
                 "name": "Fulham",
                 "logo": "https://media.api-sports.io/football/teams/36.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "ffffff",
+                        "number": "000000",
+                        "border": "ffffff"
+                    },
+                    "goalkeeper": {
+                        "primary": "fe0233",
+                        "number": "ffffff",
+                        "border": "fe0233"
+                    }
+                }
             },
             "formation": "4-2-3-1",
             "startXI": [
@@ -11743,11 +11769,12 @@
                 "Kevin"
             ],
             "fetched": false,
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 3
+        "lineup_checks": 4,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -13142,9 +13169,9 @@
                 "logo": "https://media.api-sports.io/football/teams/114.png",
                 "colors": {
                     "player": {
-                        "primary": "fafafa",
-                        "number": "102055",
-                        "border": "fafafa"
+                        "primary": "19204b",
+                        "number": "ffffff",
+                        "border": "19204b"
                     },
                     "goalkeeper": {
                         "primary": "7c3800",
@@ -13592,11 +13619,12 @@
                 "H. Traore"
             ],
             "fetched": false,
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 3
+        "lineup_checks": 4,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -17004,7 +17032,7 @@
                 "A. Rabiot"
             ],
             "fetched": false,
-            "checks": 3
+            "checks": 4
         },
         "events": []
     },
@@ -17089,7 +17117,7 @@
                 "G. Perrin"
             ],
             "fetched": false,
-            "checks": 3
+            "checks": 4
         },
         "events": []
     },
@@ -18921,7 +18949,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 12,
+                "elapsed": 13,
                 "extra": null
             }
         },
@@ -20940,7 +20968,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 11,
+                "elapsed": 12,
                 "extra": null
             }
         },
