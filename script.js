@@ -955,9 +955,35 @@ function handleHashNavigation() {
     if (window.location.hash) {
         setTimeout(() => {
             const targetCard = document.querySelector(window.location.hash);
+            const fixId = window.location.hash.replace('#card-', '');
+
             if (targetCard) {
+                // 1. Force the entire board into Compact Scoreboard mode
+                globalScoreboardMode = true;
+                const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
+                if (toggleScoreboardBtn) toggleScoreboardBtn.innerHTML = '🔼 EXPAND ALL CARDS';
+                
+                document.querySelectorAll('.ribbon-view').forEach(el => el.classList.remove('d-none'));
+                document.querySelectorAll('.full-view').forEach(el => el.classList.add('d-none'));
+
+                // 2. Force ONLY the target card to expand
+                const targetRibbon = document.getElementById(`ribbon-${fixId}`);
+                const targetFull = document.getElementById(`full-${fixId}`);
+                if (targetRibbon && targetFull) {
+                    targetRibbon.classList.add('d-none');
+                    targetFull.classList.remove('d-none');
+                }
+
+                // 3. Ensure the lineup container for the target card is open
+                const targetLineup = document.getElementById(`lineup-collapse-${fixId}`);
+                if (targetLineup) {
+                    targetLineup.classList.add('show');
+                }
+
+                // 4. Scroll to it and flash!
                 targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 triggerCardHighlight(targetCard, 'hash'); 
+                checkOverflows();
             }
         }, 600); 
     }
