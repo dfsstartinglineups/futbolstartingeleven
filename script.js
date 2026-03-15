@@ -312,7 +312,10 @@ window.openPlayerModal = function(el) {
 function getTimeBadgeHtml(data) {
     const status = data.fixture.status.short;
     const dateObj = new Date(data.fixture.date);
-    const matchTime = dateObj.toLocaleDateString([], {weekday: 'short'}) + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
+    // NEW: Make the time string much more compact (e.g., "Sun 9:00AM" instead of "Sun 09:00 AM")
+    const timeString = dateObj.toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'}).replace(' ', '');
+    const matchTime = `${dateObj.toLocaleDateString([], {weekday: 'short'})} ${timeString}`;
 
     const isFinished = ['FT', 'AET', 'PEN'].includes(status);
     const isPreGame = ['NS', 'TBD'].includes(status);
@@ -347,7 +350,8 @@ function getTimeBadgeHtml(data) {
     } else if (isFinished) {
         badge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
     } else {
-        badge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
+        // NEW: Shrunk the font slightly, reduced padding to px-1, and forced white-space: nowrap
+        badge = `<span class="badge bg-white text-dark shadow-sm border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${matchTime}</span>`;
     }
     return badge;
 }
