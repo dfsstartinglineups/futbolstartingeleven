@@ -313,7 +313,7 @@ function getTimeBadgeHtml(data) {
     const status = data.fixture.status.short;
     const dateObj = new Date(data.fixture.date);
     
-    // NEW: Make the time string much more compact (e.g., "Sun 9:00AM" instead of "Sun 09:00 AM")
+    // Make the time string much more compact (e.g., "Sun 9:00AM")
     const timeString = dateObj.toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'}).replace(' ', '');
     const matchTime = `${dateObj.toLocaleDateString([], {weekday: 'short'})} ${timeString}`;
 
@@ -321,10 +321,17 @@ function getTimeBadgeHtml(data) {
     const isPreGame = ['NS', 'TBD'].includes(status);
     const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
 
+    // Check if it's past kickoff, but the API still says "Not Started"
+    const minsSinceKickoff = (new Date() - dateObj) / (1000 * 60);
+    const isStuck = isPreGame && (minsSinceKickoff > 5);
+
     let badge = '';
 
     if (isDelayed) {
         badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
+    } else if (isStuck) {
+        // NEW: Render a subtle yellow "DEL" badge if the API feed hasn't woken up yet
+        badge = `<span class="badge bg-warning text-dark shadow-sm border px-2 py-1" style="font-size: 0.70rem;" title="Delayed or awaiting kickoff">DEL</span>`;
     } else if (!isPreGame && !isFinished && !data.isFallback) {
         let displayMin = data.fixture.status.elapsed;
         let extraMin = data.fixture.status.extra;
@@ -350,7 +357,6 @@ function getTimeBadgeHtml(data) {
     } else if (isFinished) {
         badge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
     } else {
-        // NEW: Shrunk the font slightly, reduced padding to px-1, and forced white-space: nowrap
         badge = `<span class="badge bg-white text-dark shadow-sm border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${matchTime}</span>`;
     }
     return badge;
