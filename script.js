@@ -339,8 +339,8 @@ function getLatestEventHtml(data, isRibbon = false) {
             let pOut = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
             
             if (isRibbon) {
-                // NEW: Single-line substitution format
-                return `<div class="text-dark fw-bold text-truncate text-start w-100 ps-2" style="font-size: 0.65rem; display: inline-block; vertical-align: middle;">
+                // NEW: Wrap text up to 2 lines before truncating
+                return `<div class="text-dark fw-bold text-start w-100 ps-2" style="font-size: 0.65rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal;">
                             ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> <span class="text-success">${pIn}</span> 🔄 <span class="text-muted">${pOut}</span>
                         </div>`;
             } else {
@@ -359,8 +359,8 @@ function getLatestEventHtml(data, isRibbon = false) {
             const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
             
             if (isRibbon) {
-                // NEW: Single-line Goal/Card format with logo moved next to player
-                return `<div class="${textColor} fw-bold text-truncate text-start w-100 ps-2" style="font-size: 0.65rem; display: inline-block; vertical-align: middle;">
+                // NEW: Wrap text up to 2 lines before truncating
+                return `<div class="${textColor} fw-bold text-start w-100 ps-2" style="font-size: 0.65rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal;">
                             ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} <span class="text-muted" style="font-size: 0.6rem;">(${lastEv.time}')</span>
                         </div>`;
             } else {
