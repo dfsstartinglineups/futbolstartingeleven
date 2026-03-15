@@ -351,7 +351,7 @@ def build_daily_games(date_str):
         })
     return formatted_games
 
-def process_date(target_date):
+def process_date(target_date, force_master_sync=False):
     now_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
     if target_date.date() < (now_est.date() - timedelta(days=1)): return
 
