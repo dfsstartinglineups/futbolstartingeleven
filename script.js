@@ -964,7 +964,7 @@ function handleHashNavigation() {
                 if (toggleScoreboardBtn) toggleScoreboardBtn.innerHTML = '🔼 EXPAND ALL CARDS';
                 
                 const toggleAllBtn = document.getElementById('toggle-all-lineups');
-                if (toggleAllBtn) toggleAllBtn.classList.add('d-none'); // NEW: Hide lineup button in Focus Mode
+                if (toggleAllBtn) toggleAllBtn.classList.add('d-none'); 
                 
                 document.querySelectorAll('.ribbon-view').forEach(el => el.classList.remove('d-none'));
                 document.querySelectorAll('.full-view').forEach(el => el.classList.add('d-none'));
@@ -983,8 +983,16 @@ function handleHashNavigation() {
                     targetLineup.classList.add('show');
                 }
 
-                // 4. Scroll to it and flash!
-                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // 4. Scroll to the TOP of the card (with a buffer for the fixed header)
+                const headerOffset = 120; // Gives 120px of breathing room under the navbar
+                const elementPosition = targetCard.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                window.scrollTo({
+                     top: offsetPosition,
+                     behavior: "smooth"
+                });
+
                 triggerCardHighlight(targetCard, 'hash'); 
                 checkOverflows();
             }
