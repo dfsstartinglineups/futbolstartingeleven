@@ -368,7 +368,7 @@ def process_date(target_date):
         # THE DEEP SLEEP CHECK: Do we need the live master schedule?
         # Only if a game is live, or kicking off in the next 75 minutes.
         # -------------------------------------------------------------
-        needs_live_board = not bool(daily_games)
+        needs_live_board = not bool(daily_games) or force_master_sync  # NEW LOGIC
         for g in daily_games:
             status = g.get('fixture', {}).get('status', {}).get('short', '')
             if status not in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']:
@@ -653,9 +653,26 @@ def main():
     if now_est.hour >= 20: 
         dates_to_process.append(now_est + timedelta(days=1))
         
+    # --- THE ONCE-A-DAY TRIGGER ---
+    # Look exactly 30 days into the future. 
+    # If the JSON file for that day doesn't exist, a new day just started!
+    day_30_date = now_est + timedelta(days=30)
+    day_30_str = day_30_date.strftime("%Y-%m-%d")
+    day_30_file = os.path.join(DATA_DIR, f"games_{day_30_str}.json")
+    
+    needs_daily_maintenance = not os.path.exists(day_30_file)
+
+    if needs_daily_maintenance:
+        print("\n🧹 --- NEW DAY DETECTED: RUNNING DAILY MAINTENANCE (SYNCING NEXT 30 DAYS) --- 🧹")
+        # Queue up days 2 through 30 (Today and Tomorrow are already handled)
+        for i in range(2, 31):
+            maintenance_date = now_est + timedelta(days=i)
+            if maintenance_date not in dates_to_process:
+                dates_to_process.append(maintenance_date)
+
     # Run the scraper on the determined dates
     for d in dates_to_process: 
-        process_date(d)
+        process_date(d, force_master_sync=needs_daily_maintenance)
 
 if __name__ == "__main__":
     main()
