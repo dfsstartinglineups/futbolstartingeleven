@@ -997,10 +997,15 @@ function renderGames() {
     });
 
     filteredGames.sort((a, b) => {
-        const isFinishedA = ['FT', 'AET', 'PEN'].includes(a.fixture.status.short);
-        const isFinishedB = ['FT', 'AET', 'PEN'].includes(b.fixture.status.short);
+        // NEW: Array containing all "dead" statuses (Finished, Postponed, Cancelled, Abandoned)
+        const deadStatuses = ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD'];
+        
+        const isFinishedA = deadStatuses.includes(a.fixture.status.short);
+        const isFinishedB = deadStatuses.includes(b.fixture.status.short);
+        
         if (isFinishedA && !isFinishedB) return 1;
         if (!isFinishedA && isFinishedB) return -1;
+        
         return new Date(a.fixture.date) - new Date(b.fixture.date);
     });
 
@@ -1008,7 +1013,6 @@ function renderGames() {
     
     requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
 }
-
 // ==========================================
 // NEW: DUAL-VIEW CARD BUILDER
 // ==========================================
