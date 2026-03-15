@@ -67,7 +67,7 @@ const LEAGUE_ABBREV = {
     78: "BUND",
     61: "Ligue 1",
     88: "ERED",
-    94: "PT",
+    94: "PL",
     2: "UCL",
     3: "UEL",
     848: "UECL",
