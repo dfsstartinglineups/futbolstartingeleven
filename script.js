@@ -57,6 +57,34 @@ const LEAGUE_MAP_ESPN = {
     848: "uefa.conf"
 };
 
+const LEAGUE_ABBREV = {
+    39: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 EPL",
+    40: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Champ",
+    45: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 FA Cup",
+    48: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 EFL Cup",
+    140: "🇪🇸 La Liga",
+    135: "🇮🇹 Serie A",
+    78: "🇩🇪 BUND",
+    61: "🇫🇷 Ligue 1",
+    88: "🇳🇱 ERED",
+    94: "🇵🇹 PT",
+    2: "🇪🇺 UCL",
+    3: "🇪🇺 UEL",
+    848: "🇪🇺 UECL",
+    253: "🇺🇸 MLS",
+    262: "🇲🇽 Liga MX",
+    71: "🇧🇷 Serie A",
+    128: "🇦🇷 LPF",
+    13: "🌎 Libs",
+    16: "🌎 CCC",
+    528: "🇺🇸🇲🇽 Leagues",
+    1: "🌍 WC",
+    4: "🇪🇺 Euros",
+    9: "🌎 Copa Am.",
+    307: "🇸🇦 SPL",
+    98: "🇯🇵 J1"
+};
+
 window.toggleExpand = function(el) {
     const isExpanded = el.classList.toggle('is-expanded');
     const targets = el.querySelectorAll('.truncate-target');
@@ -386,10 +414,14 @@ function getRibbonHtml(data) {
     const homeScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.home ?? 0) : '-';
     const awayScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.away ?? 0) : '-';
 
+    // Grab our compact abbreviation, fallback to the standard name if missing
+    const leagueCompact = LEAGUE_ABBREV[data.league.id] || data.league.name;
+
     return `
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-        <div class="col-3 text-center d-flex justify-content-center align-items-center border-end pe-1">
-            ${getTimeBadgeHtml(data)}
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1">
+            <div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div>
+            <div class="text-muted fw-bold text-truncate w-100 px-1" style="font-size: 0.55rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">${leagueCompact}</div>
         </div>
         <div class="col-5 px-2">
             <div class="d-flex justify-content-between align-items-center mb-1">
