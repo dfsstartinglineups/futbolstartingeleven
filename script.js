@@ -960,7 +960,7 @@ async function init() {
 
     renderGames();
     handleHashNavigation(); // <--- Process #card-ID deep links
-    setInterval(updateLiveGames, 60000); 
+    setInterval(updateLiveGames, 30000); 
 }
 
 function renderGames() {
