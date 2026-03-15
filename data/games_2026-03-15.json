@@ -19109,7 +19109,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 85,
+                "elapsed": 86,
                 "extra": null
             }
         },
@@ -19756,6 +19756,26 @@
                 "detail": "Substitution 5",
                 "player_out": "A. Green",
                 "player_out_id": 19196
+            },
+            {
+                "time": "85",
+                "team_id": 227,
+                "player": "Gabriel Silva",
+                "player_id": 266630,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "player_out": "Darlan",
+                "player_out_id": 10499
+            },
+            {
+                "time": "85",
+                "team_id": 227,
+                "player": "Gustavo Klismahn",
+                "player_id": 329660,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "player_out": "Brenner",
+                "player_out_id": 307334
             }
         ],
         "final_odds_check": true,
@@ -19782,7 +19802,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 89,
+                "elapsed": 90,
                 "extra": null
             }
         },
@@ -20399,6 +20419,14 @@
                 "player_id": 7147,
                 "type": "Card",
                 "detail": "Yellow Card"
+            },
+            {
+                "time": "90",
+                "team_id": 225,
+                "player": "C. Labidi",
+                "player_id": 49603,
+                "type": "Card",
+                "detail": "Yellow Card"
             }
         ],
         "final_odds_check": true,
@@ -20573,7 +20601,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 46,
+                "elapsed": 47,
                 "extra": null
             }
         },
@@ -23050,8 +23078,8 @@
                 "city": "Liverpool"
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
                 "extra": 3
             }
@@ -28361,7 +28389,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 16,
+                "elapsed": 18,
                 "extra": null
             }
         },
@@ -33664,28 +33692,418 @@
                 "id": 226,
                 "name": "Rio Ave",
                 "logo": "https://media.api-sports.io/football/teams/226.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "ffffff",
+                        "number": "000000",
+                        "border": "ffffff"
+                    },
+                    "goalkeeper": {
+                        "primary": "ff6f00",
+                        "number": "ffffff",
+                        "border": "ff6f00"
+                    }
+                }
             },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 166989,
+                        "name": "Ennio Van Der Gouw",
+                        "number": 99,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 36794,
+                        "name": "Marios Vrousai",
+                        "number": 17,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 798,
+                        "name": "Jakub Brabec",
+                        "number": 32,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 506308,
+                        "name": "Gustavo Mancha",
+                        "number": 39,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 275567,
+                        "name": "Nelson Abbey",
+                        "number": 6,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 28373,
+                        "name": "Tam\u00e1s Nikitscher",
+                        "number": 44,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 202084,
+                        "name": "Andreas Ndoj",
+                        "number": 5,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 340846,
+                        "name": "Diogo Bezerra",
+                        "number": 7,
+                        "pos": "M",
+                        "grid": "4:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 199936,
+                        "name": "Ole Pohlmann",
+                        "number": 80,
+                        "pos": "M",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 14353,
+                        "name": "Dario \u0160piki\u0107",
+                        "number": 18,
+                        "pos": "M",
+                        "grid": "4:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 404056,
+                        "name": "Jalen Blesa",
+                        "number": 11,
+                        "pos": "F",
+                        "grid": "5:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 40386,
+                        "name": "Cezary Miszta",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 335040,
+                        "name": "Jo\u00e3o Tom\u00e9",
+                        "number": 20,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 279104,
+                        "name": "Leonardo Buta",
+                        "number": 24,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 406377,
+                        "name": "Francisco Petrasso",
+                        "number": 23,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 306063,
+                        "name": "Ryan Guilherme",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 26769,
+                        "name": "Georgios Liavas",
+                        "number": 54,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 424375,
+                        "name": "Antonis Papakanellos",
+                        "number": 19,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 96308,
+                        "name": "Jo\u00e3o Gra\u00e7a",
+                        "number": 21,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 279674,
+                        "name": "Tambl\u00e9 Monteiro",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
             "coach": {
                 "id": 25666,
                 "name": "Sotiris Sylaidopoulos",
                 "photo": "https://media.api-sports.io/football/coachs/25666.png"
-            },
-            "formation": null
+            }
         },
         "awayLineup": {
             "team": {
                 "id": 15130,
                 "name": "Estrela",
                 "logo": "https://media.api-sports.io/football/teams/15130.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "9b0000",
+                        "number": "ffffff",
+                        "border": "9b0000"
+                    },
+                    "goalkeeper": {
+                        "primary": "646464",
+                        "number": "f6f6f6",
+                        "border": "646464"
+                    }
+                }
             },
+            "formation": "4-4-2",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 1471,
+                        "name": "Renan Ribeiro",
+                        "number": 40,
+                        "pos": "G",
+                        "grid": "1:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 380626,
+                        "name": "Max Scholze",
+                        "number": 21,
+                        "pos": "D",
+                        "grid": "2:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 180961,
+                        "name": "Luan Patrick",
+                        "number": 30,
+                        "pos": "D",
+                        "grid": "2:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 418774,
+                        "name": "Otavio",
+                        "number": 83,
+                        "pos": "D",
+                        "grid": "2:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 126901,
+                        "name": "Bruno Langa",
+                        "number": 24,
+                        "pos": "D",
+                        "grid": "2:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 278941,
+                        "name": "Abraham Marcus",
+                        "number": 99,
+                        "pos": "M",
+                        "grid": "3:4"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 142096,
+                        "name": "Paulo Moreira",
+                        "number": 19,
+                        "pos": "M",
+                        "grid": "3:3"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 108501,
+                        "name": "Kevin H\u00f6\u00f6g Jansson",
+                        "number": 6,
+                        "pos": "M",
+                        "grid": "3:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 43282,
+                        "name": "Ianis Stoica",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": "3:1"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 41290,
+                        "name": "Rodrigo Pinho",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "4:2"
+                    }
+                },
+                {
+                    "player": {
+                        "id": 1494,
+                        "name": "Jovane Cabral",
+                        "number": 11,
+                        "pos": "F",
+                        "grid": "4:1"
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 177841,
+                        "name": "Eduardo Dos Santos Haesler",
+                        "number": 13,
+                        "pos": "G",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 273389,
+                        "name": "Yahya Kalley",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 613219,
+                        "name": "Ni",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 404757,
+                        "name": "Robson Lucas Oliveira Botelho",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 636445,
+                        "name": "Eddy Dou\u00e9",
+                        "number": 39,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 330307,
+                        "name": "Tom Moustier",
+                        "number": 28,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 484311,
+                        "name": "Alex Sola",
+                        "number": 63,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 338900,
+                        "name": "Leandro Antonetti",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 336603,
+                        "name": "Jorge Meireles",
+                        "number": 18,
+                        "pos": "F",
+                        "grid": null
+                    }
+                }
+            ],
             "coach": {
                 "id": 14150,
                 "name": "Joao Nuno",
                 "photo": "https://media.api-sports.io/football/coachs/14150.png"
-            },
-            "formation": null
+            }
         },
         "odds": {
             "home": "2.32",
@@ -33704,7 +34122,7 @@
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 4
+        "lineup_checks": 5
     },
     {
         "fixture": {
@@ -33780,7 +34198,7 @@
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 1
+        "lineup_checks": 2
     },
     {
         "fixture": {
@@ -33856,7 +34274,7 @@
         },
         "events": [],
         "final_odds_check": true,
-        "lineup_checks": 1
+        "lineup_checks": 2
     },
     {
         "fixture": {
@@ -39206,7 +39624,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 75,
+                "elapsed": 77,
                 "extra": null
             }
         },
@@ -39239,7 +39657,7 @@
             }
         },
         "goals": {
-            "home": 4,
+            "home": 5,
             "away": 0
         },
         "homeLineup": {
@@ -39943,6 +40361,14 @@
                 "detail": "Substitution 3",
                 "player_out": "F. Stokkers",
                 "player_out_id": 37028
+            },
+            {
+                "time": "76",
+                "team_id": 410,
+                "player": "J. Breum",
+                "player_id": 262677,
+                "type": "Goal",
+                "detail": "Normal Goal"
             }
         ],
         "match_ended_at": null,
