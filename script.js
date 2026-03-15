@@ -31,19 +31,25 @@ const LEAGUE_GROUPS = {
         { key: "ligue1", id: 61, name: "Ligue 1" },
         { key: "eredivisie", id: 88, name: "Eredivisie" },
         { key: "portugal", id: 94, name: "Primeira Liga" },
-        { key: "conference", id: 848, name: "Conference League" }
+        { key: "conference", id: 848, name: "Conference League" },
+        { key: "turkey", id: 203, name: "Süper Lig" },
+        { key: "belgium", id: 144, name: "Pro League" },
+        { key: "scotland", id: 179, name: "Premiership" },
+        { key: "denmark", id: 119, name: "Superliga" }
     ],
     "Americas": [
         { key: "mls", id: 253, name: "MLS" },
         { key: "ligamx", id: 262, name: "Liga MX" },
         { key: "brazil", id: 71, name: "Brasileirão" },
         { key: "argentina", id: 128, name: "Liga Profesional" },
+        { key: "colombia", id: 239, name: "Primera A" },
         { key: "libertadores", id: 13, name: "Copa Libertadores" },
         { key: "concacaf", id: 16, name: "Champions Cup" }
     ],
     "World": [
         { key: "saudi", id: 307, name: "Saudi Pro League" },
-        { key: "japan", id: 98, name: "J1 League" }
+        { key: "japan", id: 98, name: "J1 League" },
+        { key: "australia", id: 188, name: "A-League" }
     ]
 };
 
@@ -82,7 +88,13 @@ const LEAGUE_ABBREV = {
     4: "Euros",
     9: "Copa Am.",
     307: "SPL",
-    98: "J1"
+    98: "J1",
+    203: "SL",   // Turkey
+    144: "BPL",  // Belgium
+    179: "SP",   // Scotland
+    119: "DS",   // Denmark
+    239: "PA",   // Colombia
+    188: "AL"    // Australia
 };
 
 window.toggleExpand = function(el) {
