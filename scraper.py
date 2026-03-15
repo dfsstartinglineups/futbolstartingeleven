@@ -63,6 +63,13 @@ MASTER_PLAYER_DICT = load_json(PLAYER_DICT_PATH)
 #  88 : Eredivisie (Netherlands)
 #  98 : J1 League (Japan)
 # =========================================================
+#JUST ADDED
+#    203: "SL",   // Turkey
+#    144: "BPL",  // Belgium
+#    179: "SP",   // Scotland
+#    119: "DS",   // Denmark
+#    239: "PA",   // Colombia
+#    188: "AL"    // Australia
 TOP_LEAGUE_IDS = [# Top 5 Europe + Championship
     39, 40, 140, 61, 135, 78, 
     # Euro Tournaments 
@@ -74,7 +81,15 @@ TOP_LEAGUE_IDS = [# Top 5 Europe + Championship
     # English Cups
     45, 48,
     # Best of the Rest (Saudi, Portugal, Netherlands, Japan)
-    307, 94, 88,98]
+    307, 94, 88,98,
+    #newly added
+    203,#Turkey
+    144,#Belgium
+    179,#Scotland
+    119,#Denmark
+    239,#Colombia
+    188 #Australia
+]
 
 def fetch_data(endpoint):
     req = urllib.request.Request(f"{API_HOST}/{endpoint}")
