@@ -4,55 +4,16 @@
 const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 let ALL_GAMES_DATA = []; 
 
-// Check local storage for the user's saved preference
+// Check local storage for the user's saved preferences
 let savedLineupState = localStorage.getItem('futbolLineupsExpanded');
 let globalLineupsExpanded = savedLineupState !== null ? savedLineupState === 'true' : true; 
 
+let savedScoreboardState = localStorage.getItem('futbolScoreboardMode');
+let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState === 'true' : false; 
+
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
 
-/**
- * =========================================================
- * API-FOOTBALL LEAGUE ID MAPPING
- * =========================================================
- * * --- Top 5 Europe + Championship ---
- * 39 : Premier League (England)
- * 40 : Championship (England)
- * 140 : La Liga (Spain)
- * 61 : Ligue 1 (France)
- * 135 : Serie A (Italy)
- * 78 : Bundesliga (Germany)
- *
- * --- Euro Tournaments ---
- * 2 : UEFA Champions League
- * 3 : UEFA Europa League
- * 848 : UEFA Conference League
- *
- * --- Americas (North & South) ---
- * 262 : Liga MX (Mexico)
- * 253 : Major League Soccer / MLS (USA)
- * 71 : Serie A / Brasileirão (Brazil)
- * 128 : Liga Profesional (Argentina)
- * 528 : Leagues Cup (CONCACAF)
- * 13 : Copa Libertadores (CONMEBOL)
- * 16 : Copa Sudamericana (CONMEBOL)
- *
- * --- International ---
- * 1 : FIFA World Cup
- * 4 : UEFA European Championship (Euros)
- * 9 : Copa America
- *
- * --- English Cups ---
- * 45 : FA Cup (England)
- * 48 : League Cup / Carabao Cup (England)
- *
- * --- Best of the Rest ---
- * 307 : Saudi Pro League (Saudi Arabia)
- * 94 : Primeira Liga (Portugal)
- * 88 : Eredivisie (Netherlands)
- * 98 : J1 League (Japan)
- * =========================================================
- */
-
+// ... (LEAGUE_GROUPS, SUPPORTED_LEAGUES, LEAGUE_MAP_ESPN, toggleExpand, checkOverflows, shortenPlayerName, openPlayerModal ALL REMAIN EXACTLY THE SAME) ...
 
 const LEAGUE_GROUPS = {
     "priority": [
@@ -86,7 +47,6 @@ const LEAGUE_GROUPS = {
     ]
 };
 
-
 const SUPPORTED_LEAGUES = {};
 Object.values(LEAGUE_GROUPS).flat().forEach(l => SUPPORTED_LEAGUES[l.key] = l);
 
@@ -97,9 +57,6 @@ const LEAGUE_MAP_ESPN = {
     848: "uefa.conf"
 };
 
-// ==========================================
-// 1. UI HELPER MODULES & OVERFLOW LOGIC
-// ==========================================
 window.toggleExpand = function(el) {
     const isExpanded = el.classList.toggle('is-expanded');
     const targets = el.querySelectorAll('.truncate-target');
@@ -108,8 +65,8 @@ window.toggleExpand = function(el) {
     targets.forEach(t => {
         if (isExpanded) {
             t.classList.remove('text-truncate');
-            t.style.whiteSpace = 'normal'; // Force wrap when expanding
-            t.style.textOverflow = ''; // Remove the sharp clip
+            t.style.whiteSpace = 'normal'; 
+            t.style.textOverflow = ''; 
         } else {
             t.classList.add('text-truncate');
             t.style.whiteSpace = ''; 
@@ -121,7 +78,7 @@ window.toggleExpand = function(el) {
     }
 
     if (!isExpanded) {
-        checkOverflows(); // Recalculate to ensure the clip applies correctly on collapse
+        checkOverflows(); 
     }
 };
 
@@ -131,7 +88,6 @@ window.checkOverflows = function() {
         const indicator = section.querySelector('.overflow-indicator');
         if (!indicator) return;
 
-        // If the user has already clicked to expand it, ignore it
         if (section.classList.contains('is-expanded')) {
             indicator.classList.remove('d-none');
             targets.forEach(t => t.style.textOverflow = ''); 
@@ -140,7 +96,6 @@ window.checkOverflows = function() {
 
         let hasOverflow = false;
         targets.forEach(t => {
-            // Determine if native width exceeds visible width smoothly (+1 protects against decimal rounding)
             if (t.scrollWidth > t.clientWidth + 1) {
                 hasOverflow = true;
             }
@@ -148,13 +103,11 @@ window.checkOverflows = function() {
 
         if (hasOverflow) {
             indicator.classList.remove('d-none');
-            // Hide the default '...' and replace it with a sharp cut so it doesn't bleed under the arrow
             targets.forEach(t => {
                 t.style.textOverflow = 'clip';
             });
         } else {
             indicator.classList.add('d-none');
-            // Restore defaults
             targets.forEach(t => {
                 t.style.textOverflow = '';
             });
@@ -171,14 +124,12 @@ function shortenPlayerName(fullName) {
     return `${initial} ${lastName}`;
 }
 
-// --- NEW MODAL RENDER FUNCTION ---
 window.openPlayerModal = function(el) {
     const playerDataStr = el.getAttribute('data-player');
     if (!playerDataStr) return;
     
     const p = JSON.parse(decodeURIComponent(playerDataStr));
     
-    // Elements
     const nameEl = document.getElementById('modal-player-name');
     const bioEl = document.getElementById('modal-player-bio');
     const photoEl = document.getElementById('modal-player-photo');
@@ -186,7 +137,6 @@ window.openPlayerModal = function(el) {
     const statsContainer = document.getElementById('modal-player-stats-container');
     const noStatsEl = document.getElementById('modal-no-stats');
 
-    // Populate Bio
     nameEl.textContent = p.name || 'Unknown Player';
     
     const pos = p.pos || '?';
@@ -194,7 +144,6 @@ window.openPlayerModal = function(el) {
     const nat = p.nationality || 'N/A';
     bioEl.innerHTML = `<span class="fw-bold text-dark">${pos}</span> &nbsp;•&nbsp; ${age} &nbsp;•&nbsp; ${nat}`;
 
-    // Populate Photo
     if (p.photo && p.photo.includes("http")) {
         photoEl.src = p.photo;
         photoEl.style.display = 'block';
@@ -205,7 +154,6 @@ window.openPlayerModal = function(el) {
         initialsEl.style.display = 'flex';
     }
 
-    // Populate Stats
     statsContainer.innerHTML = '';
     
     if (p.season_stats) {
@@ -215,7 +163,6 @@ window.openPlayerModal = function(el) {
         if (mainStats.games > 0) {
             noStatsEl.classList.add('d-none');
             
-            // Fallbacks for older cached data so the UI doesn't crash on old players
             const goals = mainStats.goals || 0;
             const assists = mainStats.assists || 0;
             const saves = mainStats.saves || 0;
@@ -230,7 +177,6 @@ window.openPlayerModal = function(el) {
 
             let stats = [];
             
-            // --- DYNAMIC STAT GRID BY POSITION ---
             if (pos === 'G') {
                 stats = [
                     { label: "Matches", val: mainStats.games, color: "text-dark" },
@@ -258,7 +204,7 @@ window.openPlayerModal = function(el) {
                     { label: "Pass Acc", val: passAcc, color: "text-dark" },
                     { label: "Rating", val: rat, color: "text-info" }
                 ];
-            } else { // 'F' (Forwards)
+            } else { 
                 stats = [
                     { label: "Matches", val: mainStats.games, color: "text-dark" },
                     { label: "Goals", val: goals, color: "text-success" },
@@ -282,7 +228,6 @@ window.openPlayerModal = function(el) {
             });
             statsContainer.innerHTML = gridHtml;
 
-            // --- BUILD DYNAMIC COMPETITION BREAKDOWN ---
             if (isNested && p.season_stats.competitions) {
                 let breakdownHtml = `<div class="mt-2 text-start w-100 px-1">
                                         <div class="text-muted mb-1 border-bottom pb-1" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Competition Breakdown</div>`;
@@ -321,12 +266,14 @@ window.openPlayerModal = function(el) {
         noStatsEl.classList.remove('d-none');
     }
 
-    // Show Modal
     const modal = new bootstrap.Modal(document.getElementById('playerProfileModal'));
     modal.show();
 };
 
 
+// ==========================================
+// NEW: SPLIT HTML BUILDERS (Time & Event decoupled)
+// ==========================================
 function getTimeBadgeHtml(data) {
     const status = data.fixture.status.short;
     const dateObj = new Date(data.fixture.date);
@@ -342,7 +289,7 @@ function getTimeBadgeHtml(data) {
         badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
     } else if (!isPreGame && !isFinished && !data.isFallback) {
         let displayMin = data.fixture.status.elapsed;
-        let extraMin = data.fixture.status.extra; // Grab the stoppage time!
+        let extraMin = data.fixture.status.extra;
 
         if (status === 'ET') {
             const maxEventTime = data.events ? Math.max(0, ...data.events.map(e => parseInt(e.time) || 0)) : 0;
@@ -350,12 +297,10 @@ function getTimeBadgeHtml(data) {
             else if (displayMin < 105 && (new Date() - dateObj) > (135 * 60 * 1000)) { displayMin += 15; }
         }
         
-        // Handle special break periods (including our new HT logic)
         if (status === 'HT') displayMin = 'HT';
         else if (status === 'BT') displayMin = 'ET HT';
         else if (status === 'P') displayMin = 'PEN';
         else {
-            // If API-Sports provides stoppage time, combine them! (e.g. 45+5')
             if (extraMin) {
                 displayMin = `${displayMin}+${extraMin}'`; 
             } else {
@@ -369,47 +314,100 @@ function getTimeBadgeHtml(data) {
     } else {
         badge = `<span class="badge bg-white text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${matchTime}</span>`;
     }
+    return badge;
+}
 
-    let latestEvent = '';
-    if (!isFinished && data.events && data.events.length > 0) {
+function getLatestEventHtml(data, isRibbon = false) {
+    const status = data.fixture.status.short;
+    const isFinished = ['FT', 'AET', 'PEN'].includes(status);
+    
+    if (data.events && data.events.length > 0) {
         const lastEv = data.events[data.events.length - 1]; 
         const currentMinute = data.fixture.status.elapsed || 0;
         const eventMinute = parseInt(lastEv.time) || 0;
         
-        // Show the alert if the event happened in the last 5 minutes
-        if (currentMinute - eventMinute <= 5) {
-            const isHomeTeam = lastEv.team_id === data.teams.home.id;
-            const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
-            const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo; 
+        // Ribbon always shows the last event. Full View only shows if within 5 mins.
+        if (!isRibbon && isFinished) return '';
+        if (!isRibbon && (currentMinute - eventMinute > 5)) return '';
+
+        const isHomeTeam = lastEv.team_id === data.teams.home.id;
+        const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
+        const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo; 
+        
+        if (lastEv.type === 'subst') {
+            let pIn = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : 'Unknown';
+            let pOut = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
             
-            if (lastEv.type === 'subst') {
-                // Substitution Alert Format (Two Lines)
-                let pIn = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : 'Unknown';
-                let pOut = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
-                
-                latestEvent = `<div class="ms-2 text-dark fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
-                    <span class="text-truncate" style="max-width: 160px;">🔄 <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${lastEv.time}' ${pIn} IN</span>
-                    <span class="text-truncate text-muted" style="max-width: 160px; padding-left: 18px;">${pOut} OUT</span>
-                </div>`;
+            if (isRibbon) {
+                return `<div class="text-dark fw-bold w-100 text-start ps-2" style="font-size: 0.6rem; line-height: 1.2; display: inline-block;">
+                            <div class="text-truncate" title="${pIn} IN"><span style="font-size: 0.55rem;">🔄</span> ${lastEv.time}' <span class="text-success">${pIn}</span></div>
+                            <div class="text-truncate text-muted" title="${pOut} OUT" style="padding-left: 14px;">${pOut}</div>
+                        </div>`;
             } else {
-                // Goal and Card Alert Format
-                let icon = '🟥';
-                if (lastEv.type === 'Goal') {
-                    icon = '⚽';
-                } else if (lastEv.detail && lastEv.detail.includes('Yellow')) {
-                    icon = lastEv.detail.includes('Red') || lastEv.detail.includes('Second') ? '🟨🟥' : '🟨';
-                }
-                const playerName = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : teamName;
-                const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
-                
-                latestEvent = `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
-                    ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} (${lastEv.time}')
-                </span>`;
+                return `<div class="ms-2 text-dark fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
+                            <span class="text-truncate" style="max-width: 160px;">🔄 <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${lastEv.time}' ${pIn} IN</span>
+                            <span class="text-truncate text-muted" style="max-width: 160px; padding-left: 18px;">${pOut} OUT</span>
+                        </div>`;
+            }
+        } else {
+            let icon = '🟥';
+            if (lastEv.type === 'Goal') { icon = '⚽'; } 
+            else if (lastEv.detail && lastEv.detail.includes('Yellow')) {
+                icon = lastEv.detail.includes('Red') || lastEv.detail.includes('Second') ? '🟨🟥' : '🟨';
+            }
+            const playerName = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : teamName;
+            const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
+            
+            if (isRibbon) {
+                return `<div class="${textColor} fw-bold text-truncate text-start w-100 ps-2" style="font-size: 0.65rem; display: inline-block; line-height: 1.2;">
+                            ${icon} <span title="${playerName}">${playerName}</span><br>
+                            <span class="text-muted" style="font-size:0.55rem; margin-left: 14px;">${lastEv.time}' <img src="${teamLogo}" style="width: 10px; height: 10px; object-fit: contain;"></span>
+                        </div>`;
+            } else {
+                return `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
+                            ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} (${lastEv.time}')
+                        </span>`;
             }
         }
     }
-    return badge + latestEvent;
+    return isRibbon ? `<span class="text-muted" style="font-size: 0.6rem; font-style: italic;">No Events</span>` : '';
 }
+
+// ==========================================
+// NEW: RIBBON HTML BUILDER
+// ==========================================
+function getRibbonHtml(data) {
+    const home = data.teams.home;
+    const away = data.teams.away;
+    const status = data.fixture.status.short;
+    const isPreGame = ['NS', 'TBD'].includes(status);
+    const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
+    
+    const homeScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.home ?? 0) : '-';
+    const awayScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.away ?? 0) : '-';
+
+    return `
+    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
+        <div class="col-3 text-center d-flex justify-content-center align-items-center border-end pe-1">
+            ${getTimeBadgeHtml(data)}
+        </div>
+        <div class="col-5 px-2">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 80%;"><img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}</span>
+                <span class="fw-bold text-dark" style="font-size: 0.85rem;">${homeScore}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 80%;"><img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}</span>
+                <span class="fw-bold text-dark" style="font-size: 0.85rem;">${awayScore}</span>
+            </div>
+        </div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">
+            ${getLatestEventHtml(data, true)}
+        </div>
+    </div>`;
+}
+
+// ... (getScoreHtml, getEventsHtml, getOddsHtml, getInjuriesHtml ALL REMAIN EXACTLY THE SAME) ...
 
 function getScoreHtml(data) {
     const status = data.fixture.status.short;
@@ -429,7 +427,6 @@ function getEventsHtml(data) {
     const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
     
     const formatSingleEvent = (e, teamName) => {
-        // 1. Handle Substitutions
         if (e.type === 'subst') {
             let pIn = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : 'Unknown';
             let pOut = (e.player_out && e.player_out !== "null") ? shortenPlayerName(e.player_out) : 'Unknown';
@@ -441,11 +438,9 @@ function getEventsHtml(data) {
             `;
         }
 
-        // 2. Handle Goals & Cards
         let icon = '🟥';
-        if (e.type === 'Goal') {
-            icon = '⚽';
-        } else if (e.detail && e.detail.includes('Yellow')) {
+        if (e.type === 'Goal') { icon = '⚽'; } 
+        else if (e.detail && e.detail.includes('Yellow')) {
             icon = e.detail.includes('Red') || e.detail.includes('Second') ? '🟨🟥' : '🟨';
         }
         let playerName = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : teamName;
@@ -454,18 +449,13 @@ function getEventsHtml(data) {
 
     const renderEventSide = (evs, teamName, isHome) => {
         if (evs.length === 0) return '';
-        
-        // Reverse array so the most recent event is at the top/index 0
         const reversedEvs = [...evs].reverse();
 
         if (reversedEvs.length === 1) {
             return `<div class="text-truncate">${formatSingleEvent(reversedEvs[0], teamName)}</div>`;
         }
 
-        // Collapsed view shows just the most recent event
         const firstEvent = formatSingleEvent(reversedEvs[0], teamName);
-        
-        // Expanded view stacks all events vertically descending
         const allEvents = reversedEvs.map(e => `<div class="text-truncate" style="margin-bottom: 2px;">${formatSingleEvent(e, teamName)}</div>`).join('');
 
         return `
@@ -513,7 +503,6 @@ function getOddsHtml(data) {
 function getInjuriesHtml(data) {
     if (!data.injuries || (data.injuries.home.length === 0 && data.injuries.away.length === 0)) return '';
     
-    // Shorten names for the injury report too
     const cleanHomeInj = data.injuries.home.map(n => shortenPlayerName(n));
     const cleanAwayInj = data.injuries.away.map(n => shortenPlayerName(n));
     
@@ -534,13 +523,12 @@ function getInjuriesHtml(data) {
     </div>`;
 }
 
-// ==========================================
-// 2. DATA FETCHING & ROUTING
-// ==========================================
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
     return { league: params.get('league') || 'top', date: params.get('date') || DEFAULT_DATE };
 }
+
+// ... (renderLeagueMenu and fetchMatchesData REMAIN EXACTLY THE SAME) ...
 
 function renderLeagueMenu(activeLeague, currentDate) {
     const desktopMenu = document.getElementById('league-menu-desktop');
@@ -551,7 +539,6 @@ function renderLeagueMenu(activeLeague, currentDate) {
     desktopMenu.innerHTML = '';
     mobileMenu.innerHTML = '';
     
-    // --- 1. BUILD DESKTOP MENU (WITH DROPDOWNS) ---
     LEAGUE_GROUPS["priority"].forEach(league => {
         const a = document.createElement('a');
         a.href = `?league=${league.key}&date=${currentDate}`;
@@ -578,10 +565,8 @@ function renderLeagueMenu(activeLeague, currentDate) {
         desktopMenu.appendChild(dropdownDiv);
     });
 
-    // --- 2. BUILD MOBILE MENU (4 Links + Dropdown) ---
     const topLinks = LEAGUE_GROUPS["priority"];
 
-    // Shorten names so they fit perfectly on small phone screens
     const mobileNames = {
         "Top Matches": "TOP",
         "Premier League": "EPL",
@@ -589,7 +574,6 @@ function renderLeagueMenu(activeLeague, currentDate) {
         "Serie A": "Serie A"
     };
 
-    // Add priority items directly to the bar
     topLinks.forEach(league => {
         const a = document.createElement('a');
         a.href = `?league=${league.key}&date=${currentDate}`;
@@ -598,10 +582,8 @@ function renderLeagueMenu(activeLeague, currentDate) {
         mobileMenu.appendChild(a);
     });
 
-    // Check if the currently selected league is hidden inside the "More" menu
     const isMoreActive = !topLinks.some(l => l.key === activeLeague);
 
-    // Build the "More" Dropdown
     let dropdownHtml = `
         <div class="dropdown d-inline-block">
             <button class="league-pill dropdown-toggle ${isMoreActive ? 'active' : ''}" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border: none; background: transparent; color: ${isMoreActive ? '#20c997' : '#adb5bd'}; padding-right: 0;">
@@ -610,7 +592,6 @@ function renderLeagueMenu(activeLeague, currentDate) {
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" style="background-color: #343a40; border-color: #495057; max-height: 65vh; overflow-y: auto;">
     `;
 
-    // Add remaining regions and their leagues with a bright, visible header
     ['Europe', 'Americas', 'World'].forEach((region, idx) => {
         if (idx !== 0) {
             dropdownHtml += `<li><hr class="dropdown-divider border-secondary"></li>`;
@@ -677,34 +658,30 @@ async function fetchMatchesData(params) {
     } catch (e) { return null; }
 }
 
-// ==========================================
-// 3. EVENT HIGHLIGHT ENGINE
-// ==========================================
 function triggerCardHighlight(targetCard, type) {
     if (!targetCard) return;
     
     const innerHeader = targetCard.querySelector('.p-2.pb-1');
     let borderColor, boxShadowColor, headerBgColor;
 
-    if (type === 'goal' || type === 'hash') { // Futbol Green
+    if (type === 'goal' || type === 'hash') { 
         borderColor = '#20c997';
         boxShadowColor = 'rgba(32, 201, 151, 0.8)';
         headerBgColor = '#d1e7dd';
-    } else if (type === 'red_card') { // Red Card
+    } else if (type === 'red_card') { 
         borderColor = '#dc3545';
         boxShadowColor = 'rgba(220, 53, 69, 0.8)';
         headerBgColor = '#f8d7da';
-    } else if (type === 'yellow_card') { // Yellow Card
+    } else if (type === 'yellow_card') { 
         borderColor = '#ffc107';
         boxShadowColor = 'rgba(255, 193, 7, 0.8)';
         headerBgColor = '#fff3cd';
-    } else if (type === 'subst') { // Substitution Black Highlight
-        borderColor = '#212529'; // Dark gray/black
-        boxShadowColor = 'rgba(33, 37, 41, 0.6)'; // Soft black glow
-        headerBgColor = '#e9ecef'; // Very light gray header background
+    } else if (type === 'subst') { 
+        borderColor = '#212529'; 
+        boxShadowColor = 'rgba(33, 37, 41, 0.6)'; 
+        headerBgColor = '#e9ecef'; 
     }
 
-    // Apply the bold highlight and slight zoom directly to the card
     targetCard.style.transition = 'all 0.4s ease-out';
     targetCard.style.transform = 'scale(1.02)';
     targetCard.style.setProperty('border', `3px solid ${borderColor}`, 'important');
@@ -717,7 +694,6 @@ function triggerCardHighlight(targetCard, type) {
         innerHeader.style.backgroundColor = headerBgColor; 
     }
     
-    // Hold the highlight for 4 seconds, then fade it back to normal
     setTimeout(() => {
         targetCard.style.transform = 'scale(1)';
         targetCard.style.removeProperty('border'); 
@@ -729,22 +705,33 @@ function triggerCardHighlight(targetCard, type) {
         }
     }, 4000); 
 }
+
 // ==========================================
-// 4. SILENT SYNC ENGINE
+// NEW: DUAL-VIEW TOGGLE LOGIC
+// ==========================================
+window.toggleSingleCard = function(fixId) {
+    const ribbon = document.getElementById(`ribbon-${fixId}`);
+    const full = document.getElementById(`full-${fixId}`);
+    if (ribbon && full) {
+        ribbon.classList.toggle('d-none');
+        full.classList.toggle('d-none');
+    }
+};
+
+// ==========================================
+// UPDATED SILENT SYNC ENGINE (Syncs Both Views)
 // ==========================================
 async function updateLiveGames() {
     const params = getUrlParams();
     const newData = await fetchMatchesData(params);
     if (!newData) return; 
 
-    // If a game was added/removed, we must re-render the whole board
     if (newData.length !== ALL_GAMES_DATA.length) {
         ALL_GAMES_DATA = newData;
         renderGames();
         return;
     }
 
-    // Clone the old state so we can detect changes (like new goals)
     const oldData = [...ALL_GAMES_DATA]; 
     ALL_GAMES_DATA = newData;
     
@@ -752,6 +739,7 @@ async function updateLiveGames() {
         const fixId = match.fixture.id;
         const oldMatch = oldData.find(m => m.fixture.id === fixId);
         
+        // Target specific containers inside the Full View
         const timeEl = document.getElementById(`time-${fixId}`);
         const scoreEl = document.getElementById(`score-${fixId}`);
         const eventsEl = document.getElementById(`events-${fixId}`);
@@ -759,7 +747,8 @@ async function updateLiveGames() {
         const injuriesEl = document.getElementById(`injuries-${fixId}`);
         
         if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
-            const newTimeHtml = getTimeBadgeHtml(match).trim();
+            // FULL VIEW UPDATES
+            const newTimeHtml = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
             const newScoreHtml = getScoreHtml(match).trim();
             const newEventsHtml = getEventsHtml(match).trim();
             const newOddsHtml = getOddsHtml(match).trim();
@@ -774,7 +763,6 @@ async function updateLiveGames() {
                 scoreEl.classList.add('flash-green');
             }
             
-            // Preserve expanded states during silent syncs
             const eventsWasExpanded = eventsEl.querySelector('.is-expanded') !== null;
             if (eventsEl.innerHTML.trim() !== newEventsHtml) {
                 eventsEl.innerHTML = newEventsHtml;
@@ -799,102 +787,100 @@ async function updateLiveGames() {
                 }
             }
         }
-        // --- NEW: DYNAMIC TOP BANNER TEXT ---
-            const bannerEl = document.getElementById(`lineup-banner-text-${fixId}`);
-            if (bannerEl) {
-                const liveStatus = match.fixture.status.short;
-                let newBannerText = "STARTING XI";
-                if (['FT', 'AET', 'PEN'].includes(liveStatus)) newBannerText = "FINAL XI";
-                else if (!['NS', 'TBD'].includes(liveStatus)) newBannerText = "LIVE XI";
-                
-                const newBannerHtml = `${newBannerText} <span style="font-size: 0.6rem;">▼</span>`;
-                if (bannerEl.innerHTML.trim() !== newBannerHtml) bannerEl.innerHTML = newBannerHtml;
-            }
-        // --- NEW: REAL-TIME LINEUP REFRESHER FOR SUBS ---
-            // If the events array length changed, a new event (like a sub) happened. We need to redraw the lineups!
-            if (oldMatch) {
-                const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
-                const newEvLen = match.events ? match.events.length : 0;
-                
-                if (newEvLen > oldEvLen) {
-                    const latestEvent = match.events[newEvLen - 1];
-                    // If the new event was a substitution, instantly re-render the starting XIs!
-                    if (latestEvent.type === 'subst') {
-                        const lineupContainer = document.getElementById(`lineup-collapse-${fixId}`);
-                        if (lineupContainer) {
-                            // Find the row holding the two lineup columns
-                            const rowEl = lineupContainer.querySelector('.row.g-0.bg-white');
-                            if (rowEl) {
-                                // Redraw both lists using our updated buildLineupList logic
-                                // Note: Because buildLineupList is defined inside createGameCard, we have to recreate the HTML structure here
+        
+        // RIBBON VIEW UPDATE (Completely redraws if data changes)
+        const ribbonEl = document.getElementById(`ribbon-${fixId}`);
+        if (ribbonEl) {
+            const newRibbonHtml = getRibbonHtml(match).trim();
+            if (ribbonEl.innerHTML.trim() !== newRibbonHtml) ribbonEl.innerHTML = newRibbonHtml;
+        }
+
+        const bannerEl = document.getElementById(`lineup-banner-text-${fixId}`);
+        if (bannerEl) {
+            const liveStatus = match.fixture.status.short;
+            let newBannerText = "STARTING XI";
+            if (['FT', 'AET', 'PEN'].includes(liveStatus)) newBannerText = "FINAL XI";
+            else if (!['NS', 'TBD'].includes(liveStatus)) newBannerText = "LIVE XI";
+            
+            const newBannerHtml = `${newBannerText} <span style="font-size: 0.6rem;">▼</span>`;
+            if (bannerEl.innerHTML.trim() !== newBannerHtml) bannerEl.innerHTML = newBannerHtml;
+        }
+        
+        if (oldMatch) {
+            const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
+            const newEvLen = match.events ? match.events.length : 0;
+            
+            if (newEvLen > oldEvLen) {
+                const latestEvent = match.events[newEvLen - 1];
+                if (latestEvent.type === 'subst') {
+                    const lineupContainer = document.getElementById(`lineup-collapse-${fixId}`);
+                    if (lineupContainer) {
+                        const rowEl = lineupContainer.querySelector('.row.g-0.bg-white');
+                        if (rowEl) {
+                            const getLineupHtml = (lineupData, gameData) => {
+                                if (gameData.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
+                                if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
                                 
-                                // We extract the helper function logic to redraw the lists without redefining the function
-                                const getLineupHtml = (lineupData, gameData) => {
-                                    if (gameData.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
-                                    if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
-                                    
-                                    const statusShort = gameData.fixture.status.short;
-                                    const isPreGame = ['NS', 'TBD'].includes(statusShort);
-                                    const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation}</div>`;
-                                    
-                                    let currentXI = [...lineupData.startXI];
-                                    if (!isPreGame && gameData.events && gameData.events.length > 0) {
-                                        const teamId = lineupData.team.id;
-                                        const subs = gameData.events.filter(e => e.type === 'subst' && e.team_id === teamId);
-                                        subs.forEach(subEvent => {
-                                            const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
-                                            if (outIndex !== -1) {
-                                                const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
-                                                if (subPlayer) {
-                                                    currentXI[outIndex] = { ...subPlayer, player: { ...subPlayer.player, pos: currentXI[outIndex].player.pos, isSubbedIn: true, subMinute: subEvent.time } };
-                                                }
+                                const statusShort = gameData.fixture.status.short;
+                                const isPreGame = ['NS', 'TBD'].includes(statusShort);
+                                const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation}</div>`;
+                                
+                                let currentXI = [...lineupData.startXI];
+                                if (!isPreGame && gameData.events && gameData.events.length > 0) {
+                                    const teamId = lineupData.team.id;
+                                    const subs = gameData.events.filter(e => e.type === 'subst' && e.team_id === teamId);
+                                    subs.forEach(subEvent => {
+                                        const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
+                                        if (outIndex !== -1) {
+                                            const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
+                                            if (subPlayer) {
+                                                currentXI[outIndex] = { ...subPlayer, player: { ...subPlayer.player, pos: currentXI[outIndex].player.pos, isSubbedIn: true, subMinute: subEvent.time } };
                                             }
-                                        });
-                                    }
+                                        }
+                                    });
+                                }
+                                
+                                const listItems = currentXI.map(p => {
+                                    const safePos = p.player.pos || '-';
+                                    const originalName = p.player.name || 'Unknown';
+                                    const displaySafeName = shortenPlayerName(originalName);
+                                    const safeNum = p.player.number || '';
+                                    const photoUrl = p.player.photo || '';
+                                    const encodedPlayer = encodeURIComponent(JSON.stringify(p.player));
+                                    let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
                                     
-                                    const listItems = currentXI.map(p => {
-                                        const safePos = p.player.pos || '-';
-                                        const originalName = p.player.name || 'Unknown';
-                                        const displaySafeName = shortenPlayerName(originalName);
-                                        const safeNum = p.player.number || '';
-                                        const photoUrl = p.player.photo || '';
-                                        const encodedPlayer = encodeURIComponent(JSON.stringify(p.player));
-                                        let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
-                                        
-                                        const photoHtml = photoUrl && photoUrl.includes("http") 
-                                            ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
-                                            : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
+                                    const photoHtml = photoUrl && photoUrl.includes("http") 
+                                        ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
+                                        : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
-                                        const subIndicator = p.player.isSubbedIn ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.player.subMinute}'</span>` : '';
+                                    const subIndicator = p.player.isSubbedIn ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.player.subMinute}'</span>` : '';
 
-                                        return `
-                                            <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" data-player="${encodedPlayer}" onclick="openPlayerModal(this)">
-                                                <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
-                                                <div class="me-2">${photoHtml}</div>
-                                                <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">${displaySafeName}${subIndicator}</span>
-                                                <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
-                                            </li>`;
-                                    }).join('');
-                                    return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
-                                };
+                                    return `
+                                        <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" data-player="${encodedPlayer}" onclick="openPlayerModal(this)">
+                                            <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
+                                            <div class="me-2">${photoHtml}</div>
+                                            <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">${displaySafeName}${subIndicator}</span>
+                                            <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
+                                        </li>`;
+                                }).join('');
+                                return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
+                            };
 
-                                // Overwrite the two columns with the fresh HTML
-                                rowEl.innerHTML = `
-                                    <div class="col-6 border-end">${getLineupHtml(match.homeLineup, match)}</div>
-                                    <div class="col-6">${getLineupHtml(match.awayLineup, match)}</div>
-                                `;
-                            }
+                            rowEl.innerHTML = `
+                                <div class="col-6 border-end">${getLineupHtml(match.homeLineup, match)}</div>
+                                <div class="col-6">${getLineupHtml(match.awayLineup, match)}</div>
+                            `;
                         }
                     }
                 }
             }
-        // --- NEW: GOAL, CARD, & SUB HIGHLIGHT DETECTOR ---
+        }
         if (oldMatch) {
             const oldLen = oldMatch.events ? oldMatch.events.length : 0;
             const newLen = match.events ? match.events.length : 0;
             
             if (newLen > oldLen) {
-                const latestEvent = match.events[newLen - 1]; // Grab the newest event added to the array
+                const latestEvent = match.events[newLen - 1]; 
                 const cardEl = document.getElementById(`card-${fixId}`);
                 
                 if (cardEl && latestEvent) {
@@ -903,9 +889,7 @@ async function updateLiveGames() {
                     } else if (latestEvent.type === 'Card' && latestEvent.detail) {
                         if (latestEvent.detail.includes('Second') || latestEvent.detail.includes('Yellow / Red')) {
                             triggerCardHighlight(cardEl, 'yellow_card');
-                            setTimeout(() => {
-                                triggerCardHighlight(cardEl, 'red_card');
-                            }, 4500); 
+                            setTimeout(() => { triggerCardHighlight(cardEl, 'red_card'); }, 4500); 
                         } else if (latestEvent.detail.includes('Red')) {
                             triggerCardHighlight(cardEl, 'red_card');
                         } else if (latestEvent.detail.includes('Yellow')) {
@@ -917,30 +901,23 @@ async function updateLiveGames() {
                 }
             }
         }
-        
     });
 
     requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
 }
 
-// ==========================================
-// 5. DEEP LINK SCROLLING
-// ==========================================
 function handleHashNavigation() {
     if (window.location.hash) {
         setTimeout(() => {
             const targetCard = document.querySelector(window.location.hash);
             if (targetCard) {
                 targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                triggerCardHighlight(targetCard, 'hash'); // Reuses the new highlight engine
+                triggerCardHighlight(targetCard, 'hash'); 
             }
         }, 600); 
     }
 }
 
-// ==========================================
-// 6. MAIN APP LOGIC 
-// ==========================================
 async function init() {
     const params = getUrlParams();
     renderLeagueMenu(params.league, params.date);
@@ -959,7 +936,7 @@ async function init() {
     }
 
     renderGames();
-    handleHashNavigation(); // <--- Process #card-ID deep links
+    handleHashNavigation(); 
     setInterval(updateLiveGames, 30000); 
 }
 
@@ -974,7 +951,6 @@ function renderGames() {
         return matchString.includes(searchText);
     });
 
-    // SORTING LOGIC
     filteredGames.sort((a, b) => {
         const isFinishedA = ['FT', 'AET', 'PEN'].includes(a.fixture.status.short);
         const isFinishedB = ['FT', 'AET', 'PEN'].includes(b.fixture.status.short);
@@ -988,6 +964,9 @@ function renderGames() {
     requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
 }
 
+// ==========================================
+// NEW: DUAL-VIEW CARD BUILDER
+// ==========================================
 function createGameCard(data) {
     const gameCard = document.createElement('div');
     gameCard.className = 'col-md-6 col-lg-6 col-xl-4 mb-2';
@@ -996,11 +975,9 @@ function createGameCard(data) {
     const away = data.teams.away;
     const fixId = data.fixture.id;
 
-    // Both ranks now have the space on the right side
     const homeRank = home.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${home.rank}]</span> ` : '';
     const awayRank = away.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${away.rank}]</span> ` : '';
 
-    // Dynamically insert records right under the team names
     const homeRecord = home.record ? `<div class="text-muted fw-normal" style="font-size: 0.65rem; margin-top: 2px;">(${home.record})</div>` : '';
     const awayRecord = away.record ? `<div class="text-muted fw-normal" style="font-size: 0.65rem; margin-top: 2px;">(${away.record})</div>` : '';
 
@@ -1008,36 +985,27 @@ function createGameCard(data) {
         if (data.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
         if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
         
-        // 1. Determine if the game has started so we know if we need to apply subs
         const status = data.fixture.status.short;
         const isPreGame = ['NS', 'TBD'].includes(status);
         
-        // We removed the dynamic text here to keep it clean!
         const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation}</div>`;
         
-        // 2. Clone the startXI array so we don't modify the original JSON data
         let currentXI = [...lineupData.startXI];
         
-        // 3. Apply Substitutions dynamically if the game has started
         if (!isPreGame && data.events && data.events.length > 0) {
             const teamId = lineupData.team.id;
             const subs = data.events.filter(e => e.type === 'subst' && e.team_id === teamId);
             
             subs.forEach(subEvent => {
-                // Find the player being subbed out
                 const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
-                
                 if (outIndex !== -1) {
-                    // Find the player coming in from the substitutes list
                     const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
-                    
                     if (subPlayer) {
-                        // Create a modified copy of the sub player with the original position and an indicator flag
                         currentXI[outIndex] = {
                             ...subPlayer,
                             player: {
                                 ...subPlayer.player,
-                                pos: currentXI[outIndex].player.pos, // Keep the starter's original position on the field
+                                pos: currentXI[outIndex].player.pos, 
                                 isSubbedIn: true,
                                 subMinute: subEvent.time
                             }
@@ -1054,17 +1022,13 @@ function createGameCard(data) {
             const safeNum = p.player.number || '';
             const photoUrl = p.player.photo || '';
             
-            // Encode the player object to pass to the modal easily
             const encodedPlayer = encodeURIComponent(JSON.stringify(p.player));
-            
             let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
             
-            // Fallback to initials if photo is missing
             const photoHtml = photoUrl && photoUrl.includes("http") 
                 ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
                 : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
-            // NEW: Add substitution indicator next to the name if they subbed in
             const subIndicator = p.player.isSubbedIn 
                 ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.player.subMinute}'</span>` 
                 : '';
@@ -1081,48 +1045,60 @@ function createGameCard(data) {
         }).join('');
         return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
     };
-    // Calculate what the top lineup banner should say
+
     const statusShort = data.fixture.status.short;
     let topBannerText = "STARTING XI";
     if (['FT', 'AET', 'PEN'].includes(statusShort)) topBannerText = "FINAL XI";
     else if (!['NS', 'TBD'].includes(statusShort)) topBannerText = "LIVE XI";
+    
+    // FULL VIEW HTML (The original card)
+    const fullHtml = `
+        <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+            <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom border-light" style="cursor: pointer;" onclick="toggleSingleCard(${fixId})" title="Click to collapse">
+                <div id="time-${fixId}" style="flex: 0 0 auto;" class="pe-2">${getTimeBadgeHtml(data)} ${getLatestEventHtml(data)}</div>
+                <div class="text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;">
+                    ${data.league.name}
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1">
+                <div class="text-center" style="width: 38%;"> 
+                    <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1">
+                    <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;" title="${home.name}">${homeRank}${home.name}</div>
+                    ${homeRecord}
+                </div>
+                <div id="score-${fixId}" class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 24%;">
+                    ${getScoreHtml(data)}
+                </div>
+                <div class="text-center" style="width: 38%;"> 
+                    <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
+                    <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;" title="${away.name}">${awayRank}${away.name}</div>
+                    ${awayRecord}
+                </div>
+            </div>
+            <div id="events-${fixId}" class="w-100">${getEventsHtml(data)}</div>
+        </div>
+        <div id="odds-${fixId}" class="w-100">${getOddsHtml(data)}</div>
+        <div id="injuries-${fixId}" class="w-100">${getInjuriesHtml(data)}</div>
+        
+        <div class="bg-light border-bottom text-center py-1" data-bs-toggle="collapse" data-bs-target="#lineup-collapse-${fixId}" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e9ecef'" onmouseout="this.style.backgroundColor='#f8f9fa'" title="Click to expand/collapse lineup">
+            <span id="lineup-banner-text-${fixId}" class="fw-bold text-muted" style="font-size: 0.7rem;">${topBannerText} <span style="font-size: 0.6rem;">▼</span></span>
+        </div>
+        <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
+            <div class="row g-0 bg-white">
+                <div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div>
+                <div class="col-6">${buildLineupList(data.awayLineup)}</div>
+            </div>
+        </div>
+    `;
+
     gameCard.innerHTML = `
-        <div class="lineup-card shadow-sm" style="margin-bottom: 8px;" id="card-${fixId}">
-            <div class="p-2 pb-1" style="background-color: #fcfcfc;">
-                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom border-light">
-                    <div id="time-${fixId}" style="flex: 0 0 auto;" class="pe-2">${getTimeBadgeHtml(data)}</div>
-                    <div class="text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;">
-                        ${data.league.name}
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1">
-                    <div class="text-center" style="width: 38%;"> 
-                        <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1">
-                        <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;" title="${home.name}">${homeRank}${home.name}</div>
-                        ${homeRecord}
-                    </div>
-                    <div id="score-${fixId}" class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 24%;">
-                        ${getScoreHtml(data)}
-                    </div>
-                    <div class="text-center" style="width: 38%;"> 
-                        <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
-                        <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;" title="${away.name}">${awayRank}${away.name}</div>
-                        ${awayRecord}
-                    </div>
-                </div>
-                <div id="events-${fixId}" class="w-100">${getEventsHtml(data)}</div>
+        <div class="lineup-card shadow-sm position-relative overflow-hidden" style="margin-bottom: 8px; background: #fff;" id="card-${fixId}">
+            <div class="ribbon-view ${globalScoreboardMode ? '' : 'd-none'}" id="ribbon-${fixId}" onclick="toggleSingleCard(${fixId})" title="Click to expand card">
+                ${getRibbonHtml(data)}
             </div>
-            <div id="odds-${fixId}" class="w-100">${getOddsHtml(data)}</div>
-            <div id="injuries-${fixId}" class="w-100">${getInjuriesHtml(data)}</div>
             
-            <div class="bg-light border-bottom text-center py-1" data-bs-toggle="collapse" data-bs-target="#lineup-collapse-${fixId}" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e9ecef'" onmouseout="this.style.backgroundColor='#f8f9fa'" title="Click to expand/collapse lineup">
-                <span id="lineup-banner-text-${fixId}" class="fw-bold text-muted" style="font-size: 0.7rem;">${topBannerText} <span style="font-size: 0.6rem;">▼</span></span>
-            </div>
-            <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
-                <div class="row g-0 bg-white">
-                    <div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div>
-                    <div class="col-6">${buildLineupList(data.awayLineup)}</div>
-                </div>
+            <div class="full-view ${globalScoreboardMode ? 'd-none' : ''}" id="full-${fixId}">
+                ${fullHtml}
             </div>
         </div>`;
     
@@ -1130,12 +1106,11 @@ function createGameCard(data) {
 }
 
 // ==========================================
-// 7. EVENT LISTENERS
+// EVENT LISTENERS
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     init();
     
-    // Automatically recalculate overflow arrows if the user rotates their phone or resizes their browser
     window.addEventListener('resize', () => {
         clearTimeout(window.resizeTimer);
         window.resizeTimer = setTimeout(() => {
@@ -1170,6 +1145,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     container.classList.remove('show');
                 }
             });
+        });
+    }
+
+    // --- NEW: SCOREBOARD TOGGLE LISTENER ---
+    const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
+    if (toggleScoreboardBtn) {
+        toggleScoreboardBtn.innerHTML = globalScoreboardMode ? '🔼 EXPAND ALL CARDS' : '🔽 COMPACT SCOREBOARD';
+        
+        toggleScoreboardBtn.addEventListener('click', () => {
+            globalScoreboardMode = !globalScoreboardMode;
+            localStorage.setItem('futbolScoreboardMode', globalScoreboardMode);
+            toggleScoreboardBtn.innerHTML = globalScoreboardMode ? '🔼 EXPAND ALL CARDS' : '🔽 COMPACT SCOREBOARD';
+            
+            const allRibbons = document.querySelectorAll('.ribbon-view');
+            const allFulls = document.querySelectorAll('.full-view');
+            
+            if (globalScoreboardMode) {
+                allRibbons.forEach(el => el.classList.remove('d-none'));
+                allFulls.forEach(el => el.classList.add('d-none'));
+            } else {
+                allRibbons.forEach(el => el.classList.add('d-none'));
+                allFulls.forEach(el => el.classList.remove('d-none'));
+            }
+            
+            checkOverflows();
         });
     }
 });
