@@ -461,6 +461,12 @@ def process_date(target_date):
                     parsed_events = []
                     for ev in events_data["response"]:
                         if ev["type"] in ["Goal", "Card", "subst"]:
+                            
+                            # --- 🛑 HOTFIX: IGNORE MISSED PENALTIES ---
+                            # API-Sports weirdly classifies missed penalties as "Goals". Reject them!
+                            if ev["type"] == "Goal" and ev["detail"] == "Missed Penalty":
+                                continue
+                                
                             # Grab both parts of the time
                             elapsed_time = ev["time"]["elapsed"]
                             extra_time = ev["time"].get("extra")
