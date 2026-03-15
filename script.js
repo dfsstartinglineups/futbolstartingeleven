@@ -627,7 +627,14 @@ function renderLeagueMenu(activeLeague, currentDate) {
 
 async function fetchMatchesData(params) {
     try {
-        const localRes = await fetch(`data/games_${params.date}.json?v=` + new Date().getTime());
+        const localRes = await fetch(`data/games_${params.date}.json?v=` + new Date().getTime(), {
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        });
         if (localRes.ok) {
             let matches = await localRes.json();
             if (params.league !== 'top') {
