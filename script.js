@@ -152,6 +152,13 @@ function shortenPlayerName(fullName) {
     return `${initial} ${lastName}`;
 }
 
+function getLeagueKey(leagueId) {
+    for (const [key, leagueObj] of Object.entries(SUPPORTED_LEAGUES)) {
+        if (leagueObj.id === leagueId) return key;
+    }
+    return 'top'; // Fallback
+}
+
 window.openPlayerModal = function(el) {
     const playerDataStr = el.getAttribute('data-player');
     if (!playerDataStr) return;
@@ -414,19 +421,20 @@ function getRibbonHtml(data) {
     const homeScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.home ?? 0) : '-';
     const awayScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.away ?? 0) : '-';
 
-    // Grab our compact abbreviation, fallback to the standard name if missing
     const leagueCompact = LEAGUE_ABBREV[data.league.id] || data.league.name;
-    
-    // Safety check for the flag URL, fallback to nothing if null
     const flagHtml = data.league.flag ? `<img src="${data.league.flag}" style="width: 14px; height: 10px; object-fit: cover; border-radius: 2px; border: 1px solid #dee2e6; margin-right: 3px; vertical-align: middle;">` : '';
+
+    // NEW: Build the true hyperlink URL
+    const params = getUrlParams();
+    const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
 
     return `
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
         <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1">
             <div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div>
-            <div class="text-muted fw-bold text-truncate w-100 px-1" style="font-size: 0.55rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">
+            <a href="${leagueHref}" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.55rem; letter-spacing: 0.5px; text-transform: uppercase;" title="View all ${data.league.name} matches" onmouseover="this.classList.remove('text-muted'); this.classList.add('text-success');" onmouseout="this.classList.add('text-muted'); this.classList.remove('text-success');">
                 ${flagHtml}${leagueCompact}
-            </div>
+            </a>
         </div>
         <div class="col-5 px-2">
             <div class="d-flex justify-content-between align-items-center mb-1">
@@ -1087,15 +1095,20 @@ function createGameCard(data) {
     let topBannerText = "STARTING XI";
     if (['FT', 'AET', 'PEN'].includes(statusShort)) topBannerText = "FINAL XI";
     else if (!['NS', 'TBD'].includes(statusShort)) topBannerText = "LIVE XI";
+
+    // NEW: Build the true hyperlink URL for the Full View
+    const params = getUrlParams();
+    const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
+    
     
     // FULL VIEW HTML (The original card)
     const fullHtml = `
         <div class="p-2 pb-1" style="background-color: #fcfcfc;">
             <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom border-light" style="cursor: pointer;" onclick="toggleSingleCard(${fixId})" title="Click to collapse">
                 <div id="time-${fixId}" style="flex: 0 0 auto;" class="pe-2">${getTimeBadgeHtml(data)} ${getLatestEventHtml(data)}</div>
-                <div class="text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;">
+                <a href="${leagueHref}" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;" title="View all ${data.league.name} matches" onmouseover="this.classList.remove('text-muted'); this.classList.add('text-success');" onmouseout="this.classList.add('text-muted'); this.classList.remove('text-success');">
                     ${data.league.name}
-                </div>
+                </a>
             </div>
             <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1">
                 <div class="text-center" style="width: 38%;"> 
