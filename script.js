@@ -339,9 +339,9 @@ function getLatestEventHtml(data, isRibbon = false) {
             let pOut = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
             
             if (isRibbon) {
-                return `<div class="text-dark fw-bold w-100 text-start ps-2" style="font-size: 0.6rem; line-height: 1.2; display: inline-block;">
-                            <div class="text-truncate" title="${pIn} IN"><span style="font-size: 0.55rem;">🔄</span> ${lastEv.time}' <span class="text-success">${pIn}</span></div>
-                            <div class="text-truncate text-muted" title="${pOut} OUT" style="padding-left: 14px;">${pOut}</div>
+                // NEW: Single-line substitution format
+                return `<div class="text-dark fw-bold text-truncate text-start w-100 ps-2" style="font-size: 0.65rem; display: inline-block; vertical-align: middle;">
+                            ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> <span class="text-success">${pIn}</span> 🔄 <span class="text-muted">${pOut}</span>
                         </div>`;
             } else {
                 return `<div class="ms-2 text-dark fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
@@ -359,9 +359,9 @@ function getLatestEventHtml(data, isRibbon = false) {
             const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
             
             if (isRibbon) {
-                return `<div class="${textColor} fw-bold text-truncate text-start w-100 ps-2" style="font-size: 0.65rem; display: inline-block; line-height: 1.2;">
-                            ${icon} <span title="${playerName}">${playerName}</span><br>
-                            <span class="text-muted" style="font-size:0.55rem; margin-left: 14px;">${lastEv.time}' <img src="${teamLogo}" style="width: 10px; height: 10px; object-fit: contain;"></span>
+                // NEW: Single-line Goal/Card format with logo moved next to player
+                return `<div class="${textColor} fw-bold text-truncate text-start w-100 ps-2" style="font-size: 0.65rem; display: inline-block; vertical-align: middle;">
+                            ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} <span class="text-muted" style="font-size: 0.6rem;">(${lastEv.time}')</span>
                         </div>`;
             } else {
                 return `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
