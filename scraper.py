@@ -437,6 +437,16 @@ def process_date(target_date):
             latest_status = latest_data['fixture']['status']['short']
             local_status = game.get('fixture', {}).get('status', {}).get('short', '')
             
+            # --- 🛑 TIME TRAVEL BLOCKER ---
+            # API load balancers often send stale payloads. If the API tries to send us 
+            # backward in time, we reject it entirely so goals don't temporarily vanish!
+            new_elapsed = latest_data.get('fixture', {}).get('status', {}).get('elapsed') or 0
+            old_elapsed = game.get('fixture', {}).get('status', {}).get('elapsed') or 0
+            
+            if new_elapsed < old_elapsed:
+                continue # Skip this game loop entirely. The API is lagging!
+            
+            
             # 1. LIVE EVENTS
             # Actively poll if playing, OR if it JUST hit HT, OR if it JUST ended (to catch stoppage-time goals!)
             is_active_half = latest_status in ['1H', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
