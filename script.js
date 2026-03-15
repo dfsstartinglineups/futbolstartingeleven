@@ -342,6 +342,8 @@ function getTimeBadgeHtml(data) {
         badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
     } else if (!isPreGame && !isFinished && !data.isFallback) {
         let displayMin = data.fixture.status.elapsed;
+        let extraMin = data.fixture.status.extra; // Grab the stoppage time!
+
         if (status === 'ET') {
             const maxEventTime = data.events ? Math.max(0, ...data.events.map(e => parseInt(e.time) || 0)) : 0;
             if (displayMin < 105 && maxEventTime >= 105) { displayMin += 15; } 
@@ -352,7 +354,14 @@ function getTimeBadgeHtml(data) {
         if (status === 'HT') displayMin = 'HT';
         else if (status === 'BT') displayMin = 'ET HT';
         else if (status === 'P') displayMin = 'PEN';
-        else displayMin = `${displayMin}'`;
+        else {
+            // If API-Sports provides stoppage time, combine them! (e.g. 45+5')
+            if (extraMin) {
+                displayMin = `${displayMin}+${extraMin}'`; 
+            } else {
+                displayMin = `${displayMin}'`; 
+            }
+        }
         
         badge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${displayMin}</span>`;
     } else if (isFinished) {
