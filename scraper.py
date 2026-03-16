@@ -291,18 +291,16 @@ def inject_player_stats(lineups, season):
             
     return lineups
 
-def update_future_files_for_league(league_id):
+def update_future_files_for_league(league_id, start_date_str):
     """Updates rank/record for a specific league in all future daily JSON files."""
     league_id_str = str(league_id)
-    now_est = datetime.now(zoneinfo.ZoneInfo("America/New_York"))
-    today_str = now_est.strftime("%Y-%m-%d")
     
     for filename in os.listdir(DATA_DIR):
         if filename.startswith("games_") and filename.endswith(".json"):
             file_date_str = filename.replace("games_", "").replace(".json", "")
             
-            # Process files for tomorrow or later (today is handled by the live loop)
-            if file_date_str > today_str:
+            # Process files strictly AFTER the date of the match that just finished
+            if file_date_str > start_date_str:
                 filepath = os.path.join(DATA_DIR, filename)
                 try:
                     with open(filepath, 'r') as f:
@@ -310,14 +308,12 @@ def update_future_files_for_league(league_id):
                     
                     file_updated = False
                     for g in day_games:
-                        # Check if this future game is in the league we just updated
                         if str(g.get("league", {}).get("id")) == league_id_str:
                             for side in ['home', 'away']:
                                 t_id = str(g['teams'][side]['id'])
                                 t_data = MASTER_TEAM_DICT.get(f"{t_id}_{league_id_str}")
                                 
                                 if t_data and t_data.get("rank"):
-                                    # If the rank or record has changed, update it
                                     if g['teams'][side].get("rank") != t_data["rank"] or g['teams'][side].get("record") != t_data["record"]:
                                         g['teams'][side]['rank'] = t_data["rank"]
                                         g['teams'][side]['record'] = t_data["record"]
@@ -435,12 +431,13 @@ def process_date(target_date, force_master_sync=False):
             fixture_id = game['fixture']['id']
             league_id_str = str(game['league']['id'])
             
-            # --- HEAL MISSING RANKS/RECORDS FOR TODAY (0 API Cost) ---
+            # --- 🔄 DYNAMIC RANK & RECORD SYNC ---
+            # Automatically update the ranks in TODAY'S file if they differ from the master dictionary
             for side in ['home', 'away']:
                 team = game['teams'][side]
-                if team.get('rank') is None or team.get('rank') == "null":
-                    t_data = MASTER_TEAM_DICT.get(f"{team['id']}_{league_id_str}")
-                    if t_data and t_data.get("rank"):
+                t_data = MASTER_TEAM_DICT.get(f"{team['id']}_{league_id_str}")
+                if t_data and t_data.get("rank"):
+                    if team.get('rank') != t_data["rank"] or team.get('record') != t_data["record"]:
                         team['rank'] = t_data["rank"]
                         team['record'] = t_data["record"]
                         updated = True
@@ -624,11 +621,10 @@ def process_date(target_date, force_master_sync=False):
             if is_finished and not game.get("post_game_sync") and game.get("match_ended_at"):
                 if (now - datetime.fromisoformat(game["match_ended_at"])).total_seconds() >= 5400:
                     
-                    # A. Try to fetch Standings (Knockout Cups might be empty/different)
+                    # A. Fetch Standings & Update Teams
                     standings_data = fetch_data(f"standings?league={game['league']['id']}&season={game['league']['season']}")
                     if standings_data and standings_data.get("response"):
                         try:
-                            # 1. Update the entire league in the Master Dict
                             standings_list = standings_data["response"][0]["league"].get("standings", [])
                             if standings_list and len(standings_list) > 0:
                                 for row in standings_list[0]:
@@ -638,17 +634,40 @@ def process_date(target_date, force_master_sync=False):
                                     }
                                 with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
                             
-                            # 2. Push the league-wide update to all future files!
-                            update_future_files_for_league(game['league']['id'])
+                            # Push the league-wide update to all FUTURE files
+                            update_future_files_for_league(game['league']['id'], date_str)
                             
                         except Exception as e:
-                            pass # Silently handle weird cup structures
+                            pass 
                     
-                    # B. Fetch Player Data (We want this even if Standings fail!)
+                    # B. Fetch Player Data (SAFE MERGE)
                     try:
                         for t_id in [game['teams']['home']['id'], game['teams']['away']['id']]:
                             for p in fetch_all_players(t_id, game['league']['season']): 
-                                MASTER_PLAYER_DICT[str(p["player"]["id"])] = p
+                                p_id = str(p["player"]["id"])
+                                
+                                if p_id in MASTER_PLAYER_DICT:
+                                    existing_stats = MASTER_PLAYER_DICT[p_id].get("statistics", [])
+                                    new_stats = p.get("statistics", [])
+                                    
+                                    for n_stat in new_stats:
+                                        n_team = n_stat.get("team", {}).get("id")
+                                        n_league = n_stat.get("league", {}).get("id")
+                                        n_season = n_stat.get("league", {}).get("season")
+                                        
+                                        is_duplicate = any(
+                                            e_stat.get("team", {}).get("id") == n_team and
+                                            e_stat.get("league", {}).get("id") == n_league and
+                                            e_stat.get("league", {}).get("season") == n_season
+                                            for e_stat in existing_stats
+                                        )
+                                        if not is_duplicate:
+                                            existing_stats.append(n_stat)
+                                            
+                                    MASTER_PLAYER_DICT[p_id]["statistics"] = existing_stats
+                                else:
+                                    MASTER_PLAYER_DICT[p_id] = p
+                        
                         with open(PLAYER_DICT_PATH, "w") as f: json.dump(MASTER_PLAYER_DICT, f, indent=4)
                     except Exception as e:
                         print(f"[{fixture_id}] Post-game player sync error: {e}")
