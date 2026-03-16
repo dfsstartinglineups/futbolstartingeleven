@@ -24,73 +24,60 @@ def load_json(path):
 MASTER_TEAM_DICT = load_json(TEAM_DICT_PATH)
 MASTER_PLAYER_DICT = load_json(PLAYER_DICT_PATH)
 # =========================================================
-# API-FOOTBALL LEAGUE ID MAPPING
+# API-FOOTBALL LEAGUE ID MAPPING (41 LEAGUES)
 # =========================================================
-# --- Top 5 Europe + Championship ---
-#  39 : Premier League (England)
-#  40 : Championship (England)
-# 140 : La Liga (Spain)
-#  61 : Ligue 1 (France)
-# 135 : Serie A (Italy)
-#  78 : Bundesliga (Germany)
-#
-# --- Euro Tournaments ---
-#   2 : UEFA Champions League
-#   3 : UEFA Europa League
-# 848 : UEFA Conference League
-#
-# --- Americas (North & South) ---
-# 262 : Liga MX (Mexico)
-# 253 : Major League Soccer / MLS (USA)
-#  71 : Serie A / Brasileirão (Brazil)
-# 128 : Liga Profesional (Argentina)
-# 528 : Leagues Cup (CONCACAF)
-#  13 : Copa Libertadores (CONMEBOL)
-#  16 : Copa Sudamericana (CONMEBOL)
-#
-# --- International ---
-#   1 : FIFA World Cup
-#   4 : UEFA European Championship (Euros)
-#   9 : Copa America
-#
-# --- English Cups ---
-#  45 : FA Cup (England)
-#  48 : League Cup / Carabao Cup (England)
-#
-# --- Best of the Rest ---
-# 307 : Saudi Pro League (Saudi Arabia)
-#  94 : Primeira Liga (Portugal)
-#  88 : Eredivisie (Netherlands)
-#  98 : J1 League (Japan)
-# =========================================================
-#JUST ADDED
-#    203: "SL",   // Turkey
-#    144: "BPL",  // Belgium
-#    179: "SP",   // Scotland
-#    119: "DS",   // Denmark
-#    239: "PA",   // Colombia
-#    188: "AL"    // Australia
-#    292: "K1"    //South Korea
-TOP_LEAGUE_IDS = [# Top 5 Europe + Championship
-    39, 40, 140, 61, 135, 78, 
-    # Euro Tournaments 
-    2, 3, 848, 
-    # Americas (Mexico, MLS, Brazil, Argentina, Leagues Cup, Copa Lib)
-    262, 253, 71, 128, 528, 13,16, 
-    # International
-    1, 4, 9, 
-    # English Cups
-    45, 48,
-    # Best of the Rest (Saudi, Portugal, Netherlands, Japan)
-    307, 94, 88,98,
-    #newly added
-    203,#Turkey
-    144,#Belgium
-    179,#Scotland
-    119,#Denmark
-    239,#Colombia
-    188, #Australia
-    292  #South Korea K1
+TOP_LEAGUE_IDS = [
+    # --- EUROPE (Domestic Leagues) ---
+    39,  # Premier League (England)
+    40,  # Championship (England)
+    140, # La Liga (Spain)
+    135, # Serie A (Italy)
+    78,  # Bundesliga (Germany)
+    61,  # Ligue 1 (France)
+    88,  # Eredivisie (Netherlands)
+    94,  # Primeira Liga (Portugal)
+    203, # Süper Lig (Turkey)
+    144, # Pro League (Belgium)
+    179, # Premiership (Scotland)
+    119, # Superliga (Denmark)
+
+    # --- AMERICAS (Domestic Leagues) ---
+    253, # MLS (USA)
+    262, # Liga MX (Mexico)
+    71,  # Brasileirão (Brazil)
+    128, # Liga Profesional (Argentina)
+    239, # Primera A (Colombia)
+
+    # --- WORLD (Domestic Leagues) ---
+    307, # Saudi Pro League (Saudi Arabia)
+    98,  # J1 League (Japan)
+    188, # A-League (Australia)
+    292, # K League 1 (South Korea)
+
+    # --- CUPS & CONTINENTAL TOURNAMENTS ---
+    2,   # UEFA Champions League
+    3,   # UEFA Europa League
+    848, # UEFA Conference League
+    13,  # Copa Libertadores (CONMEBOL)
+    11,  # Copa Sudamericana (CONMEBOL)
+    16,  # CONCACAF Champions Cup
+    528, # Leagues Cup (CONCACAF/MLS/LigaMX)
+    45,  # FA Cup (England)
+    48,  # EFL Cup / Carabao Cup (England)
+    143, # Copa del Rey (Spain)
+    137, # Coppa Italia (Italy)
+    81,  # DFB-Pokal (Germany)
+
+    # --- INTERNATIONAL (National Teams) ---
+    1,   # FIFA World Cup
+    4,   # UEFA Euro Championship
+    9,   # Copa America
+    5,   # UEFA Nations League
+    531, # CONCACAF Nations League
+
+    # --- WOMEN'S LEAGUES ---
+    44,  # Women's Super League / WSL (England)
+    254  # NWSL (USA)
 ]
 
 def fetch_data(endpoint):
@@ -627,9 +614,14 @@ def process_date(target_date, force_master_sync=False):
                     if standings_data and standings_data.get("response"):
                         try:
                             # 1. Update the entire league in the Master Dict
-                            for row in standings_data["response"][0]["league"]["standings"][0]:
-                                MASTER_TEAM_DICT[f"{row['team']['id']}_{game['league']['id']}"] = {"rank": row["rank"], "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"}
-                            with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
+                            standings_list = standings_data["response"][0]["league"].get("standings", [])
+                            if standings_list and len(standings_list) > 0:
+                                for row in standings_list[0]:
+                                    MASTER_TEAM_DICT[f"{row['team']['id']}_{game['league']['id']}"] = {
+                                        "rank": row["rank"], 
+                                        "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"
+                                    }
+                                with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
                             
                             # 2. Push the league-wide update to all future files!
                             update_future_files_for_league(game['league']['id'])
