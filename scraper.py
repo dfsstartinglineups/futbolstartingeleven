@@ -70,6 +70,7 @@ MASTER_PLAYER_DICT = load_json(PLAYER_DICT_PATH)
 #    119: "DS",   // Denmark
 #    239: "PA",   // Colombia
 #    188: "AL"    // Australia
+#    292: "K1"    //South Korea
 TOP_LEAGUE_IDS = [# Top 5 Europe + Championship
     39, 40, 140, 61, 135, 78, 
     # Euro Tournaments 
@@ -88,7 +89,8 @@ TOP_LEAGUE_IDS = [# Top 5 Europe + Championship
     179,#Scotland
     119,#Denmark
     239,#Colombia
-    188 #Australia
+    188, #Australia
+    292  #South Korea K1
 ]
 
 def fetch_data(endpoint):
