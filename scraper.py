@@ -705,11 +705,27 @@ def process_date(target_date, force_master_sync=False):
                         try:
                             standings_list = standings_data["response"][0]["league"].get("standings", [])
                             if standings_list and len(standings_list) > 0:
+                                # POST-GAME SYNC: Safe Standings Update
                                 for group in standings_list:
                                     for row in group:
-                                        MASTER_TEAM_DICT[f"{row['team']['id']}_{game['league']['id']}"] = {
-                                            "rank": row["rank"], 
-                                            "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"
+                                        all_stats = row.get('all', {})
+                                        w = all_stats.get('win')
+                                        d = all_stats.get('draw')
+                                        l = all_stats.get('lose')
+                                        played = all_stats.get('played', 0)
+                                        
+                                        if w is None or d is None or l is None:
+                                            continue
+                                            
+                                        row_t_key = f"{row['team']['id']}_{game['league']['id']}"
+                                        existing_rec = MASTER_TEAM_DICT.get(row_t_key, {}).get("record", "")
+                                        
+                                        if played == 0 and existing_rec and existing_rec not in ["", "0-0-0"] and "none" not in existing_rec.lower():
+                                            continue
+                                            
+                                        MASTER_TEAM_DICT[row_t_key] = {
+                                            "rank": row.get("rank"), 
+                                            "record": f"{w}-{d}-{l}"
                                         }
                                 with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
                             
