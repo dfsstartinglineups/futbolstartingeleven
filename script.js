@@ -15,7 +15,10 @@ const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425
 
 const LEAGUE_GROUPS = {
     "priority": [
-        { key: "top", id: "top", name: "Top Matches" }
+        { key: "top", id: "top", name: "Top Matches" },
+        { key: "epl", id: 39, name: "Premier League" },
+        { key: "laliga", id: 140, name: "La Liga" },
+        { key: "seriea", id: 135, name: "Serie A" }
     ],
     "Europe": [
         { key: "epl", id: 39, name: "Premier League" },
