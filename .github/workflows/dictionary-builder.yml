@@ -29,17 +29,17 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Stage the files
+          # Stage ONLY the master dictionaries
           git add data/master_teams.json data/master_players.json
           
           if ! git diff --quiet --staged; then
             git commit -m "🤖 Master Data Sync: Updated rosters and ranks [skip ci]"
-            # Overwrite strategy: take the local (Bulk Sync) version as truth
-            git fetch origin main
-            git reset --soft origin/main
-            git add data/master_teams.json data/master_players.json
-            git commit --amend -m "🤖 Master Data Sync: Updated rosters and ranks [skip ci]"
-            git push origin main --force
+            
+            # SAFE MERGE: Pull latest changes from the scraper. 
+            # '-X theirs' in a rebase means "if there is a conflict, use the Bulk Sync's version"
+            git pull --rebase origin main -X theirs
+            
+            git push origin main
           else
             echo "No changes to commit."
           fi
