@@ -7,7 +7,9 @@ from datetime import datetime, timedelta, timezone
 # --- CONFIGURATION ---
 API_HOST = "https://v3.football.api-sports.io"
 API_KEY = os.environ.get("FOOTBALL_API_KEY")
-DATA_DIR = "data"
+
+# Since the script is in /scripts, but data is in /data at root
+DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
 os.makedirs(DATA_DIR, exist_ok=True)
 
 TEAM_DICT_PATH = os.path.join(DATA_DIR, "master_teams.json")
@@ -29,7 +31,7 @@ def fetch_data(endpoint):
     try:
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode())
-            # Basic rate limit safety (30 calls per minute fallback)
+            # Safety for 450 req/min limit (120 req/min at 0.5s)
             time.sleep(0.5) 
             return data
     except Exception as e:
@@ -39,15 +41,21 @@ def fetch_data(endpoint):
 def sync_all_leagues():
     master_teams = {}
     master_players = {}
-    current_season = 2025 # Adjust if API reports 2024 for certain leagues
+    now = datetime.now(timezone.utc)
+    this_year = 2026
+    last_year = 2025
 
     print(f"🚀 Starting Master Sync for {len(TOP_LEAGUE_IDS)} leagues...")
 
     for league_id in TOP_LEAGUE_IDS:
-        print(f"\n--- Processing League ID: {league_id} ---")
+        # Most Americas/World/Women run calendar year (2026)
+        # Euro leagues are finishing their 2025/2026 season
+        season = this_year if league_id in [253, 262, 71, 128, 239, 307, 98, 188, 292, 254, 531, 11, 13, 16, 528] else last_year
+        
+        print(f"\n--- Processing League ID: {league_id} (Season {season}) ---")
         
         # 1. Sync Standings & Team Logos
-        standings_data = fetch_data(f"standings?league={league_id}&season={current_season}")
+        standings_data = fetch_data(f"standings?league={league_id}&season={season}")
         team_ids_in_league = []
         
         if standings_data and standings_data.get("response"):
@@ -58,7 +66,6 @@ def sync_all_leagues():
                         t_id = row['team']['id']
                         team_ids_in_league.append(t_id)
                         
-                        # Save Rich Team Data
                         master_teams[f"{t_id}_{league_id}"] = {
                             "rank": row["rank"],
                             "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}",
@@ -68,15 +75,15 @@ def sync_all_leagues():
                             "logo": row['team'].get('logo')
                         }
                 print(f"✅ Standings synced. Found {len(team_ids_in_league)} teams.")
-            except Exception as e:
-                print(f"⚠️ League {league_id} standings skip (likely cup format).")
+            except Exception:
+                print(f"⚠️ League {league_id} standings skip (likely knockout cup).")
 
-        # 2. Sync Full Rosters (The Heavy Lifter)
+        # 2. Sync Full Rosters
         for t_id in team_ids_in_league:
             print(f"   Fetching Roster: Team {t_id}...")
             page = 1
             while True:
-                player_data = fetch_data(f"players?team={t_id}&season={current_season}&page={page}")
+                player_data = fetch_data(f"players?team={t_id}&season={season}&page={page}")
                 if not player_data or not player_data.get("response"):
                     break
                 
@@ -94,7 +101,7 @@ def sync_all_leagues():
     with open(PLAYER_DICT_PATH, 'w') as f:
         json.dump(master_players, f, indent=4)
     
-    print("\n✅ Master Dictionaries saved successfully.")
+    print("\n✅ Master Dictionaries updated.")
 
 def sync_future_schedules():
     print("\n🚀 Building Future 30-Day Schedule...")
@@ -106,10 +113,7 @@ def sync_future_schedules():
         
         data = fetch_data(f"fixtures?date={target_date}&timezone=America/New_York")
         if data and data.get("response"):
-            # Filter for our 41 leagues
             filtered = [g for g in data["response"] if g['league']['id'] in TOP_LEAGUE_IDS]
-            
-            # Simple format for daily files
             daily_games = []
             for game in filtered:
                 daily_games.append({
@@ -128,7 +132,7 @@ def sync_future_schedules():
 
 if __name__ == "__main__":
     if not API_KEY:
-        print("❌ Error: FOOTBALL_API_KEY environment variable not set.")
+        print("❌ Error: FOOTBALL_API_KEY not found.")
     else:
         sync_all_leagues()
         sync_future_schedules()
