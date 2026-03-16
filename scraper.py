@@ -438,17 +438,25 @@ def process_date(target_date, force_master_sync=False):
                 team = game['teams'][side]
                 t_key = f"{team['id']}_{league_id_str}"
                 
-                # Grab the values safely
-                current_rank = team.get('rank')
-                t_data = MASTER_TEAM_DICT.get(t_key, {})
-                master_rank = t_data.get('rank')
+                # Grab today's values and master values safely
+                curr_rank = team.get('rank')
+                curr_rec = team.get('record')
                 
-                # 1. TRIGGER: Does the current game file have a JSON null (Python None) or a string "null"?
-                if current_rank is None or str(current_rank).lower() == "null":
+                t_data = MASTER_TEAM_DICT.get(t_key, {})
+                mast_rank = t_data.get('rank')
+                mast_rec = t_data.get('record')
+                
+                # 1. TRIGGER: Check if TODAY'S file is missing either Rank OR Record
+                today_missing = (curr_rank is None or str(curr_rank).lower() == "null") or \
+                                (curr_rec is None or str(curr_rec).lower() == "null")
+                
+                if today_missing:
+                    # 2. CHECK MASTER: Does the MASTER dictionary also lack either piece of data?
+                    master_missing = (mast_rank is None or str(mast_rank).lower() == "null") or \
+                                     (mast_rec is None or str(mast_rec).lower() == "null")
                     
-                    # 2. CHECK MASTER & API: If Master Dict ALSO lacks the rank, we fetch!
-                    if (master_rank is None or str(master_rank).lower() == "null") and league_id_str not in process_date.checked_leagues:
-                        print(f"[{fixture_id}] Null rank detected for {team['name']}. Fetching League {league_id_str}...")
+                    if master_missing and league_id_str not in process_date.checked_leagues:
+                        print(f"[{fixture_id}] Missing rank/record detected for {team['name']}. Fetching League {league_id_str}...")
                         process_date.checked_leagues.add(league_id_str)
                         
                         standings_data = fetch_data(f"standings?league={game['league']['id']}&season={game['league']['season']}")
@@ -458,7 +466,7 @@ def process_date(target_date, force_master_sync=False):
                             standings_list = standings_data["response"][0]["league"].get("standings", [])
                             if standings_list and len(standings_list) > 0:
                                 fetched_standings = True
-                                # A. Update Master Dict (Looping through all conferences/groups)
+                                # A. Update Master Dict (Looping through all groups)
                                 for group in standings_list:
                                     for row in group:
                                         MASTER_TEAM_DICT[f"{row['team']['id']}_{league_id_str}"] = {
@@ -467,7 +475,7 @@ def process_date(target_date, force_master_sync=False):
                                         }
                                 with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
                                 
-                                # B. Sweep & Heal ALL of TODAY's games for this league
+                                # B. Sweep & Heal ALL of TODAY's games for this league in memory
                                 for g in daily_games:
                                     if str(g['league']['id']) == league_id_str:
                                         for s in ['home', 'away']:
@@ -481,6 +489,15 @@ def process_date(target_date, force_master_sync=False):
                                                 
                                 # C. Sweep & Heal ALL FUTURE games for this league
                                 update_future_files_for_league(game['league']['id'], date_str)
+
+                    # 3. APPLY: If Master Dict has the data now, apply it to the current team in memory
+                    t_data = MASTER_TEAM_DICT.get(t_key, {})
+                    if t_data.get('rank') is not None:
+                        if team.get('rank') != t_data.get('rank') or team.get('record') != t_data.get('record'):
+                            team['rank'] = t_data.get('rank')
+                            team['record'] = t_data.get('record')
+                            updated = True
+            # ---------------------------------------------------------
                         
                         
 
