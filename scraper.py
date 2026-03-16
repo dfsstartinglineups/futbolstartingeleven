@@ -431,39 +431,67 @@ def process_date(target_date, force_master_sync=False):
             fixture_id = game['fixture']['id']
             league_id_str = str(game['league']['id'])
             
-            # --- 🔄 DYNAMIC RANK & RECORD SYNC ---
+            # --- 🔄 DYNAMIC RANK & RECORD SYNC (Pre-Game JIT Healing) ---
             if not hasattr(process_date, "checked_leagues"): process_date.checked_leagues = set()
 
             for side in ['home', 'away']:
                 team = game['teams'][side]
                 t_key = f"{team['id']}_{league_id_str}"
-                t_data = MASTER_TEAM_DICT.get(t_key, {})
                 
-                # 1. TRIGGER: If the game file has nulls, and our Master Dict doesn't have the answer
-                if (team.get('rank') is None or team.get('rank') == "null") and not t_data.get('rank'):
-                    if league_id_str not in process_date.checked_leagues:
+                # Grab the values safely
+                current_rank = team.get('rank')
+                t_data = MASTER_TEAM_DICT.get(t_key, {})
+                master_rank = t_data.get('rank')
+                
+                # 1. TRIGGER: Does the current game file have a JSON null (Python None) or a string "null"?
+                if current_rank is None or str(current_rank).lower() == "null":
+                    
+                    # 2. CHECK MASTER & API: If Master Dict ALSO lacks the rank, we fetch!
+                    if (master_rank is None or str(master_rank).lower() == "null") and league_id_str not in process_date.checked_leagues:
                         print(f"[{fixture_id}] Null rank detected for {team['name']}. Fetching League {league_id_str}...")
-                        process_date.checked_leagues.add(league_id_str) # Mark so we only fetch once today
+                        process_date.checked_leagues.add(league_id_str)
                         
                         standings_data = fetch_data(f"standings?league={game['league']['id']}&season={game['league']['season']}")
                         
+                        fetched_standings = False
                         if standings_data and standings_data.get("response"):
                             standings_list = standings_data["response"][0]["league"].get("standings", [])
                             if standings_list and len(standings_list) > 0:
+                                fetched_standings = True
+                                # A. Update Master Dict
                                 for row in standings_list[0]:
                                     MASTER_TEAM_DICT[f"{row['team']['id']}_{league_id_str}"] = {
                                         "rank": row["rank"], 
                                         "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"
                                     }
                                 with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
-                                t_data = MASTER_TEAM_DICT.get(t_key, {}) # Refresh data for step 2
-                
-                # 2. HEAL: Apply the Master Dict rank to the game file to overwrite the nulls
-                if t_data.get('rank'):
-                    if team.get('rank') != t_data.get('rank') or team.get('record') != t_data.get('record'):
-                        team['rank'] = t_data.get('rank')
-                        team['record'] = t_data.get('record')
-                        updated = True
+                                
+                                # B. Sweep & Heal ALL of TODAY's games for this league
+                                for g in daily_games:
+                                    if str(g['league']['id']) == league_id_str:
+                                        for s in ['home', 'away']:
+                                            g_team = g['teams'][s]
+                                            g_key = f"{g_team['id']}_{league_id_str}"
+                                            g_data = MASTER_TEAM_DICT.get(g_key)
+                                            if g_data and g_data.get('rank') is not None:
+                                                g_team['rank'] = g_data.get('rank')
+                                                g_team['record'] = g_data.get('record')
+                                                updated = True
+                                                
+                                # C. Sweep & Heal ALL FUTURE games for this league
+                                update_future_files_for_league(game['league']['id'], date_str)
+                        
+                        # Cup Safeguard: If the API returned empty, mark as Python None (JSON null)
+                        if not fetched_standings:
+                            MASTER_TEAM_DICT[t_key] = {"rank": None, "record": None}
+
+                    # 3. APPLY TO CURRENT TEAM (If Master Dict already had it, or we just fetched it)
+                    t_data = MASTER_TEAM_DICT.get(t_key, {})
+                    if t_data.get('rank') is not None and str(t_data.get('rank')).lower() != "null":
+                        if team.get('rank') != t_data.get('rank') or team.get('record') != t_data.get('record'):
+                            team['rank'] = t_data.get('rank')
+                            team['record'] = t_data.get('record')
+                            updated = True
             # ---------------------------------------------------------
             
             # Use live data if we woke up to fetch it, otherwise use our local memory
