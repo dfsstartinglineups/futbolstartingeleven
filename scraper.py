@@ -458,12 +458,13 @@ def process_date(target_date, force_master_sync=False):
                             standings_list = standings_data["response"][0]["league"].get("standings", [])
                             if standings_list and len(standings_list) > 0:
                                 fetched_standings = True
-                                # A. Update Master Dict
-                                for row in standings_list[0]:
-                                    MASTER_TEAM_DICT[f"{row['team']['id']}_{league_id_str}"] = {
-                                        "rank": row["rank"], 
-                                        "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"
-                                    }
+                                # A. Update Master Dict (Looping through all conferences/groups)
+                                for group in standings_list:
+                                    for row in group:
+                                        MASTER_TEAM_DICT[f"{row['team']['id']}_{league_id_str}"] = {
+                                            "rank": row["rank"], 
+                                            "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"
+                                        }
                                 with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
                                 
                                 # B. Sweep & Heal ALL of TODAY's games for this league
@@ -678,11 +679,12 @@ def process_date(target_date, force_master_sync=False):
                         try:
                             standings_list = standings_data["response"][0]["league"].get("standings", [])
                             if standings_list and len(standings_list) > 0:
-                                for row in standings_list[0]:
-                                    MASTER_TEAM_DICT[f"{row['team']['id']}_{game['league']['id']}"] = {
-                                        "rank": row["rank"], 
-                                        "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"
-                                    }
+                                for group in standings_list:
+                                    for row in group:
+                                        MASTER_TEAM_DICT[f"{row['team']['id']}_{game['league']['id']}"] = {
+                                            "rank": row["rank"], 
+                                            "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"
+                                        }
                                 with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
                             
                             # Push the league-wide update to all FUTURE files
