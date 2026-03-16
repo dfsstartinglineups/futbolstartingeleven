@@ -181,8 +181,9 @@ def fetch_all_players(team_id, season):
         page += 1
     return all_players
 
-def inject_player_stats(lineups):
-    if not MASTER_PLAYER_DICT: return lineups 
+def inject_player_stats(lineups, season):
+    global MASTER_PLAYER_DICT
+    dict_updated = False
     
     for team_lineup in lineups:
         for section in ["startXI", "substitutes"]:
@@ -190,12 +191,21 @@ def inject_player_stats(lineups):
                 player_info = slot.get("player", {})
                 p_id = str(player_info.get("id"))
                 
+                # --- NEW: JUST-IN-TIME FETCHING ---
+                if p_id != "None" and p_id not in MASTER_PLAYER_DICT:
+                    print(f"   [Missing Player] Fetching deep stats for ID: {p_id}...")
+                    p_data = fetch_data(f"players?id={p_id}&season={season}")
+                    if p_data and p_data.get("response"):
+                        MASTER_PLAYER_DICT[p_id] = p_data["response"][0]
+                        dict_updated = True
+                # ----------------------------------
+                
                 if p_id in MASTER_PLAYER_DICT:
                     cached_data = MASTER_PLAYER_DICT[p_id]
                     player_bio = cached_data.get("player", {})
                     stats_list = cached_data.get("statistics", [])
                     
-                    # --- NEW EXPANDED STATS TRACKING ---
+                    # --- EXPANDED STATS TRACKING ---
                     total_games, total_goals, total_assists = 0, 0, 0
                     total_yellows, total_reds = 0, 0
                     total_saves, total_conceded = 0, 0
@@ -216,8 +226,6 @@ def inject_player_stats(lineups):
                         
                         c_goals = stat.get("goals", {}).get("total") or 0
                         c_assists = stat.get("goals", {}).get("assists") or 0
-                        
-                        # New extracted stats
                         c_saves = stat.get("goals", {}).get("saves") or 0
                         c_conceded = stat.get("goals", {}).get("conceded") or 0
                         c_shots_on = stat.get("shots", {}).get("on") or 0
@@ -275,6 +283,12 @@ def inject_player_stats(lineups):
                         },
                         "competitions": competitions
                     }
+                    
+    # Save the master dictionary back to the file if we caught any new players!
+    if dict_updated:
+        with open(PLAYER_DICT_PATH, "w") as f:
+            json.dump(MASTER_PLAYER_DICT, f, indent=4)
+            
     return lineups
 
 def update_future_files_for_league(league_id):
@@ -594,7 +608,8 @@ def process_date(target_date, force_master_sync=False):
             if needs_lineup:
                 lineups_data = fetch_lineups(fixture_id)
                 if lineups_data and lineups_data.get("response") and len(lineups_data["response"]) >= 2:
-                    enriched = inject_player_stats(lineups_data["response"])
+                    season = game['league']['season'] # Grab the season to fetch missing players
+                    enriched = inject_player_stats(lineups_data["response"], season)
                     game['homeLineup'], game['awayLineup'] = enriched[0], enriched[1]
                 
                 # Mark late refreshes as complete so they only fire exactly once
