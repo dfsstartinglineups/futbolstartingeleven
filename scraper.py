@@ -431,51 +431,62 @@ def process_date(target_date, force_master_sync=False):
             fixture_id = game['fixture']['id']
             league_id_str = str(game['league']['id'])
             
-            # --- 🔄 DYNAMIC RANK & RECORD SYNC (Pre-Game JIT Healing) ---
+           # --- 🔄 DYNAMIC RANK & RECORD SYNC (Pre-Game JIT Healing) ---
             if not hasattr(process_date, "checked_leagues"): process_date.checked_leagues = set()
 
             for side in ['home', 'away']:
                 team = game['teams'][side]
                 t_key = f"{team['id']}_{league_id_str}"
                 
-                # Grab today's values and master values safely
                 curr_rank = team.get('rank')
                 curr_rec = team.get('record')
                 
-                t_data = MASTER_TEAM_DICT.get(t_key, {})
-                mast_rank = t_data.get('rank')
-                mast_rec = t_data.get('record')
+                # 1. TRIGGER: Check for missing ranks, missing records, OR the poisoned "None-None-None"
+                needs_healing = (
+                    curr_rank is None or str(curr_rank).lower() == "null" or
+                    curr_rec is None or str(curr_rec).lower() == "null" or
+                    "none" in str(curr_rec).lower()
+                )
                 
-                # 1. TRIGGER: Check if TODAY'S file is missing either Rank OR Record
-                today_missing = (curr_rank is None or str(curr_rank).lower() == "null") or \
-                                (curr_rec is None or str(curr_rec).lower() == "null")
-                
-                if today_missing:
-                    # 2. CHECK MASTER: Does the MASTER dictionary also lack either piece of data?
-                    master_missing = (mast_rank is None or str(mast_rank).lower() == "null") or \
-                                     (mast_rec is None or str(mast_rec).lower() == "null")
-                    
-                    if master_missing and league_id_str not in process_date.checked_leagues:
-                        print(f"[{fixture_id}] Missing rank/record detected for {team['name']}. Fetching League {league_id_str}...")
+                if needs_healing:
+                    if league_id_str not in process_date.checked_leagues:
+                        print(f"[{fixture_id}] Bad data detected for {team['name']}. Fetching League {league_id_str}...")
                         process_date.checked_leagues.add(league_id_str)
                         
                         standings_data = fetch_data(f"standings?league={game['league']['id']}&season={game['league']['season']}")
                         
-                        fetched_standings = False
                         if standings_data and standings_data.get("response"):
                             standings_list = standings_data["response"][0]["league"].get("standings", [])
                             if standings_list and len(standings_list) > 0:
-                                fetched_standings = True
-                                # A. Update Master Dict (Looping through all groups)
+                                
+                                # A. Update Master Dict (Safely avoiding unplayed future phases!)
                                 for group in standings_list:
                                     for row in group:
-                                        MASTER_TEAM_DICT[f"{row['team']['id']}_{league_id_str}"] = {
-                                            "rank": row["rank"], 
-                                            "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"
+                                        all_stats = row.get('all', {})
+                                        w = all_stats.get('win')
+                                        d = all_stats.get('draw')
+                                        l = all_stats.get('lose')
+                                        played = all_stats.get('played', 0)
+                                        
+                                        # Skip rows where API passes null for stats
+                                        if w is None or d is None or l is None:
+                                            continue
+                                            
+                                        row_t_key = f"{row['team']['id']}_{league_id_str}"
+                                        existing_rec = MASTER_TEAM_DICT.get(row_t_key, {}).get("record", "")
+                                        
+                                        # Do not let a 0-played future phase overwrite a valid active phase
+                                        if played == 0 and existing_rec and existing_rec not in ["", "0-0-0"] and "none" not in existing_rec.lower():
+                                            continue
+                                            
+                                        MASTER_TEAM_DICT[row_t_key] = {
+                                            "rank": row.get("rank"), 
+                                            "record": f"{w}-{d}-{l}"
                                         }
+                                        
                                 with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
                                 
-                                # B. Sweep & Heal ALL of TODAY's games for this league in memory
+                                # B. Sweep & Heal ALL of TODAY's games for this league
                                 for g in daily_games:
                                     if str(g['league']['id']) == league_id_str:
                                         for s in ['home', 'away']:
@@ -490,9 +501,9 @@ def process_date(target_date, force_master_sync=False):
                                 # C. Sweep & Heal ALL FUTURE games for this league
                                 update_future_files_for_league(game['league']['id'], date_str)
 
-                    # 3. APPLY: If Master Dict has the data now, apply it to the current team in memory
+                    # 3. APPLY TO CURRENT TEAM
                     t_data = MASTER_TEAM_DICT.get(t_key, {})
-                    if t_data.get('rank') is not None:
+                    if t_data.get('rank') is not None and "none" not in str(t_data.get('record', '')).lower():
                         if team.get('rank') != t_data.get('rank') or team.get('record') != t_data.get('record'):
                             team['rank'] = t_data.get('rank')
                             team['record'] = t_data.get('record')
