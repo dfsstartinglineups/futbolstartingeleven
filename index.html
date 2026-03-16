@@ -199,11 +199,11 @@
             .navbar .container { padding-bottom: 8px !important; }
         }
 
-        /* On Desktop/Laptop: Hide individual league pills to save space */
+        /* On Desktop/Laptop: Hide standalone league pills to save space, but KEEP them in dropdowns */
         @media (min-width: 992px) {
-            #league-menu-desktop a[href*="league=epl"],
-            #league-menu-desktop a[href*="league=laliga"],
-            #league-menu-desktop a[href*="league=seriea"] {
+            #league-menu-desktop > a.league-pill[href*="league=epl"],
+            #league-menu-desktop > a.league-pill[href*="league=laliga"],
+            #league-menu-desktop > a.league-pill[href*="league=seriea"] {
             display: none !important;
             }
         }
