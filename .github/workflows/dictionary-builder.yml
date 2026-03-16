@@ -29,13 +29,17 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # ONLY add the dictionaries (Safest approach)
+          # Stage the files
           git add data/master_teams.json data/master_players.json
           
           if ! git diff --quiet --staged; then
             git commit -m "🤖 Master Data Sync: Updated rosters and ranks [skip ci]"
-            git pull --rebase origin main
-            git push origin main
+            # Overwrite strategy: take the local (Bulk Sync) version as truth
+            git fetch origin main
+            git reset --soft origin/main
+            git add data/master_teams.json data/master_players.json
+            git commit --amend -m "🤖 Master Data Sync: Updated rosters and ranks [skip ci]"
+            git push origin main --force
           else
             echo "No changes to commit."
           fi
