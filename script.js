@@ -78,15 +78,57 @@ const SUPPORTED_LEAGUES = {};
 Object.values(LEAGUE_GROUPS).flat().forEach(l => SUPPORTED_LEAGUES[l.key] = l);
 
 const LEAGUE_ABBREV = {
-    39: "EPL", 40: "EFL", 140: "ESP", 61: "L1", 135: "ITA", 78: "BUND",
-    2: "UCL", 3: "UEL", 848: "UECL",
-    262: "LMX", 253: "MLS", 71: "BRA", 128: "ARG", 528: "LC", 13: "LIB", 16: "CCC",
-    1: "WC", 4: "EURO", 9: "COPA",
-    45: "FA", 48: "EFL",
-    307: "SPL", 94: "PL", 88: "NED", 98: "J1",
-    // New Additions
-    203: "SL", 144: "BPL", 179: "SP", 119: "DS", 239: "PA", 188: "AL", 292: "K1",
-    11: "SUD", 143: "CDR", 137: "CI", 81: "DFB", 5: "UNL", 531: "CNL", 44: "WSL", 254: "NWSL"
+    // --- Top Euro Leagues ---
+    39: "EPL",       // Premier League
+    40: "CHAMP",     // English Championship
+    140: "LIGA",     // La Liga (or LFP)
+    135: "SER A",    // Serie A (or SA)
+    78: "BUND",      // Bundesliga (or BUN)
+    61: "L1",        // Ligue 1
+    88: "ERED",      // Eredivisie
+    94: "PRIM",      // Primeira Liga (Portugal)
+    
+    // --- Continental & World Cups ---
+    2: "UCL",        // UEFA Champions League
+    3: "UEL",        // UEFA Europa League
+    848: "UECL",     // UEFA Conference League
+    13: "LIB",       // Copa Libertadores
+    11: "SUD",       // Copa Sudamericana
+    16: "CCC",       // CONCACAF Champions Cup
+    528: "LCUP",     // Leagues Cup
+    1: "WC",         // World Cup
+    4: "EURO",       // UEFA Euro
+    9: "COPA",       // Copa America
+    5: "UNL",        // UEFA Nations League
+    531: "CNL",      // CONCACAF Nations League
+
+    // --- Americas ---
+    253: "MLS",      // Major League Soccer
+    262: "LMX",      // Liga MX
+    71: "BSA",       // Brasileiro Série A (Standard data feed code)
+    128: "LPF",      // Liga Profesional de Fútbol (Argentina)
+    239: "FPC",      // Fútbol Profesional Colombiano (Primera A)
+    
+    // --- Domestic Cups ---
+    45: "FA",        // FA Cup
+    48: "EFL",       // EFL Cup / Carabao
+    143: "CDR",      // Copa del Rey
+    137: "COPPA",    // Coppa Italia
+    81: "DFB",       // DFB-Pokal
+
+    // --- Global Leagues ---
+    307: "SPL",      // Saudi Pro League
+    98: "J1",        // J1 League
+    203: "TSL",      // Turkish Süper Lig
+    144: "JPL",      // Jupiler Pro League (Belgium)
+    179: "SPFL",     // Scottish Professional Football League
+    119: "SUP",      // Superliga (Denmark)
+    188: "ALM",      // A-League Men (Australia)
+    292: "K1",       // K League 1
+
+    // --- Women's Leagues ---
+    44: "WSL",       // Women's Super League
+    254: "NWSL"      // National Women's Soccer League
 };
 
 const LEAGUE_MAP_ESPN = {
