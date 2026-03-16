@@ -482,9 +482,7 @@ def process_date(target_date, force_master_sync=False):
                                 # C. Sweep & Heal ALL FUTURE games for this league
                                 update_future_files_for_league(game['league']['id'], date_str)
                         
-                        # Cup Safeguard: If the API returned empty, mark as Python None (JSON null)
-                        if not fetched_standings:
-                            MASTER_TEAM_DICT[t_key] = {"rank": None, "record": None}
+                        
 
                     # 3. APPLY TO CURRENT TEAM (If Master Dict already had it, or we just fetched it)
                     t_data = MASTER_TEAM_DICT.get(t_key, {})
