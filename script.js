@@ -16,22 +16,15 @@ const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425
 // ... (LEAGUE_GROUPS, SUPPORTED_LEAGUES, LEAGUE_MAP_ESPN, toggleExpand, checkOverflows, shortenPlayerName, openPlayerModal ALL REMAIN EXACTLY THE SAME) ...
 
 const LEAGUE_GROUPS = {
-    "priority": [
-        { key: "top", id: "top", name: "Top Matches" },
-        { key: "epl", id: 39, name: "Premier League" },
-        { key: "laliga", id: 140, name: "La Liga" },
-        { key: "seriea", id: 135, name: "Serie A" }
-    ],
     "Europe": [
-        { key: "ucl", id: 2, name: "Champions League" },
-        { key: "europa", id: 3, name: "Europa League" },
-        { key: "facup", id: 45, name: "FA Cup" },
+        { key: "epl", id: 39, name: "Premier League" },
         { key: "championship", id: 40, name: "Championship" },
+        { key: "laliga", id: 140, name: "La Liga" },
+        { key: "seriea", id: 135, name: "Serie A" },
         { key: "bundesliga", id: 78, name: "Bundesliga" },
         { key: "ligue1", id: 61, name: "Ligue 1" },
         { key: "eredivisie", id: 88, name: "Eredivisie" },
         { key: "portugal", id: 94, name: "Primeira Liga" },
-        { key: "conference", id: 848, name: "Conference League" },
         { key: "turkey", id: 203, name: "Süper Lig" },
         { key: "belgium", id: 144, name: "Pro League" },
         { key: "scotland", id: 179, name: "Premiership" },
@@ -42,63 +35,68 @@ const LEAGUE_GROUPS = {
         { key: "ligamx", id: 262, name: "Liga MX" },
         { key: "brazil", id: 71, name: "Brasileirão" },
         { key: "argentina", id: 128, name: "Liga Profesional" },
-        { key: "colombia", id: 239, name: "Primera A" },
-        { key: "libertadores", id: 13, name: "Copa Libertadores" },
-        { key: "concacaf", id: 16, name: "Champions Cup" }
+        { key: "colombia", id: 239, name: "Primera A" }
     ],
     "World": [
         { key: "saudi", id: 307, name: "Saudi Pro League" },
         { key: "japan", id: 98, name: "J1 League" },
         { key: "australia", id: 188, name: "A-League" },
         { key: "k1", id: 292, name: "K League 1" }
+    ],
+    "Cups": [
+        { key: "ucl", id: 2, name: "Champions League" },
+        { key: "europa", id: 3, name: "Europa League" },
+        { key: "conference", id: 848, name: "Conference League" },
+        { key: "libertadores", id: 13, name: "Copa Libertadores" },
+        { key: "sudamericana", id: 11, name: "Copa Sudamericana" },
+        { key: "concacaf", id: 16, name: "Champions Cup" },
+        { key: "leaguescup", id: 528, name: "Leagues Cup" },
+        { key: "facup", id: 45, name: "FA Cup" },
+        { key: "eflcup", id: 48, name: "EFL Cup" },
+        { key: "copadelrey", id: 143, name: "Copa del Rey" },
+        { key: "coppaitalia", id: 137, name: "Coppa Italia" },
+        { key: "dfbpokal", id: 81, name: "DFB-Pokal" }
+    ],
+    "International": [
+        { key: "worldcup", id: 1, name: "World Cup" },
+        { key: "euros", id: 4, name: "Euro Championship" },
+        { key: "copaamerica", id: 9, name: "Copa America" },
+        { key: "uefanations", id: 5, name: "UEFA Nations League" },
+        { key: "concacafnations", id: 531, name: "CONCACAF Nations League" }
+    ],
+    "Women": [
+        { key: "wsl", id: 44, name: "Women's Super League" },
+        { key: "nwsl", id: 254, name: "NWSL" }
     ]
 };
 
 const SUPPORTED_LEAGUES = {};
 Object.values(LEAGUE_GROUPS).flat().forEach(l => SUPPORTED_LEAGUES[l.key] = l);
 
-const LEAGUE_MAP_ESPN = {
-    39: "eng.1", 40: "eng.2", 45: "eng.fa", 140: "esp.1", 135: "ita.1", 78: "ger.1", 
-    61: "fra.1", 72: "ned.1", 94: "por.1", 2: "uefa.champions", 3: "uefa.europa", 253: "usa.1", 
-    262: "mex.1", 71: "bra.1", 128: "arg.1", 13: "conmebol.libertadores", 307: "ksa.1", 98: "jpn.1",
-    848: "uefa.conf"
-};
-
 const LEAGUE_ABBREV = {
-    39: "EPL",
-    40: "Champ",
-    45: "FA Cup",
-    48: "EFL Cup",
-    140: "La Liga",
-    135: "Serie A",
-    78: "BUND",
-    61: "Ligue 1",
-    88: "ERED",
-    94: "PL",
-    2: "UCL",
-    3: "UEL",
-    848: "UECL",
-    253: "MLS",
-    262: "Liga MX",
-    71: "Serie A",
-    128: "LPF",
-    13: "Libs",
-    16: "CCC",
-    528: "Leagues",
-    1: "WC",
-    4: "Euros",
-    9: "Copa Am.",
-    307: "SPL",
-    98: "J1",
-    203: "SL",   // Turkey
-    144: "BPL",  // Belgium
-    179: "SP",   // Scotland
-    119: "DS",   // Denmark
-    239: "PA",   // Colombia
-    188: "AL",   // Australia
-    292: "K1"    //South Korea
+    39: "EPL", 40: "EFL", 140: "ESP", 61: "L1", 135: "ITA", 78: "GER",
+    2: "UCL", 3: "UEL", 848: "UECL",
+    262: "LMX", 253: "MLS", 71: "BRA", 128: "ARG", 528: "LC", 13: "LIB", 16: "CCC",
+    1: "WC", 4: "EURO", 9: "COPA",
+    45: "FA", 48: "EFL",
+    307: "SPL", 94: "POR", 88: "NED", 98: "J1",
+    // New Additions
+    203: "SL", 144: "BPL", 179: "SP", 119: "DS", 239: "PA", 188: "AL", 292: "K1",
+    11: "SUD", 143: "CDR", 137: "CI", 81: "DFB", 5: "UNL", 531: "CNL", 44: "WSL", 254: "NWSL"
 };
 
+const LEAGUE_MAP_ESPN = {
+    39: "eng.1", 40: "eng.2", 140: "esp.1", 61: "fra.1", 135: "ita.1", 78: "ger.1",
+    2: "uefa.champions", 3: "uefa.europa", 848: "uefa.europa.conf",
+    262: "mex.1", 253: "usa.1", 71: "bra.1", 128: "arg.1", 528: "conmebol.leagues.cup", 13: "conmebol.libertadores", 16: "concacaf.champions",
+    1: "fifa.world", 4: "uefa.euro", 9: "conmebol.america",
+    45: "eng.fa", 48: "eng.league_cup",
+    307: "ksa.1", 94: "por.1", 88: "ned.1", 98: "jpn.1",
+    // New Additions
+    203: "tur.1", 144: "bel.1", 179: "sco.1", 119: "den.1", 239: "col.1", 188: "aus.1", 292: "kor.1",
+    11: "conmebol.sudamericana", 143: "esp.copa_del_rey", 137: "ita.coppa_italia", 81: "ger.dfb_pokal", 
+    5: "uefa.nations", 531: "concacaf.nations", 44: "eng.w.1", 254: "usa.nwsl"
+};
 window.toggleExpand = function(el) {
     const isExpanded = el.classList.toggle('is-expanded');
     const targets = el.querySelectorAll('.truncate-target');
