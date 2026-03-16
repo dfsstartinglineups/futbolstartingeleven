@@ -9,13 +9,17 @@ let savedLineupState = localStorage.getItem('futbolLineupsExpanded');
 let globalLineupsExpanded = savedLineupState !== null ? savedLineupState === 'true' : true; 
 
 let savedScoreboardState = localStorage.getItem('futbolScoreboardMode');
-let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState === 'true' : true; // NEW: Defaults to true for new visitors
+let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState === 'true' : true;
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
 
-// ... (LEAGUE_GROUPS, SUPPORTED_LEAGUES, LEAGUE_MAP_ESPN, toggleExpand, checkOverflows, shortenPlayerName, openPlayerModal ALL REMAIN EXACTLY THE SAME) ...
-
 const LEAGUE_GROUPS = {
+    "priority": [
+        { key: "top", id: "top", name: "Top Matches" },
+        { key: "epl", id: 39, name: "Premier League" },
+        { key: "laliga", id: 140, name: "La Liga" },
+        { key: "seriea", id: 135, name: "Serie A" }
+    ],
     "Europe": [
         { key: "epl", id: 39, name: "Premier League" },
         { key: "championship", id: 40, name: "Championship" },
@@ -97,6 +101,7 @@ const LEAGUE_MAP_ESPN = {
     11: "conmebol.sudamericana", 143: "esp.copa_del_rey", 137: "ita.coppa_italia", 81: "ger.dfb_pokal", 
     5: "uefa.nations", 531: "concacaf.nations", 44: "eng.w.1", 254: "usa.nwsl"
 };
+
 window.toggleExpand = function(el) {
     const isExpanded = el.classList.toggle('is-expanded');
     const targets = el.querySelectorAll('.truncate-target');
@@ -474,8 +479,6 @@ function getRibbonHtml(data) {
     </div>`;
 }
 
-// ... (getScoreHtml, getEventsHtml, getOddsHtml, getInjuriesHtml ALL REMAIN EXACTLY THE SAME) ...
-
 function getScoreHtml(data) {
     const status = data.fixture.status.short;
     const isFinished = ['FT', 'AET', 'PEN'].includes(status);
@@ -595,8 +598,6 @@ function getUrlParams() {
     return { league: params.get('league') || 'top', date: params.get('date') || DEFAULT_DATE };
 }
 
-// ... (renderLeagueMenu and fetchMatchesData REMAIN EXACTLY THE SAME) ...
-
 function renderLeagueMenu(activeLeague, currentDate) {
     const desktopMenu = document.getElementById('league-menu-desktop');
     const mobileMenu = document.getElementById('league-menu-mobile');
@@ -614,7 +615,7 @@ function renderLeagueMenu(activeLeague, currentDate) {
         desktopMenu.appendChild(a);
     });
 
-    ['Europe', 'Americas', 'World'].forEach(region => {
+    ['Europe', 'Americas', 'World', 'Cups', 'International', 'Women'].forEach(region => {
         const regionLeagues = LEAGUE_GROUPS[region];
         if (!regionLeagues || regionLeagues.length === 0) return; 
         const isActiveRegion = regionLeagues.some(l => l.key === activeLeague);
@@ -659,7 +660,7 @@ function renderLeagueMenu(activeLeague, currentDate) {
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" style="background-color: #343a40; border-color: #495057; max-height: 65vh; overflow-y: auto;">
     `;
 
-    ['Europe', 'Americas', 'World'].forEach((region, idx) => {
+    ['Europe', 'Americas', 'World', 'Cups', 'International', 'Women'].forEach((region, idx) => {
         if (idx !== 0) {
             dropdownHtml += `<li><hr class="dropdown-divider border-secondary"></li>`;
         }
