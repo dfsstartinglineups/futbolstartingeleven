@@ -49,7 +49,8 @@ const LEAGUE_GROUPS = {
     "World": [
         { key: "saudi", id: 307, name: "Saudi Pro League" },
         { key: "japan", id: 98, name: "J1 League" },
-        { key: "australia", id: 188, name: "A-League" }
+        { key: "australia", id: 188, name: "A-League" },
+        { key: "k1", id: 292, name: "K League 1" }
     ]
 };
 
@@ -94,7 +95,8 @@ const LEAGUE_ABBREV = {
     179: "SP",   // Scotland
     119: "DS",   // Denmark
     239: "PA",   // Colombia
-    188: "AL"    // Australia
+    188: "AL",   // Australia
+    292: "K1"    //South Korea
 };
 
 window.toggleExpand = function(el) {
