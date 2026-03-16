@@ -194,6 +194,15 @@
             .navbar .container { padding-bottom: 8px !important; }
         }
 
+        /* On Desktop/Laptop: Hide individual league pills to save space */
+        @media (min-width: 992px) {
+            #league-menu-desktop a[href*="league=epl"],
+            #league-menu-desktop a[href*="league=laliga"],
+            #league-menu-desktop a[href*="league=seriea"] {
+            display: none !important;
+            }
+        }
+
         .sr-only {
           position: absolute !important;
           width: 1px !important;
