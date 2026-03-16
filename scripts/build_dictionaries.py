@@ -2,13 +2,13 @@ import json
 import os
 import urllib.request
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 # --- CONFIGURATION ---
 API_HOST = "https://v3.football.api-sports.io"
 API_KEY = os.environ.get("FOOTBALL_API_KEY")
 
-# Since the script is in /scripts, but data is in /data at root
+# Script is in /scripts, data is in /data at root
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
 os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -31,30 +31,31 @@ def fetch_data(endpoint):
     try:
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode())
-            # Safety for 450 req/min limit (120 req/min at 0.5s)
-            time.sleep(0.5) 
+            time.sleep(0.6) # Slightly slower for maximum safety
             return data
     except Exception as e:
         print(f"Error fetching {endpoint}: {e}")
         return None
 
 def sync_all_leagues():
-    master_teams = {}
-    master_players = {}
-    now = datetime.now(timezone.utc)
+    # Load existing to merge rather than overwrite (even safer!)
+    if os.path.exists(TEAM_DICT_PATH):
+        with open(TEAM_DICT_PATH, 'r') as f: master_teams = json.load(f)
+    else: master_teams = {}
+
+    if os.path.exists(PLAYER_DICT_PATH):
+        with open(PLAYER_DICT_PATH, 'r') as f: master_players = json.load(f)
+    else: master_players = {}
+
     this_year = 2026
     last_year = 2025
 
-    print(f"🚀 Starting Master Sync for {len(TOP_LEAGUE_IDS)} leagues...")
+    print(f"🚀 Starting SAFE Master Sync (Dictionaries Only)...")
 
     for league_id in TOP_LEAGUE_IDS:
-        # Most Americas/World/Women run calendar year (2026)
-        # Euro leagues are finishing their 2025/2026 season
         season = this_year if league_id in [253, 262, 71, 128, 239, 307, 98, 188, 292, 254, 531, 11, 13, 16, 528] else last_year
+        print(f"\n--- League ID: {league_id} (Season {season}) ---")
         
-        print(f"\n--- Processing League ID: {league_id} (Season {season}) ---")
-        
-        # 1. Sync Standings & Team Logos
         standings_data = fetch_data(f"standings?league={league_id}&season={season}")
         team_ids_in_league = []
         
@@ -65,74 +66,34 @@ def sync_all_leagues():
                     for row in standings_list[0]:
                         t_id = row['team']['id']
                         team_ids_in_league.append(t_id)
-                        
+                        # Sync rank and record only
                         master_teams[f"{t_id}_{league_id}"] = {
                             "rank": row["rank"],
-                            "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}",
-                            "points": row.get("points"),
-                            "goalsDiff": row.get("goalsDiff"),
-                            "form": row.get("form"),
-                            "logo": row['team'].get('logo')
+                            "record": f"{row['all']['win']}-{row['all']['draw']}-{row['all']['lose']}"
                         }
-                print(f"✅ Standings synced. Found {len(team_ids_in_league)} teams.")
+                print(f"✅ Standings synced.")
             except Exception:
-                print(f"⚠️ League {league_id} standings skip (likely knockout cup).")
+                print(f"⚠️ Standings skip.")
 
-        # 2. Sync Full Rosters
         for t_id in team_ids_in_league:
-            print(f"   Fetching Roster: Team {t_id}...")
+            print(f"   Roster: Team {t_id}...")
             page = 1
             while True:
                 player_data = fetch_data(f"players?team={t_id}&season={season}&page={page}")
                 if not player_data or not player_data.get("response"):
                     break
-                
                 for entry in player_data["response"]:
-                    p_id = str(entry["player"]["id"])
-                    master_players[p_id] = entry
-                
+                    master_players[str(entry["player"]["id"])] = entry
                 if page >= player_data.get("paging", {}).get("total", 1):
                     break
                 page += 1
 
-    # Save Master Dictionaries
-    with open(TEAM_DICT_PATH, 'w') as f:
-        json.dump(master_teams, f, indent=4)
-    with open(PLAYER_DICT_PATH, 'w') as f:
-        json.dump(master_players, f, indent=4)
-    
-    print("\n✅ Master Dictionaries updated.")
-
-def sync_future_schedules():
-    print("\n🚀 Building Future 30-Day Schedule...")
-    now = datetime.now(timezone.utc)
-    
-    for i in range(31):
-        target_date = (now + timedelta(days=i)).strftime("%Y-%m-%d")
-        print(f"   Processing {target_date}...")
-        
-        data = fetch_data(f"fixtures?date={target_date}&timezone=America/New_York")
-        if data and data.get("response"):
-            filtered = [g for g in data["response"] if g['league']['id'] in TOP_LEAGUE_IDS]
-            daily_games = []
-            for game in filtered:
-                daily_games.append({
-                    "fixture": game['fixture'],
-                    "league": game['league'],
-                    "teams": {"home": game['teams']['home'], "away": game['teams']['away']},
-                    "goals": game['goals'],
-                    "homeLineup": None, "awayLineup": None,
-                    "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
-                    "injuries": {"home": [], "away": []},
-                    "events": [], "post_game_sync": False
-                })
-            
-            with open(os.path.join(DATA_DIR, f"games_{target_date}.json"), 'w') as f:
-                json.dump(daily_games, f, indent=4)
+    with open(TEAM_DICT_PATH, 'w') as f: json.dump(master_teams, f, indent=4)
+    with open(PLAYER_DICT_PATH, 'w') as f: json.dump(master_players, f, indent=4)
+    print("\n✅ Master Dictionaries updated. Ready for Scraper to use.")
 
 if __name__ == "__main__":
     if not API_KEY:
-        print("❌ Error: FOOTBALL_API_KEY not found.")
+        print("❌ Error: API Key not found.")
     else:
         sync_all_leagues()
-        sync_future_schedules()
