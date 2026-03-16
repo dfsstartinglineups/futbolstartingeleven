@@ -78,12 +78,12 @@ const SUPPORTED_LEAGUES = {};
 Object.values(LEAGUE_GROUPS).flat().forEach(l => SUPPORTED_LEAGUES[l.key] = l);
 
 const LEAGUE_ABBREV = {
-    39: "EPL", 40: "EFL", 140: "ESP", 61: "L1", 135: "ITA", 78: "GER",
+    39: "EPL", 40: "EFL", 140: "ESP", 61: "L1", 135: "ITA", 78: "BUND",
     2: "UCL", 3: "UEL", 848: "UECL",
     262: "LMX", 253: "MLS", 71: "BRA", 128: "ARG", 528: "LC", 13: "LIB", 16: "CCC",
     1: "WC", 4: "EURO", 9: "COPA",
     45: "FA", 48: "EFL",
-    307: "SPL", 94: "POR", 88: "NED", 98: "J1",
+    307: "SPL", 94: "PL", 88: "NED", 98: "J1",
     // New Additions
     203: "SL", 144: "BPL", 179: "SP", 119: "DS", 239: "PA", 188: "AL", 292: "K1",
     11: "SUD", 143: "CDR", 137: "CI", 81: "DFB", 5: "UNL", 531: "CNL", 44: "WSL", 254: "NWSL"
