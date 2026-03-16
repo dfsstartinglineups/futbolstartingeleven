@@ -1,13 +1,39 @@
-- name: Commit and Push Data
+name: Bulk Data Sync
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-dictionaries:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Master Sync
+        env:
+          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
+        run: |
+          python scripts/build_dictionaries.py
+
+      - name: Commit and Push Data
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # ONLY add the dictionaries
+          # ONLY add the dictionaries (Safest approach)
           git add data/master_teams.json data/master_players.json
           
           if ! git diff --quiet --staged; then
-            git commit -m "🤖 Master Data Sync: Dictionary Backfill [skip ci]"
+            git commit -m "🤖 Master Data Sync: Updated rosters and ranks [skip ci]"
             git pull --rebase origin main
             git push origin main
           else
