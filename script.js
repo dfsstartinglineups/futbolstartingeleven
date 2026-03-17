@@ -443,13 +443,12 @@ function getLatestEventHtml(data, isRibbon = false) {
             let pOut = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
             
             if (isRibbon) {
-                // NEW: Wrap text up to 2 lines before truncating
                 return `<div class="text-dark fw-bold text-start w-100 ps-2" style="font-size: 0.65rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal;">
-                            ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> <span class="text-success">${pIn}</span> 🔄 <span class="text-muted">${pOut}</span>
+                            🔄 ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> <span class="text-success">${pIn}</span> IN <span class="text-muted">(${pOut} OUT)</span>
                         </div>`;
             } else {
                 return `<div class="ms-2 text-dark fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
-                            <span class="text-truncate" style="max-width: 160px;">🔄 <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${lastEv.time}' ${pIn} IN</span>
+                            <span class="text-truncate" style="max-width: 160px;">🔄 ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${pIn} IN</span>
                             <span class="text-truncate text-muted" style="max-width: 160px; padding-left: 18px;">${pOut} OUT</span>
                         </div>`;
             }
@@ -462,14 +461,14 @@ function getLatestEventHtml(data, isRibbon = false) {
             const playerName = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : teamName;
             const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
             
+            // FORMAT: Emoji -> Min -> Player
             if (isRibbon) {
-                // NEW: Wrap text up to 2 lines before truncating
                 return `<div class="${textColor} fw-bold text-start w-100 ps-2" style="font-size: 0.65rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal;">
-                            ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} <span class="text-muted" style="font-size: 0.6rem;">(${lastEv.time}')</span>
+                            ${icon} ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}
                         </div>`;
             } else {
                 return `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
-                            ${icon} <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName} (${lastEv.time}')
+                            ${icon} ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}
                         </span>`;
             }
         }
@@ -540,14 +539,19 @@ function getEventsHtml(data) {
     const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id);
     const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
     
+    // Enforces strict grid order: Emoji | Minute | Name
     const formatSingleEvent = (e, teamName) => {
         if (e.type === 'subst') {
             let pIn = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : 'Unknown';
             let pOut = (e.player_out && e.player_out !== "null") ? shortenPlayerName(e.player_out) : 'Unknown';
             return `
-                <div style="line-height: 1.2; margin-bottom: 2px;">
-                    🔄 ${e.time}' <span class="text-dark fw-bold">${pIn}</span> IN<br>
-                    <span class="text-muted">🔄 ${e.time}' ${pOut} OUT</span>
+                <div class="d-flex align-items-start" style="line-height: 1.2; margin-bottom: 2px;">
+                    <div style="width: 16px; text-align: center; flex-shrink: 0;">🔄</div>
+                    <div class="text-secondary fw-bold px-1" style="width: 25px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
+                    <div class="text-truncate">
+                        <span class="text-dark fw-bold">${pIn}</span> IN<br>
+                        <span class="text-muted" style="font-size: 0.6rem;">(${pOut} OUT)</span>
+                    </div>
                 </div>
             `;
         }
@@ -558,28 +562,36 @@ function getEventsHtml(data) {
             icon = e.detail.includes('Red') || e.detail.includes('Second') ? '🟨🟥' : '🟨';
         }
         let playerName = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : teamName;
-        return `${icon} <span class="text-dark fw-bold">${playerName}</span> ${e.time}'`;
+        
+        return `
+            <div class="d-flex align-items-center" style="line-height: 1.2; margin-bottom: 2px;">
+                <div style="width: 16px; text-align: center; flex-shrink: 0;">${icon}</div>
+                <div class="text-secondary fw-bold px-1" style="width: 25px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
+                <div class="text-dark fw-bold text-truncate">${playerName}</div>
+            </div>
+        `;
     };
 
-    const renderEventSide = (evs, teamName, isHome) => {
+    const renderEventSide = (evs, teamName) => {
         if (evs.length === 0) return '';
         const reversedEvs = [...evs].reverse();
 
         if (reversedEvs.length === 1) {
-            return `<div class="text-truncate">${formatSingleEvent(reversedEvs[0], teamName)}</div>`;
+            return `<div>${formatSingleEvent(reversedEvs[0], teamName)}</div>`;
         }
 
         const firstEvent = formatSingleEvent(reversedEvs[0], teamName);
-        const allEvents = reversedEvs.map(e => `<div class="text-truncate" style="margin-bottom: 2px;">${formatSingleEvent(e, teamName)}</div>`).join('');
+        const allEvents = reversedEvs.map(e => `<div>${formatSingleEvent(e, teamName)}</div>`).join('');
 
+        // ALIGNMENT: Left-aligned for both sides
         return `
-            <div class="event-collapsed d-flex align-items-center ${isHome ? 'justify-content-start' : 'justify-content-end'}">
-                <div class="text-truncate">${firstEvent}</div>
+            <div class="event-collapsed d-flex align-items-center justify-content-between pe-1">
+                <div class="flex-grow-1" style="min-width: 0;">${firstEvent}</div>
                 <div class="text-secondary ms-1" style="font-size: 0.6rem; flex-shrink: 0;">▼</div>
             </div>
-            <div class="event-expanded d-none">
-                ${allEvents}
-                <div class="text-secondary" style="font-size: 0.6rem; line-height: 1;">▲</div>
+            <div class="event-expanded d-none pe-1">
+                <div class="flex-grow-1" style="min-width: 0;">${allEvents}</div>
+                <div class="text-secondary text-end mt-1" style="font-size: 0.6rem; line-height: 1;">▲</div>
             </div>
         `;
     };
@@ -591,8 +603,15 @@ function getEventsHtml(data) {
          onmouseover="this.style.backgroundColor='#f8f9fa'" 
          onmouseout="this.style.backgroundColor='transparent'"
          title="Click to expand/collapse goals and cards">
-        <div class="text-start pe-1" style="flex: 1; min-width: 0;">${renderEventSide(homeEvents, data.teams.home.name, true)}</div>
-        <div class="text-end ps-1" style="flex: 1; min-width: 0;">${renderEventSide(awayEvents, data.teams.away.name, false)}</div>
+        
+        <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">
+            ${renderEventSide(homeEvents, data.teams.home.name)}
+        </div>
+        
+        <div class="text-start border-start" style="flex: 1; min-width: 0; padding-left: 6px;">
+            ${renderEventSide(awayEvents, data.teams.away.name)}
+        </div>
+        
     </div>`;
 }
 
