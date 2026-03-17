@@ -542,12 +542,12 @@ def process_date(target_date, force_master_sync=False):
             local_status = game.get('fixture', {}).get('status', {}).get('short', '')
             
             # --- 🛑 TIME TRAVEL BLOCKER ---
-            # API load balancers often send stale payloads. If the API tries to send us 
-            # backward in time, we reject it entirely so goals don't temporarily vanish!
+            # API load balancers often send stale payloads. Reject backward time travel,
+            # UNLESS the official match status has changed (e.g. blowing the whistle caps time back to 90 or 120)
             new_elapsed = latest_data.get('fixture', {}).get('status', {}).get('elapsed') or 0
             old_elapsed = game.get('fixture', {}).get('status', {}).get('elapsed') or 0
             
-            if new_elapsed < old_elapsed:
+            if new_elapsed < old_elapsed and latest_status == local_status:
                 continue # Skip this game loop entirely. The API is lagging!
             
             
