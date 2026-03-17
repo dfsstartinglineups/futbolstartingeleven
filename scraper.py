@@ -662,23 +662,19 @@ def process_date(target_date, force_master_sync=False):
                     game["injuries"]["checks"] = target_level
                     updated = True
 
-            # 4. LINEUPS (Strict Pre-Game Polling & Late Scratches)
-            l_checks = game.get("lineup_checks", 0)
-            
-            # Check if we already have the FULL lineup with actual players
+            # 4. LINEUPS (Continuous polling from T-90 to T+5)
             has_full_lineup = bool(game.get('homeLineup') and game.get('homeLineup').get('startXI'))
             
-            # Check every 5 minutes in the final hour
-            checkpoints = [60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 4, 3, 2, 1]
-            target_checks = sum(1 for c in checkpoints if time_to_kickoff_minutes <= c)
+            # The Polling Window: Start checking 90 mins before kickoff, stop checking 5 mins after kickoff.
+            in_polling_window = (-5 <= time_to_kickoff_minutes <= 90)
             
-            # Late Scratch Checks: Force a re-check at 15m and 5m even if we have the lineup
+            # Late Scratch Checks: Force a re-check at exactly 15m and 5m before kickoff, even if we already have the lineup.
             needs_15m_refresh = (time_to_kickoff_minutes <= 15) and not game.get("refreshed_15m", False)
             needs_5m_refresh = (time_to_kickoff_minutes <= 5) and not game.get("refreshed_5m", False)
             
-            # STRICT RULE: ONLY check if the game has NOT started ('NS')
+            # STRICT RULE: ONLY fetch if the game has NOT started ('NS')
             needs_lineup = (latest_status == 'NS') and (
-                (not has_full_lineup and l_checks < target_checks) or 
+                (in_polling_window and not has_full_lineup) or 
                 needs_15m_refresh or 
                 needs_5m_refresh
             )
@@ -686,7 +682,8 @@ def process_date(target_date, force_master_sync=False):
             if needs_lineup:
                 lineups_data = fetch_lineups(fixture_id)
                 if lineups_data and lineups_data.get("response") and len(lineups_data["response"]) >= 2:
-                    season = game['league']['season'] # Grab the season to fetch missing players
+                    print(f"[{fixture_id}] Lineup found at T-{int(time_to_kickoff_minutes)} mins!")
+                    season = game['league']['season']
                     enriched = inject_player_stats(lineups_data["response"], season)
                     game['homeLineup'], game['awayLineup'] = enriched[0], enriched[1]
                 
@@ -694,8 +691,6 @@ def process_date(target_date, force_master_sync=False):
                 if time_to_kickoff_minutes <= 15: game["refreshed_15m"] = True
                 if time_to_kickoff_minutes <= 5:  game["refreshed_5m"] = True
                 
-                # Update counter so we don't spam the API
-                game['lineup_checks'] = target_checks if not has_full_lineup else (l_checks + 1)
                 updated = True
                 
             # 5. POST-GAME SYNC
