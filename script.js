@@ -545,7 +545,7 @@ function getEventsHtml(data) {
             let pIn = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : 'Unknown';
             let pOut = (e.player_out && e.player_out !== "null") ? shortenPlayerName(e.player_out) : 'Unknown';
             return `
-                <div class="d-flex align-items-start" style="line-height: 1.2; margin-bottom: 2px;">
+                <div class="d-flex align-items-start" style="line-height: 1.1; margin-bottom: 2px;">
                     <div class="text-secondary fw-bold pe-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem; margin-top: 1px;">${e.time}'</div>
                     <div style="width: 18px; text-align: center; flex-shrink: 0;" class="me-1">🔄</div>
                     <div class="text-truncate" style="min-width: 0;">
@@ -564,7 +564,7 @@ function getEventsHtml(data) {
         let playerName = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : teamName;
         
         return `
-            <div class="d-flex align-items-center" style="line-height: 1.2; margin-bottom: 2px;">
+            <div class="d-flex align-items-center" style="line-height: 1.1; margin-bottom: 2px;">
                 <div class="text-secondary fw-bold pe-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
                 <div style="width: 18px; text-align: center; flex-shrink: 0;" class="me-1">${icon}</div>
                 <div class="text-dark fw-bold text-truncate" style="min-width: 0;">${playerName}</div>
@@ -586,10 +586,10 @@ function getEventsHtml(data) {
     // Check if we actually need the dropdown arrows
     const needsCollapse = Math.max(homeReversed.length, awayReversed.length) > 1;
 
-    // Single unified collapse wrapper with a centered arrow and negative top margin to close the gap
+    // Single unified collapse wrapper with aggressive negative margins to pull the UI tight
     return `
     <div class="w-100 px-2 pt-1 mt-1 border-top text-muted" 
-         style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" 
+         style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s; margin-bottom: -6px;" 
          onclick="if(${needsCollapse}) { const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp); }"
          onmouseover="this.style.backgroundColor='#f8f9fa'" 
          onmouseout="this.style.backgroundColor='transparent'"
@@ -600,7 +600,7 @@ function getEventsHtml(data) {
                 <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${firstHome}</div>
                 <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${firstAway}</div>
             </div>
-            ${needsCollapse ? `<div class="text-center text-secondary w-100" style="font-size: 0.6rem; margin-top: -4px; padding-bottom: 2px;">▼</div>` : ''}
+            ${needsCollapse ? `<div class="text-center text-secondary w-100" style="font-size: 0.65rem; line-height: 0.5; margin-top: -4px; padding-bottom: 6px;">▼</div>` : ''}
         </div>
         
         <div class="event-expanded d-none">
@@ -608,12 +608,11 @@ function getEventsHtml(data) {
                 <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${allHome}</div>
                 <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${allAway}</div>
             </div>
-            <div class="text-center text-secondary w-100" style="font-size: 0.6rem; margin-top: -4px; padding-bottom: 2px;">▲</div>
+            <div class="text-center text-secondary w-100" style="font-size: 0.65rem; line-height: 0.5; margin-top: -4px; padding-bottom: 6px;">▲</div>
         </div>
         
     </div>`;
 }
-
 function getOddsHtml(data) {
     if (!data.odds || (data.odds.home === "TBD" && data.odds.over === "TBD")) return '';
     const h = data.odds.home !== "TBD" ? data.odds.home : "-";
