@@ -586,7 +586,7 @@ function getEventsHtml(data) {
     // Check if we actually need the dropdown arrows
     const needsCollapse = Math.max(homeReversed.length, awayReversed.length) > 1;
 
-    // Single unified collapse wrapper with a centered arrow
+    // Single unified collapse wrapper with a centered arrow and negative top margin to close the gap
     return `
     <div class="w-100 px-2 pt-1 mt-1 border-top text-muted" 
          style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" 
@@ -600,7 +600,7 @@ function getEventsHtml(data) {
                 <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${firstHome}</div>
                 <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${firstAway}</div>
             </div>
-            ${needsCollapse ? `<div class="text-center text-secondary w-100 mt-1" style="font-size: 0.6rem; line-height: 1;">▼</div>` : ''}
+            ${needsCollapse ? `<div class="text-center text-secondary w-100" style="font-size: 0.6rem; margin-top: -4px; padding-bottom: 2px;">▼</div>` : ''}
         </div>
         
         <div class="event-expanded d-none">
@@ -608,7 +608,7 @@ function getEventsHtml(data) {
                 <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${allHome}</div>
                 <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${allAway}</div>
             </div>
-            <div class="text-center text-secondary w-100 mt-1" style="font-size: 0.6rem; line-height: 1;">▲</div>
+            <div class="text-center text-secondary w-100" style="font-size: 0.6rem; margin-top: -4px; padding-bottom: 2px;">▲</div>
         </div>
         
     </div>`;
