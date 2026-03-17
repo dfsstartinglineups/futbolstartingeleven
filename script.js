@@ -539,16 +539,16 @@ function getEventsHtml(data) {
     const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id);
     const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
     
-    // Enforces strict grid order: Emoji | Minute | Name
+    // Enforces strict grid order: Minute | Emoji | Name
     const formatSingleEvent = (e, teamName) => {
         if (e.type === 'subst') {
             let pIn = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : 'Unknown';
             let pOut = (e.player_out && e.player_out !== "null") ? shortenPlayerName(e.player_out) : 'Unknown';
             return `
                 <div class="d-flex align-items-start" style="line-height: 1.2; margin-bottom: 2px;">
-                    <div style="width: 16px; text-align: center; flex-shrink: 0;">🔄</div>
-                    <div class="text-secondary fw-bold px-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
-                    <div class="text-truncate">
+                    <div class="text-secondary fw-bold pe-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem; margin-top: 1px;">${e.time}'</div>
+                    <div style="width: 18px; text-align: center; flex-shrink: 0;" class="me-1">🔄</div>
+                    <div class="text-truncate" style="min-width: 0;">
                         <span class="text-dark fw-bold">${pIn}</span> IN<br>
                         <span class="text-muted" style="font-size: 0.6rem;">(${pOut} OUT)</span>
                     </div>
@@ -565,9 +565,9 @@ function getEventsHtml(data) {
         
         return `
             <div class="d-flex align-items-center" style="line-height: 1.2; margin-bottom: 2px;">
-                <div style="width: 16px; text-align: center; flex-shrink: 0;">${icon}</div>
-                <div class="text-secondary fw-bold px-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
-                <div class="text-dark fw-bold text-truncate">${playerName}</div>
+                <div class="text-secondary fw-bold pe-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
+                <div style="width: 18px; text-align: center; flex-shrink: 0;" class="me-1">${icon}</div>
+                <div class="text-dark fw-bold text-truncate" style="min-width: 0;">${playerName}</div>
             </div>
         `;
     };
@@ -583,32 +583,24 @@ function getEventsHtml(data) {
     const allHome = homeReversed.map(e => formatSingleEvent(e, data.teams.home.name)).join('');
     const allAway = awayReversed.map(e => formatSingleEvent(e, data.teams.away.name)).join('');
 
-    // Check if we actually need the dropdown arrows (are there more than 1 event on either side?)
+    // Check if we actually need the dropdown arrows
     const needsCollapse = Math.max(homeReversed.length, awayReversed.length) > 1;
 
-    if (!needsCollapse) {
-        return `
-        <div class="w-100 px-2 pt-1 mt-1 border-top d-flex justify-content-between text-muted" style="font-size: 0.65rem;">
-            <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${firstHome}</div>
-            <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${firstAway}</div>
-        </div>`;
-    }
-
-    // Unified Collapse Wrapper with a single centered arrow
+    // Single unified collapse wrapper with a centered arrow
     return `
     <div class="w-100 px-2 pt-1 mt-1 border-top text-muted" 
          style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" 
-         onclick="const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp);"
+         onclick="if(${needsCollapse}) { const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp); }"
          onmouseover="this.style.backgroundColor='#f8f9fa'" 
          onmouseout="this.style.backgroundColor='transparent'"
-         title="Click to expand/collapse goals and cards">
+         title="${needsCollapse ? 'Click to expand/collapse goals and cards' : ''}">
         
         <div class="event-collapsed">
             <div class="d-flex justify-content-between">
                 <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${firstHome}</div>
                 <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${firstAway}</div>
             </div>
-            <div class="text-center text-secondary w-100 mt-1" style="font-size: 0.6rem; line-height: 1;">▼</div>
+            ${needsCollapse ? `<div class="text-center text-secondary w-100 mt-1" style="font-size: 0.6rem; line-height: 1;">▼</div>` : ''}
         </div>
         
         <div class="event-expanded d-none">
