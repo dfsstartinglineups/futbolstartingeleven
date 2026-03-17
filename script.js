@@ -491,8 +491,10 @@ function getRibbonHtml(data) {
     const awayScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.away ?? 0) : '-';
 
     const leagueCompact = LEAGUE_ABBREV[data.league.id] || data.league.name;
-    const flagHtml = data.league.flag ? `<img src="${data.league.flag}" style="width: 14px; height: 10px; object-fit: cover; border-radius: 2px; border: 1px solid #dee2e6; margin-right: 3px; vertical-align: middle;">` : '';
-
+    // Check if the API provides a flag. If not, use a default trophy icon for Cups/World events.
+    const flagHtml = data.league.flag 
+        ? `<img src="${data.league.flag}" style="width: 14px; height: 10px; object-fit: cover; border-radius: 2px; border: 1px solid #dee2e6; margin-right: 3px; vertical-align: middle;">` 
+        : `<span style="font-size: 0.65rem; margin-right: 3px; vertical-align: middle;">🏆</span>`;
     // NEW: Build the true hyperlink URL
     const params = getUrlParams();
     const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
