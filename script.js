@@ -547,7 +547,7 @@ function getEventsHtml(data) {
             return `
                 <div class="d-flex align-items-start" style="line-height: 1.2; margin-bottom: 2px;">
                     <div style="width: 16px; text-align: center; flex-shrink: 0;">🔄</div>
-                    <div class="text-secondary fw-bold px-1" style="width: 25px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
+                    <div class="text-secondary fw-bold px-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
                     <div class="text-truncate">
                         <span class="text-dark fw-bold">${pIn}</span> IN<br>
                         <span class="text-muted" style="font-size: 0.6rem;">(${pOut} OUT)</span>
@@ -566,50 +566,57 @@ function getEventsHtml(data) {
         return `
             <div class="d-flex align-items-center" style="line-height: 1.2; margin-bottom: 2px;">
                 <div style="width: 16px; text-align: center; flex-shrink: 0;">${icon}</div>
-                <div class="text-secondary fw-bold px-1" style="width: 25px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
+                <div class="text-secondary fw-bold px-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
                 <div class="text-dark fw-bold text-truncate">${playerName}</div>
             </div>
         `;
     };
 
-    const renderEventSide = (evs, teamName) => {
-        if (evs.length === 0) return '';
-        const reversedEvs = [...evs].reverse();
+    const homeReversed = [...homeEvents].reverse();
+    const awayReversed = [...awayEvents].reverse();
 
-        if (reversedEvs.length === 1) {
-            return `<div>${formatSingleEvent(reversedEvs[0], teamName)}</div>`;
-        }
+    // Grab just the latest event for the collapsed view
+    const firstHome = homeReversed.length > 0 ? formatSingleEvent(homeReversed[0], data.teams.home.name) : '';
+    const firstAway = awayReversed.length > 0 ? formatSingleEvent(awayReversed[0], data.teams.away.name) : '';
 
-        const firstEvent = formatSingleEvent(reversedEvs[0], teamName);
-        const allEvents = reversedEvs.map(e => `<div>${formatSingleEvent(e, teamName)}</div>`).join('');
+    // Grab all events for the expanded view
+    const allHome = homeReversed.map(e => formatSingleEvent(e, data.teams.home.name)).join('');
+    const allAway = awayReversed.map(e => formatSingleEvent(e, data.teams.away.name)).join('');
 
-        // ALIGNMENT: Left-aligned for both sides
+    // Check if we actually need the dropdown arrows (are there more than 1 event on either side?)
+    const needsCollapse = Math.max(homeReversed.length, awayReversed.length) > 1;
+
+    if (!needsCollapse) {
         return `
-            <div class="event-collapsed d-flex align-items-center justify-content-between pe-1">
-                <div class="flex-grow-1" style="min-width: 0;">${firstEvent}</div>
-                <div class="text-secondary ms-1" style="font-size: 0.6rem; flex-shrink: 0;">▼</div>
-            </div>
-            <div class="event-expanded d-none pe-1">
-                <div class="flex-grow-1" style="min-width: 0;">${allEvents}</div>
-                <div class="text-secondary text-end mt-1" style="font-size: 0.6rem; line-height: 1;">▲</div>
-            </div>
-        `;
-    };
+        <div class="w-100 px-2 pt-1 mt-1 border-top d-flex justify-content-between text-muted" style="font-size: 0.65rem;">
+            <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${firstHome}</div>
+            <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${firstAway}</div>
+        </div>`;
+    }
 
+    // Unified Collapse Wrapper with a single centered arrow
     return `
-    <div class="w-100 px-2 pt-1 mt-1 border-top d-flex justify-content-between text-muted" 
+    <div class="w-100 px-2 pt-1 mt-1 border-top text-muted" 
          style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" 
-         onclick="const isExp = this.classList.toggle('is-expanded'); this.querySelectorAll('.event-collapsed').forEach(el => el.classList.toggle('d-none', isExp)); this.querySelectorAll('.event-expanded').forEach(el => el.classList.toggle('d-none', !isExp));"
+         onclick="const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp);"
          onmouseover="this.style.backgroundColor='#f8f9fa'" 
          onmouseout="this.style.backgroundColor='transparent'"
          title="Click to expand/collapse goals and cards">
         
-        <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">
-            ${renderEventSide(homeEvents, data.teams.home.name)}
+        <div class="event-collapsed">
+            <div class="d-flex justify-content-between">
+                <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${firstHome}</div>
+                <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${firstAway}</div>
+            </div>
+            <div class="text-center text-secondary w-100 mt-1" style="font-size: 0.6rem; line-height: 1;">▼</div>
         </div>
         
-        <div class="text-start border-start" style="flex: 1; min-width: 0; padding-left: 6px;">
-            ${renderEventSide(awayEvents, data.teams.away.name)}
+        <div class="event-expanded d-none">
+            <div class="d-flex justify-content-between">
+                <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${allHome}</div>
+                <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${allAway}</div>
+            </div>
+            <div class="text-center text-secondary w-100 mt-1" style="font-size: 0.6rem; line-height: 1;">▲</div>
         </div>
         
     </div>`;
