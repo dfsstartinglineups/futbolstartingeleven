@@ -476,7 +476,18 @@ function getLatestEventHtml(data, isRibbon = false) {
                             <div class="text-truncate" style="margin-bottom: ${assistHtml ? '0' : '2px'};">${icon} ${playerName}</div>
                             ${assistHtml}
                         </div>`;
-            } else {
+             } else {
+                // NEW: Check for an assist and stack it cleanly if it exists
+                if (lastEv.type === 'Goal' && lastEv.assist && lastEv.assist !== "null") {
+                    let assistHtml = `<span class="text-truncate text-muted fw-normal" style="max-width: 160px; font-size: 0.60rem; padding-left: 20px;">👟 ${shortenPlayerName(lastEv.assist)}</span>`;
+                    
+                    return `<div class="ms-2 ${textColor} fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
+                                <span class="text-truncate" style="max-width: 160px;">${icon} ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}</span>
+                                ${assistHtml}
+                            </div>`;
+                }
+
+                // Default fallback for single-line events (Cards, Unassisted Goals)
                 return `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
                             ${icon} ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}
                         </span>`;
