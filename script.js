@@ -439,8 +439,8 @@ function getLatestEventHtml(data, isRibbon = false) {
         const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo; 
         
         if (lastEv.type === 'subst') {
-            let pIn = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : 'Unknown';
-            let pOut = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
+            let pOut = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : 'Unknown';
+            let pIn = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
             
             if (isRibbon) {
                 // Subs: Logo on Line 1. 🟢 and 🔴 flush left.
@@ -546,8 +546,8 @@ function getEventsHtml(data) {
     // Enforces strict grid order: Minute | Emoji | Name
     const formatSingleEvent = (e, teamName) => {
         if (e.type === 'subst') {
-            let pIn = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : 'Unknown';
-            let pOut = (e.player_out && e.player_out !== "null") ? shortenPlayerName(e.player_out) : 'Unknown';
+            let pOut = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : 'Unknown';
+            let pIn = (e.player_out && e.player_out !== "null") ? shortenPlayerName(e.player_out) : 'Unknown';
             return `
                 <div class="d-flex align-items-start" style="line-height: 1.1; margin-bottom: 2px;">
                     <div class="text-secondary fw-bold pe-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem; margin-top: 1px;">${e.time}'</div>
@@ -963,9 +963,11 @@ async function updateLiveGames() {
                                     const teamId = lineupData.team.id;
                                     const subs = gameData.events.filter(e => e.type === 'subst' && e.team_id === teamId);
                                     subs.forEach(subEvent => {
-                                        const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
+                                        // Look for the starter leaving (player_id)
+                                        const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
                                         if (outIndex !== -1) {
-                                            const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
+                                        // Look for the sub entering (player_out_id)
+                                            const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
                                             if (subPlayer) {
                                                 currentXI[outIndex] = { ...subPlayer, player: { ...subPlayer.player, pos: currentXI[outIndex].player.pos, isSubbedIn: true, subMinute: subEvent.time } };
                                             }
@@ -1189,9 +1191,11 @@ function createGameCard(data) {
             const subs = data.events.filter(e => e.type === 'subst' && e.team_id === teamId);
             
             subs.forEach(subEvent => {
-                const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
+                // Look for the starter leaving (player_id)
+                const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
                 if (outIndex !== -1) {
-                    const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
+                // Look for the sub entering (player_out_id)
+                    const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
                     if (subPlayer) {
                         currentXI[outIndex] = {
                             ...subPlayer,
