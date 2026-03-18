@@ -325,6 +325,44 @@ def update_future_files_for_league(league_id, start_date_str):
                 except Exception as e:
                     print(f"Error updating future file {filename}: {e}")
 
+def migrate_game_if_needed(game, current_file_date_str):
+    """
+    Checks if a game belongs in a different daily JSON file based on its true EST date.
+    If it does, it injects the game into the correct file and returns True.
+    """
+    try:
+        # Calculate the true EST date of the kickoff
+        kickoff = datetime.fromisoformat(game['fixture']['date']).astimezone(zoneinfo.ZoneInfo("America/New_York"))
+        true_date_str = kickoff.strftime("%Y-%m-%d")
+    except Exception:
+        return False # If date is missing or malformed, do nothing
+        
+    if true_date_str != current_file_date_str:
+        print(f"[{game['fixture']['id']}] Timezone/Reschedule mismatch. Moving from {current_file_date_str} to {true_date_str}...")
+        
+        new_file_path = os.path.join(DATA_DIR, f"games_{true_date_str}.json")
+        
+        # 1. Safely load the target file
+        if os.path.exists(new_file_path):
+            try:
+                with open(new_file_path, 'r') as f:
+                    target_games = json.load(f)
+            except Exception:
+                target_games = []
+        else:
+            target_games = []
+            
+        # 2. Inject the game (if it isn't already in there)
+        if not any(str(g.get('fixture', {}).get('id')) == str(game['fixture']['id']) for g in target_games):
+            target_games.append(game)
+            with open(new_file_path, 'w') as f:
+                json.dump(target_games, f, indent=4)
+                
+        # 3. Return True to signal the main loop to delete this game
+        return True 
+        
+    return False
+
 def build_daily_games(date_str):
     print(f"\n--- Building Initial Board for {date_str} ---")
     fixtures_data = fetch_fixtures_by_date(date_str)
@@ -427,7 +465,8 @@ def process_date(target_date, force_master_sync=False):
             # Print is optional, just confirms it is working
             # print(f"[{date_str}] Pre-Game Deep Sleep. Next kickoff is > 75 mins away. Skipping Master Board API.")
             pass
-
+        games_to_remove = []
+        
         for game in daily_games:
             fixture_id = game['fixture']['id']
             league_id_str = str(game['league']['id'])
@@ -546,6 +585,11 @@ def process_date(target_date, force_master_sync=False):
                 print(f"[{fixture_id}] Kickoff time changed from {game['fixture'].get('date')} to {latest_date}. Updating...")
                 game['fixture']['date'] = latest_date
                 updated = True
+
+            # --- 🚀 CALL OUR NEW MIGRATION METHOD ---
+            if migrate_game_if_needed(game, date_str):
+                games_to_remove.append(game)
+                continue # Skip the rest of the loop for this game, it's gone!
                 
             latest_status = latest_data['fixture']['status']['short']
             local_status = game.get('fixture', {}).get('status', {}).get('short', '')
@@ -779,6 +823,14 @@ def process_date(target_date, force_master_sync=False):
                     game["post_game_sync"] = True
                     updated = True
 
+        # --- PURGE MIGRATED GAMES FROM THE CURRENT FILE ---
+        if games_to_remove:
+            for g in games_to_remove:
+                if g in daily_games:
+                    daily_games.remove(g)
+            updated = True
+        
+        
         if updated:
             with open(games_file, 'w') as f: json.dump(daily_games, f, indent=4)
 
