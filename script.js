@@ -512,11 +512,11 @@ function getRibbonHtml(data) {
         </div>
         <div class="col-5 px-2">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 80%;"><img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}</span>
+                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}</span>
                 <span class="fw-bold text-dark" style="font-size: 0.85rem;">${homeScore}</span>
             </div>
             <div class="d-flex justify-content-between align-items-center">
-                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 80%;"><img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}</span>
+                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}</span>
                 <span class="fw-bold text-dark" style="font-size: 0.85rem;">${awayScore}</span>
             </div>
         </div>
@@ -1258,15 +1258,15 @@ function createGameCard(data) {
                 </a>
             </div>
             <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1">
-                <div class="text-center" style="width: 38%;"> 
+                <div class="text-center" style="width: 41%;"> 
                     <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1">
                     <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;" title="${home.name}">${homeRank}${home.name}</div>
                     ${homeRecord}
                 </div>
-                <div id="score-${fixId}" class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 24%;">
+                <div id="score-${fixId}" class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 18%;">
                     ${getScoreHtml(data)}
                 </div>
-                <div class="text-center" style="width: 38%;"> 
+                <div class="text-center" style="width: 41%;"> 
                     <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
                     <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;" title="${away.name}">${awayRank}${away.name}</div>
                     ${awayRecord}
