@@ -496,8 +496,8 @@ function getRibbonHtml(data) {
     const leagueCompact = LEAGUE_ABBREV[data.league.id] || data.league.name;
     // Check if the API provides a flag. If not, use a default trophy icon for Cups/World events.
     const flagHtml = data.league.flag 
-        ? `<img src="${data.league.flag}" style="width: 14px; height: 10px; object-fit: cover; border-radius: 2px; border: 1px solid #dee2e6; margin-right: 3px; vertical-align: middle;">` 
-        : `<span style="font-size: 0.65rem; margin-right: 3px; vertical-align: middle;">🏆</span>`;
+        ? `<img src="${data.league.flag}" style="width: 18px; height: 13px; object-fit: cover; border-radius: 2px; border: 1px solid #dee2e6; margin-right: 4px; vertical-align: middle;">` 
+        : `<span style="font-size: 0.75rem; margin-right: 4px; vertical-align: middle;">🏆</span>`;
     // NEW: Build the true hyperlink URL
     const params = getUrlParams();
     const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
@@ -506,7 +506,7 @@ function getRibbonHtml(data) {
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
         <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1">
             <div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div>
-            <a href="${leagueHref}" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.55rem; letter-spacing: 0.5px; text-transform: uppercase;" title="View all ${data.league.name} matches" onmouseover="this.classList.remove('text-muted'); this.classList.add('text-success');" onmouseout="this.classList.add('text-muted'); this.classList.remove('text-success');">
+            <a href="${leagueHref}" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="View all ${data.league.name} matches" onmouseover="this.classList.remove('text-muted'); this.classList.add('text-success');" onmouseout="this.classList.add('text-muted'); this.classList.remove('text-success');">
                 ${flagHtml}${leagueCompact}
             </a>
         </div>
