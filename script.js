@@ -443,16 +443,16 @@ function getLatestEventHtml(data, isRibbon = false) {
             let pOut = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
             
             if (isRibbon) {
-                // NEW: 3-Line layout for substitutions (Icon/Time, Player IN, Player OUT)
-                return `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.15; overflow: hidden;">
-                            <div class="text-truncate">🔄 ${lastEv.time}'</div>
-                            <div class="text-truncate"><img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> <span class="text-success">${pIn}</span> IN</div>
-                            <div class="text-muted text-truncate" style="padding-left: 16px;">(${pOut} OUT)</div>
+                // NEW: 3-Line Sub Layout with 🟢/🔴 emojis leading the names, taking up full vertical space
+                return `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3; overflow: hidden; height: 100%;">
+                            <div class="text-truncate" style="margin-bottom: 2px;">🔄 ${lastEv.time}'</div>
+                            <div class="text-truncate" style="margin-bottom: 1px;"><img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> 🟢 <span class="text-success">${pIn}</span></div>
+                            <div class="text-muted text-truncate" style="padding-left: 16px;">🔴 ${pOut}</div>
                         </div>`;
             } else {
                 return `<div class="ms-2 text-dark fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
-                            <span class="text-truncate" style="max-width: 160px;">🔄 ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${pIn} IN</span>
-                            <span class="text-truncate text-muted" style="max-width: 160px; padding-left: 18px;">${pOut} OUT</span>
+                            <span class="text-truncate" style="max-width: 160px;">🔄 ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> 🟢 ${pIn}</span>
+                            <span class="text-truncate text-muted" style="max-width: 160px; padding-left: 18px;">🔴 ${pOut}</span>
                         </div>`;
             }
         } else {
@@ -465,9 +465,9 @@ function getLatestEventHtml(data, isRibbon = false) {
             const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
             
             if (isRibbon) {
-                // NEW: 2-Line layout for Goals/Cards (Emoji/Time -> Line Break -> Icon/Name)
-                return `<div class="${textColor} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.15; overflow: hidden;">
-                            <div class="text-truncate">${icon} ${lastEv.time}'</div>
+                // NEW: 2-Line layout for Goals/Cards with increased margin-bottom for better breathing room
+                return `<div class="${textColor} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.4; overflow: hidden; height: 100%;">
+                            <div class="text-truncate" style="margin-bottom: 4px;">${icon} ${lastEv.time}'</div>
                             <div class="text-truncate"><img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}</div>
                         </div>`;
             } else {
@@ -478,7 +478,6 @@ function getLatestEventHtml(data, isRibbon = false) {
         }
     }
     
-    // Ensure "No Events" is also left-aligned and perfectly centered vertically
     return isRibbon ? `<div class="text-muted text-start w-100 ps-2 d-flex align-items-center" style="font-size: 0.6rem; font-style: italic; height: 100%;">No Events</div>` : '';
 }
 
