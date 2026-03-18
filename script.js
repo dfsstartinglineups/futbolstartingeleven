@@ -504,7 +504,7 @@ function getRibbonHtml(data) {
 
     return `
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1">
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1">
             <div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div>
             <a href="${leagueHref}" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.55rem; letter-spacing: 0.5px; text-transform: uppercase;" title="View all ${data.league.name} matches" onmouseover="this.classList.remove('text-muted'); this.classList.add('text-success');" onmouseout="this.classList.add('text-muted'); this.classList.remove('text-success');">
                 ${flagHtml}${leagueCompact}
