@@ -1042,11 +1042,26 @@ async function updateLiveGames() {
 function handleHashNavigation() {
     if (window.location.hash) {
         setTimeout(() => {
-            const targetCard = document.querySelector(window.location.hash);
-            const fixId = window.location.hash.replace('#card-', '');
+            const hash = window.location.hash;
+            let fixId = null;
+            let isGoalEvent = false;
+
+            // 1. Determine intent from the hash prefix
+            if (hash.startsWith('#lineup-')) {
+                fixId = hash.replace('#lineup-', '');
+            } else if (hash.startsWith('#card-')) {
+                fixId = hash.replace('#card-', ''); // Legacy fallback for old tweets!
+            } else if (hash.startsWith('#goal-')) {
+                fixId = hash.replace('#goal-', '');
+                isGoalEvent = true;
+            } else {
+                return; // Not a hash we care about
+            }
+
+            const targetCard = document.getElementById(`card-${fixId}`);
 
             if (targetCard) {
-                // 1. Force the entire board into Compact Scoreboard mode
+                // Step 1: Force the entire board into Compact Scoreboard mode
                 globalScoreboardMode = true;
                 const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
                 if (toggleScoreboardBtn) toggleScoreboardBtn.innerHTML = '🔼 EXPAND ALL CARDS';
@@ -1057,21 +1072,24 @@ function handleHashNavigation() {
                 document.querySelectorAll('.ribbon-view').forEach(el => el.classList.remove('d-none'));
                 document.querySelectorAll('.full-view').forEach(el => el.classList.add('d-none'));
 
-                // 2. Force ONLY the target card to expand
-                const targetRibbon = document.getElementById(`ribbon-${fixId}`);
-                const targetFull = document.getElementById(`full-${fixId}`);
-                if (targetRibbon && targetFull) {
-                    targetRibbon.classList.add('d-none');
-                    targetFull.classList.remove('d-none');
-                }
+                // Step 2: If it's a Lineup OR Legacy Card Tweet, expand ONLY the target card
+                if (!isGoalEvent) {
+                    const targetRibbon = document.getElementById(`ribbon-${fixId}`);
+                    const targetFull = document.getElementById(`full-${fixId}`);
+                    if (targetRibbon && targetFull) {
+                        targetRibbon.classList.add('d-none');
+                        targetFull.classList.remove('d-none');
+                    }
 
-                // 3. Ensure the lineup container for the target card is open
-                const targetLineup = document.getElementById(`lineup-collapse-${fixId}`);
-                if (targetLineup) {
-                    targetLineup.classList.add('show');
+                    // Ensure the lineup container for the target card is open
+                    const targetLineup = document.getElementById(`lineup-collapse-${fixId}`);
+                    if (targetLineup) {
+                        targetLineup.classList.add('show');
+                    }
                 }
+                // (If it IS a goal event, it skips Step 2 and leaves the card collapsed as a ribbon)
 
-                // 4. Scroll to the TOP of the card (with a buffer for the fixed header)
+                // Step 3: Scroll and Highlight
                 const headerOffset = 120; // Gives 120px of breathing room under the navbar
                 const elementPosition = targetCard.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
