@@ -637,7 +637,8 @@ def process_date(target_date, force_master_sync=False):
                                 "player": ev["player"]["name"] if ev.get("player") else None,
                                 "player_id": ev["player"]["id"] if ev.get("player") else None,
                                 "type": ev["type"],
-                                "detail": ev["detail"]
+                                "detail": ev["detail"],
+                                "assist": ev["assist"]["name"] if ev.get("assist") else None
                             }
                             
                             # If it's a substitution, grab the player coming OUT
