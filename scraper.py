@@ -666,7 +666,8 @@ def process_date(target_date, force_master_sync=False):
             has_full_lineup = bool(game.get('homeLineup') and game.get('homeLineup').get('startXI'))
             
             # The Polling Window: Start checking 90 mins before kickoff, stop checking 5 mins after kickoff.
-            in_polling_window = (-5 <= time_to_kickoff_minutes <= 90)
+            # The Polling Window: Start checking 90 mins before kickoff, stop checking 120 mins AFTER kickoff (for delays).
+            in_polling_window = (-120 <= time_to_kickoff_minutes <= 90)
             
             # Late Scratch Checks: Force a re-check at exactly 15m and 5m before kickoff, even if we already have the lineup.
             needs_15m_refresh = (time_to_kickoff_minutes <= 15) and not game.get("refreshed_15m", False)
