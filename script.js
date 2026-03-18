@@ -465,10 +465,17 @@ function getLatestEventHtml(data, isRibbon = false) {
             const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
             
             if (isRibbon) {
-                // Goals/Cards: Reverted back to Emoji/Time on Line 1, Logo/Name on Line 2
-                return `<div class="${textColor} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.4; overflow: hidden; height: 100%;">
-                            <div class="text-truncate" style="margin-bottom: 4px;">${icon} ${lastEv.time}'</div>
-                            <div class="text-truncate"><img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}</div>
+                // Goals/Cards: Emoji/Time on Line 1, Logo/Name on Line 2
+                // NEW: If it's a goal and has an assist, add the 3rd line!
+                let assistHtml = '';
+                if (lastEv.type === 'Goal' && lastEv.assist && lastEv.assist !== "null") {
+                    assistHtml = `<div class="text-muted text-truncate" style="margin-top: 1px;">👟 ${shortenPlayerName(lastEv.assist)}</div>`;
+                }
+
+                return `<div class="${textColor} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3; overflow: hidden; height: 100%;">
+                            <div class="text-truncate" style="margin-bottom: 2px;">${icon} ${lastEv.time}'</div>
+                            <div class="text-truncate" style="margin-bottom: ${assistHtml ? '0' : '2px'};"><img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}</div>
+                            ${assistHtml}
                         </div>`;
             } else {
                 return `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
@@ -567,11 +574,17 @@ function getEventsHtml(data) {
         }
         let playerName = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : teamName;
         
+        // NEW: Check for assist
+        let assistHtml = '';
+        if (e.type === 'Goal' && e.assist && e.assist !== "null") {
+            assistHtml = `<span class="text-muted fw-normal" style="font-size: 0.55rem; margin-left: 4px;">(👟 ${shortenPlayerName(e.assist)})</span>`;
+        }
+        
         return `
             <div class="d-flex align-items-center" style="line-height: 1.1; margin-bottom: 2px;">
                 <div class="text-secondary fw-bold pe-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem;">${e.time}'</div>
                 <div style="width: 18px; text-align: center; flex-shrink: 0;" class="me-1">${icon}</div>
-                <div class="text-dark fw-bold text-truncate" style="min-width: 0;">${playerName}</div>
+                <div class="text-dark fw-bold text-truncate" style="min-width: 0;">${playerName}${assistHtml}</div>
             </div>
         `;
     };
