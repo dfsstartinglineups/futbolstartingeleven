@@ -525,8 +525,17 @@ def process_date(target_date, force_master_sync=False):
             # ---------------------------------------------------------
             
             # Use live data if we woke up to fetch it, otherwise use our local memory
-            if current_fixtures_map and fixture_id in current_fixtures_map:
-                latest_data = current_fixtures_map[fixture_id]
+            if current_fixtures_map:
+                if fixture_id in current_fixtures_map:
+                    latest_data = current_fixtures_map[fixture_id]
+                else:
+                    # 🚨 THE VANISHING GAME CATCH 🚨
+                    print(f"[{fixture_id}] Missing from daily schedule! Polling directly for status/time change...")
+                    fallback = fetch_data(f"fixtures?id={fixture_id}")
+                    if fallback and fallback.get("response"):
+                        latest_data = fallback["response"][0]
+                    else:
+                        latest_data = {"fixture": game["fixture"], "goals": game["goals"]}
             else:
                 latest_data = {"fixture": game["fixture"], "goals": game["goals"]}
                 
@@ -667,7 +676,7 @@ def process_date(target_date, force_master_sync=False):
             
             # The Polling Window: Start checking 90 mins before kickoff, stop checking 5 mins after kickoff.
             # The Polling Window: Start checking 90 mins before kickoff, stop checking 120 mins AFTER kickoff (for delays).
-            in_polling_window = (-120 <= time_to_kickoff_minutes <= 90)
+            in_polling_window = (-5 <= time_to_kickoff_minutes <= 90)
             
             # Late Scratch Checks: Force a re-check at exactly 15m and 5m before kickoff, even if we already have the lineup.
             needs_15m_refresh = (time_to_kickoff_minutes <= 15) and not game.get("refreshed_15m", False)
