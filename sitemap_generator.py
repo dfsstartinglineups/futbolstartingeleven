@@ -3,12 +3,15 @@ from datetime import datetime, timedelta
 
 BASE_URL = "https://futbolstartingeleven.com"
 
-# The exact keys from your script.js LEAGUE_GROUPS
+# The exact 41 keys from your script.js LEAGUE_GROUPS
 LEAGUES = [
-    "top", "epl", "facup", "laliga", "mls", "ucl", 
-    "championship", "seriea", "bundesliga", "ligue1", "eredivisie", "portugal",
-    "ligamx", "brazil", "argentina", "libertadores",
-    "saudi", "japan"
+    "top", "epl", "championship", "laliga", "seriea", "bundesliga", "ligue1", 
+    "eredivisie", "portugal", "turkey", "belgium", "scotland", "denmark", 
+    "mls", "ligamx", "brazil", "argentina", "colombia", "saudi", "japan", 
+    "australia", "k1", "ucl", "europa", "conference", "libertadores", 
+    "sudamericana", "concacaf", "leaguescup", "facup", "eflcup", "copadelrey", 
+    "coppaitalia", "dfbpokal", "worldcup", "euros", "copaamerica", "uefanations", 
+    "concacafnations", "wsl", "nwsl"
 ]
 
 def generate_sitemap():
