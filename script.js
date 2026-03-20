@@ -1364,7 +1364,6 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
         if (players.length === 0) return;
 
         const gConf = groups[posKey];
-        const isScrollable = posKey !== 'G'; // Goalkeepers only have 4 columns, no scroll needed
 
         html += `
             <div class="d-flex w-100 position-relative" style="background-color: #fff;">
@@ -1382,16 +1381,18 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
                         if (p._isSubbedOut) prefix = `<span class="text-danger me-1" style="font-size:0.55rem;">🔻</span>`;
                         const encodedPlayer = encodeURIComponent(JSON.stringify(p));
                         
-                        return `
+                        return \`
                         <div class="px-2 d-flex align-items-center text-truncate fw-bold text-dark border-bottom user-select-none" 
                              style="font-size: 0.70rem; height: 28px; cursor: pointer;" 
-                             onclick="openPlayerModal(this)" data-player="${encodedPlayer}">
-                            ${prefix}${name}
-                        </div>`;
+                             onclick="openPlayerModal(this)" data-player="\${encodedPlayer}">
+                            \${prefix}\${name}
+                        </div>\`;
                     }).join('')}
                 </div>
 
-                <div class="d-flex flex-column stats-scroll-container" style="width: 52%; overflow-x: ${isScrollable ? 'auto' : 'hidden'}; white-space: nowrap; scrollbar-width: none; -ms-overflow-style: none;">
+                <div class="d-flex flex-column stats-scroll-container" 
+                     style="width: 52%; overflow-x: auto; white-space: nowrap; scrollbar-width: none; -ms-overflow-style: none;"
+                     onscroll="if(this.nextElementSibling) { this.nextElementSibling.style.opacity = (this.scrollWidth - this.clientWidth - this.scrollLeft < 5) ? '0' : '1'; }">
                     
                     <div class="px-2 d-flex align-items-center" style="background-color: #f1f3f5; font-size: 0.6rem; font-weight: 800; color: #495057; border-bottom: 1px solid #dee2e6; height: 26px; width: max-content; min-width: 100%;">
                         ${gConf.stats.map(s => `<div style="width: 26px; text-align: center; flex-shrink: 0;">${s}</div>`).join('')}
@@ -1399,14 +1400,19 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
                     
                     ${players.map(p => {
                         const lStats = p.live_stats || {};
-                        return `
+                        return \`
                         <div class="px-2 d-flex align-items-center text-muted fw-semibold border-bottom" style="font-size: 0.70rem; height: 28px; width: max-content; min-width: 100%; background-color: inherit;">
-                            ${gConf.keys.map(k => `<div style="width: 26px; text-align: center; flex-shrink: 0;">${lStats[k] || 0}</div>`).join('')}
-                        </div>`;
+                            \${gConf.keys.map(k => \`<div style="width: 26px; text-align: center; flex-shrink: 0;">\${lStats[k] || 0}</div>\`).join('')}
+                        </div>\`;
                     }).join('')}
                 </div>
                 
-                ${isScrollable ? `<div class="desktop-scroll-hint d-none d-md-flex border-bottom" style="position: absolute; right: 0; top: 0; bottom: 0; width: 16px; background: linear-gradient(to right, transparent, rgba(0,0,0,0.06)); z-index: 3; align-items: center; justify-content: center; pointer-events: none;"><span style="font-size: 0.5rem; color: #adb5bd; margin-right: -4px;">▶</span></div>` : ''}
+                <div class="desktop-scroll-hint d-none d-md-flex" 
+                     style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 20px; height: 32px; background: #fff; border: 1px solid #dee2e6; border-right: none; border-radius: 16px 0 0 16px; box-shadow: -2px 0 5px rgba(0,0,0,0.08); z-index: 3; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s ease;" 
+                     onclick="this.previousElementSibling.scrollBy({left: 78, behavior: 'smooth'})"
+                     title="Click to see more stats">
+                    <span style="font-size: 0.6rem; color: #495057; margin-left: 2px;">▶</span>
+                </div>
 
             </div>
         `;
