@@ -1342,10 +1342,11 @@ function renderGames() {
 function buildLiveStatsGrid(lineupData, teamColorHex) {
     if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
 
+    // Map positional data for the grid headers
     const groups = {
         'F': { title: 'FWD', stats: ['G', 'A', 'SOT', 'SH'], keys: ['goals', 'assists', 'shots_on_target', 'total_shots'] },
-        'M': { title: 'MID', stats: ['A', 'KP', 'PA', 'TK'], keys: ['assists', 'key_passes', 'passes', 'tackles'] },
-        'D': { title: 'DEF', stats: ['TK', 'IN', 'CL', 'YC'], keys: ['tackles', 'interceptions', 'clearances', 'yellow_cards'] },
+        'M': { title: 'MID', stats: ['G', 'A', 'KP', 'TK'], keys: ['goals', 'assists', 'key_passes', 'tackles'] },
+        'D': { title: 'DEF', stats: ['G', 'A', 'TK', 'IN'], keys: ['goals', 'assists', 'tackles', 'interceptions'] },
         'G': { title: 'GK',  stats: ['SV', 'GC', 'PA', 'YC'], keys: ['saves', 'conceded', 'passes', 'yellow_cards'] }
     };
 
