@@ -605,6 +605,10 @@ function getCenterColumnHtml(data) {
         } else {
             activeHColor = '#adb5bd'; activeAColor = '#adb5bd';
         }
+        
+        // NEW: Add a border if the team's color is white/super light so it doesn't bleed into the background
+        let borderH = getContrastColor(activeHColor) === '#000000' ? 'border: 1px solid #ced4da;' : '';
+        let borderA = getContrastColor(activeAColor) === '#000000' ? 'border: 1px solid #ced4da;' : '';
 
         const displayH = isPercentage ? `${hVal}%` : hVal;
         const displayA = isPercentage ? `${aVal}%` : aVal;
@@ -613,10 +617,10 @@ function getCenterColumnHtml(data) {
             <div class="text-center w-100 px-1">
                 <div class="stat-label-tiny">${label}</div>
                 <div class="stat-bar-container">
-                    <div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${activeHColor}; color: ${hText}; ${textShadowH}">
+                    <div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${activeHColor}; color: ${hText}; ${textShadowH} ${borderH}">
                         ${displayH}
                     </div>
-                    <div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${activeAColor}; color: ${aText}; ${textShadowA}">
+                    <div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${activeAColor}; color: ${aText}; ${textShadowA} ${borderA}">
                         ${displayA}
                     </div>
                 </div>
@@ -1160,14 +1164,27 @@ async function updateLiveGames() {
                 if (viewStatsEl.innerHTML.trim() !== newStatsHtml.trim()) viewStatsEl.innerHTML = newStatsHtml;
             }
 
-            // Smart Reveal: If Team Stats just became available, un-hide the tab automatically
-            if (match.team_stats) {
-                const statsTab = document.getElementById(`tab-stats-${fixId}`);
-                if (statsTab && statsTab.classList.contains('d-none')) {
+            // --- THE FIX: SMART REVEAL & TAB TRANSITIONS ---
+            const wasPreGame = ['NS', 'TBD'].includes(oldMatch.fixture.status.short);
+            const isNowLive = !['NS', 'TBD'].includes(match.fixture.status.short);
+            const isFinished = ['FT', 'AET', 'PEN'].includes(match.fixture.status.short);
+
+            const xiTab = document.getElementById(`tab-xi-${fixId}`);
+            const statsTab = document.getElementById(`tab-stats-${fixId}`);
+            
+            // Update tab text appropriately based on game status
+            if (xiTab) xiTab.textContent = isFinished ? "FINAL XI" : "STARTING XI";
+            if (statsTab) statsTab.textContent = isFinished ? "FINAL STATS" : "LIVE STATS";
+
+            if (match.team_stats && statsTab) {
+                const wasHidden = statsTab.classList.contains('d-none');
+                if (wasHidden) {
                     statsTab.classList.remove('d-none');
-                    if (!['NS', 'TBD'].includes(match.fixture.status.short)) {
-                        switchLineupTab(fixId, 'stats');
-                    }
+                }
+                
+                // Force the DOM switch if the tab was just unhidden OR the game just transitioned to live
+                if (wasHidden || (wasPreGame && isNowLive)) {
+                    switchLineupTab(fixId, 'stats');
                 }
             }
         }
@@ -1335,7 +1352,12 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
     flatPlayers.forEach(p => groupedPlayers[p.pos || 'M'].push(p));
 
     let html = '';
-    const tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
+    let tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
+
+    // NEW: Prevent white/super light colors from disappearing against the light grey background
+    if (getContrastColor(tColor) === '#000000') {
+        tColor = '#495057';
+    }
 
     ['F', 'M', 'D', 'G'].forEach(posKey => {
         const players = groupedPlayers[posKey];
