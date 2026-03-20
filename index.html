@@ -187,7 +187,7 @@
         .stat-bar-container {
             display: flex;
             width: 100%;
-            height: 18px;
+            height: 14px; /* Thinner bars */
             background-color: #e9ecef;
             border-radius: 4px;
             overflow: hidden;
@@ -197,10 +197,12 @@
         .stat-bar-segment {
             display: flex;
             align-items: center;
-            font-size: 0.65rem;
+            justify-content: center; /* Center the text */
+            font-size: 0.60rem; /* Slightly smaller to fit nicely */
             font-weight: 800;
             padding: 0 4px;
             transition: width 0.5s ease-in-out;
+            overflow: hidden;
         }
         .stat-bar-home { justify-content: flex-start; }
         .stat-bar-away { justify-content: flex-end; }
