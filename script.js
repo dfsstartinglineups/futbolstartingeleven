@@ -998,9 +998,22 @@ window.switchLineupTab = function(fixId, tabName) {
     const statsTab = document.getElementById(`tab-stats-${fixId}`);
     const xiView = document.getElementById(`view-xi-${fixId}`);
     const statsView = document.getElementById(`view-stats-${fixId}`);
+    const collapseEl = document.getElementById(`lineup-collapse-${fixId}`);
 
-    if (!xiTab || !statsTab || !xiView || !statsView) return;
+    if (!xiTab || !statsTab || !xiView || !statsView || !collapseEl) return;
 
+    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+    const isCurrentlyExpanded = collapseEl.classList.contains('show');
+    const clickedActiveTab = (tabName === 'xi' && xiTab.classList.contains('active')) || 
+                             (tabName === 'stats' && statsTab.classList.contains('active'));
+
+    // If clicking the already active tab, toggle the collapse state
+    if (clickedActiveTab) {
+        isCurrentlyExpanded ? bsCollapse.hide() : bsCollapse.show();
+        return;
+    }
+
+    // Otherwise, switch views and ensure the section is expanded
     if (tabName === 'xi') {
         xiTab.classList.add('active');
         statsTab.classList.remove('active');
@@ -1012,6 +1025,8 @@ window.switchLineupTab = function(fixId, tabName) {
         statsView.classList.remove('d-none');
         xiView.classList.add('d-none');
     }
+
+    bsCollapse.show();
     checkOverflows();
 };
 
@@ -1475,17 +1490,18 @@ function createGameCard(data) {
         <div id="odds-${fixId}" class="w-100">${getOddsHtml(data)}</div>
         <div id="injuries-${fixId}" class="w-100">${getInjuriesHtml(data)}</div>
         
-        <div class="bg-light border-bottom d-flex justify-content-between align-items-center px-2 py-1" style="background-color: #f8f9fa;">
-            <div class="d-flex gap-3">
-                <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" id="tab-xi-${fixId}" onclick="switchLineupTab(${fixId}, 'xi')">
+        <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1" style="background-color: #f8f9fa;">
+            <div class="d-flex gap-4">
+                <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" 
+                     id="tab-xi-${fixId}" 
+                     onclick="switchLineupTab(${fixId}, 'xi')">
                     ${xiTabText}
                 </div>
-                <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" id="tab-stats-${fixId}" onclick="switchLineupTab(${fixId}, 'stats')">
+                <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" 
+                     id="tab-stats-${fixId}" 
+                     onclick="switchLineupTab(${fixId}, 'stats')">
                     ${statsTabText}
                 </div>
-            </div>
-            <div data-bs-toggle="collapse" data-bs-target="#lineup-collapse-${fixId}" style="cursor: pointer; padding: 2px 8px;" title="Expand/Collapse">
-                <span class="text-muted" style="font-size: 0.7rem;">▼</span>
             </div>
         </div>
         
