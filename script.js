@@ -138,12 +138,14 @@ const LEAGUE_MAP_ESPN = {
     1: "fifa.world", 4: "uefa.euro", 9: "conmebol.america",
     45: "eng.fa", 48: "eng.league_cup",
     307: "ksa.1", 94: "por.1", 88: "ned.1", 98: "jpn.1",
-    // New Additions
     203: "tur.1", 144: "bel.1", 179: "sco.1", 119: "den.1", 239: "col.1", 188: "aus.1", 292: "kor.1",
     11: "conmebol.sudamericana", 143: "esp.copa_del_rey", 137: "ita.coppa_italia", 81: "ger.dfb_pokal", 
     5: "uefa.nations", 531: "concacaf.nations", 44: "eng.w.1", 254: "usa.nwsl"
 };
 
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
 window.toggleExpand = function(el) {
     const isExpanded = el.classList.toggle('is-expanded');
     const targets = el.querySelectorAll('.truncate-target');
@@ -211,20 +213,16 @@ function shortenPlayerName(fullName) {
     return `${initial} ${lastName}`;
 }
 
-// Calculates if text should be black or white based on background hex color
 function getContrastColor(hexColor) {
     if (!hexColor) return '#ffffff';
-    // Strip the # if it exists
     hexColor = hexColor.replace('#', '');
     const r = parseInt(hexColor.substr(0, 2), 16);
     const g = parseInt(hexColor.substr(2, 2), 16);
     const b = parseInt(hexColor.substr(4, 2), 16);
-    // YIQ equation from W3C
     const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
     return (yiq >= 128) ? '#000000' : '#ffffff';
 }
 
-// Calculates the visual difference between two hex colors
 function colorDistance(hex1, hex2) {
     if (!hex1 || !hex2) return 100;
     const getRgb = (hex) => {
@@ -240,9 +238,47 @@ function getLeagueKey(leagueId) {
     for (const [key, leagueObj] of Object.entries(SUPPORTED_LEAGUES)) {
         if (leagueObj.id === leagueId) return key;
     }
-    return 'top'; // Fallback
+    return 'top'; 
 }
 
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return { league: params.get('league') || 'top', date: params.get('date') || DEFAULT_DATE };
+}
+
+function updatePageMetadata(leagueKey) {
+    const h1Tag = document.querySelector('h1');
+
+    if (leagueKey === 'top') {
+        document.title = "Live Soccer-Futbol-Football Starting Lineups, Scores, Injuries & Odds | FutbolStartingEleven";
+        document.querySelector('meta[name="description"]').setAttribute("content", "Real-time soccer and football starting XIs, live match scores, goalscorers, injuries, and betting odds. Up-to-the-minute data for Premier League, Champions League, MLS, La Liga, and global football.");
+        if (h1Tag) h1Tag.textContent = "Live Soccer-Futbol-Football Starting Lineups, Scores & Match Odds";
+        return;
+    }
+
+    let leagueName = "";
+    for (const region in LEAGUE_GROUPS) {
+        const found = LEAGUE_GROUPS[region].find(l => l.key === leagueKey);
+        if (found) { leagueName = found.name; break; }
+    }
+
+    if (leagueName) {
+        document.title = `Live ${leagueName} Starting Lineups, Scores & Match Odds | FutbolStartingEleven`;
+        
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute("content", `Real-time ${leagueName} starting XIs, live match scores, injuries, goalscorers, and betting odds. Fast, ad-free live updates for today's matches.`);
+        }
+        
+        if (h1Tag) {
+            h1Tag.textContent = `Live ${leagueName} Starting Lineups, Scores & Match Odds`;
+        }
+    }
+}
+
+// ==========================================
+// MODAL LOGIC
+// ==========================================
 window.openPlayerModal = function(el) {
     const playerDataStr = el.getAttribute('data-player');
     if (!playerDataStr) return;
@@ -389,430 +425,9 @@ window.openPlayerModal = function(el) {
     modal.show();
 };
 
-
 // ==========================================
-// NEW: SPLIT HTML BUILDERS (Time & Event decoupled)
+// MENU RENDERER
 // ==========================================
-function getTimeBadgeHtml(data) {
-    const status = data.fixture.status.short;
-    const dateObj = new Date(data.fixture.date);
-    
-    // Make the time string much more compact (e.g., "Sun 9:00AM")
-    const timeString = dateObj.toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'}).replace(' ', '');
-    const matchTime = `${dateObj.toLocaleDateString([], {weekday: 'short'})} ${timeString}`;
-
-    const isFinished = ['FT', 'AET', 'PEN'].includes(status);
-    const isPreGame = ['NS', 'TBD'].includes(status);
-    const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
-
-    // Check if it's past kickoff, but the API still says "Not Started"
-    const minsSinceKickoff = (new Date() - dateObj) / (1000 * 60);
-    const isStuck = isPreGame && (minsSinceKickoff > 5);
-
-    let badge = '';
-
-    if (isDelayed) {
-        badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
-    } else if (isStuck) {
-        // NEW: Render a subtle yellow "DEL" badge if the API feed hasn't woken up yet
-        badge = `<span class="badge bg-warning text-dark shadow-sm border px-2 py-1" style="font-size: 0.70rem;" title="Delayed or awaiting kickoff">DEL</span>`;
-    } else if (!isPreGame && !isFinished && !data.isFallback) {
-        let displayMin = data.fixture.status.elapsed;
-        let extraMin = data.fixture.status.extra;
-
-        if (status === 'ET') {
-            const maxEventTime = data.events ? Math.max(0, ...data.events.map(e => parseInt(e.time) || 0)) : 0;
-            if (displayMin < 105 && maxEventTime >= 105) { displayMin += 15; } 
-            else if (displayMin < 105 && (new Date() - dateObj) > (135 * 60 * 1000)) { displayMin += 15; }
-        }
-        
-        if (status === 'HT') displayMin = 'HT';
-        else if (status === 'BT') displayMin = 'ET HT';
-        else if (status === 'P') displayMin = 'PEN';
-        else {
-            if (extraMin) {
-                displayMin = `${displayMin}+${extraMin}'`; 
-            } else {
-                displayMin = `${displayMin}'`; 
-            }
-        }
-        
-        badge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${displayMin}</span>`;
-    } else if (isFinished) {
-        badge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
-    } else {
-        badge = `<span class="badge bg-white text-dark shadow-sm border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${matchTime}</span>`;
-    }
-    return badge;
-}
-
-function getLatestEventHtml(data, isRibbon = false) {
-    const status = data.fixture.status.short;
-    const isFinished = ['FT', 'AET', 'PEN'].includes(status);
-    
-    if (data.events && data.events.length > 0) {
-        const lastEv = data.events[data.events.length - 1]; 
-        const currentMinute = data.fixture.status.elapsed || 0;
-        const eventMinute = parseInt(lastEv.time) || 0;
-        
-        // Ribbon always shows the last event. Full View only shows if within 5 mins.
-        if (!isRibbon && isFinished) return '';
-        if (!isRibbon && (currentMinute - eventMinute > 5)) return '';
-
-        const isHomeTeam = lastEv.team_id === data.teams.home.id;
-        const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
-        const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo; 
-        
-        if (lastEv.type === 'subst') {
-            let pOut = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : 'Unknown';
-            let pIn = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
-            
-            if (isRibbon) {
-                // Subs: Logo on Line 1. 🟢 and 🔴 flush left.
-                return `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3; overflow: hidden; height: 100%;">
-                            <div class="text-truncate" style="margin-bottom: 2px;">🔄 <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-left: 2px; margin-right: 2px;"> ${lastEv.time}'</div>
-                            <div class="text-truncate" style="margin-bottom: 1px;">🟢 <span class="text-success">${pIn}</span></div>
-                            <div class="text-muted text-truncate">🔴 ${pOut}</div>
-                        </div>`;
-            } else {
-                return `<div class="ms-2 text-dark fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
-                            <span class="text-truncate" style="max-width: 160px;">🔄 <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-left: 2px; margin-right: 2px;"> ${lastEv.time}' 🟢 ${pIn}</span>
-                            <span class="text-truncate text-muted" style="max-width: 160px; padding-left: 18px;">🔴 ${pOut}</span>
-                        </div>`;
-            }
-        } else {
-            let icon = '🟥';
-            if (lastEv.type === 'Goal') { icon = '⚽'; } 
-            else if (lastEv.detail && lastEv.detail.includes('Yellow')) {
-                icon = lastEv.detail.includes('Red') || lastEv.detail.includes('Second') ? '🟨🟥' : '🟨';
-            }
-            const playerName = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : teamName;
-            const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
-            
-            if (isRibbon) {
-                // Goals/Cards: Logo/Time on Line 1, Emoji/Name on Line 2 (Matches Subs!)
-                let assistHtml = '';
-                if (lastEv.type === 'Goal' && lastEv.assist && lastEv.assist !== "null") {
-                    assistHtml = `<div class="text-muted text-truncate" style="margin-top: 1px;">👟 ${shortenPlayerName(lastEv.assist)}</div>`;
-                }
-
-                return `<div class="${textColor} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3; overflow: hidden; height: 100%;">
-                            <div class="text-truncate" style="margin-bottom: 2px;"><img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${lastEv.time}'</div>
-                            <div class="text-truncate" style="margin-bottom: ${assistHtml ? '0' : '2px'};">${icon} ${playerName}</div>
-                            ${assistHtml}
-                        </div>`;
-             } else {
-                // NEW: Check for an assist and stack it cleanly if it exists
-                if (lastEv.type === 'Goal' && lastEv.assist && lastEv.assist !== "null") {
-                    let assistHtml = `<span class="text-truncate text-muted fw-normal" style="max-width: 160px; font-size: 0.60rem; padding-left: 20px;">👟 ${shortenPlayerName(lastEv.assist)}</span>`;
-                    
-                    return `<div class="ms-2 ${textColor} fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
-                                <span class="text-truncate" style="max-width: 160px;">${icon} ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}</span>
-                                ${assistHtml}
-                            </div>`;
-                }
-
-                // Default fallback for single-line events (Cards, Unassisted Goals)
-                return `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
-                            ${icon} ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}
-                        </span>`;
-            }
-        }
-    }
-    
-    return isRibbon ? `<div class="text-muted text-start w-100 ps-2 d-flex align-items-center" style="font-size: 0.6rem; font-style: italic; height: 100%;">No Events</div>` : '';
-}
-// ==========================================
-// NEW: RIBBON HTML BUILDER
-// ==========================================
-function getRibbonHtml(data) {
-    const home = data.teams.home;
-    const away = data.teams.away;
-    const status = data.fixture.status.short;
-    const isPreGame = ['NS', 'TBD'].includes(status);
-    const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
-    
-    const homeScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.home ?? 0) : '-';
-    const awayScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.away ?? 0) : '-';
-
-    const leagueCompact = LEAGUE_ABBREV[data.league.id] || data.league.name;
-    // Check if the API provides a flag. If not, use a default trophy icon for Cups/World events.
-    const flagHtml = data.league.flag 
-        ? `<img src="${data.league.flag}" style="width: 18px; height: 13px; object-fit: cover; border-radius: 2px; border: 1px solid #dee2e6; margin-right: 4px; vertical-align: middle;">` 
-        : `<span style="font-size: 0.75rem; margin-right: 4px; vertical-align: middle;">🏆</span>`;
-    // NEW: Build the true hyperlink URL
-    const params = getUrlParams();
-    const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
-
-    return `
-    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1">
-            <div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div>
-            <a href="${leagueHref}" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="View all ${data.league.name} matches" onmouseover="this.classList.remove('text-muted'); this.classList.add('text-success');" onmouseout="this.classList.add('text-muted'); this.classList.remove('text-success');">
-                ${flagHtml}${leagueCompact}
-            </a>
-        </div>
-        <div class="col-5 px-2">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}</span>
-                <span class="fw-bold text-dark" style="font-size: 0.85rem;">${homeScore}</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}</span>
-                <span class="fw-bold text-dark" style="font-size: 0.85rem;">${awayScore}</span>
-            </div>
-        </div>
-        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">
-            ${getLatestEventHtml(data, true)}
-        </div>
-    </div>`;
-}
-
-
-
-function getCenterColumnHtml(data) {
-    const status = data.fixture.status.short;
-    const isPreGame = ['NS', 'TBD'].includes(status);
-    const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
-    const showScore = !isPreGame && !isDelayed && !data.isFallback;
-
-    if (!showScore || !data.team_stats) {
-        const scoreText = showScore ? `${data.goals.home} - ${data.goals.away}` : `vs`;
-        return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${scoreText}</div>`;
-    }
-
-    const tStats = data.team_stats;
-    let hColor = data.homeLineup?.team?.colors?.player?.primary ? `#${data.homeLineup.team.colors.player.primary}` : '#0d6efd';
-    let aColor = data.awayLineup?.team?.colors?.player?.primary ? `#${data.awayLineup.team.colors.player.primary}` : '#dc3545';
-    
-    // THE FIX: If the colors clash, fallback the Away team to a sleek dark slate
-    if (colorDistance(hColor, aColor) < 60) {
-        aColor = '#343a40'; 
-    }
-
-    const hText = getContrastColor(hColor);
-    const aText = getContrastColor(aColor);
-    const textShadowH = hText === '#ffffff' ? 'text-shadow: 0px 1px 2px rgba(0,0,0,0.6);' : '';
-    const textShadowA = aText === '#ffffff' ? 'text-shadow: 0px 1px 2px rgba(0,0,0,0.6);' : '';
-
-    const buildBar = (label, hVal, aVal, isPercentage = false) => {
-        const total = hVal + aVal;
-        let hPct = 50, aPct = 50, activeHColor = hColor, activeAColor = aColor;
-
-        if (total > 0) {
-            hPct = (hVal / total) * 100;
-            aPct = (aVal / total) * 100;
-        } else {
-            activeHColor = '#adb5bd'; activeAColor = '#adb5bd';
-        }
-        
-        // NEW: Add a border if the team's color is white/super light so it doesn't bleed into the background
-        let borderH = getContrastColor(activeHColor) === '#000000' ? 'border: 1px solid #ced4da;' : '';
-        let borderA = getContrastColor(activeAColor) === '#000000' ? 'border: 1px solid #ced4da;' : '';
-
-        const displayH = isPercentage ? `${hVal}%` : hVal;
-        const displayA = isPercentage ? `${aVal}%` : aVal;
-
-        return `
-            <div class="text-center w-100 px-1">
-                <div class="stat-label-tiny">${label}</div>
-                <div class="stat-bar-container">
-                    <div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${activeHColor}; color: ${hText}; ${textShadowH} ${borderH}">
-                        ${displayH}
-                    </div>
-                    <div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${activeAColor}; color: ${aText}; ${textShadowA} ${borderA}">
-                        ${displayA}
-                    </div>
-                </div>
-            </div>
-        `;
-    };
-
-    const cardsHome = `🟨 ${tStats.home.yellow_cards} 🟥 ${tStats.home.red_cards}`;
-    const cardsAway = `🟨 ${tStats.away.yellow_cards} 🟥 ${tStats.away.red_cards}`;
-
-    return `
-        <div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals.home} - ${data.goals.away}</div>
-        ${buildBar("Possession", tStats.home.possession, tStats.away.possession, true)}
-        ${buildBar("Total Shots", tStats.home.total_shots, tStats.away.total_shots, false)}
-        ${buildBar("Shots on Target", tStats.home.shots_on_target, tStats.away.shots_on_target, false)}
-        ${buildBar("Corners", tStats.home.corners, tStats.away.corners, false)}
-        
-        <div class="text-center w-100 px-1 mt-1">
-            <div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div>
-            <div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;">
-                <span>${cardsHome}</span>
-                <span>${cardsAway}</span>
-            </div>
-        </div>
-    `;
-}
-
-function getEventsHtml(data) {
-    if (!data.events || data.events.length === 0) return '';
-    const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id);
-    const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
-    
-    // Enforces strict grid order: Minute | Emoji | Name
-    const formatSingleEvent = (e, teamName) => {
-        if (e.type === 'subst') {
-            let pOut = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : 'Unknown';
-            let pIn = (e.player_out && e.player_out !== "null") ? shortenPlayerName(e.player_out) : 'Unknown';
-            return `
-                <div class="d-flex align-items-start" style="line-height: 1.1; margin-bottom: 2px;">
-                    <div class="text-secondary fw-bold pe-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem; margin-top: 1px;">${e.time}'</div>
-                    <div style="width: 18px; text-align: center; flex-shrink: 0;" class="me-1">🔄</div>
-                    <div class="text-truncate" style="min-width: 0;">
-                        <span class="text-dark fw-bold">${pIn}</span> IN<br>
-                        <span class="text-muted" style="font-size: 0.6rem;">(${pOut} OUT)</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        let icon = '🟥';
-        if (e.type === 'Goal') { icon = '⚽'; } 
-        else if (e.detail && e.detail.includes('Yellow')) {
-            icon = e.detail.includes('Red') || e.detail.includes('Second') ? '🟨🟥' : '🟨';
-        }
-        let playerName = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : teamName;
-        
-        let assistHtml = '';
-        if (e.type === 'Goal' && e.assist && e.assist !== "null") {
-            assistHtml = `<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>`;
-        }
-        
-        return `
-            <div class="d-flex align-items-start" style="line-height: 1.1; margin-bottom: 2px;">
-                <div class="text-secondary fw-bold pe-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem; margin-top: 1px;">${e.time}'</div>
-                <div style="width: 18px; text-align: center; flex-shrink: 0;" class="me-1">${icon}</div>
-                <div class="text-truncate" style="min-width: 0;">
-                    <span class="text-dark fw-bold">${playerName}</span>${assistHtml}
-                </div>
-            </div>
-        `;
-    };
-
-    const homeReversed = [...homeEvents].reverse();
-    const awayReversed = [...awayEvents].reverse();
-
-    // Grab just the latest event for the collapsed view
-    const firstHome = homeReversed.length > 0 ? formatSingleEvent(homeReversed[0], data.teams.home.name) : '';
-    const firstAway = awayReversed.length > 0 ? formatSingleEvent(awayReversed[0], data.teams.away.name) : '';
-
-    // Grab all events for the expanded view
-    const allHome = homeReversed.map(e => formatSingleEvent(e, data.teams.home.name)).join('');
-    const allAway = awayReversed.map(e => formatSingleEvent(e, data.teams.away.name)).join('');
-
-    // Check if we actually need the dropdown arrows
-    const needsCollapse = Math.max(homeReversed.length, awayReversed.length) > 1;
-
-    // Single unified collapse wrapper with aggressive negative margins to pull the UI tight
-    return `
-    <div class="w-100 px-2 pt-1 mt-1 border-top text-muted" 
-         style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s; margin-bottom: -6px;" 
-         onclick="if(${needsCollapse}) { const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp); }"
-         onmouseover="this.style.backgroundColor='#f8f9fa'" 
-         onmouseout="this.style.backgroundColor='transparent'"
-         title="${needsCollapse ? 'Click to expand/collapse goals and cards' : ''}">
-        
-        <div class="event-collapsed">
-            <div class="d-flex justify-content-between">
-                <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${firstHome}</div>
-                <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${firstAway}</div>
-            </div>
-            ${needsCollapse ? `<div class="text-center text-secondary w-100" style="font-size: 0.65rem; line-height: 0.5; margin-top: -4px; padding-bottom: 6px;">▼</div>` : ''}
-        </div>
-        
-        <div class="event-expanded d-none">
-            <div class="d-flex justify-content-between">
-                <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${allHome}</div>
-                <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${allAway}</div>
-            </div>
-            <div class="text-center text-secondary w-100" style="font-size: 0.65rem; line-height: 0.5; margin-top: -4px; padding-bottom: 6px;">▲</div>
-        </div>
-        
-    </div>`;
-}
-function getOddsHtml(data) {
-    if (!data.odds || (data.odds.home === "TBD" && data.odds.over === "TBD")) return '';
-    const h = data.odds.home !== "TBD" ? data.odds.home : "-";
-    const d = data.odds.draw !== "TBD" ? data.odds.draw : "-";
-    const a = data.odds.away !== "TBD" ? data.odds.away : "-";
-    const t = data.odds.total !== "TBD" ? data.odds.total : "-";
-    const o = data.odds.over !== "TBD" ? data.odds.over : "-";
-    const u = data.odds.under !== "TBD" ? data.odds.under : "-";
-
-    return `
-    <div class="d-flex justify-content-between text-center bg-white border-top border-bottom py-1" style="font-size: 0.70rem;">
-        <div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">1 (HOME)</div><div class="fw-bold text-dark">${h}</div></div>
-        <div class="w-25 border-start border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">X (DRAW)</div><div class="fw-bold text-dark">${d}</div></div>
-        <div class="w-25 border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">2 (AWAY)</div><div class="fw-bold text-dark">${a}</div></div>
-        <div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">O/U ${t}</div><div class="fw-bold text-dark"><span class="text-success">O</span> ${o} &nbsp;<span class="text-danger">U</span> ${u}</div></div>
-    </div>`;
-}
-
-function getInjuriesHtml(data) {
-    if (!data.injuries || (data.injuries.home.length === 0 && data.injuries.away.length === 0)) return '';
-    
-    const cleanHomeInj = data.injuries.home.map(n => shortenPlayerName(n));
-    const cleanAwayInj = data.injuries.away.map(n => shortenPlayerName(n));
-    
-    const hInj = cleanHomeInj.join(', ') || 'None';
-    const aInj = cleanAwayInj.join(', ') || 'None';
-    
-    return `
-    <div class="border-bottom px-2 py-1 expandable-section position-relative d-flex justify-content-center align-items-center" 
-         style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545; cursor: pointer; transition: background-color 0.2s;" 
-         onclick="toggleExpand(this)" 
-         onmouseover="this.style.backgroundColor='#ffebeb'" 
-         onmouseout="this.style.backgroundColor='#fff5f5'" 
-         title="Click to expand/collapse injuries">
-        <div class="injury-text text-truncate truncate-target user-select-none" style="max-width: 92%; min-width: 0;">
-            <strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj} | <b>A:</b> ${aInj}</span>
-        </div>
-        <div class="overflow-indicator d-none position-absolute text-danger" style="right: 12px; font-size: 0.6rem; pointer-events: none;">▼</div>
-    </div>`;
-}
-
-function getUrlParams() {
-    const params = new URLSearchParams(window.location.search);
-    return { league: params.get('league') || 'top', date: params.get('date') || DEFAULT_DATE };
-}
-
-function updatePageMetadata(leagueKey) {
-    const h1Tag = document.querySelector('h1');
-
-    // If it's the default homepage, use the master tags
-    if (leagueKey === 'top') {
-        document.title = "Live Soccer-Futbol-Football Starting Lineups, Scores, Injuries & Odds | FutbolStartingEleven";
-        document.querySelector('meta[name="description"]').setAttribute("content", "Real-time soccer and football starting XIs, live match scores, goalscorers, injuries, and betting odds. Up-to-the-minute data for Premier League, Champions League, MLS, La Liga, and global football.");
-        if (h1Tag) h1Tag.textContent = "Live Soccer-Futbol-Football Starting Lineups, Scores & Match Odds";
-        return;
-    }
-
-    // Otherwise, find the specific league name
-    let leagueName = "";
-    for (const region in LEAGUE_GROUPS) {
-        const found = LEAGUE_GROUPS[region].find(l => l.key === leagueKey);
-        if (found) { leagueName = found.name; break; }
-    }
-
-    // Inject the targeted page metadata
-    if (leagueName) {
-        document.title = `Live ${leagueName} Starting Lineups, Scores & Match Odds | FutbolStartingEleven`;
-        
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) {
-            metaDesc.setAttribute("content", `Real-time ${leagueName} starting XIs, live match scores, injuries, goalscorers, and betting odds. Fast, ad-free live updates for today's matches.`);
-        }
-        
-        if (h1Tag) {
-            h1Tag.textContent = `Live ${leagueName} Starting Lineups, Scores & Match Odds`;
-        }
-    }
-}
-
 function renderLeagueMenu(activeLeague, currentDate) {
     const desktopMenu = document.getElementById('league-menu-desktop');
     const mobileMenu = document.getElementById('league-menu-mobile');
@@ -822,7 +437,6 @@ function renderLeagueMenu(activeLeague, currentDate) {
     desktopMenu.innerHTML = '';
     mobileMenu.innerHTML = '';
 
-    // URL Builder: Only append the date parameter if it's NOT today.
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
     const dateParam = currentDate === todayStr ? '' : `&date=${currentDate}`;
     
@@ -893,6 +507,9 @@ function renderLeagueMenu(activeLeague, currentDate) {
     mobileMenu.insertAdjacentHTML('beforeend', dropdownHtml);
 }
 
+// ==========================================
+// DATA FETCHING & SYNCING
+// ==========================================
 async function fetchMatchesData(params) {
     try {
         const localRes = await fetch(`data/games_${params.date}.json?v=` + new Date().getTime(), {
@@ -945,106 +562,6 @@ async function fetchMatchesData(params) {
     } catch (e) { return null; }
 }
 
-function triggerCardHighlight(targetCard, type) {
-    if (!targetCard) return;
-    
-    const innerHeader = targetCard.querySelector('.p-2.pb-1');
-    let borderColor, boxShadowColor, headerBgColor;
-
-    if (type === 'goal' || type === 'hash') { 
-        borderColor = '#20c997';
-        boxShadowColor = 'rgba(32, 201, 151, 0.8)';
-        headerBgColor = '#d1e7dd';
-    } else if (type === 'red_card') { 
-        borderColor = '#dc3545';
-        boxShadowColor = 'rgba(220, 53, 69, 0.8)';
-        headerBgColor = '#f8d7da';
-    } else if (type === 'yellow_card') { 
-        borderColor = '#ffc107';
-        boxShadowColor = 'rgba(255, 193, 7, 0.8)';
-        headerBgColor = '#fff3cd';
-    } else if (type === 'subst') { 
-        borderColor = '#212529'; 
-        boxShadowColor = 'rgba(33, 37, 41, 0.6)'; 
-        headerBgColor = '#e9ecef'; 
-    }
-
-    targetCard.style.transition = 'all 0.4s ease-out';
-    targetCard.style.transform = 'scale(1.02)';
-    targetCard.style.setProperty('border', `3px solid ${borderColor}`, 'important');
-    targetCard.style.setProperty('box-shadow', `0 0 25px ${boxShadowColor}`, 'important');
-    targetCard.style.position = 'relative'; 
-    targetCard.style.zIndex = '10';
-    
-    if (innerHeader) {
-        innerHeader.style.transition = 'background-color 0.4s ease-out';
-        innerHeader.style.backgroundColor = headerBgColor; 
-    }
-    
-    setTimeout(() => {
-        targetCard.style.transform = 'scale(1)';
-        targetCard.style.removeProperty('border'); 
-        targetCard.style.setProperty('box-shadow', '0 2px 4px rgba(0,0,0,0.05)', 'important');
-        targetCard.style.zIndex = '1';
-        
-        if (innerHeader) {
-            innerHeader.style.backgroundColor = '#fcfcfc'; 
-        }
-    }, 4000); 
-}
-
-// ==========================================
-// NEW: DUAL-VIEW TOGGLE LOGIC
-// ==========================================
-window.toggleSingleCard = function(fixId) {
-    const ribbon = document.getElementById(`ribbon-${fixId}`);
-    const full = document.getElementById(`full-${fixId}`);
-    if (ribbon && full) {
-        ribbon.classList.toggle('d-none');
-        full.classList.toggle('d-none');
-    }
-};
-
-window.switchLineupTab = function(fixId, tabName) {
-    const xiTab = document.getElementById(`tab-xi-${fixId}`);
-    const statsTab = document.getElementById(`tab-stats-${fixId}`);
-    const xiView = document.getElementById(`view-xi-${fixId}`);
-    const statsView = document.getElementById(`view-stats-${fixId}`);
-    const collapseEl = document.getElementById(`lineup-collapse-${fixId}`);
-
-    if (!xiTab || !statsTab || !xiView || !statsView || !collapseEl) return;
-
-    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
-    const isCurrentlyExpanded = collapseEl.classList.contains('show');
-    const clickedActiveTab = (tabName === 'xi' && xiTab.classList.contains('active')) || 
-                             (tabName === 'stats' && statsTab.classList.contains('active'));
-
-    // If clicking the already active tab, toggle the collapse state
-    if (clickedActiveTab) {
-        isCurrentlyExpanded ? bsCollapse.hide() : bsCollapse.show();
-        return;
-    }
-
-    // Otherwise, switch views and ensure the section is expanded
-    if (tabName === 'xi') {
-        xiTab.classList.add('active');
-        statsTab.classList.remove('active');
-        xiView.classList.remove('d-none');
-        statsView.classList.add('d-none');
-    } else {
-        statsTab.classList.add('active');
-        xiTab.classList.remove('active');
-        statsView.classList.remove('d-none');
-        xiView.classList.add('d-none');
-    }
-
-    bsCollapse.show();
-    checkOverflows();
-};
-
-// ==========================================
-// UPDATED SILENT SYNC ENGINE (Syncs Both Views)
-// ==========================================
 async function updateLiveGames() {
     const params = getUrlParams();
     const newData = await fetchMatchesData(params);
@@ -1063,7 +580,6 @@ async function updateLiveGames() {
         const fixId = match.fixture.id;
         const oldMatch = oldData.find(m => m.fixture.id === fixId);
         
-        // Target specific containers inside the Full View
         const timeEl = document.getElementById(`time-${fixId}`);
         const scoreEl = document.getElementById(`score-${fixId}`);
         const eventsEl = document.getElementById(`events-${fixId}`);
@@ -1071,7 +587,6 @@ async function updateLiveGames() {
         const injuriesEl = document.getElementById(`injuries-${fixId}`);
         
         if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
-            // FULL VIEW UPDATES
             const newTimeHtml = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
             const newCenterHtml = getCenterColumnHtml(match).trim();
             const newEventsHtml = getEventsHtml(match).trim();
@@ -1109,19 +624,16 @@ async function updateLiveGames() {
             }
         }
         
-        // RIBBON VIEW UPDATE
         const ribbonEl = document.getElementById(`ribbon-${fixId}`);
         if (ribbonEl) {
             const newRibbonHtml = getRibbonHtml(match).trim();
             if (ribbonEl.innerHTML.trim() !== newRibbonHtml) ribbonEl.innerHTML = newRibbonHtml;
         }
         
-        // EVENT HIGHLIGHTS & IN-PLACE GRID UPDATES
         if (oldMatch) {
             const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
             const newEvLen = match.events ? match.events.length : 0;
             
-            // Trigger Flash Highlights
             if (newEvLen > oldEvLen) {
                 const latestEvent = match.events[newEvLen - 1]; 
                 const cardEl = document.getElementById(`card-${fixId}`);
@@ -1137,7 +649,6 @@ async function updateLiveGames() {
                 }
             }
 
-            // PRECISION IN-PLACE UPDATES (Preserves Expand/Collapse State!)
             const viewXiEl = document.getElementById(`view-xi-${fixId}`);
             if (viewXiEl) {
                 const newXiHtml = `
@@ -1164,7 +675,6 @@ async function updateLiveGames() {
                 if (viewStatsEl.innerHTML.trim() !== newStatsHtml.trim()) viewStatsEl.innerHTML = newStatsHtml;
             }
 
-            // --- THE FIX: SMART REVEAL & TAB TRANSITIONS ---
             const wasPreGame = ['NS', 'TBD'].includes(oldMatch.fixture.status.short);
             const isNowLive = !['NS', 'TBD'].includes(match.fixture.status.short);
             const isFinished = ['FT', 'AET', 'PEN'].includes(match.fixture.status.short);
@@ -1172,7 +682,6 @@ async function updateLiveGames() {
             const xiTab = document.getElementById(`tab-xi-${fixId}`);
             const statsTab = document.getElementById(`tab-stats-${fixId}`);
             
-            // Update tab text appropriately based on game status
             if (xiTab) xiTab.textContent = isFinished ? "FINAL XI" : "STARTING XI";
             if (statsTab) statsTab.textContent = isFinished ? "FINAL STATS" : "LIVE STATS";
 
@@ -1182,7 +691,6 @@ async function updateLiveGames() {
                     statsTab.classList.remove('d-none');
                 }
                 
-                // Force the DOM switch if the tab was just unhidden OR the game just transitioned to live
                 if (wasHidden || (wasPreGame && isNowLive)) {
                     switchLineupTab(fixId, 'stats');
                 }
@@ -1193,127 +701,368 @@ async function updateLiveGames() {
     requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
 }
 
-function handleHashNavigation() {
-    if (window.location.hash) {
-        setTimeout(() => {
-            const hash = window.location.hash;
-            let fixId = null;
-            let isGoalEvent = false;
+// ==========================================
+// HTML BUILDERS
+// ==========================================
+function getTimeBadgeHtml(data) {
+    const status = data.fixture.status.short;
+    const dateObj = new Date(data.fixture.date);
+    
+    const timeString = dateObj.toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'}).replace(' ', '');
+    const matchTime = `${dateObj.toLocaleDateString([], {weekday: 'short'})} ${timeString}`;
 
-            // 1. Determine intent from the hash prefix
-            if (hash.startsWith('#lineup-')) {
-                fixId = hash.replace('#lineup-', '');
-            } else if (hash.startsWith('#card-')) {
-                fixId = hash.replace('#card-', ''); // Legacy fallback for old tweets!
-            } else if (hash.startsWith('#goal-')) {
-                fixId = hash.replace('#goal-', '');
-                isGoalEvent = true;
+    const isFinished = ['FT', 'AET', 'PEN'].includes(status);
+    const isPreGame = ['NS', 'TBD'].includes(status);
+    const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
+
+    const minsSinceKickoff = (new Date() - dateObj) / (1000 * 60);
+    const isStuck = isPreGame && (minsSinceKickoff > 5);
+
+    let badge = '';
+
+    if (isDelayed) {
+        badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
+    } else if (isStuck) {
+        badge = `<span class="badge bg-warning text-dark shadow-sm border px-2 py-1" style="font-size: 0.70rem;" title="Delayed or awaiting kickoff">DEL</span>`;
+    } else if (!isPreGame && !isFinished && !data.isFallback) {
+        let displayMin = data.fixture.status.elapsed;
+        let extraMin = data.fixture.status.extra;
+
+        if (status === 'ET') {
+            const maxEventTime = data.events ? Math.max(0, ...data.events.map(e => parseInt(e.time) || 0)) : 0;
+            if (displayMin < 105 && maxEventTime >= 105) { displayMin += 15; } 
+            else if (displayMin < 105 && (new Date() - dateObj) > (135 * 60 * 1000)) { displayMin += 15; }
+        }
+        
+        if (status === 'HT') displayMin = 'HT';
+        else if (status === 'BT') displayMin = 'ET HT';
+        else if (status === 'P') displayMin = 'PEN';
+        else {
+            if (extraMin) {
+                displayMin = `${displayMin}+${extraMin}'`; 
             } else {
-                return; // Not a hash we care about
+                displayMin = `${displayMin}'`; 
             }
+        }
+        
+        badge = `<span class="badge bg-success text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${displayMin}</span>`;
+    } else if (isFinished) {
+        badge = `<span class="badge bg-dark text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
+    } else {
+        badge = `<span class="badge bg-white text-dark shadow-sm border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${matchTime}</span>`;
+    }
+    return badge;
+}
 
-            const targetCard = document.getElementById(`card-${fixId}`);
+function getLatestEventHtml(data, isRibbon = false) {
+    const status = data.fixture.status.short;
+    const isFinished = ['FT', 'AET', 'PEN'].includes(status);
+    
+    if (data.events && data.events.length > 0) {
+        const lastEv = data.events[data.events.length - 1]; 
+        const currentMinute = data.fixture.status.elapsed || 0;
+        const eventMinute = parseInt(lastEv.time) || 0;
+        
+        if (!isRibbon && isFinished) return '';
+        if (!isRibbon && (currentMinute - eventMinute > 5)) return '';
 
-            if (targetCard) {
-                // Step 1: Force the entire board into Compact Scoreboard mode
-                globalScoreboardMode = true;
-                const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
-                if (toggleScoreboardBtn) toggleScoreboardBtn.innerHTML = '🔼 EXPAND ALL CARDS';
-                
-                const toggleAllBtn = document.getElementById('toggle-all-lineups');
-                if (toggleAllBtn) toggleAllBtn.classList.add('d-none'); 
-                
-                document.querySelectorAll('.ribbon-view').forEach(el => el.classList.remove('d-none'));
-                document.querySelectorAll('.full-view').forEach(el => el.classList.add('d-none'));
-
-                // Step 2: If it's a Lineup OR Legacy Card Tweet, expand ONLY the target card
-                if (!isGoalEvent) {
-                    const targetRibbon = document.getElementById(`ribbon-${fixId}`);
-                    const targetFull = document.getElementById(`full-${fixId}`);
-                    if (targetRibbon && targetFull) {
-                        targetRibbon.classList.add('d-none');
-                        targetFull.classList.remove('d-none');
-                    }
-
-                    // Ensure the lineup container for the target card is open
-                    const targetLineup = document.getElementById(`lineup-collapse-${fixId}`);
-                    if (targetLineup) {
-                        targetLineup.classList.add('show');
-                    }
+        const isHomeTeam = lastEv.team_id === data.teams.home.id;
+        const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
+        const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo; 
+        
+        if (lastEv.type === 'subst') {
+            let pOut = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : 'Unknown';
+            let pIn = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
+            
+            if (isRibbon) {
+                return `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3; overflow: hidden; height: 100%;">
+                            <div class="text-truncate" style="margin-bottom: 2px;">🔄 <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-left: 2px; margin-right: 2px;"> ${lastEv.time}'</div>
+                            <div class="text-truncate" style="margin-bottom: 1px;">🟢 <span class="text-success">${pIn}</span></div>
+                            <div class="text-muted text-truncate">🔴 ${pOut}</div>
+                        </div>`;
+            } else {
+                return `<div class="ms-2 text-dark fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
+                            <span class="text-truncate" style="max-width: 160px;">🔄 <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-left: 2px; margin-right: 2px;"> ${lastEv.time}' 🟢 ${pIn}</span>
+                            <span class="text-truncate text-muted" style="max-width: 160px; padding-left: 18px;">🔴 ${pOut}</span>
+                        </div>`;
+            }
+        } else {
+            let icon = '🟥';
+            if (lastEv.type === 'Goal') { icon = '⚽'; } 
+            else if (lastEv.detail && lastEv.detail.includes('Yellow')) {
+                icon = lastEv.detail.includes('Red') || lastEv.detail.includes('Second') ? '🟨🟥' : '🟨';
+            }
+            const playerName = (lastEv.player && lastEv.player !== "null") ? shortenPlayerName(lastEv.player) : teamName;
+            const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
+            
+            if (isRibbon) {
+                let assistHtml = '';
+                if (lastEv.type === 'Goal' && lastEv.assist && lastEv.assist !== "null") {
+                    assistHtml = `<div class="text-muted text-truncate" style="margin-top: 1px;">👟 ${shortenPlayerName(lastEv.assist)}</div>`;
                 }
-                // (If it IS a goal event, it skips Step 2 and leaves the card collapsed as a ribbon)
 
-                // Step 3: Scroll and Highlight
-                const headerOffset = 120; // Gives 120px of breathing room under the navbar
-                const elementPosition = targetCard.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                
-                window.scrollTo({
-                     top: offsetPosition,
-                     behavior: "smooth"
-                });
+                return `<div class="${textColor} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3; overflow: hidden; height: 100%;">
+                            <div class="text-truncate" style="margin-bottom: 2px;"><img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${lastEv.time}'</div>
+                            <div class="text-truncate" style="margin-bottom: ${assistHtml ? '0' : '2px'};">${icon} ${playerName}</div>
+                            ${assistHtml}
+                        </div>`;
+             } else {
+                if (lastEv.type === 'Goal' && lastEv.assist && lastEv.assist !== "null") {
+                    let assistHtml = `<span class="text-truncate text-muted fw-normal" style="max-width: 160px; font-size: 0.60rem; padding-left: 20px;">👟 ${shortenPlayerName(lastEv.assist)}</span>`;
+                    
+                    return `<div class="ms-2 ${textColor} fw-bold" style="font-size: 0.65rem; display: inline-flex; flex-direction: column; justify-content: center; vertical-align: middle; line-height: 1.15;">
+                                <span class="text-truncate" style="max-width: 160px;">${icon} ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}</span>
+                                ${assistHtml}
+                            </div>`;
+                }
 
-                triggerCardHighlight(targetCard, 'hash'); 
-                checkOverflows();
+                return `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
+                            ${icon} ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}
+                        </span>`;
             }
-        }, 600); 
+        }
     }
+    
+    return isRibbon ? `<div class="text-muted text-start w-100 ps-2 d-flex align-items-center" style="font-size: 0.6rem; font-style: italic; height: 100%;">No Events</div>` : '';
 }
 
-async function init() {
+function getRibbonHtml(data) {
+    const home = data.teams.home;
+    const away = data.teams.away;
+    const status = data.fixture.status.short;
+    const isPreGame = ['NS', 'TBD'].includes(status);
+    const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
+    
+    const homeScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.home ?? 0) : '-';
+    const awayScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.away ?? 0) : '-';
+
+    const leagueCompact = LEAGUE_ABBREV[data.league.id] || data.league.name;
+    const flagHtml = data.league.flag 
+        ? `<img src="${data.league.flag}" style="width: 18px; height: 13px; object-fit: cover; border-radius: 2px; border: 1px solid #dee2e6; margin-right: 4px; vertical-align: middle;">` 
+        : `<span style="font-size: 0.75rem; margin-right: 4px; vertical-align: middle;">🏆</span>`;
     const params = getUrlParams();
-    
-    // Update document title and meta description instantly
-    updatePageMetadata(params.league);
-    
-    renderLeagueMenu(params.league, params.date);
-    
-    const container = document.getElementById('games-container');
-    const datePicker = document.getElementById('date-picker');
-    // ... rest of the function remains unchanged
-    if (datePicker) datePicker.value = params.date;
+    const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
 
-    container.innerHTML = `<div class="col-12 text-center mt-5 pt-5"><div class="spinner-border text-success" role="status"></div><p class="mt-3 text-muted fw-bold">Loading Pitch Data...</p></div>`;
-    
-    ALL_GAMES_DATA = await fetchMatchesData(params);
-
-    if (!ALL_GAMES_DATA || ALL_GAMES_DATA.length === 0) {
-        container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-light border shadow-sm py-4"><h5 class="text-muted mb-0">No matches found for ${params.date}.</h5></div></div>`;
-        return;
-    }
-
-    renderGames();
-    handleHashNavigation(); 
-    setInterval(updateLiveGames, 30000); 
+    return `
+    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1">
+            <div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div>
+            <a href="${leagueHref}" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="View all ${data.league.name} matches" onmouseover="this.classList.remove('text-muted'); this.classList.add('text-success');" onmouseout="this.classList.add('text-muted'); this.classList.remove('text-success');">
+                ${flagHtml}${leagueCompact}
+            </a>
+        </div>
+        <div class="col-5 px-2">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}</span>
+                <span class="fw-bold text-dark" style="font-size: 0.85rem;">${homeScore}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}</span>
+                <span class="fw-bold text-dark" style="font-size: 0.85rem;">${awayScore}</span>
+            </div>
+        </div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">
+            ${getLatestEventHtml(data, true)}
+        </div>
+    </div>`;
 }
 
-function renderGames() {
-    const container = document.getElementById('games-container');
-    container.innerHTML = '';
-    const searchInput = document.getElementById('team-search');
-    const searchText = searchInput ? searchInput.value.toLowerCase() : '';
+function getCenterColumnHtml(data) {
+    const status = data.fixture.status.short;
+    const isPreGame = ['NS', 'TBD'].includes(status);
+    const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
+    const showScore = !isPreGame && !isDelayed && !data.isFallback;
 
-    let filteredGames = ALL_GAMES_DATA.filter(item => {
-        const matchString = (item.teams.home.name + " " + item.teams.away.name).toLowerCase();
-        return matchString.includes(searchText);
-    });
+    if (!showScore || !data.team_stats) {
+        const scoreText = showScore ? `${data.goals.home} - ${data.goals.away}` : `vs`;
+        return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${scoreText}</div>`;
+    }
 
-    filteredGames.sort((a, b) => {
-        // NEW: Array containing all "dead" statuses (Finished, Postponed, Cancelled, Abandoned)
-        const deadStatuses = ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD'];
-        
-        const isFinishedA = deadStatuses.includes(a.fixture.status.short);
-        const isFinishedB = deadStatuses.includes(b.fixture.status.short);
-        
-        if (isFinishedA && !isFinishedB) return 1;
-        if (!isFinishedA && isFinishedB) return -1;
-        
-        return new Date(a.fixture.date) - new Date(b.fixture.date);
-    });
-
-    filteredGames.forEach(item => container.appendChild(createGameCard(item)));
+    const tStats = data.team_stats;
+    let hColor = data.homeLineup?.team?.colors?.player?.primary ? `#${data.homeLineup.team.colors.player.primary}` : '#0d6efd';
+    let aColor = data.awayLineup?.team?.colors?.player?.primary ? `#${data.awayLineup.team.colors.player.primary}` : '#dc3545';
     
-    requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
+    if (colorDistance(hColor, aColor) < 60) {
+        aColor = '#343a40'; 
+    }
+
+    const hText = getContrastColor(hColor);
+    const aText = getContrastColor(aColor);
+    const textShadowH = hText === '#ffffff' ? 'text-shadow: 0px 1px 2px rgba(0,0,0,0.6);' : '';
+    const textShadowA = aText === '#ffffff' ? 'text-shadow: 0px 1px 2px rgba(0,0,0,0.6);' : '';
+
+    const buildBar = (label, hVal, aVal, isPercentage = false) => {
+        const total = hVal + aVal;
+        let hPct = 50, aPct = 50, activeHColor = hColor, activeAColor = aColor;
+
+        if (total > 0) {
+            hPct = (hVal / total) * 100;
+            aPct = (aVal / total) * 100;
+        } else {
+            activeHColor = '#adb5bd'; activeAColor = '#adb5bd';
+        }
+        
+        let borderH = getContrastColor(activeHColor) === '#000000' ? 'border: 1px solid #ced4da;' : '';
+        let borderA = getContrastColor(activeAColor) === '#000000' ? 'border: 1px solid #ced4da;' : '';
+
+        const displayH = isPercentage ? `${hVal}%` : hVal;
+        const displayA = isPercentage ? `${aVal}%` : aVal;
+
+        return `
+            <div class="text-center w-100 px-1">
+                <div class="stat-label-tiny">${label}</div>
+                <div class="stat-bar-container">
+                    <div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${activeHColor}; color: ${hText}; ${textShadowH} ${borderH}">
+                        ${displayH}
+                    </div>
+                    <div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${activeAColor}; color: ${aText}; ${textShadowA} ${borderA}">
+                        ${displayA}
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
+    const cardsHome = `🟨 ${tStats.home.yellow_cards} 🟥 ${tStats.home.red_cards}`;
+    const cardsAway = `🟨 ${tStats.away.yellow_cards} 🟥 ${tStats.away.red_cards}`;
+
+    return `
+        <div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals.home} - ${data.goals.away}</div>
+        ${buildBar("Possession", tStats.home.possession, tStats.away.possession, true)}
+        ${buildBar("Total Shots", tStats.home.total_shots, tStats.away.total_shots, false)}
+        ${buildBar("Shots on Target", tStats.home.shots_on_target, tStats.away.shots_on_target, false)}
+        ${buildBar("Corners", tStats.home.corners, tStats.away.corners, false)}
+        
+        <div class="text-center w-100 px-1 mt-1">
+            <div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div>
+            <div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;">
+                <span>${cardsHome}</span>
+                <span>${cardsAway}</span>
+            </div>
+        </div>
+    `;
+}
+
+function getEventsHtml(data) {
+    if (!data.events || data.events.length === 0) return '';
+    const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id);
+    const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
+    
+    const formatSingleEvent = (e, teamName) => {
+        if (e.type === 'subst') {
+            let pOut = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : 'Unknown';
+            let pIn = (e.player_out && e.player_out !== "null") ? shortenPlayerName(e.player_out) : 'Unknown';
+            return `
+                <div class="d-flex align-items-start" style="line-height: 1.1; margin-bottom: 2px;">
+                    <div class="text-secondary fw-bold pe-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem; margin-top: 1px;">${e.time}'</div>
+                    <div style="width: 18px; text-align: center; flex-shrink: 0;" class="me-1">🔄</div>
+                    <div class="text-truncate" style="min-width: 0;">
+                        <span class="text-dark fw-bold">${pIn}</span> IN<br>
+                        <span class="text-muted" style="font-size: 0.6rem;">(${pOut} OUT)</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        let icon = '🟥';
+        if (e.type === 'Goal') { icon = '⚽'; } 
+        else if (e.detail && e.detail.includes('Yellow')) {
+            icon = e.detail.includes('Red') || e.detail.includes('Second') ? '🟨🟥' : '🟨';
+        }
+        let playerName = (e.player && e.player !== "null") ? shortenPlayerName(e.player) : teamName;
+        
+        let assistHtml = '';
+        if (e.type === 'Goal' && e.assist && e.assist !== "null") {
+            assistHtml = `<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>`;
+        }
+        
+        return `
+            <div class="d-flex align-items-start" style="line-height: 1.1; margin-bottom: 2px;">
+                <div class="text-secondary fw-bold pe-1" style="width: 35px; text-align: right; flex-shrink: 0; font-size: 0.6rem; margin-top: 1px;">${e.time}'</div>
+                <div style="width: 18px; text-align: center; flex-shrink: 0;" class="me-1">${icon}</div>
+                <div class="text-truncate" style="min-width: 0;">
+                    <span class="text-dark fw-bold">${playerName}</span>${assistHtml}
+                </div>
+            </div>
+        `;
+    };
+
+    const homeReversed = [...homeEvents].reverse();
+    const awayReversed = [...awayEvents].reverse();
+
+    const firstHome = homeReversed.length > 0 ? formatSingleEvent(homeReversed[0], data.teams.home.name) : '';
+    const firstAway = awayReversed.length > 0 ? formatSingleEvent(awayReversed[0], data.teams.away.name) : '';
+
+    const allHome = homeReversed.map(e => formatSingleEvent(e, data.teams.home.name)).join('');
+    const allAway = awayReversed.map(e => formatSingleEvent(e, data.teams.away.name)).join('');
+
+    const needsCollapse = Math.max(homeReversed.length, awayReversed.length) > 1;
+
+    return `
+    <div class="w-100 px-2 pt-1 mt-1 border-top text-muted" 
+         style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s; margin-bottom: -6px;" 
+         onclick="if(${needsCollapse}) { const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp); }"
+         onmouseover="this.style.backgroundColor='#f8f9fa'" 
+         onmouseout="this.style.backgroundColor='transparent'"
+         title="${needsCollapse ? 'Click to expand/collapse goals and cards' : ''}">
+        
+        <div class="event-collapsed">
+            <div class="d-flex justify-content-between">
+                <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${firstHome}</div>
+                <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${firstAway}</div>
+            </div>
+            ${needsCollapse ? `<div class="text-center text-secondary w-100" style="font-size: 0.65rem; line-height: 0.5; margin-top: -4px; padding-bottom: 6px;">▼</div>` : ''}
+        </div>
+        
+        <div class="event-expanded d-none">
+            <div class="d-flex justify-content-between">
+                <div class="text-start" style="flex: 1; min-width: 0; padding-right: 4px;">${allHome}</div>
+                <div class="text-start" style="flex: 1; min-width: 0; padding-left: 4px;">${allAway}</div>
+            </div>
+            <div class="text-center text-secondary w-100" style="font-size: 0.65rem; line-height: 0.5; margin-top: -4px; padding-bottom: 6px;">▲</div>
+        </div>
+        
+    </div>`;
+}
+function getOddsHtml(data) {
+    if (!data.odds || (data.odds.home === "TBD" && data.odds.over === "TBD")) return '';
+    const h = data.odds.home !== "TBD" ? data.odds.home : "-";
+    const d = data.odds.draw !== "TBD" ? data.odds.draw : "-";
+    const a = data.odds.away !== "TBD" ? data.odds.away : "-";
+    const t = data.odds.total !== "TBD" ? data.odds.total : "-";
+    const o = data.odds.over !== "TBD" ? data.odds.over : "-";
+    const u = data.odds.under !== "TBD" ? data.odds.under : "-";
+
+    return `
+    <div class="d-flex justify-content-between text-center bg-white border-top border-bottom py-1" style="font-size: 0.70rem;">
+        <div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">1 (HOME)</div><div class="fw-bold text-dark">${h}</div></div>
+        <div class="w-25 border-start border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">X (DRAW)</div><div class="fw-bold text-dark">${d}</div></div>
+        <div class="w-25 border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">2 (AWAY)</div><div class="fw-bold text-dark">${a}</div></div>
+        <div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">O/U ${t}</div><div class="fw-bold text-dark"><span class="text-success">O</span> ${o} &nbsp;<span class="text-danger">U</span> ${u}</div></div>
+    </div>`;
+}
+
+function getInjuriesHtml(data) {
+    if (!data.injuries || (data.injuries.home.length === 0 && data.injuries.away.length === 0)) return '';
+    
+    const cleanHomeInj = data.injuries.home.map(n => shortenPlayerName(n));
+    const cleanAwayInj = data.injuries.away.map(n => shortenPlayerName(n));
+    
+    const hInj = cleanHomeInj.join(', ') || 'None';
+    const aInj = cleanAwayInj.join(', ') || 'None';
+    
+    return `
+    <div class="border-bottom px-2 py-1 expandable-section position-relative d-flex justify-content-center align-items-center" 
+         style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545; cursor: pointer; transition: background-color 0.2s;" 
+         onclick="toggleExpand(this)" 
+         onmouseover="this.style.backgroundColor='#ffebeb'" 
+         onmouseout="this.style.backgroundColor='#fff5f5'" 
+         title="Click to expand/collapse injuries">
+        <div class="injury-text text-truncate truncate-target user-select-none" style="max-width: 92%; min-width: 0;">
+            <strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj} | <b>A:</b> ${aInj}</span>
+        </div>
+        <div class="overflow-indicator d-none position-absolute text-danger" style="right: 12px; font-size: 0.6rem; pointer-events: none;">▼</div>
+    </div>`;
 }
 
 function buildLiveStatsGrid(lineupData, teamColorHex) {
@@ -1329,7 +1078,6 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
     const groupedPlayers = { 'F': [], 'M': [], 'D': [], 'G': [] };
     let flatPlayers = [];
 
-    // 1. Gather all active players and subbed out players
     lineupData.startXI.forEach(slot => {
         flatPlayers.push({ ...slot.player, _isSubbedOut: false });
         if (slot.sub_history) {
@@ -1337,7 +1085,6 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
         }
     });
 
-    // 2. Fallback: Grab any bench players that recorded stats just in case API missed the sub event
     if (lineupData.substitutes) {
         lineupData.substitutes.forEach(sub => {
             if (sub.player.live_stats && Object.values(sub.player.live_stats).some(v => v !== 0 && v !== "N/A" && v !== "0")) {
@@ -1348,13 +1095,11 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
         });
     }
 
-    // 3. Sort them into their position groups
     flatPlayers.forEach(p => groupedPlayers[p.pos || 'M'].push(p));
 
     let html = '';
     let tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
 
-    // Prevent white/super light colors from disappearing against the light grey background
     if (getContrastColor(tColor) === '#000000') {
         tColor = '#495057';
     }
@@ -1482,9 +1227,99 @@ function buildLineupList(lineupData, gameData) {
     }).join('');
     return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
 }
-// ==========================================
-// NEW: DUAL-VIEW CARD BUILDER
-// ==========================================
+
+function triggerCardHighlight(targetCard, type) {
+    if (!targetCard) return;
+    
+    const innerHeader = targetCard.querySelector('.p-2.pb-1');
+    let borderColor, boxShadowColor, headerBgColor;
+
+    if (type === 'goal' || type === 'hash') { 
+        borderColor = '#20c997';
+        boxShadowColor = 'rgba(32, 201, 151, 0.8)';
+        headerBgColor = '#d1e7dd';
+    } else if (type === 'red_card') { 
+        borderColor = '#dc3545';
+        boxShadowColor = 'rgba(220, 53, 69, 0.8)';
+        headerBgColor = '#f8d7da';
+    } else if (type === 'yellow_card') { 
+        borderColor = '#ffc107';
+        boxShadowColor = 'rgba(255, 193, 7, 0.8)';
+        headerBgColor = '#fff3cd';
+    } else if (type === 'subst') { 
+        borderColor = '#212529'; 
+        boxShadowColor = 'rgba(33, 37, 41, 0.6)'; 
+        headerBgColor = '#e9ecef'; 
+    }
+
+    targetCard.style.transition = 'all 0.4s ease-out';
+    targetCard.style.transform = 'scale(1.02)';
+    targetCard.style.setProperty('border', `3px solid ${borderColor}`, 'important');
+    targetCard.style.setProperty('box-shadow', `0 0 25px ${boxShadowColor}`, 'important');
+    targetCard.style.position = 'relative'; 
+    targetCard.style.zIndex = '10';
+    
+    if (innerHeader) {
+        innerHeader.style.transition = 'background-color 0.4s ease-out';
+        innerHeader.style.backgroundColor = headerBgColor; 
+    }
+    
+    setTimeout(() => {
+        targetCard.style.transform = 'scale(1)';
+        targetCard.style.removeProperty('border'); 
+        targetCard.style.setProperty('box-shadow', '0 2px 4px rgba(0,0,0,0.05)', 'important');
+        targetCard.style.zIndex = '1';
+        
+        if (innerHeader) {
+            innerHeader.style.backgroundColor = '#fcfcfc'; 
+        }
+    }, 4000); 
+}
+
+window.toggleSingleCard = function(fixId) {
+    const ribbon = document.getElementById(`ribbon-${fixId}`);
+    const full = document.getElementById(`full-${fixId}`);
+    if (ribbon && full) {
+        ribbon.classList.toggle('d-none');
+        full.classList.toggle('d-none');
+    }
+};
+
+window.switchLineupTab = function(fixId, tabName) {
+    const xiTab = document.getElementById(`tab-xi-${fixId}`);
+    const statsTab = document.getElementById(`tab-stats-${fixId}`);
+    const xiView = document.getElementById(`view-xi-${fixId}`);
+    const statsView = document.getElementById(`view-stats-${fixId}`);
+    const collapseEl = document.getElementById(`lineup-collapse-${fixId}`);
+
+    if (!xiTab || !statsTab || !xiView || !statsView || !collapseEl) return;
+
+    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+    const isCurrentlyExpanded = collapseEl.classList.contains('show');
+    const clickedActiveTab = (tabName === 'xi' && xiTab.classList.contains('active')) || 
+                             (tabName === 'stats' && statsTab.classList.contains('active'));
+
+    if (clickedActiveTab) {
+        isCurrentlyExpanded ? bsCollapse.hide() : bsCollapse.show();
+        return;
+    }
+
+    if (tabName === 'xi') {
+        xiTab.classList.add('active');
+        statsTab.classList.remove('active');
+        xiView.classList.remove('d-none');
+        statsView.classList.add('d-none');
+    } else {
+        statsTab.classList.add('active');
+        xiTab.classList.remove('active');
+        statsView.classList.remove('d-none');
+        xiView.classList.add('d-none');
+    }
+
+    bsCollapse.show();
+    checkOverflows();
+};
+
 function createGameCard(data) {
     const gameCard = document.createElement('div');
     gameCard.className = 'col-md-6 col-lg-6 col-xl-4 mb-2';
@@ -1505,11 +1340,9 @@ function createGameCard(data) {
     const params = getUrlParams();
     const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
 
-    // Dynamic Tab Text
     const xiTabText = isFinished ? "FINAL XI" : "STARTING XI";
     const statsTabText = isFinished ? "FINAL STATS" : "LIVE STATS";
 
-    // Helper to grab exact team colors for the stats grids
     const hColor = data.homeLineup?.team?.colors?.player?.primary;
     const aColor = data.awayLineup?.team?.colors?.player?.primary;
 
@@ -1591,6 +1424,123 @@ function createGameCard(data) {
     
     return gameCard;
 }
+
+function handleHashNavigation() {
+    if (window.location.hash) {
+        setTimeout(() => {
+            const hash = window.location.hash;
+            let fixId = null;
+            let isGoalEvent = false;
+
+            if (hash.startsWith('#lineup-')) {
+                fixId = hash.replace('#lineup-', '');
+            } else if (hash.startsWith('#card-')) {
+                fixId = hash.replace('#card-', ''); 
+            } else if (hash.startsWith('#goal-')) {
+                fixId = hash.replace('#goal-', '');
+                isGoalEvent = true;
+            } else {
+                return; 
+            }
+
+            const targetCard = document.getElementById(`card-${fixId}`);
+
+            if (targetCard) {
+                globalScoreboardMode = true;
+                const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
+                if (toggleScoreboardBtn) toggleScoreboardBtn.innerHTML = '🔼 EXPAND ALL CARDS';
+                
+                const toggleAllBtn = document.getElementById('toggle-all-lineups');
+                if (toggleAllBtn) toggleAllBtn.classList.add('d-none'); 
+                
+                document.querySelectorAll('.ribbon-view').forEach(el => el.classList.remove('d-none'));
+                document.querySelectorAll('.full-view').forEach(el => el.classList.add('d-none'));
+
+                if (!isGoalEvent) {
+                    const targetRibbon = document.getElementById(`ribbon-${fixId}`);
+                    const targetFull = document.getElementById(`full-${fixId}`);
+                    if (targetRibbon && targetFull) {
+                        targetRibbon.classList.add('d-none');
+                        targetFull.classList.remove('d-none');
+                    }
+
+                    const targetLineup = document.getElementById(`lineup-collapse-${fixId}`);
+                    if (targetLineup) {
+                        targetLineup.classList.add('show');
+                    }
+                }
+
+                const headerOffset = 120; 
+                const elementPosition = targetCard.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                window.scrollTo({
+                     top: offsetPosition,
+                     behavior: "smooth"
+                });
+
+                triggerCardHighlight(targetCard, 'hash'); 
+                checkOverflows();
+            }
+        }, 600); 
+    }
+}
+
+function renderGames() {
+    const container = document.getElementById('games-container');
+    container.innerHTML = '';
+    const searchInput = document.getElementById('team-search');
+    const searchText = searchInput ? searchInput.value.toLowerCase() : '';
+
+    let filteredGames = ALL_GAMES_DATA.filter(item => {
+        const matchString = (item.teams.home.name + " " + item.teams.away.name).toLowerCase();
+        return matchString.includes(searchText);
+    });
+
+    filteredGames.sort((a, b) => {
+        const deadStatuses = ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD'];
+        
+        const isFinishedA = deadStatuses.includes(a.fixture.status.short);
+        const isFinishedB = deadStatuses.includes(b.fixture.status.short);
+        
+        if (isFinishedA && !isFinishedB) return 1;
+        if (!isFinishedA && isFinishedB) return -1;
+        
+        return new Date(a.fixture.date) - new Date(b.fixture.date);
+    });
+
+    filteredGames.forEach(item => container.appendChild(createGameCard(item)));
+    
+    requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
+}
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
+async function init() {
+    const params = getUrlParams();
+    
+    updatePageMetadata(params.league);
+    renderLeagueMenu(params.league, params.date);
+    
+    const container = document.getElementById('games-container');
+    const datePicker = document.getElementById('date-picker');
+    if (datePicker) datePicker.value = params.date;
+
+    container.innerHTML = `<div class="col-12 text-center mt-5 pt-5"><div class="spinner-border text-success" role="status"></div><p class="mt-3 text-muted fw-bold">Loading Pitch Data...</p></div>`;
+    
+    ALL_GAMES_DATA = await fetchMatchesData(params);
+
+    if (!ALL_GAMES_DATA || ALL_GAMES_DATA.length === 0) {
+        container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-light border shadow-sm py-4"><h5 class="text-muted mb-0">No matches found for ${params.date}.</h5></div></div>`;
+        return;
+    }
+
+    renderGames();
+    handleHashNavigation(); 
+    setInterval(updateLiveGames, 30000); 
+}
+
 // ==========================================
 // EVENT LISTENERS
 // ==========================================
@@ -1617,7 +1567,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleAllBtn = document.getElementById('toggle-all-lineups');
     if (toggleAllBtn) {
         toggleAllBtn.innerHTML = globalLineupsExpanded ? '🔼 COLLAPSE ALL LINEUPS' : '🔽 EXPAND ALL LINEUPS';
-        if (globalScoreboardMode) toggleAllBtn.classList.add('d-none'); // NEW: Hide if starting in compact mode
+        if (globalScoreboardMode) toggleAllBtn.classList.add('d-none'); 
         
         toggleAllBtn.addEventListener('click', () => {
             globalLineupsExpanded = !globalLineupsExpanded;
@@ -1635,7 +1585,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- NEW: SCOREBOARD TOGGLE LISTENER ---
     const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
     if (toggleScoreboardBtn) {
         toggleScoreboardBtn.innerHTML = globalScoreboardMode ? '🔼 EXPAND ALL CARDS' : '🔽 COMPACT SCOREBOARD';
@@ -1651,11 +1600,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (globalScoreboardMode) {
                 allRibbons.forEach(el => el.classList.remove('d-none'));
                 allFulls.forEach(el => el.classList.add('d-none'));
-                if (toggleAllBtn) toggleAllBtn.classList.add('d-none'); // NEW: Hide lineup button
+                if (toggleAllBtn) toggleAllBtn.classList.add('d-none'); 
             } else {
                 allRibbons.forEach(el => el.classList.add('d-none'));
                 allFulls.forEach(el => el.classList.remove('d-none'));
-                if (toggleAllBtn) toggleAllBtn.classList.remove('d-none'); // NEW: Show lineup button
+                if (toggleAllBtn) toggleAllBtn.classList.remove('d-none'); 
             }
             
             checkOverflows();
