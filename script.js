@@ -1071,6 +1071,29 @@ async function updateLiveGames() {
         const injuriesEl = document.getElementById(`injuries-${fixId}`);
         
         if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
+            
+            // --- THE FIX: DYNAMIC WIDTH TRANSITION ---
+            // If the game just transitioned to Live, smoothly stretch the columns and shrink the logos!
+            if (!oldMatch.team_stats && match.team_stats) {
+                const hCol = scoreEl.previousElementSibling;
+                const aCol = scoreEl.nextElementSibling;
+                if (hCol && aCol) {
+                    hCol.style.width = '25%';
+                    aCol.style.width = '25%';
+                    scoreEl.style.width = '50%';
+                    
+                    const hImg = hCol.querySelector('img');
+                    const aImg = aCol.querySelector('img');
+                    if (hImg) { hImg.style.width = '35px'; hImg.style.height = '35px'; }
+                    if (aImg) { aImg.style.width = '35px'; aImg.style.height = '35px'; }
+                    
+                    const hName = hCol.querySelector('.fw-bold.text-truncate');
+                    const aName = aCol.querySelector('.fw-bold.text-truncate');
+                    if (hName) hName.style.fontSize = '0.75rem';
+                    if (aName) aName.style.fontSize = '0.75rem';
+                }
+            }
+
             // FULL VIEW UPDATES
             const newTimeHtml = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
             const newCenterHtml = getCenterColumnHtml(match).trim();
