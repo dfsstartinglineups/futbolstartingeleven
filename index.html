@@ -217,11 +217,14 @@
         .lineup-tab {
             font-size: 0.65rem;
             font-weight: 700;
-            padding: 4px 12px;
+            padding: 6px 4px;
             color: #adb5bd;
             cursor: pointer;
             transition: all 0.2s ease;
             border-bottom: 2px solid transparent;
+            user-select: none; /* Prevents text highlighting on clicks */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .lineup-tab.active {
             color: #20c997;
