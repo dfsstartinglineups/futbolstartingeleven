@@ -681,20 +681,35 @@ def process_date(target_date, force_master_sync=False):
                                 p_stats = p["statistics"][0] if len(p["statistics"]) > 0 else {}
                                 
                                 live_player_map[p_id] = {
+                                    # Offensive / Forward Stats
                                     "goals": p_stats.get("goals", {}).get("total") or 0,
                                     "assists": p_stats.get("goals", {}).get("assists") or 0,
-                                    "shots_on_target": p_stats.get("shots", {}).get("on") or 0,
                                     "total_shots": p_stats.get("shots", {}).get("total") or 0,
-                                    "key_passes": p_stats.get("passes", {}).get("key") or 0,
+                                    "shots_on_target": p_stats.get("shots", {}).get("on") or 0,
+                                    "offsides": p_stats.get("offsides") or 0,
+                                    
+                                    # Passing / Midfielder Stats
                                     "passes": p_stats.get("passes", {}).get("total") or 0,
+                                    "key_passes": p_stats.get("passes", {}).get("key") or 0,
                                     "pass_acc": p_stats.get("passes", {}).get("accuracy") or 0,
+                                    
+                                    # Defensive Stats
                                     "tackles": p_stats.get("tackles", {}).get("total") or 0,
+                                    "blocks": p_stats.get("tackles", {}).get("blocks") or 0,
                                     "interceptions": p_stats.get("tackles", {}).get("interceptions") or 0,
-                                    "clearances": p_stats.get("tackles", {}).get("blocks") or 0,
-                                    "yellow_cards": p_stats.get("cards", {}).get("yellow") or 0,
-                                    "red_cards": p_stats.get("cards", {}).get("red") or 0,
+                                    "duels_total": p_stats.get("duels", {}).get("total") or 0,
+                                    "duels_won": p_stats.get("duels", {}).get("won") or 0,
+                                    "clearances": p_stats.get("tackles", {}).get("blocks") or 0, # Note: API groups clearances in blocks
+                                    
+                                    # Goalkeeper Stats
                                     "saves": p_stats.get("goals", {}).get("saves") or 0,
                                     "conceded": p_stats.get("goals", {}).get("conceded") or 0,
+                                    
+                                    # Discipline / Misc
+                                    "yellow_cards": p_stats.get("cards", {}).get("yellow") or 0,
+                                    "red_cards": p_stats.get("cards", {}).get("red") or 0,
+                                    "fouls_drawn": p_stats.get("fouls", {}).get("drawn") or 0,
+                                    "fouls_committed": p_stats.get("fouls", {}).get("committed") or 0,
                                     "rating": p_stats.get("games", {}).get("rating") or "N/A"
                                 }
 
