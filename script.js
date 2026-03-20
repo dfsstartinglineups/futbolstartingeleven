@@ -224,6 +224,18 @@ function getContrastColor(hexColor) {
     return (yiq >= 128) ? '#000000' : '#ffffff';
 }
 
+// Calculates the visual difference between two hex colors
+function colorDistance(hex1, hex2) {
+    if (!hex1 || !hex2) return 100;
+    const getRgb = (hex) => {
+        let h = hex.replace('#', '');
+        if (h.length === 3) h = h.split('').map(x => x + x).join('');
+        return { r: parseInt(h.substr(0, 2), 16), g: parseInt(h.substr(2, 2), 16), b: parseInt(h.substr(4, 2), 16) };
+    };
+    const c1 = getRgb(hex1), c2 = getRgb(hex2);
+    return Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2));
+}
+
 function getLeagueKey(leagueId) {
     for (const [key, leagueObj] of Object.entries(SUPPORTED_LEAGUES)) {
         if (leagueObj.id === leagueId) return key;
@@ -564,17 +576,20 @@ function getCenterColumnHtml(data) {
     const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
     const showScore = !isPreGame && !isDelayed && !data.isFallback;
 
-    // If it's pre-game, or we don't have the new team_stats object yet, just show the standard big score
     if (!showScore || !data.team_stats) {
         const scoreText = showScore ? `${data.goals.home} - ${data.goals.away}` : `vs`;
         return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${scoreText}</div>`;
     }
 
-    // --- WE HAVE LIVE DATA: BUILD THE BARS ---
     const tStats = data.team_stats;
-    const hColor = data.homeLineup?.team?.colors?.player?.primary ? `#${data.homeLineup.team.colors.player.primary}` : '#0d6efd';
-    const aColor = data.awayLineup?.team?.colors?.player?.primary ? `#${data.awayLineup.team.colors.player.primary}` : '#dc3545';
+    let hColor = data.homeLineup?.team?.colors?.player?.primary ? `#${data.homeLineup.team.colors.player.primary}` : '#0d6efd';
+    let aColor = data.awayLineup?.team?.colors?.player?.primary ? `#${data.awayLineup.team.colors.player.primary}` : '#dc3545';
     
+    // THE FIX: If the colors clash, fallback the Away team to a sleek dark slate
+    if (colorDistance(hColor, aColor) < 60) {
+        aColor = '#343a40'; 
+    }
+
     const hText = getContrastColor(hColor);
     const aText = getContrastColor(aColor);
     const textShadowH = hText === '#ffffff' ? 'text-shadow: 0px 1px 2px rgba(0,0,0,0.6);' : '';
@@ -582,18 +597,13 @@ function getCenterColumnHtml(data) {
 
     const buildBar = (label, hVal, aVal, isPercentage = false) => {
         const total = hVal + aVal;
-        // If both are 0, make it a 50/50 split of neutral grey
-        let hPct = 50;
-        let aPct = 50;
-        let activeHColor = hColor;
-        let activeAColor = aColor;
+        let hPct = 50, aPct = 50, activeHColor = hColor, activeAColor = aColor;
 
         if (total > 0) {
             hPct = (hVal / total) * 100;
             aPct = (aVal / total) * 100;
         } else {
-            activeHColor = '#adb5bd';
-            activeAColor = '#adb5bd';
+            activeHColor = '#adb5bd'; activeAColor = '#adb5bd';
         }
 
         const displayH = isPercentage ? `${hVal}%` : hVal;
@@ -603,10 +613,10 @@ function getCenterColumnHtml(data) {
             <div class="text-center w-100 px-1">
                 <div class="stat-label-tiny">${label}</div>
                 <div class="stat-bar-container">
-                    <div class="stat-bar-segment stat-bar-home" style="width: ${hPct}%; background-color: ${activeHColor}; color: ${hText}; ${textShadowH}">
+                    <div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${activeHColor}; color: ${hText}; ${textShadowH}">
                         ${displayH}
                     </div>
-                    <div class="stat-bar-segment stat-bar-away" style="width: ${aPct}%; background-color: ${activeAColor}; color: ${aText}; ${textShadowA}">
+                    <div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${activeAColor}; color: ${aText}; ${textShadowA}">
                         ${displayA}
                     </div>
                 </div>
@@ -614,16 +624,14 @@ function getCenterColumnHtml(data) {
         `;
     };
 
-    const shotsHome = `${tStats.home.shots_on_target}/${tStats.home.total_shots}`;
-    const shotsAway = `${tStats.away.shots_on_target}/${tStats.away.total_shots}`;
     const cardsHome = `🟨 ${tStats.home.yellow_cards} 🟥 ${tStats.home.red_cards}`;
     const cardsAway = `🟨 ${tStats.away.yellow_cards} 🟥 ${tStats.away.red_cards}`;
 
-    // Return the compressed score + the 4 stat bars
     return `
         <div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals.home} - ${data.goals.away}</div>
         ${buildBar("Possession", tStats.home.possession, tStats.away.possession, true)}
-        ${buildBar("Shots (On/Tot)", tStats.home.shots_on_target, tStats.away.shots_on_target, false)}
+        ${buildBar("Total Shots", tStats.home.total_shots, tStats.away.total_shots, false)}
+        ${buildBar("Shots on Target", tStats.home.shots_on_target, tStats.away.shots_on_target, false)}
         ${buildBar("Corners", tStats.home.corners, tStats.away.corners, false)}
         
         <div class="text-center w-100 px-1 mt-1">
@@ -1061,7 +1069,7 @@ async function updateLiveGames() {
         if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
             // FULL VIEW UPDATES
             const newTimeHtml = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
-            const newCenterHtml = getCenterColumnHtml(match).trim(); // <-- THIS IS NEW!
+            const newCenterHtml = getCenterColumnHtml(match).trim();
             const newEventsHtml = getEventsHtml(match).trim();
             const newOddsHtml = getOddsHtml(match).trim();
             const newInjuriesHtml = getInjuriesHtml(match).trim();
@@ -1070,7 +1078,6 @@ async function updateLiveGames() {
             
             if (scoreEl.innerHTML.trim() !== newCenterHtml) {
                 scoreEl.innerHTML = newCenterHtml;
-                // We drop the flash-green animation here so the whole center block doesn't flash every 30 seconds!
             }
             
             const eventsWasExpanded = eventsEl.querySelector('.is-expanded') !== null;
@@ -1098,75 +1105,70 @@ async function updateLiveGames() {
             }
         }
         
-        // RIBBON VIEW UPDATE (Completely redraws if data changes)
+        // RIBBON VIEW UPDATE
         const ribbonEl = document.getElementById(`ribbon-${fixId}`);
         if (ribbonEl) {
             const newRibbonHtml = getRibbonHtml(match).trim();
             if (ribbonEl.innerHTML.trim() !== newRibbonHtml) ribbonEl.innerHTML = newRibbonHtml;
         }
-
-        const bannerEl = document.getElementById(`lineup-banner-text-${fixId}`);
-        if (bannerEl) {
-            const liveStatus = match.fixture.status.short;
-            let newBannerText = "STARTING XI";
-            if (['FT', 'AET', 'PEN'].includes(liveStatus)) newBannerText = "FINAL XI";
-            else if (!['NS', 'TBD'].includes(liveStatus)) newBannerText = "LIVE XI";
-            
-            const newBannerHtml = `${newBannerText} <span style="font-size: 0.6rem;">▼</span>`;
-            if (bannerEl.innerHTML.trim() !== newBannerHtml) bannerEl.innerHTML = newBannerHtml;
-        }
         
-        // Constantly repaint Lineups & Live Stats arrays so the grids stay fresh
-        const viewXiEl = document.getElementById(`view-xi-${fixId}`);
-        if (viewXiEl) {
-            // Re-build LineupList (Python manages the substitutions for us now)
-            // (We are reusing the internal buildLineupList logic locally, or you can safely just call a global one.
-            // But since it's already structured, we can just replace innerHTML by triggering a full card rebuild if needed.
-            // Actually, because we moved buildLineupList inside createGameCard, the easiest and safest way to sync 
-            // is to completely rebuild the whole lineup-collapse block using our HTML builders.)
-            
-            // To keep it simple, we let the inner HTML refresh dynamically:
-            const hColor = match.homeLineup?.team?.colors?.player?.primary;
-            const aColor = match.awayLineup?.team?.colors?.player?.primary;
-            
-            // We trigger a silent UI swap inside the old DOM container
-            const oldFullView = document.getElementById(`full-${fixId}`);
-            if (oldFullView) {
-                // The new data has already updated time/score/events above. 
-                // We just need to trigger the card highlight if a new event happened!
-            }
-        }
-        
+        // EVENT HIGHLIGHTS & IN-PLACE GRID UPDATES
         if (oldMatch) {
             const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
             const newEvLen = match.events ? match.events.length : 0;
             
+            // Trigger Flash Highlights
             if (newEvLen > oldEvLen) {
                 const latestEvent = match.events[newEvLen - 1]; 
                 const cardEl = document.getElementById(`card-${fixId}`);
-                
                 if (cardEl && latestEvent) {
-                    if (latestEvent.type === 'Goal') {
-                        triggerCardHighlight(cardEl, 'goal');
-                    } else if (latestEvent.type === 'Card' && latestEvent.detail) {
+                    if (latestEvent.type === 'Goal') { triggerCardHighlight(cardEl, 'goal'); } 
+                    else if (latestEvent.type === 'Card' && latestEvent.detail) {
                         if (latestEvent.detail.includes('Second') || latestEvent.detail.includes('Yellow / Red')) {
                             triggerCardHighlight(cardEl, 'yellow_card');
                             setTimeout(() => { triggerCardHighlight(cardEl, 'red_card'); }, 4500); 
-                        } else if (latestEvent.detail.includes('Red')) {
-                            triggerCardHighlight(cardEl, 'red_card');
-                        } else if (latestEvent.detail.includes('Yellow')) {
-                            triggerCardHighlight(cardEl, 'yellow_card');
-                        }
-                    } else if (latestEvent.type === 'subst') {
-                        triggerCardHighlight(cardEl, 'subst');
+                        } else if (latestEvent.detail.includes('Red')) { triggerCardHighlight(cardEl, 'red_card'); } 
+                        else if (latestEvent.detail.includes('Yellow')) { triggerCardHighlight(cardEl, 'yellow_card'); }
+                    } else if (latestEvent.type === 'subst') { triggerCardHighlight(cardEl, 'subst'); }
+                }
+            }
+
+            // PRECISION IN-PLACE UPDATES (Preserves Expand/Collapse State!)
+            const viewXiEl = document.getElementById(`view-xi-${fixId}`);
+            if (viewXiEl) {
+                const newXiHtml = `
+                    <div class="row g-0 bg-white">
+                        <div class="col-6 border-end">${buildLineupList(match.homeLineup, match)}</div>
+                        <div class="col-6">${buildLineupList(match.awayLineup, match)}</div>
+                    </div>
+                `;
+                if (viewXiEl.innerHTML.trim() !== newXiHtml.trim()) viewXiEl.innerHTML = newXiHtml;
+            }
+
+            const viewStatsEl = document.getElementById(`view-stats-${fixId}`);
+            if (viewStatsEl) {
+                let hColor = match.homeLineup?.team?.colors?.player?.primary ? `#${match.homeLineup.team.colors.player.primary}` : '#0d6efd';
+                let aColor = match.awayLineup?.team?.colors?.player?.primary ? `#${match.awayLineup.team.colors.player.primary}` : '#dc3545';
+                if (colorDistance(hColor, aColor) < 60) aColor = '#343a40';
+
+                const newStatsHtml = `
+                    <div class="row g-0 bg-white">
+                        <div class="col-6 border-end">${buildLiveStatsGrid(match.homeLineup, hColor)}</div>
+                        <div class="col-6">${buildLiveStatsGrid(match.awayLineup, aColor)}</div>
+                    </div>
+                `;
+                if (viewStatsEl.innerHTML.trim() !== newStatsHtml.trim()) viewStatsEl.innerHTML = newStatsHtml;
+            }
+
+            // Smart Reveal: If Team Stats just became available, un-hide the tab automatically
+            if (match.team_stats) {
+                const statsTab = document.getElementById(`tab-stats-${fixId}`);
+                if (statsTab && statsTab.classList.contains('d-none')) {
+                    statsTab.classList.remove('d-none');
+                    if (!['NS', 'TBD'].includes(match.fixture.status.short)) {
+                        switchLineupTab(fixId, 'stats');
                     }
                 }
-                // Because a new event happened (or stats updated), we force the entire card to re-render to pick up all the new sub_history and grid data
-                const container = document.getElementById('games-container');
-                renderGames(); // This safely repaints the whole board with the latest Python JSON
-            } else if (match.team_stats) {
-                // If it's a live game with team_stats, we quietly re-render the board to update the progress bars and player stats!
-                renderGames(); 
             }
         }
     });
@@ -1392,6 +1394,42 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
     return html;
 }
 
+
+function buildLineupList(lineupData, gameData) {
+    if (gameData.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
+    if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
+    
+    const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation}</div>`;
+    
+    const listItems = lineupData.startXI.map(slot => {
+        const p = slot.player;
+        const safePos = p.pos || '-';
+        const originalName = p.name || 'Unknown';
+        const displaySafeName = shortenPlayerName(originalName);
+        const safeNum = p.number || '';
+        const photoUrl = p.photo || '';
+        
+        const encodedPlayer = encodeURIComponent(JSON.stringify(p));
+        let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
+        
+        const photoHtml = photoUrl && photoUrl.includes("http") 
+            ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
+            : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
+
+        const subIndicator = p.isSubbedIn ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.subMinute}'</span>` : '';
+
+        return `
+            <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" data-player="${encodedPlayer}" onclick="openPlayerModal(this)">
+                <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
+                <div class="me-2">${photoHtml}</div>
+                <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">
+                    ${displaySafeName}${subIndicator}
+                </span>
+                <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
+            </li>`;
+    }).join('');
+    return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
+}
 // ==========================================
 // NEW: DUAL-VIEW CARD BUILDER
 // ==========================================
@@ -1408,44 +1446,7 @@ function createGameCard(data) {
 
     const homeRecord = home.record ? `<div class="text-muted fw-normal" style="font-size: 0.65rem; margin-top: 2px;">(${home.record})</div>` : '';
     const awayRecord = away.record ? `<div class="text-muted fw-normal" style="font-size: 0.65rem; margin-top: 2px;">(${away.record})</div>` : '';
-
-    // --- SIMPLIFIED: PYTHON NOW HANDLES SUBS FOR US! ---
-    const buildLineupList = (lineupData) => {
-        if (data.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
-        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
-        
-        const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation}</div>`;
-        
-        const listItems = lineupData.startXI.map(slot => {
-            const p = slot.player;
-            const safePos = p.pos || '-';
-            const originalName = p.name || 'Unknown';
-            const displaySafeName = shortenPlayerName(originalName);
-            const safeNum = p.number || '';
-            const photoUrl = p.photo || '';
-            
-            const encodedPlayer = encodeURIComponent(JSON.stringify(p));
-            let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
-            
-            const photoHtml = photoUrl && photoUrl.includes("http") 
-                ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
-                : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
-
-            const subIndicator = p.isSubbedIn ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.subMinute}'</span>` : '';
-
-            return `
-                <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" data-player="${encodedPlayer}" onclick="openPlayerModal(this)">
-                    <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
-                    <div class="me-2">${photoHtml}</div>
-                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">
-                        ${displaySafeName}${subIndicator}
-                    </span>
-                    <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
-                </li>`;
-        }).join('');
-        return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
-    };
-
+    
     const statusShort = data.fixture.status.short;
     const isPreGame = ['NS', 'TBD'].includes(statusShort);
     const isFinished = ['FT', 'AET', 'PEN'].includes(statusShort);
@@ -1491,15 +1492,17 @@ function createGameCard(data) {
         <div id="injuries-${fixId}" class="w-100">${getInjuriesHtml(data)}</div>
         
         <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1" style="background-color: #f8f9fa;">
-            <div class="d-flex gap-4">
+            <div class="d-flex gap-4 w-100">
                 <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" 
                      id="tab-xi-${fixId}" 
-                     onclick="switchLineupTab(${fixId}, 'xi')">
+                     onclick="switchLineupTab(${fixId}, 'xi')"
+                     style="flex: 1; text-align: center;">
                     ${xiTabText}
                 </div>
                 <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" 
                      id="tab-stats-${fixId}" 
-                     onclick="switchLineupTab(${fixId}, 'stats')">
+                     onclick="switchLineupTab(${fixId}, 'stats')"
+                     style="flex: 1; text-align: center;">
                     ${statsTabText}
                 </div>
             </div>
@@ -1509,8 +1512,8 @@ function createGameCard(data) {
             
             <div id="view-xi-${fixId}" class="${(data.team_stats && !isPreGame) ? 'd-none' : ''}">
                 <div class="row g-0 bg-white">
-                    <div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div>
-                    <div class="col-6">${buildLineupList(data.awayLineup)}</div>
+                    <div class="col-6 border-end">${buildLineupList(data.homeLineup, data)}</div>
+                    <div class="col-6">${buildLineupList(data.awayLineup, data)}</div>
                 </div>
             </div>
             
