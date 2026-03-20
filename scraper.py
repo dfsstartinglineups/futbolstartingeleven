@@ -708,34 +708,44 @@ def process_date(target_date, force_master_sync=False):
                                 lineup = game[side]
                                 if not lineup: continue
                                 
-                                # Find if the incoming player is still on the bench
-                                incoming_sub = next((s for s in lineup.get("substitutes", []) if str(s["player"]["id"]) == player_in_id), None)
+                                # Safely find where they are right now
+                                in_is_sub = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("substitutes", []))
+                                out_is_sub = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("substitutes", []))
+                                in_is_starter = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("startXI", []))
+                                out_is_starter = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("startXI", []))
                                 
-                                if incoming_sub:
-                                    # Find the outgoing player in startXI
-                                    for slot in lineup.get("startXI", []):
+                                # API ERROR CORRECTION: If the API's initial lineup was backward.
+                                if in_is_starter and out_is_sub:
+                                    starter_idx = next(i for i, s in enumerate(lineup["startXI"]) if str(s["player"]["id"]) == player_in_id)
+                                    sub_idx = next(i for i, s in enumerate(lineup["substitutes"]) if str(s["player"]["id"]) == player_out_id)
+                                    
+                                    # Swap them quietly before processing the event
+                                    temp = lineup["startXI"][starter_idx]
+                                    lineup["startXI"][starter_idx] = lineup["substitutes"][sub_idx]
+                                    lineup["substitutes"][sub_idx] = temp
+                                    
+                                    # Re-evaluate logic state
+                                    in_is_sub, out_is_starter = True, True
+                                    
+                                if in_is_sub and out_is_starter:
+                                    incoming_sub = next(s for s in lineup["substitutes"] if str(s["player"]["id"]) == player_in_id)
+                                    
+                                    for slot in lineup["startXI"]:
                                         if str(slot["player"]["id"]) == player_out_id:
-                                            
-                                            # Create sub_history if it doesn't exist
                                             if "sub_history" not in slot:
                                                 slot["sub_history"] = []
                                                 
-                                            # Move outgoing player to history
                                             slot["sub_history"].insert(0, slot["player"].copy())
                                             
-                                            # Put incoming player in the main slot
                                             slot["player"] = incoming_sub["player"]
                                             slot["player"]["isSubbedIn"] = True
                                             slot["player"]["subMinute"] = ev["time"]
-                                            
-                                            # VERY IMPORTANT: Inherit the position of the player they replaced!
                                             slot["player"]["pos"] = slot["sub_history"][0].get("pos", "M")
                                             
-                                            # Remove from bench so we don't process them again next minute
                                             lineup["substitutes"] = [s for s in lineup["substitutes"] if str(s["player"]["id"]) != player_in_id]
                                             break
 
-                    # Attach Live Stats to Active Players AND Subbed-Out Players
+                    # Attach Live Stats to Active Players, Subbed-Out Players, AND Bench
                     for side in ["homeLineup", "awayLineup"]:
                         lineup = game[side]
                         if not lineup: continue
@@ -749,6 +759,11 @@ def process_date(target_date, force_master_sync=False):
                                 h_id = str(sub_hist["id"])
                                 if h_id in live_player_map:
                                     sub_hist["live_stats"] = live_player_map[h_id]
+                                    
+                        for sub in lineup.get("substitutes", []):
+                            p_id = str(sub["player"]["id"])
+                            if p_id in live_player_map:
+                                sub["player"]["live_stats"] = live_player_map[p_id]
 
                 updated = True
                 
