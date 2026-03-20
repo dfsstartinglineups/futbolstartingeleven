@@ -41490,7 +41490,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 60,
+                "elapsed": 61,
                 "extra": null
             }
         },
@@ -43126,7 +43126,7 @@
                         "id": 303136,
                         "name": "Jan Lucum\u00ed",
                         "number": 17,
-                        "pos": "M",
+                        "pos": "D",
                         "grid": "3:4",
                         "photo": "https://media.api-sports.io/football/players/303136.png",
                         "age": 21,
@@ -43202,8 +43202,42 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 1,
                             "rating": "6.3"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "59"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 81631,
+                            "name": "Cristian Tovar",
+                            "number": 24,
+                            "pos": "D",
+                            "grid": null,
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -43769,38 +43803,6 @@
                 },
                 {
                     "player": {
-                        "id": 81631,
-                        "name": "Cristian Tovar",
-                        "number": 24,
-                        "pos": "D",
-                        "grid": null,
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 59849,
                         "name": "Marcos Mina",
                         "number": 14,
@@ -44281,6 +44283,17 @@
                 "type": "Card",
                 "detail": "Red Card",
                 "assist": null
+            },
+            {
+                "time": "59",
+                "team_id": 1138,
+                "player": "J. Lucumi",
+                "player_id": 303136,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "C. Tovar",
+                "player_out": "C. Tovar",
+                "player_out_id": 81631
             }
         ],
         "match_ended_at": null,
@@ -44305,7 +44318,7 @@
                 "corners": 1,
                 "fouls": 4,
                 "yellow_cards": 0,
-                "red_cards": 0
+                "red_cards": 1
             }
         }
     },
