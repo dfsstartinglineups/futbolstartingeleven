@@ -1320,10 +1320,10 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
     if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
 
     const groups = {
-        'F': { title: 'FWD', stats: ['G', 'A', 'SOT', 'SH'], keys: ['goals', 'assists', 'shots_on_target', 'total_shots'] },
-        'M': { title: 'MID', stats: ['A', 'KP', 'PA', 'TK'], keys: ['assists', 'key_passes', 'passes', 'tackles'] },
-        'D': { title: 'DEF', stats: ['TK', 'IN', 'CL', 'YC'], keys: ['tackles', 'interceptions', 'clearances', 'yellow_cards'] },
-        'G': { title: 'GK',  stats: ['SV', 'GC', 'PA', 'YC'], keys: ['saves', 'conceded', 'passes', 'yellow_cards'] }
+        'F': { title: 'FWD', stats: ['G', 'A', 'SOT', 'SH', 'KP', 'OF'], keys: ['goals', 'assists', 'shots_on_target', 'total_shots', 'key_passes', 'offsides'] },
+        'M': { title: 'MID', stats: ['G', 'A', 'KP', 'PA%', 'TK', 'IN'], keys: ['goals', 'assists', 'key_passes', 'pass_acc', 'tackles', 'interceptions'] },
+        'D': { title: 'DEF', stats: ['G', 'A', 'TK', 'IN', 'BLK', 'YC'], keys: ['goals', 'assists', 'tackles', 'interceptions', 'blocks', 'yellow_cards'] },
+        'G': { title: 'GK',  stats: ['SV', 'GC', 'PA%', 'YC'], keys: ['saves', 'conceded', 'pass_acc', 'yellow_cards'] }
     };
 
     const groupedPlayers = { 'F': [], 'M': [], 'D': [], 'G': [] };
@@ -1354,7 +1354,7 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
     let html = '';
     let tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
 
-    // NEW: Prevent white/super light colors from disappearing against the light grey background
+    // Prevent white/super light colors from disappearing against the light grey background
     if (getContrastColor(tColor) === '#000000') {
         tColor = '#495057';
     }
@@ -1364,41 +1364,52 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
         if (players.length === 0) return;
 
         const gConf = groups[posKey];
+        const isScrollable = posKey !== 'G'; // Goalkeepers only have 4 columns, no scroll needed
 
         html += `
-            <div class="d-flex w-100 px-2 py-1 align-items-center" style="background-color: #f1f3f5; font-size: 0.6rem; font-weight: 800; color: #495057; border-bottom: 1px solid #dee2e6;">
-                <div style="flex: 1; text-align: left; color: ${tColor};">${gConf.title}</div>
-                <div style="width: 22px; text-align: center;">${gConf.stats[0]}</div>
-                <div style="width: 22px; text-align: center;">${gConf.stats[1]}</div>
-                <div style="width: 22px; text-align: center;">${gConf.stats[2]}</div>
-                <div style="width: 22px; text-align: center;">${gConf.stats[3]}</div>
+            <div class="d-flex w-100 position-relative" style="background-color: #fff;">
+                
+                <div class="d-flex flex-column" style="width: 48%; position: sticky; left: 0; z-index: 2; box-shadow: 2px 0 4px -2px rgba(0,0,0,0.15); background-color: inherit;">
+                    
+                    <div class="px-2 d-flex align-items-center" style="background-color: #f1f3f5; font-size: 0.6rem; font-weight: 800; color: ${tColor}; border-bottom: 1px solid #dee2e6; height: 26px;">
+                        ${gConf.title}
+                    </div>
+                    
+                    ${players.map(p => {
+                        const name = shortenPlayerName(p.name || 'Unknown');
+                        let prefix = '';
+                        if (p.isSubbedIn || p._isSubbedIn) prefix = `<span class="text-success me-1" style="font-size:0.55rem;">🔄</span>`;
+                        if (p._isSubbedOut) prefix = `<span class="text-danger me-1" style="font-size:0.55rem;">🔻</span>`;
+                        const encodedPlayer = encodeURIComponent(JSON.stringify(p));
+                        
+                        return `
+                        <div class="px-2 d-flex align-items-center text-truncate fw-bold text-dark border-bottom user-select-none" 
+                             style="font-size: 0.70rem; height: 28px; cursor: pointer;" 
+                             onclick="openPlayerModal(this)" data-player="${encodedPlayer}">
+                            ${prefix}${name}
+                        </div>`;
+                    }).join('')}
+                </div>
+
+                <div class="d-flex flex-column stats-scroll-container" style="width: 52%; overflow-x: ${isScrollable ? 'auto' : 'hidden'}; white-space: nowrap; scrollbar-width: none; -ms-overflow-style: none;">
+                    
+                    <div class="px-2 d-flex align-items-center" style="background-color: #f1f3f5; font-size: 0.6rem; font-weight: 800; color: #495057; border-bottom: 1px solid #dee2e6; height: 26px; width: max-content; min-width: 100%;">
+                        ${gConf.stats.map(s => `<div style="width: 26px; text-align: center; flex-shrink: 0;">${s}</div>`).join('')}
+                    </div>
+                    
+                    ${players.map(p => {
+                        const lStats = p.live_stats || {};
+                        return `
+                        <div class="px-2 d-flex align-items-center text-muted fw-semibold border-bottom" style="font-size: 0.70rem; height: 28px; width: max-content; min-width: 100%; background-color: inherit;">
+                            ${gConf.keys.map(k => `<div style="width: 26px; text-align: center; flex-shrink: 0;">${lStats[k] || 0}</div>`).join('')}
+                        </div>`;
+                    }).join('')}
+                </div>
+                
+                ${isScrollable ? `<div class="desktop-scroll-hint d-none d-md-flex border-bottom" style="position: absolute; right: 0; top: 0; bottom: 0; width: 16px; background: linear-gradient(to right, transparent, rgba(0,0,0,0.06)); z-index: 3; align-items: center; justify-content: center; pointer-events: none;"><span style="font-size: 0.5rem; color: #adb5bd; margin-right: -4px;">▶</span></div>` : ''}
+
             </div>
         `;
-
-        players.forEach(p => {
-            const lStats = p.live_stats || {};
-            const name = shortenPlayerName(p.name || 'Unknown');
-            const encodedPlayer = encodeURIComponent(JSON.stringify(p));
-            
-            const v1 = lStats[gConf.keys[0]] || 0;
-            const v2 = lStats[gConf.keys[1]] || 0;
-            const v3 = lStats[gConf.keys[2]] || 0;
-            const v4 = lStats[gConf.keys[3]] || 0;
-
-            let prefix = '';
-            if (p.isSubbedIn || p._isSubbedIn) prefix = `<span class="text-success me-1" style="font-size:0.55rem;" title="Subbed In">🔄</span>`;
-            if (p._isSubbedOut) prefix = `<span class="text-danger me-1" style="font-size:0.55rem;" title="Subbed Out">🔻</span>`;
-
-            html += `
-                <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom user-select-none player-stat-row" style="font-size: 0.70rem; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" onclick="openPlayerModal(this)" data-player="${encodedPlayer}">
-                    <div class="text-truncate text-start fw-bold text-dark" style="flex: 1;">${prefix}${name}</div>
-                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v1}</div>
-                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v2}</div>
-                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v3}</div>
-                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v4}</div>
-                </div>
-            `;
-        });
     });
 
     return html;
