@@ -169,6 +169,12 @@ def fetch_odds(fixture_id):
 def fetch_events(fixture_id):
     return fetch_data(f"fixtures/events?fixture={fixture_id}")
 
+def fetch_fixture_statistics(fixture_id):
+    return fetch_data(f"fixtures/statistics?fixture={fixture_id}")
+
+def fetch_fixture_players(fixture_id):
+    return fetch_data(f"fixtures/players?fixture={fixture_id}")
+
 def fetch_all_players(team_id, season):
     all_players = []
     page = 1
@@ -543,14 +549,7 @@ def process_date(target_date, force_master_sync=False):
                             MASTER_TEAM_DICT[t_key] = {"rank": "", "record": ""}
                             with open(TEAM_DICT_PATH, "w") as f: json.dump(MASTER_TEAM_DICT, f, indent=4)
 
-                # 3. APPLY TO CURRENT TEAM
-                t_data = MASTER_TEAM_DICT.get(t_key, {})
-                if t_data.get('rank') is not None and "none" not in str(t_data.get('record', '')).lower():
-                    if team.get('rank') != t_data.get('rank') or team.get('record') != t_data.get('record'):
-                        team['rank'] = t_data.get('rank')
-                        team['record'] = t_data.get('record')
-                        updated = True
-            # ---------------------------------------------------------
+                
                         
                         
 
@@ -612,23 +611,17 @@ def process_date(target_date, force_master_sync=False):
             
             if is_active_half or just_hit_ht or just_ended:
                 game['fixture']['status'], game['goals'] = latest_data['fixture']['status'], latest_data['goals']
-                events_data = fetch_events(fixture_id)
                 
+                # 1A. LIVE EVENTS
+                events_data = fetch_events(fixture_id)
+                parsed_events = []
                 if events_data and events_data.get("response"):
-                    parsed_events = []
                     for ev in events_data["response"]:
                         if ev["type"] in ["Goal", "Card", "subst"]:
+                            if ev["type"] == "Goal" and ev["detail"] == "Missed Penalty": continue
                             
-                            # --- 🛑 HOTFIX: IGNORE MISSED PENALTIES ---
-                            # API-Sports weirdly classifies missed penalties as "Goals". Reject them!
-                            if ev["type"] == "Goal" and ev["detail"] == "Missed Penalty":
-                                continue
-                                
-                            # Grab both parts of the time
                             elapsed_time = ev["time"]["elapsed"]
                             extra_time = ev["time"].get("extra")
-                            
-                            # Combine them if extra exists (e.g., "90+4"), otherwise just use elapsed
                             display_time = f"{elapsed_time}+{extra_time}" if extra_time else str(elapsed_time)
 
                             event_obj = {
@@ -640,15 +633,123 @@ def process_date(target_date, force_master_sync=False):
                                 "detail": ev["detail"],
                                 "assist": ev["assist"]["name"] if ev.get("assist") else None
                             }
-                            
-                            # If it's a substitution, grab the player coming OUT
                             if ev["type"] == "subst":
                                 event_obj["player_out"] = ev["assist"]["name"] if ev.get("assist") else None
                                 event_obj["player_out_id"] = ev["assist"]["id"] if ev.get("assist") else None
                                 
                             parsed_events.append(event_obj)
-                            
                     game["events"] = parsed_events
+
+                # 1B. TEAM STATS (The Center Column Progress Bars)
+                stats_data = fetch_fixture_statistics(fixture_id)
+                if stats_data and stats_data.get("response"):
+                    team_stats = {"home": {}, "away": {}}
+                    for t_stat in stats_data["response"]:
+                        t_id = t_stat["team"]["id"]
+                        side = "home" if t_id == game["teams"]["home"]["id"] else "away"
+                        
+                        parsed_t_stats = {
+                            "possession": 50, "total_shots": 0, "shots_on_target": 0,
+                            "corners": 0, "fouls": 0, "yellow_cards": 0, "red_cards": 0
+                        }
+                        
+                        for s in t_stat["statistics"]:
+                            val = s["value"]
+                            if val is None: continue
+                            
+                            stype = s["type"]
+                            if stype == "Ball Possession": parsed_t_stats["possession"] = int(str(val).replace('%', ''))
+                            elif stype == "Total Shots": parsed_t_stats["total_shots"] = int(val)
+                            elif stype == "Shots on Goal": parsed_t_stats["shots_on_target"] = int(val)
+                            elif stype == "Corner Kicks": parsed_t_stats["corners"] = int(val)
+                            elif stype == "Fouls": parsed_t_stats["fouls"] = int(val)
+                            elif stype == "Yellow Cards": parsed_t_stats["yellow_cards"] = int(val)
+                            elif stype == "Red Cards": parsed_t_stats["red_cards"] = int(val)
+                                
+                        team_stats[side] = parsed_t_stats
+                    game["team_stats"] = team_stats
+
+                # 1C. LIVE PLAYER STATS & SERVER-SIDE SUBSTITUTIONS
+                if game.get("homeLineup") and game.get("awayLineup"):
+                    live_players_data = fetch_fixture_players(fixture_id)
+                    live_player_map = {}
+                    
+                    if live_players_data and live_players_data.get("response"):
+                        for tp in live_players_data["response"]:
+                            for p in tp["players"]:
+                                p_id = str(p["player"]["id"])
+                                p_stats = p["statistics"][0] if len(p["statistics"]) > 0 else {}
+                                
+                                live_player_map[p_id] = {
+                                    "goals": p_stats.get("goals", {}).get("total") or 0,
+                                    "assists": p_stats.get("goals", {}).get("assists") or 0,
+                                    "shots_on_target": p_stats.get("shots", {}).get("on") or 0,
+                                    "total_shots": p_stats.get("shots", {}).get("total") or 0,
+                                    "key_passes": p_stats.get("passes", {}).get("key") or 0,
+                                    "passes": p_stats.get("passes", {}).get("total") or 0,
+                                    "pass_acc": p_stats.get("passes", {}).get("accuracy") or 0,
+                                    "tackles": p_stats.get("tackles", {}).get("total") or 0,
+                                    "interceptions": p_stats.get("tackles", {}).get("interceptions") or 0,
+                                    "clearances": p_stats.get("tackles", {}).get("blocks") or 0,
+                                    "yellow_cards": p_stats.get("cards", {}).get("yellow") or 0,
+                                    "red_cards": p_stats.get("cards", {}).get("red") or 0,
+                                    "saves": p_stats.get("goals", {}).get("saves") or 0,
+                                    "conceded": p_stats.get("goals", {}).get("conceded") or 0,
+                                    "rating": p_stats.get("games", {}).get("rating") or "N/A"
+                                }
+
+                    # Process Substitutions Idempotently (Only move them once)
+                    for ev in parsed_events:
+                        if ev["type"] == "subst":
+                            player_in_id = str(ev["player_id"])
+                            player_out_id = str(ev["player_out_id"])
+                            
+                            for side in ["homeLineup", "awayLineup"]:
+                                lineup = game[side]
+                                if not lineup: continue
+                                
+                                # Find if the incoming player is still on the bench
+                                incoming_sub = next((s for s in lineup.get("substitutes", []) if str(s["player"]["id"]) == player_in_id), None)
+                                
+                                if incoming_sub:
+                                    # Find the outgoing player in startXI
+                                    for slot in lineup.get("startXI", []):
+                                        if str(slot["player"]["id"]) == player_out_id:
+                                            
+                                            # Create sub_history if it doesn't exist
+                                            if "sub_history" not in slot:
+                                                slot["sub_history"] = []
+                                                
+                                            # Move outgoing player to history
+                                            slot["sub_history"].insert(0, slot["player"].copy())
+                                            
+                                            # Put incoming player in the main slot
+                                            slot["player"] = incoming_sub["player"]
+                                            slot["player"]["isSubbedIn"] = True
+                                            slot["player"]["subMinute"] = ev["time"]
+                                            
+                                            # VERY IMPORTANT: Inherit the position of the player they replaced!
+                                            slot["player"]["pos"] = slot["sub_history"][0].get("pos", "M")
+                                            
+                                            # Remove from bench so we don't process them again next minute
+                                            lineup["substitutes"] = [s for s in lineup["substitutes"] if str(s["player"]["id"]) != player_in_id]
+                                            break
+
+                    # Attach Live Stats to Active Players AND Subbed-Out Players
+                    for side in ["homeLineup", "awayLineup"]:
+                        lineup = game[side]
+                        if not lineup: continue
+                        
+                        for slot in lineup.get("startXI", []):
+                            p_id = str(slot["player"]["id"])
+                            if p_id in live_player_map:
+                                slot["player"]["live_stats"] = live_player_map[p_id]
+                                
+                            for sub_hist in slot.get("sub_history", []):
+                                h_id = str(sub_hist["id"])
+                                if h_id in live_player_map:
+                                    sub_hist["live_stats"] = live_player_map[h_id]
+
                 updated = True
                 
             elif latest_status == 'HT':
