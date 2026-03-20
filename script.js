@@ -1302,7 +1302,6 @@ function renderGames() {
 function buildLiveStatsGrid(lineupData, teamColorHex) {
     if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
 
-    // Map positional data for the grid headers
     const groups = {
         'F': { title: 'FWD', stats: ['G', 'A', 'SOT', 'SH'], keys: ['goals', 'assists', 'shots_on_target', 'total_shots'] },
         'M': { title: 'MID', stats: ['A', 'KP', 'PA', 'TK'], keys: ['assists', 'key_passes', 'passes', 'tackles'] },
@@ -1310,24 +1309,40 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
         'G': { title: 'GK',  stats: ['SV', 'GC', 'PA', 'YC'], keys: ['saves', 'conceded', 'passes', 'yellow_cards'] }
     };
 
-    // Sort players into their positional groups
     const groupedPlayers = { 'F': [], 'M': [], 'D': [], 'G': [] };
+    let flatPlayers = [];
+
+    // 1. Gather all active players and subbed out players
     lineupData.startXI.forEach(slot => {
-        const pos = slot.player.pos || 'M';
-        if (groupedPlayers[pos]) groupedPlayers[pos].push(slot);
+        flatPlayers.push({ ...slot.player, _isSubbedOut: false });
+        if (slot.sub_history) {
+            slot.sub_history.forEach(h => flatPlayers.push({ ...h, _isSubbedOut: true }));
+        }
     });
+
+    // 2. Fallback: Grab any bench players that recorded stats just in case API missed the sub event
+    if (lineupData.substitutes) {
+        lineupData.substitutes.forEach(sub => {
+            if (sub.player.live_stats && Object.values(sub.player.live_stats).some(v => v !== 0 && v !== "N/A" && v !== "0")) {
+                if (!flatPlayers.find(p => p.id === sub.player.id)) {
+                    flatPlayers.push({ ...sub.player, _isSubbedIn: true, _isSubbedOut: false });
+                }
+            }
+        });
+    }
+
+    // 3. Sort them into their position groups
+    flatPlayers.forEach(p => groupedPlayers[p.pos || 'M'].push(p));
 
     let html = '';
     const tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
 
-    // Build the tables
     ['F', 'M', 'D', 'G'].forEach(posKey => {
         const players = groupedPlayers[posKey];
         if (players.length === 0) return;
 
         const gConf = groups[posKey];
 
-        // Group Header Row
         html += `
             <div class="d-flex w-100 px-2 py-1 align-items-center" style="background-color: #f1f3f5; font-size: 0.6rem; font-weight: 800; color: #495057; border-bottom: 1px solid #dee2e6;">
                 <div style="flex: 1; text-align: left; color: ${tColor};">${gConf.title}</div>
@@ -1338,62 +1353,34 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
             </div>
         `;
 
-        // Players Row
-        players.forEach(slot => {
-            const renderPlayerRow = (p, isSubbedOut) => {
-                const lStats = p.live_stats || {};
-                const name = shortenPlayerName(p.name || 'Unknown');
-                const encodedPlayer = encodeURIComponent(JSON.stringify(p));
-                
-                const v1 = lStats[gConf.keys[0]] || 0;
-                const v2 = lStats[gConf.keys[1]] || 0;
-                const v3 = lStats[gConf.keys[2]] || 0;
-                const v4 = lStats[gConf.keys[3]] || 0;
+        players.forEach(p => {
+            const lStats = p.live_stats || {};
+            const name = shortenPlayerName(p.name || 'Unknown');
+            const encodedPlayer = encodeURIComponent(JSON.stringify(p));
+            
+            const v1 = lStats[gConf.keys[0]] || 0;
+            const v2 = lStats[gConf.keys[1]] || 0;
+            const v3 = lStats[gConf.keys[2]] || 0;
+            const v4 = lStats[gConf.keys[3]] || 0;
 
-                let prefix = '';
-                if (p.isSubbedIn) prefix = `<span class="text-success me-1" style="font-size:0.55rem;" title="Subbed in at ${p.subMinute}'">🔄</span>`;
-                if (isSubbedOut) prefix = `<span class="text-danger me-1 ms-2" style="font-size:0.55rem;" title="Subbed out at ${p.subMinute}'">🔻</span>`;
+            let prefix = '';
+            if (p.isSubbedIn || p._isSubbedIn) prefix = `<span class="text-success me-1" style="font-size:0.55rem;" title="Subbed In">🔄</span>`;
+            if (p._isSubbedOut) prefix = `<span class="text-danger me-1" style="font-size:0.55rem;" title="Subbed Out">🔻</span>`;
 
-                const rowStyle = isSubbedOut ? `font-style: italic; opacity: 0.75; background-color: #fcfcfc;` : `cursor: pointer; transition: background-color 0.2s;`;
-                const hoverAttr = isSubbedOut ? `` : `onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'"`;
-
-                let subToggleHtml = '';
-                let toggleAttr = `onclick="openPlayerModal(this)" data-player="${encodedPlayer}"`;
-
-                // If they have sub history, clicking the row triggers the accordion dropdown!
-                if (!isSubbedOut && slot.sub_history && slot.sub_history.length > 0) {
-                     subToggleHtml = `<span class="ms-1 text-muted" style="font-size: 0.55rem;">▼</span>`;
-                     toggleAttr = `data-bs-toggle="collapse" data-bs-target="#sub-hist-${p.id}" onclick="event.stopPropagation();"`;
-                }
-
-                return `
-                    <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom user-select-none player-stat-row" style="font-size: 0.70rem; ${rowStyle}" ${hoverAttr} ${toggleAttr}>
-                        <div class="text-truncate text-start fw-bold text-dark" style="flex: 1;">${prefix}${name}${subToggleHtml}</div>
-                        <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v1}</div>
-                        <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v2}</div>
-                        <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v3}</div>
-                        <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v4}</div>
-                    </div>
-                `;
-            };
-
-            // 1. Render the active player in the slot
-            html += renderPlayerRow(slot.player, false);
-
-            // 2. Render the "Accordion" history if someone was subbed out of this slot
-            if (slot.sub_history && slot.sub_history.length > 0) {
-                html += `<div class="collapse" id="sub-hist-${slot.player.id}">`;
-                slot.sub_history.forEach(hPlayer => {
-                    html += renderPlayerRow(hPlayer, true);
-                });
-                html += `</div>`;
-            }
+            html += `
+                <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom user-select-none player-stat-row" style="font-size: 0.70rem; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" onclick="openPlayerModal(this)" data-player="${encodedPlayer}">
+                    <div class="text-truncate text-start fw-bold text-dark" style="flex: 1;">${prefix}${name}</div>
+                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v1}</div>
+                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v2}</div>
+                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v3}</div>
+                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v4}</div>
+                </div>
+            `;
         });
     });
 
     return html;
 }
-
 
 function buildLineupList(lineupData, gameData) {
     if (gameData.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
@@ -1402,31 +1389,57 @@ function buildLineupList(lineupData, gameData) {
     const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation}</div>`;
     
     const listItems = lineupData.startXI.map(slot => {
-        const p = slot.player;
-        const safePos = p.pos || '-';
-        const originalName = p.name || 'Unknown';
-        const displaySafeName = shortenPlayerName(originalName);
-        const safeNum = p.number || '';
-        const photoUrl = p.photo || '';
-        
-        const encodedPlayer = encodeURIComponent(JSON.stringify(p));
-        let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
-        
-        const photoHtml = photoUrl && photoUrl.includes("http") 
-            ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
-            : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
+        const renderRow = (p, isSubbedOut) => {
+            const safePos = p.pos || '-';
+            const originalName = p.name || 'Unknown';
+            const displaySafeName = shortenPlayerName(originalName);
+            const safeNum = p.number || '';
+            const photoUrl = p.photo || '';
+            
+            const encodedPlayer = encodeURIComponent(JSON.stringify(p));
+            let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
+            
+            const photoHtml = photoUrl && photoUrl.includes("http") 
+                ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
+                : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
-        const subIndicator = p.isSubbedIn ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.subMinute}'</span>` : '';
+            let prefix = '';
+            if (p.isSubbedIn) prefix = `<span class="text-success me-1" style="font-size:0.55rem;" title="Subbed in at ${p.subMinute}'">🔄</span>`;
+            if (isSubbedOut) prefix = `<span class="text-danger me-1" style="font-size:0.55rem;" title="Subbed out at ${p.subMinute}'">🔻</span>`;
 
-        return `
-            <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" data-player="${encodedPlayer}" onclick="openPlayerModal(this)">
-                <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
-                <div class="me-2">${photoHtml}</div>
-                <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">
-                    ${displaySafeName}${subIndicator}
-                </span>
-                <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
-            </li>`;
+            const rowStyle = isSubbedOut ? `font-style: italic; opacity: 0.75; background-color: #fcfcfc; border-bottom: 1px dashed #dee2e6;` : `cursor: pointer; transition: background-color 0.2s; border-bottom: 1px solid #f1f3f5;`;
+            const hoverAttr = isSubbedOut ? `` : `onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'"`;
+
+            let subToggleHtml = '';
+            let toggleAttr = `onclick="openPlayerModal(this)"`;
+
+            if (!isSubbedOut && slot.sub_history && slot.sub_history.length > 0) {
+                 subToggleHtml = `<span class="ms-1 text-muted" style="font-size: 0.55rem;">▼</span>`;
+                 toggleAttr = `onclick="openPlayerModal(this)" data-bs-toggle="collapse" data-bs-target="#lineup-hist-${p.id}"`;
+            }
+
+            return `
+                <li class="d-flex align-items-center w-100 px-2 py-1 user-select-none" style="${rowStyle}" ${hoverAttr} ${toggleAttr} data-player="${encodedPlayer}">
+                    <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
+                    <div class="me-2">${photoHtml}</div>
+                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">
+                        ${prefix}${displaySafeName}${subToggleHtml}
+                    </span>
+                    <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
+                </li>`;
+        };
+
+        let html = renderRow(slot.player, false);
+        if (slot.sub_history && slot.sub_history.length > 0) {
+            html += `<div class="collapse bg-light" id="lineup-hist-${slot.player.id}">`;
+            html += `<ul class="m-0 p-0" style="list-style-type: none;">`;
+            slot.sub_history.forEach(hPlayer => {
+                html += renderRow(hPlayer, true);
+            });
+            html += `</ul></div>`;
+        }
+        return html;
+
     }).join('');
     return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
 }
