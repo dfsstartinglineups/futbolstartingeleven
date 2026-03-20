@@ -1078,6 +1078,7 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
     const groupedPlayers = { 'F': [], 'M': [], 'D': [], 'G': [] };
     let flatPlayers = [];
 
+    // 1. Gather all active players and subbed out players
     lineupData.startXI.forEach(slot => {
         flatPlayers.push({ ...slot.player, _isSubbedOut: false });
         if (slot.sub_history) {
@@ -1085,6 +1086,7 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
         }
     });
 
+    // 2. Fallback: Grab any bench players that recorded stats just in case API missed the sub event
     if (lineupData.substitutes) {
         lineupData.substitutes.forEach(sub => {
             if (sub.player.live_stats && Object.values(sub.player.live_stats).some(v => v !== 0 && v !== "N/A" && v !== "0")) {
@@ -1095,11 +1097,13 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
         });
     }
 
+    // 3. Sort them into their position groups
     flatPlayers.forEach(p => groupedPlayers[p.pos || 'M'].push(p));
 
     let html = '';
     let tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
 
+    // Prevent white/super light colors from disappearing against the light grey background
     if (getContrastColor(tColor) === '#000000') {
         tColor = '#495057';
     }
