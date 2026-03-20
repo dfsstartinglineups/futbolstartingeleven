@@ -1130,12 +1130,12 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
                         if (p._isSubbedOut) prefix = `<span class="text-danger me-1" style="font-size:0.55rem;">🔻</span>`;
                         const encodedPlayer = encodeURIComponent(JSON.stringify(p));
                         
-                        return \`
+                        return `
                         <div class="px-2 d-flex align-items-center text-truncate fw-bold text-dark border-bottom user-select-none" 
                              style="font-size: 0.70rem; height: 28px; cursor: pointer;" 
-                             onclick="openPlayerModal(this)" data-player="\${encodedPlayer}">
-                            \${prefix}\${name}
-                        </div>\`;
+                             onclick="openPlayerModal(this)" data-player="${encodedPlayer}">
+                            ${prefix}${name}
+                        </div>`;
                     }).join('')}
                 </div>
 
@@ -1149,10 +1149,10 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
                     
                     ${players.map(p => {
                         const lStats = p.live_stats || {};
-                        return \`
+                        return `
                         <div class="px-2 d-flex align-items-center text-muted fw-semibold border-bottom" style="font-size: 0.70rem; height: 28px; width: max-content; min-width: 100%; background-color: inherit;">
-                            \${gConf.keys.map(k => \`<div style="width: 26px; text-align: center; flex-shrink: 0;">\${lStats[k] || 0}</div>\`).join('')}
-                        </div>\`;
+                            ${gConf.keys.map(k => `<div style="width: 26px; text-align: center; flex-shrink: 0;">${lStats[k] || 0}</div>`).join('')}
+                        </div>`;
                     }).join('')}
                 </div>
                 
