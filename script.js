@@ -1433,6 +1433,7 @@ function createGameCard(data) {
 
     const statusShort = data.fixture.status.short;
     const isPreGame = ['NS', 'TBD'].includes(statusShort);
+    const isFinished = ['FT', 'AET', 'PEN'].includes(statusShort);
     const params = getUrlParams();
     const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
 
