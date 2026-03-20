@@ -211,6 +211,19 @@ function shortenPlayerName(fullName) {
     return `${initial} ${lastName}`;
 }
 
+// Calculates if text should be black or white based on background hex color
+function getContrastColor(hexColor) {
+    if (!hexColor) return '#ffffff';
+    // Strip the # if it exists
+    hexColor = hexColor.replace('#', '');
+    const r = parseInt(hexColor.substr(0, 2), 16);
+    const g = parseInt(hexColor.substr(2, 2), 16);
+    const b = parseInt(hexColor.substr(4, 2), 16);
+    // YIQ equation from W3C
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 128) ? '#000000' : '#ffffff';
+}
+
 function getLeagueKey(leagueId) {
     for (const [key, leagueObj] of Object.entries(SUPPORTED_LEAGUES)) {
         if (leagueObj.id === leagueId) return key;
@@ -543,16 +556,84 @@ function getRibbonHtml(data) {
     </div>`;
 }
 
-function getScoreHtml(data) {
+
+
+function getCenterColumnHtml(data) {
     const status = data.fixture.status.short;
-    const isFinished = ['FT', 'AET', 'PEN'].includes(status);
     const isPreGame = ['NS', 'TBD'].includes(status);
     const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
     const showScore = !isPreGame && !isDelayed && !data.isFallback;
 
-    return showScore 
-        ? `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${data.goals.home} - ${data.goals.away}</div>` 
-        : `<div class="text-muted mx-2" style="font-size: 0.8rem;">vs</div>`;
+    // If it's pre-game, or we don't have the new team_stats object yet, just show the standard big score
+    if (!showScore || !data.team_stats) {
+        const scoreText = showScore ? `${data.goals.home} - ${data.goals.away}` : `vs`;
+        return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${scoreText}</div>`;
+    }
+
+    // --- WE HAVE LIVE DATA: BUILD THE BARS ---
+    const tStats = data.team_stats;
+    const hColor = data.homeLineup?.team?.colors?.player?.primary ? `#${data.homeLineup.team.colors.player.primary}` : '#0d6efd';
+    const aColor = data.awayLineup?.team?.colors?.player?.primary ? `#${data.awayLineup.team.colors.player.primary}` : '#dc3545';
+    
+    const hText = getContrastColor(hColor);
+    const aText = getContrastColor(aColor);
+    const textShadowH = hText === '#ffffff' ? 'text-shadow: 0px 1px 2px rgba(0,0,0,0.6);' : '';
+    const textShadowA = aText === '#ffffff' ? 'text-shadow: 0px 1px 2px rgba(0,0,0,0.6);' : '';
+
+    const buildBar = (label, hVal, aVal, isPercentage = false) => {
+        const total = hVal + aVal;
+        // If both are 0, make it a 50/50 split of neutral grey
+        let hPct = 50;
+        let aPct = 50;
+        let activeHColor = hColor;
+        let activeAColor = aColor;
+
+        if (total > 0) {
+            hPct = (hVal / total) * 100;
+            aPct = (aVal / total) * 100;
+        } else {
+            activeHColor = '#adb5bd';
+            activeAColor = '#adb5bd';
+        }
+
+        const displayH = isPercentage ? `${hVal}%` : hVal;
+        const displayA = isPercentage ? `${aVal}%` : aVal;
+
+        return `
+            <div class="text-center w-100 px-1">
+                <div class="stat-label-tiny">${label}</div>
+                <div class="stat-bar-container">
+                    <div class="stat-bar-segment stat-bar-home" style="width: ${hPct}%; background-color: ${activeHColor}; color: ${hText}; ${textShadowH}">
+                        ${displayH}
+                    </div>
+                    <div class="stat-bar-segment stat-bar-away" style="width: ${aPct}%; background-color: ${activeAColor}; color: ${aText}; ${textShadowA}">
+                        ${displayA}
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
+    const shotsHome = `${tStats.home.shots_on_target}/${tStats.home.total_shots}`;
+    const shotsAway = `${tStats.away.shots_on_target}/${tStats.away.total_shots}`;
+    const cardsHome = `🟨 ${tStats.home.yellow_cards} 🟥 ${tStats.home.red_cards}`;
+    const cardsAway = `🟨 ${tStats.away.yellow_cards} 🟥 ${tStats.away.red_cards}`;
+
+    // Return the compressed score + the 4 stat bars
+    return `
+        <div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals.home} - ${data.goals.away}</div>
+        ${buildBar("Possession", tStats.home.possession, tStats.away.possession, true)}
+        ${buildBar("Shots (On/Tot)", tStats.home.shots_on_target, tStats.away.shots_on_target, false)}
+        ${buildBar("Corners", tStats.home.corners, tStats.away.corners, false)}
+        
+        <div class="text-center w-100 px-1 mt-1">
+            <div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div>
+            <div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;">
+                <span>${cardsHome}</span>
+                <span>${cardsAway}</span>
+            </div>
+        </div>
+    `;
 }
 
 function getEventsHtml(data) {
@@ -943,18 +1024,16 @@ async function updateLiveGames() {
         if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
             // FULL VIEW UPDATES
             const newTimeHtml = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
-            const newScoreHtml = getScoreHtml(match).trim();
+            const newCenterHtml = getCenterColumnHtml(match).trim(); // <-- THIS IS NEW!
             const newEventsHtml = getEventsHtml(match).trim();
             const newOddsHtml = getOddsHtml(match).trim();
             const newInjuriesHtml = getInjuriesHtml(match).trim();
             
             if (timeEl.innerHTML.trim() !== newTimeHtml) timeEl.innerHTML = newTimeHtml;
             
-            if (scoreEl.innerHTML.trim() !== newScoreHtml) {
-                scoreEl.innerHTML = newScoreHtml;
-                scoreEl.classList.remove('flash-green');
-                void scoreEl.offsetWidth; 
-                scoreEl.classList.add('flash-green');
+            if (scoreEl.innerHTML.trim() !== newCenterHtml) {
+                scoreEl.innerHTML = newCenterHtml;
+                // We drop the flash-green animation here so the whole center block doesn't flash every 30 seconds!
             }
             
             const eventsWasExpanded = eventsEl.querySelector('.is-expanded') !== null;
@@ -1327,18 +1406,20 @@ function createGameCard(data) {
                     ${data.league.name}
                 </a>
             </div>
-            <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1">
-                <div class="text-center" style="width: 41%;"> 
-                    <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1">
-                    <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;" title="${home.name}">${homeRank}${home.name}</div>
+            <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1 w-100">
+                <div class="text-center transition-width" style="width: ${data.team_stats ? '25%' : '41%'}; flex-shrink: 0;"> 
+                    <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1" style="width: ${data.team_stats ? '35px' : '55px'}; height: ${data.team_stats ? '35px' : '55px'}; transition: all 0.3s ease;">
+                    <div class="fw-bold text-dark text-truncate w-100" style="font-size: ${data.team_stats ? '0.75rem' : '0.9rem'}; transition: font-size 0.3s ease;" title="${home.name}">${homeRank}${home.name}</div>
                     ${homeRecord}
                 </div>
-                <div id="score-${fixId}" class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 18%;">
-                    ${getScoreHtml(data)}
+                
+                <div id="score-${fixId}" class="text-center d-flex flex-column align-items-center justify-content-center transition-width mx-2" style="width: ${data.team_stats ? '50%' : '18%'}; min-width: 0;">
+                    ${getCenterColumnHtml(data)}
                 </div>
-                <div class="text-center" style="width: 41%;"> 
-                    <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
-                    <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;" title="${away.name}">${awayRank}${away.name}</div>
+                
+                <div class="text-center transition-width" style="width: ${data.team_stats ? '25%' : '41%'}; flex-shrink: 0;"> 
+                    <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1" style="width: ${data.team_stats ? '35px' : '55px'}; height: ${data.team_stats ? '35px' : '55px'}; transition: all 0.3s ease;">
+                    <div class="fw-bold text-dark text-truncate w-100" style="font-size: ${data.team_stats ? '0.75rem' : '0.9rem'}; transition: font-size 0.3s ease;" title="${away.name}">${awayRank}${away.name}</div>
                     ${awayRecord}
                 </div>
             </div>
