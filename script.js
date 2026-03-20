@@ -993,6 +993,28 @@ window.toggleSingleCard = function(fixId) {
     }
 };
 
+window.switchLineupTab = function(fixId, tabName) {
+    const xiTab = document.getElementById(`tab-xi-${fixId}`);
+    const statsTab = document.getElementById(`tab-stats-${fixId}`);
+    const xiView = document.getElementById(`view-xi-${fixId}`);
+    const statsView = document.getElementById(`view-stats-${fixId}`);
+
+    if (!xiTab || !statsTab || !xiView || !statsView) return;
+
+    if (tabName === 'xi') {
+        xiTab.classList.add('active');
+        statsTab.classList.remove('active');
+        xiView.classList.remove('d-none');
+        statsView.classList.add('d-none');
+    } else {
+        statsTab.classList.add('active');
+        xiTab.classList.remove('active');
+        statsView.classList.remove('d-none');
+        xiView.classList.add('d-none');
+    }
+    checkOverflows();
+};
+
 // ==========================================
 // UPDATED SILENT SYNC ENGINE (Syncs Both Views)
 // ==========================================
@@ -1079,83 +1101,33 @@ async function updateLiveGames() {
             if (bannerEl.innerHTML.trim() !== newBannerHtml) bannerEl.innerHTML = newBannerHtml;
         }
         
+        // Constantly repaint Lineups & Live Stats arrays so the grids stay fresh
+        const viewXiEl = document.getElementById(`view-xi-${fixId}`);
+        if (viewXiEl) {
+            // Re-build LineupList (Python manages the substitutions for us now)
+            // (We are reusing the internal buildLineupList logic locally, or you can safely just call a global one.
+            // But since it's already structured, we can just replace innerHTML by triggering a full card rebuild if needed.
+            // Actually, because we moved buildLineupList inside createGameCard, the easiest and safest way to sync 
+            // is to completely rebuild the whole lineup-collapse block using our HTML builders.)
+            
+            // To keep it simple, we let the inner HTML refresh dynamically:
+            const hColor = match.homeLineup?.team?.colors?.player?.primary;
+            const aColor = match.awayLineup?.team?.colors?.player?.primary;
+            
+            // We trigger a silent UI swap inside the old DOM container
+            const oldFullView = document.getElementById(`full-${fixId}`);
+            if (oldFullView) {
+                // The new data has already updated time/score/events above. 
+                // We just need to trigger the card highlight if a new event happened!
+            }
+        }
+        
         if (oldMatch) {
             const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
             const newEvLen = match.events ? match.events.length : 0;
             
             if (newEvLen > oldEvLen) {
-                const latestEvent = match.events[newEvLen - 1];
-                if (latestEvent.type === 'subst') {
-                    const lineupContainer = document.getElementById(`lineup-collapse-${fixId}`);
-                    if (lineupContainer) {
-                        const rowEl = lineupContainer.querySelector('.row.g-0.bg-white');
-                        if (rowEl) {
-                            const getLineupHtml = (lineupData, gameData) => {
-                                if (gameData.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
-                                if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
-                                
-                                const statusShort = gameData.fixture.status.short;
-                                const isPreGame = ['NS', 'TBD'].includes(statusShort);
-                                const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation}</div>`;
-                                
-                                let currentXI = [...lineupData.startXI];
-                                if (!isPreGame && gameData.events && gameData.events.length > 0) {
-                                    const teamId = lineupData.team.id;
-                                    const subs = gameData.events.filter(e => e.type === 'subst' && e.team_id === teamId);
-                                    subs.forEach(subEvent => {
-                                        // Look for the starter leaving (player_id)
-                                        const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
-                                        if (outIndex !== -1) {
-                                        // Look for the sub entering (player_out_id)
-                                            const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
-                                            if (subPlayer) {
-                                                currentXI[outIndex] = { ...subPlayer, player: { ...subPlayer.player, pos: currentXI[outIndex].player.pos, isSubbedIn: true, subMinute: subEvent.time } };
-                                            }
-                                        }
-                                    });
-                                }
-                                
-                                const listItems = currentXI.map(p => {
-                                    const safePos = p.player.pos || '-';
-                                    const originalName = p.player.name || 'Unknown';
-                                    const displaySafeName = shortenPlayerName(originalName);
-                                    const safeNum = p.player.number || '';
-                                    const photoUrl = p.player.photo || '';
-                                    const encodedPlayer = encodeURIComponent(JSON.stringify(p.player));
-                                    let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
-                                    
-                                    const photoHtml = photoUrl && photoUrl.includes("http") 
-                                        ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
-                                        : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
-
-                                    const subIndicator = p.player.isSubbedIn ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.player.subMinute}'</span>` : '';
-
-                                    return `
-                                        <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" data-player="${encodedPlayer}" onclick="openPlayerModal(this)">
-                                            <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
-                                            <div class="me-2">${photoHtml}</div>
-                                            <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">${displaySafeName}${subIndicator}</span>
-                                            <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
-                                        </li>`;
-                                }).join('');
-                                return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
-                            };
-
-                            rowEl.innerHTML = `
-                                <div class="col-6 border-end">${getLineupHtml(match.homeLineup, match)}</div>
-                                <div class="col-6">${getLineupHtml(match.awayLineup, match)}</div>
-                            `;
-                        }
-                    }
-                }
-            }
-        }
-        if (oldMatch) {
-            const oldLen = oldMatch.events ? oldMatch.events.length : 0;
-            const newLen = match.events ? match.events.length : 0;
-            
-            if (newLen > oldLen) {
-                const latestEvent = match.events[newLen - 1]; 
+                const latestEvent = match.events[newEvLen - 1]; 
                 const cardEl = document.getElementById(`card-${fixId}`);
                 
                 if (cardEl && latestEvent) {
@@ -1174,6 +1146,12 @@ async function updateLiveGames() {
                         triggerCardHighlight(cardEl, 'subst');
                     }
                 }
+                // Because a new event happened (or stats updated), we force the entire card to re-render to pick up all the new sub_history and grid data
+                const container = document.getElementById('games-container');
+                renderGames(); // This safely repaints the whole board with the latest Python JSON
+            } else if (match.team_stats) {
+                // If it's a live game with team_stats, we quietly re-render the board to update the progress bars and player stats!
+                renderGames(); 
             }
         }
     });
@@ -1303,6 +1281,102 @@ function renderGames() {
     
     requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
 }
+
+function buildLiveStatsGrid(lineupData, teamColorHex) {
+    if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
+
+    // Map positional data for the grid headers
+    const groups = {
+        'F': { title: 'FWD', stats: ['G', 'A', 'SOT', 'SH'], keys: ['goals', 'assists', 'shots_on_target', 'total_shots'] },
+        'M': { title: 'MID', stats: ['A', 'KP', 'PA', 'TK'], keys: ['assists', 'key_passes', 'passes', 'tackles'] },
+        'D': { title: 'DEF', stats: ['TK', 'IN', 'CL', 'YC'], keys: ['tackles', 'interceptions', 'clearances', 'yellow_cards'] },
+        'G': { title: 'GK',  stats: ['SV', 'GC', 'PA', 'YC'], keys: ['saves', 'conceded', 'passes', 'yellow_cards'] }
+    };
+
+    // Sort players into their positional groups
+    const groupedPlayers = { 'F': [], 'M': [], 'D': [], 'G': [] };
+    lineupData.startXI.forEach(slot => {
+        const pos = slot.player.pos || 'M';
+        if (groupedPlayers[pos]) groupedPlayers[pos].push(slot);
+    });
+
+    let html = '';
+    const tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
+
+    // Build the tables
+    ['F', 'M', 'D', 'G'].forEach(posKey => {
+        const players = groupedPlayers[posKey];
+        if (players.length === 0) return;
+
+        const gConf = groups[posKey];
+
+        // Group Header Row
+        html += `
+            <div class="d-flex w-100 px-2 py-1 align-items-center" style="background-color: #f1f3f5; font-size: 0.6rem; font-weight: 800; color: #495057; border-bottom: 1px solid #dee2e6;">
+                <div style="flex: 1; text-align: left; color: ${tColor};">${gConf.title}</div>
+                <div style="width: 22px; text-align: center;">${gConf.stats[0]}</div>
+                <div style="width: 22px; text-align: center;">${gConf.stats[1]}</div>
+                <div style="width: 22px; text-align: center;">${gConf.stats[2]}</div>
+                <div style="width: 22px; text-align: center;">${gConf.stats[3]}</div>
+            </div>
+        `;
+
+        // Players Row
+        players.forEach(slot => {
+            const renderPlayerRow = (p, isSubbedOut) => {
+                const lStats = p.live_stats || {};
+                const name = shortenPlayerName(p.name || 'Unknown');
+                const encodedPlayer = encodeURIComponent(JSON.stringify(p));
+                
+                const v1 = lStats[gConf.keys[0]] || 0;
+                const v2 = lStats[gConf.keys[1]] || 0;
+                const v3 = lStats[gConf.keys[2]] || 0;
+                const v4 = lStats[gConf.keys[3]] || 0;
+
+                let prefix = '';
+                if (p.isSubbedIn) prefix = `<span class="text-success me-1" style="font-size:0.55rem;" title="Subbed in at ${p.subMinute}'">🔄</span>`;
+                if (isSubbedOut) prefix = `<span class="text-danger me-1 ms-2" style="font-size:0.55rem;" title="Subbed out at ${p.subMinute}'">🔻</span>`;
+
+                const rowStyle = isSubbedOut ? `font-style: italic; opacity: 0.75; background-color: #fcfcfc;` : `cursor: pointer; transition: background-color 0.2s;`;
+                const hoverAttr = isSubbedOut ? `` : `onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'"`;
+
+                let subToggleHtml = '';
+                let toggleAttr = `onclick="openPlayerModal(this)" data-player="${encodedPlayer}"`;
+
+                // If they have sub history, clicking the row triggers the accordion dropdown!
+                if (!isSubbedOut && slot.sub_history && slot.sub_history.length > 0) {
+                     subToggleHtml = `<span class="ms-1 text-muted" style="font-size: 0.55rem;">▼</span>`;
+                     toggleAttr = `data-bs-toggle="collapse" data-bs-target="#sub-hist-${p.id}" onclick="event.stopPropagation();"`;
+                }
+
+                return `
+                    <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom user-select-none player-stat-row" style="font-size: 0.70rem; ${rowStyle}" ${hoverAttr} ${toggleAttr}>
+                        <div class="text-truncate text-start fw-bold text-dark" style="flex: 1;">${prefix}${name}${subToggleHtml}</div>
+                        <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v1}</div>
+                        <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v2}</div>
+                        <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v3}</div>
+                        <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v4}</div>
+                    </div>
+                `;
+            };
+
+            // 1. Render the active player in the slot
+            html += renderPlayerRow(slot.player, false);
+
+            // 2. Render the "Accordion" history if someone was subbed out of this slot
+            if (slot.sub_history && slot.sub_history.length > 0) {
+                html += `<div class="collapse" id="sub-hist-${slot.player.id}">`;
+                slot.sub_history.forEach(hPlayer => {
+                    html += renderPlayerRow(hPlayer, true);
+                });
+                html += `</div>`;
+            }
+        });
+    });
+
+    return html;
+}
+
 // ==========================================
 // NEW: DUAL-VIEW CARD BUILDER
 // ==========================================
@@ -1320,59 +1394,29 @@ function createGameCard(data) {
     const homeRecord = home.record ? `<div class="text-muted fw-normal" style="font-size: 0.65rem; margin-top: 2px;">(${home.record})</div>` : '';
     const awayRecord = away.record ? `<div class="text-muted fw-normal" style="font-size: 0.65rem; margin-top: 2px;">(${away.record})</div>` : '';
 
+    // --- SIMPLIFIED: PYTHON NOW HANDLES SUBS FOR US! ---
     const buildLineupList = (lineupData) => {
         if (data.isFallback) return `<div class="p-4 text-center text-muted small fst-italic">Formations & lineups available on match day</div>`;
         if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-4 text-center text-muted small fw-bold">Lineup pending...</div>`;
         
-        const status = data.fixture.status.short;
-        const isPreGame = ['NS', 'TBD'].includes(status);
-        
         const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white" style="font-size: 0.65rem; background-color: #198754; border-bottom: 1px solid #146c43;">✅ ${lineupData.formation}</div>`;
         
-        let currentXI = [...lineupData.startXI];
-        
-        if (!isPreGame && data.events && data.events.length > 0) {
-            const teamId = lineupData.team.id;
-            const subs = data.events.filter(e => e.type === 'subst' && e.team_id === teamId);
-            
-            subs.forEach(subEvent => {
-                // Look for the starter leaving (player_id)
-                const outIndex = currentXI.findIndex(p => p.player.id === subEvent.player_id || p.player.name === subEvent.player);
-                if (outIndex !== -1) {
-                // Look for the sub entering (player_out_id)
-                    const subPlayer = lineupData.substitutes.find(p => p.player.id === subEvent.player_out_id || p.player.name === subEvent.player_out);
-                    if (subPlayer) {
-                        currentXI[outIndex] = {
-                            ...subPlayer,
-                            player: {
-                                ...subPlayer.player,
-                                pos: currentXI[outIndex].player.pos, 
-                                isSubbedIn: true,
-                                subMinute: subEvent.time
-                            }
-                        };
-                    }
-                }
-            });
-        }
-        
-        const listItems = currentXI.map(p => {
-            const safePos = p.player.pos || '-';
-            const originalName = p.player.name || 'Unknown';
+        const listItems = lineupData.startXI.map(slot => {
+            const p = slot.player;
+            const safePos = p.pos || '-';
+            const originalName = p.name || 'Unknown';
             const displaySafeName = shortenPlayerName(originalName);
-            const safeNum = p.player.number || '';
-            const photoUrl = p.player.photo || '';
+            const safeNum = p.number || '';
+            const photoUrl = p.photo || '';
             
-            const encodedPlayer = encodeURIComponent(JSON.stringify(p.player));
+            const encodedPlayer = encodeURIComponent(JSON.stringify(p));
             let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
             
             const photoHtml = photoUrl && photoUrl.includes("http") 
                 ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
                 : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
-            const subIndicator = p.player.isSubbedIn 
-                ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.player.subMinute}'</span>` 
-                : '';
+            const subIndicator = p.isSubbedIn ? `<span class="ms-1 text-secondary" style="font-size: 0.65rem;">🔄 ${p.subMinute}'</span>` : '';
 
             return `
                 <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" data-player="${encodedPlayer}" onclick="openPlayerModal(this)">
@@ -1388,16 +1432,18 @@ function createGameCard(data) {
     };
 
     const statusShort = data.fixture.status.short;
-    let topBannerText = "STARTING XI";
-    if (['FT', 'AET', 'PEN'].includes(statusShort)) topBannerText = "FINAL XI";
-    else if (!['NS', 'TBD'].includes(statusShort)) topBannerText = "LIVE XI";
-
-    // NEW: Build the true hyperlink URL for the Full View
+    const isPreGame = ['NS', 'TBD'].includes(statusShort);
     const params = getUrlParams();
     const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
-    
-    
-    // FULL VIEW HTML (The original card)
+
+    // Dynamic Tab Text
+    const xiTabText = isFinished ? "FINAL XI" : "STARTING XI";
+    const statsTabText = isFinished ? "FINAL STATS" : "LIVE STATS";
+
+    // Helper to grab exact team colors for the stats grids
+    const hColor = data.homeLineup?.team?.colors?.player?.primary;
+    const aColor = data.awayLineup?.team?.colors?.player?.primary;
+
     const fullHtml = `
         <div class="p-2 pb-1" style="background-color: #fcfcfc;">
             <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom border-light" style="cursor: pointer;" onclick="toggleSingleCard(${fixId})" title="Click to collapse">
@@ -1428,14 +1474,36 @@ function createGameCard(data) {
         <div id="odds-${fixId}" class="w-100">${getOddsHtml(data)}</div>
         <div id="injuries-${fixId}" class="w-100">${getInjuriesHtml(data)}</div>
         
-        <div class="bg-light border-bottom text-center py-1" data-bs-toggle="collapse" data-bs-target="#lineup-collapse-${fixId}" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e9ecef'" onmouseout="this.style.backgroundColor='#f8f9fa'" title="Click to expand/collapse lineup">
-            <span id="lineup-banner-text-${fixId}" class="fw-bold text-muted" style="font-size: 0.7rem;">${topBannerText} <span style="font-size: 0.6rem;">▼</span></span>
-        </div>
-        <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
-            <div class="row g-0 bg-white">
-                <div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div>
-                <div class="col-6">${buildLineupList(data.awayLineup)}</div>
+        <div class="bg-light border-bottom d-flex justify-content-between align-items-center px-2 py-1" style="background-color: #f8f9fa;">
+            <div class="d-flex gap-3">
+                <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" id="tab-xi-${fixId}" onclick="switchLineupTab(${fixId}, 'xi')">
+                    ${xiTabText}
+                </div>
+                <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" id="tab-stats-${fixId}" onclick="switchLineupTab(${fixId}, 'stats')">
+                    ${statsTabText}
+                </div>
             </div>
+            <div data-bs-toggle="collapse" data-bs-target="#lineup-collapse-${fixId}" style="cursor: pointer; padding: 2px 8px;" title="Expand/Collapse">
+                <span class="text-muted" style="font-size: 0.7rem;">▼</span>
+            </div>
+        </div>
+        
+        <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
+            
+            <div id="view-xi-${fixId}" class="${(data.team_stats && !isPreGame) ? 'd-none' : ''}">
+                <div class="row g-0 bg-white">
+                    <div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div>
+                    <div class="col-6">${buildLineupList(data.awayLineup)}</div>
+                </div>
+            </div>
+            
+            <div id="view-stats-${fixId}" class="${(!data.team_stats || isPreGame) ? 'd-none' : ''}">
+                <div class="row g-0 bg-white">
+                    <div class="col-6 border-end">${buildLiveStatsGrid(data.homeLineup, hColor)}</div>
+                    <div class="col-6">${buildLiveStatsGrid(data.awayLineup, aColor)}</div>
+                </div>
+            </div>
+            
         </div>
     `;
 
@@ -1444,7 +1512,6 @@ function createGameCard(data) {
             <div class="ribbon-view ${globalScoreboardMode ? '' : 'd-none'}" id="ribbon-${fixId}" onclick="toggleSingleCard(${fixId})" title="Click to expand card">
                 ${getRibbonHtml(data)}
             </div>
-            
             <div class="full-view ${globalScoreboardMode ? 'd-none' : ''}" id="full-${fixId}">
                 ${fullHtml}
             </div>
@@ -1452,7 +1519,6 @@ function createGameCard(data) {
     
     return gameCard;
 }
-
 // ==========================================
 // EVENT LISTENERS
 // ==========================================
