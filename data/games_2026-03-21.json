@@ -201726,7 +201726,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 89,
+                "elapsed": 90,
                 "extra": null
             }
         },
@@ -203764,7 +203764,7 @@
                         "id": 2583,
                         "name": "\u00c1ngelo Preciado",
                         "number": 23,
-                        "pos": "D",
+                        "pos": "M",
                         "grid": "2:4",
                         "photo": "https://media.api-sports.io/football/players/2583.png",
                         "age": 27,
@@ -203855,8 +203855,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
                             "rating": "7.2"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "89"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 10166,
+                            "name": "Reinier",
+                            "number": 19,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/10166.png",
+                            "age": 23,
+                            "nationality": "Brazil",
+                            "season_stats": {
+                                "total": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 3,
+                                    "pass_acc": 84,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.27"
+                                },
+                                "competitions": {
+                                    "Serie A": {
+                                        "games": 6,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 3,
+                                        "key_passes": 3,
+                                        "pass_acc": 84,
+                                        "tackles": 0,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.27"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -205063,75 +205134,6 @@
                 },
                 {
                     "player": {
-                        "id": 10166,
-                        "name": "Reinier",
-                        "number": 19,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/10166.png",
-                        "age": 23,
-                        "nationality": "Brazil",
-                        "season_stats": {
-                            "total": {
-                                "games": 6,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 3,
-                                "key_passes": 3,
-                                "pass_acc": 84,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.27"
-                            },
-                            "competitions": {
-                                "Serie A": {
-                                    "games": 6,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 3,
-                                    "key_passes": 3,
-                                    "pass_acc": 84,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.27"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 414544,
                         "name": "Tom\u00e1s P\u00e9rez",
                         "number": 25,
@@ -205487,6 +205489,35 @@
                 "assist": "Alisson",
                 "player_out": "Alisson",
                 "player_out_id": 10501
+            },
+            {
+                "time": "89",
+                "team_id": 1062,
+                "player": "A. Preciado",
+                "player_id": 2583,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "Reinier",
+                "player_out": "Reinier",
+                "player_out_id": 10166
+            },
+            {
+                "time": "90",
+                "team_id": 124,
+                "player": "Jemmes",
+                "player_id": 282692,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90",
+                "team_id": 1062,
+                "player": "A. Franco",
+                "player_id": 16360,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
             }
         ],
         "match_ended_at": null,
@@ -210678,7 +210709,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 20,
+                "elapsed": 21,
                 "extra": null
             }
         },
@@ -213847,7 +213878,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 19,
+                "elapsed": 20,
                 "extra": null
             }
         },
@@ -217150,9 +217181,9 @@
                 "city": "Manizales"
             },
             "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
+                "long": "First Half",
+                "short": "1H",
+                "elapsed": 2,
                 "extra": null
             }
         },
@@ -217185,8 +217216,8 @@
             }
         },
         "goals": {
-            "home": null,
-            "away": null
+            "home": 0,
+            "away": 0
         },
         "homeLineup": {
             "team": {
