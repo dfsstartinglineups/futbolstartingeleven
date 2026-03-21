@@ -427,7 +427,7 @@ function getTimeBadgeHtml(data) {
         }
         
         if (status === 'HT') displayMin = 'HT';
-        else if (status === 'BT) displayMin = 'ET HT';
+        else if (status === 'BT') displayMin = 'ET HT';
         else if (status === 'P') displayMin = 'PEN';
         else {
             if (extraMin) {
