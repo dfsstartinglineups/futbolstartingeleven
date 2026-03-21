@@ -29438,7 +29438,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 3
+                "extra": 4
             }
         },
         "league": {
@@ -33181,7 +33181,7 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 53,
+                "possession": 48,
                 "total_shots": 11,
                 "shots_on_target": 4,
                 "corners": 1,
@@ -33190,12 +33190,12 @@
                 "red_cards": 0
             },
             "away": {
-                "possession": 47,
-                "total_shots": 9,
+                "possession": 52,
+                "total_shots": 11,
                 "shots_on_target": 4,
                 "corners": 2,
-                "fouls": 7,
-                "yellow_cards": 0,
+                "fouls": 9,
+                "yellow_cards": 1,
                 "red_cards": 0
             }
         }
@@ -36823,7 +36823,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 20,
+                "elapsed": 21,
                 "extra": null
             }
         },
@@ -40763,16 +40763,16 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 77,
-                "total_shots": 1,
-                "shots_on_target": 0,
-                "corners": 0,
+                "possession": 76,
+                "total_shots": 3,
+                "shots_on_target": 1,
+                "corners": 3,
                 "fouls": 1,
                 "yellow_cards": 1,
                 "red_cards": 0
             },
             "away": {
-                "possession": 23,
+                "possession": 24,
                 "total_shots": 0,
                 "shots_on_target": 0,
                 "corners": 0,
@@ -40801,7 +40801,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 21,
+                "elapsed": 22,
                 "extra": null
             }
         },
@@ -40835,7 +40835,7 @@
         },
         "goals": {
             "home": 2,
-            "away": 1
+            "away": 2
         },
         "homeLineup": {
             "team": {
@@ -44137,6 +44137,15 @@
                 "type": "Goal",
                 "detail": "Normal Goal",
                 "assist": "J. Kaminski"
+            },
+            {
+                "time": "20",
+                "team_id": 163,
+                "player": "P. Sander",
+                "player_id": 24969,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
             }
         ],
         "match_ended_at": null,
@@ -44146,7 +44155,7 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 54,
+                "possession": 48,
                 "total_shots": 3,
                 "shots_on_target": 2,
                 "corners": 0,
@@ -44155,11 +44164,11 @@
                 "red_cards": 0
             },
             "away": {
-                "possession": 46,
-                "total_shots": 1,
+                "possession": 52,
+                "total_shots": 2,
                 "shots_on_target": 1,
                 "corners": 0,
-                "fouls": 1,
+                "fouls": 3,
                 "yellow_cards": 0,
                 "red_cards": 0
             }
@@ -44184,7 +44193,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 21,
+                "elapsed": 22,
                 "extra": null
             }
         },
@@ -44218,7 +44227,7 @@
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -48036,7 +48045,17 @@
             ],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "22",
+                "team_id": 168,
+                "player": "M. Tillman",
+                "player_id": 162037,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
+            }
+        ],
         "match_ended_at": null,
         "post_game_sync": false,
         "final_odds_check": true,
@@ -48082,7 +48101,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 21,
+                "elapsed": 22,
                 "extra": null
             }
         },
@@ -51401,18 +51420,18 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 61,
-                "total_shots": 0,
-                "shots_on_target": 0,
-                "corners": 0,
-                "fouls": 2,
+                "possession": 65,
+                "total_shots": 1,
+                "shots_on_target": 1,
+                "corners": 1,
+                "fouls": 3,
                 "yellow_cards": 0,
                 "red_cards": 0
             },
             "away": {
-                "possession": 39,
-                "total_shots": 0,
-                "shots_on_target": 0,
+                "possession": 35,
+                "total_shots": 2,
+                "shots_on_target": 2,
                 "corners": 1,
                 "fouls": 0,
                 "yellow_cards": 0,
@@ -90169,28 +90188,1834 @@
                 "id": 215,
                 "name": "Moreirense",
                 "logo": "https://media.api-sports.io/football/teams/215.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "ffffff",
+                        "number": "050505",
+                        "border": "ffffff"
+                    },
+                    "goalkeeper": {
+                        "primary": "f400f7",
+                        "number": "ffffff",
+                        "border": "f400f7"
+                    }
+                }
             },
+            "formation": "4-3-3",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 41320,
+                        "name": "Andr\u00e9 Ferreira",
+                        "number": 13,
+                        "pos": "G",
+                        "grid": "1:1",
+                        "photo": "https://media.api-sports.io/football/players/41320.png",
+                        "age": 29,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 16,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 51,
+                                "conceded": 27,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 66,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.01"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 16,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 51,
+                                    "conceded": 27,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 66,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.01"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 336575,
+                        "name": "Diogo Travassos",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": "2:4",
+                        "photo": "https://media.api-sports.io/football/players/336575.png",
+                        "age": 21,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 9380,
+                        "name": "Marac\u00e1s",
+                        "number": 26,
+                        "pos": "D",
+                        "grid": "2:3",
+                        "photo": "https://media.api-sports.io/football/players/9380.png",
+                        "age": 31,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 22,
+                                "goals": 3,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 2,
+                                "pass_acc": 90,
+                                "tackles": 30,
+                                "interceptions": 17,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.91"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 22,
+                                    "goals": 3,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 2,
+                                    "pass_acc": 90,
+                                    "tackles": 30,
+                                    "interceptions": 17,
+                                    "yellow_cards": 8,
+                                    "red_cards": 0,
+                                    "rating": "6.91"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 330410,
+                        "name": "Gilberto Batista",
+                        "number": 66,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/330410.png",
+                        "age": 22,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 20,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 1,
+                                "pass_acc": 88,
+                                "tackles": 8,
+                                "interceptions": 12,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.73"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 20,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 1,
+                                    "pass_acc": 88,
+                                    "tackles": 8,
+                                    "interceptions": 12,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 379124,
+                        "name": "Kiko",
+                        "number": 27,
+                        "pos": "D",
+                        "grid": "2:1",
+                        "photo": "https://media.api-sports.io/football/players/379124.png",
+                        "age": 23,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 19,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 12,
+                                "pass_acc": 78,
+                                "tackles": 29,
+                                "interceptions": 15,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.58"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 19,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 12,
+                                    "pass_acc": 78,
+                                    "tackles": 29,
+                                    "interceptions": 15,
+                                    "yellow_cards": 4,
+                                    "red_cards": 0,
+                                    "rating": "6.58"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 162150,
+                        "name": "Nile John",
+                        "number": 23,
+                        "pos": "M",
+                        "grid": "3:3",
+                        "photo": "https://media.api-sports.io/football/players/162150.png",
+                        "age": 22,
+                        "nationality": "England",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 0,
+                                "pass_acc": 77,
+                                "tackles": 3,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.33"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 77,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.33"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 400720,
+                        "name": "Mateja Stjepanovi\u0107",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:2",
+                        "photo": "https://media.api-sports.io/football/players/400720.png",
+                        "age": 21,
+                        "nationality": "Serbia",
+                        "season_stats": {
+                            "total": {
+                                "games": 24,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 5,
+                                "pass_acc": 85,
+                                "tackles": 20,
+                                "interceptions": 21,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.71"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 24,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 5,
+                                    "pass_acc": 85,
+                                    "tackles": 20,
+                                    "interceptions": 21,
+                                    "yellow_cards": 6,
+                                    "red_cards": 0,
+                                    "rating": "6.71"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 195110,
+                        "name": "Alan",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": "3:1",
+                        "photo": "https://media.api-sports.io/football/players/195110.png",
+                        "age": 25,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 24,
+                                "goals": 3,
+                                "assists": 5,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 11,
+                                "key_passes": 30,
+                                "pass_acc": 88,
+                                "tackles": 18,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.00"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 24,
+                                    "goals": 3,
+                                    "assists": 5,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 11,
+                                    "key_passes": 30,
+                                    "pass_acc": 88,
+                                    "tackles": 18,
+                                    "interceptions": 5,
+                                    "yellow_cards": 6,
+                                    "red_cards": 0,
+                                    "rating": "7.00"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 474842,
+                        "name": "Leandro Santos",
+                        "number": 71,
+                        "pos": "F",
+                        "grid": "4:3",
+                        "photo": "https://media.api-sports.io/football/players/474842.png",
+                        "age": 20,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 8,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {
+                                "FIFA Club World Cup": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 335054,
+                        "name": "Lu\u00eds Semedo",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "4:2",
+                        "photo": "https://media.api-sports.io/football/players/335054.png",
+                        "age": 22,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 15,
+                                "goals": 2,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 5,
+                                "key_passes": 6,
+                                "pass_acc": 73,
+                                "tackles": 3,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.58"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 15,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 5,
+                                    "key_passes": 6,
+                                    "pass_acc": 73,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.58"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 119633,
+                        "name": "Kiko Bondoso",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:1",
+                        "photo": "https://media.api-sports.io/football/players/119633.png",
+                        "age": 30,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 22,
+                                "goals": 0,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 19,
+                                "pass_acc": 82,
+                                "tackles": 18,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.70"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 22,
+                                    "goals": 0,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 19,
+                                    "pass_acc": 82,
+                                    "tackles": 18,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 41486,
+                        "name": "Caio",
+                        "number": 22,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/41486.png",
+                        "age": 35,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 9,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 26,
+                                "conceded": 7,
+                                "shots_on": 0,
+                                "key_passes": 1,
+                                "pass_acc": 66,
+                                "tackles": 1,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.81"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 9,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 26,
+                                    "conceded": 7,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 66,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.81"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 41229,
+                        "name": "Mika",
+                        "number": 16,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/41229.png",
+                        "age": 34,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 544698,
+                        "name": "Kevyn Monteiro",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/544698.png",
+                        "age": 20,
+                        "nationality": null,
+                        "season_stats": {
+                            "total": {
+                                "games": 1,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.60"
+                            },
+                            "competitions": {
+                                "Paulista - A1": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 313229,
+                        "name": "Jimi Gower",
+                        "number": 30,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/313229.png",
+                        "age": 21,
+                        "nationality": "England",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 75,
+                                "tackles": 1,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.37"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 75,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.37"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 505604,
+                        "name": "Afonso Assis",
+                        "number": 25,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/505604.png",
+                        "age": 19,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 13,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 2,
+                                "pass_acc": 87,
+                                "tackles": 7,
+                                "interceptions": 10,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.62"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 13,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 2,
+                                    "pass_acc": 87,
+                                    "tackles": 7,
+                                    "interceptions": 10,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.62"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 637620,
+                        "name": "Miguel Silva",
+                        "number": 6,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/637620.png",
+                        "age": null,
+                        "nationality": null,
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 333680,
+                        "name": "Rodrigo Alonso",
+                        "number": 21,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/333680.png",
+                        "age": 22,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 18,
+                                "goals": 2,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 6,
+                                "pass_acc": 84,
+                                "tackles": 15,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.69"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 18,
+                                    "goals": 2,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 6,
+                                    "pass_acc": 84,
+                                    "tackles": 15,
+                                    "interceptions": 3,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.69"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 408618,
+                        "name": "Landerson",
+                        "number": 78,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/408618.png",
+                        "age": 19,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 21,
+                                "goals": 0,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 11,
+                                "pass_acc": 83,
+                                "tackles": 12,
+                                "interceptions": 4,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.50"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 21,
+                                    "goals": 0,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 11,
+                                    "pass_acc": 83,
+                                    "tackles": 12,
+                                    "interceptions": 4,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.50"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
             "coach": {
                 "id": 18055,
                 "name": "Vasco Costa",
                 "photo": "https://media.api-sports.io/football/coachs/18055.png"
-            },
-            "formation": null
+            }
         },
         "awayLineup": {
             "team": {
                 "id": 240,
                 "name": "Arouca",
                 "logo": "https://media.api-sports.io/football/teams/240.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "ffff00",
+                        "number": "047dcd",
+                        "border": "ffff00"
+                    },
+                    "goalkeeper": {
+                        "primary": "f70707",
+                        "number": "242121",
+                        "border": "f70707"
+                    }
+                }
             },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 51762,
+                        "name": "Ignacio de Arruabarrena",
+                        "number": 12,
+                        "pos": "G",
+                        "grid": "1:1",
+                        "photo": "https://media.api-sports.io/football/players/51762.png",
+                        "age": 28,
+                        "nationality": "Uruguay",
+                        "season_stats": {
+                            "total": {
+                                "games": 9,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 26,
+                                "conceded": 13,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 72,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.84"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 9,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 26,
+                                    "conceded": 13,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 72,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 4,
+                                    "red_cards": 0,
+                                    "rating": "6.84"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 127372,
+                        "name": "Tiago Esgaio",
+                        "number": 28,
+                        "pos": "D",
+                        "grid": "2:4",
+                        "photo": "https://media.api-sports.io/football/players/127372.png",
+                        "age": 30,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 21,
+                                "goals": 1,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 20,
+                                "pass_acc": 68,
+                                "tackles": 22,
+                                "interceptions": 20,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.55"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 21,
+                                    "goals": 1,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 20,
+                                    "pass_acc": 68,
+                                    "tackles": 22,
+                                    "interceptions": 20,
+                                    "yellow_cards": 9,
+                                    "red_cards": 0,
+                                    "rating": "6.55"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 740,
+                        "name": "Javi S\u00e1nchez",
+                        "number": 15,
+                        "pos": "D",
+                        "grid": "2:3",
+                        "photo": "https://media.api-sports.io/football/players/740.png",
+                        "age": 28,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 8,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 4,
+                                "pass_acc": 90,
+                                "tackles": 8,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.91"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 8,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 4,
+                                    "pass_acc": 90,
+                                    "tackles": 8,
+                                    "interceptions": 5,
+                                    "yellow_cards": 4,
+                                    "red_cards": 0,
+                                    "rating": "6.91"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 182501,
+                        "name": "Jose Font\u00e1n",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/182501.png",
+                        "age": 25,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 23,
+                                "goals": 1,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 11,
+                                "pass_acc": 87,
+                                "tackles": 27,
+                                "interceptions": 30,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.44"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 23,
+                                    "goals": 1,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 11,
+                                    "pass_acc": 87,
+                                    "tackles": 27,
+                                    "interceptions": 30,
+                                    "yellow_cards": 5,
+                                    "red_cards": 0,
+                                    "rating": "6.44"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 43076,
+                        "name": "Bas Kuipers",
+                        "number": 25,
+                        "pos": "D",
+                        "grid": "2:1",
+                        "photo": "https://media.api-sports.io/football/players/43076.png",
+                        "age": 31,
+                        "nationality": "Netherlands",
+                        "season_stats": {
+                            "total": {
+                                "games": 9,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 4,
+                                "pass_acc": 85,
+                                "tackles": 0,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.44"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 9,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 4,
+                                    "pass_acc": 85,
+                                    "tackles": 0,
+                                    "interceptions": 5,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.44"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 355171,
+                        "name": "Hyun-ju Lee",
+                        "number": 14,
+                        "pos": "M",
+                        "grid": "3:2",
+                        "photo": "https://media.api-sports.io/football/players/355171.png",
+                        "age": 22,
+                        "nationality": "Korea Republic",
+                        "season_stats": {
+                            "total": {
+                                "games": 23,
+                                "goals": 5,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 9,
+                                "key_passes": 9,
+                                "pass_acc": 89,
+                                "tackles": 11,
+                                "interceptions": 6,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.63"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 23,
+                                    "goals": 5,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 9,
+                                    "key_passes": 9,
+                                    "pass_acc": 89,
+                                    "tackles": 11,
+                                    "interceptions": 6,
+                                    "yellow_cards": 5,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 431887,
+                        "name": "Espen Van Ee",
+                        "number": 22,
+                        "pos": "M",
+                        "grid": "3:1",
+                        "photo": "https://media.api-sports.io/football/players/431887.png",
+                        "age": 22,
+                        "nationality": "Netherlands",
+                        "season_stats": {
+                            "total": {
+                                "games": 18,
+                                "goals": 1,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 7,
+                                "pass_acc": 85,
+                                "tackles": 33,
+                                "interceptions": 21,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.83"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 18,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 7,
+                                    "pass_acc": 85,
+                                    "tackles": 33,
+                                    "interceptions": 21,
+                                    "yellow_cards": 5,
+                                    "red_cards": 0,
+                                    "rating": "6.83"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 161877,
+                        "name": "Pablo Goz\u00e1lbez",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": "4:3",
+                        "photo": "https://media.api-sports.io/football/players/161877.png",
+                        "age": 24,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 20,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 5,
+                                "key_passes": 6,
+                                "pass_acc": 77,
+                                "tackles": 14,
+                                "interceptions": 4,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.57"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 20,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 5,
+                                    "key_passes": 6,
+                                    "pass_acc": 77,
+                                    "tackles": 14,
+                                    "interceptions": 4,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.57"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 306615,
+                        "name": "Taichi Fukui",
+                        "number": 21,
+                        "pos": "M",
+                        "grid": "4:2",
+                        "photo": "https://media.api-sports.io/football/players/306615.png",
+                        "age": 21,
+                        "nationality": "Japan",
+                        "season_stats": {
+                            "total": {
+                                "games": 25,
+                                "goals": 2,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 4,
+                                "key_passes": 13,
+                                "pass_acc": 87,
+                                "tackles": 43,
+                                "interceptions": 20,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.86"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 25,
+                                    "goals": 2,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 13,
+                                    "pass_acc": 87,
+                                    "tackles": 43,
+                                    "interceptions": 20,
+                                    "yellow_cards": 2,
+                                    "red_cards": 1,
+                                    "rating": "6.86"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 47308,
+                        "name": "Na\u00efs Djouahra",
+                        "number": 7,
+                        "pos": "M",
+                        "grid": "4:1",
+                        "photo": "https://media.api-sports.io/football/players/47308.png",
+                        "age": 26,
+                        "nationality": "France",
+                        "season_stats": {
+                            "total": {
+                                "games": 26,
+                                "goals": 6,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 18,
+                                "key_passes": 20,
+                                "pass_acc": 80,
+                                "tackles": 26,
+                                "interceptions": 21,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.83"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 26,
+                                    "goals": 6,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 18,
+                                    "key_passes": 20,
+                                    "pass_acc": 80,
+                                    "tackles": 26,
+                                    "interceptions": 21,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.83"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 301701,
+                        "name": "Dylan Nand\u00edn",
+                        "number": 23,
+                        "pos": "F",
+                        "grid": "5:1",
+                        "photo": "https://media.api-sports.io/football/players/301701.png",
+                        "age": 23,
+                        "nationality": "Uruguay",
+                        "season_stats": {
+                            "total": {
+                                "games": 18,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 10,
+                                "pass_acc": 73,
+                                "tackles": 12,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.45"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 18,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 10,
+                                    "pass_acc": 73,
+                                    "tackles": 12,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 1,
+                                    "rating": "6.45"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 41377,
+                        "name": "Jo\u00e3o Valido",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/41377.png",
+                        "age": 25,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 9,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 25,
+                                "conceded": 24,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 67,
+                                "tackles": 3,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.58"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 9,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 25,
+                                    "conceded": 24,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 67,
+                                    "tackles": 3,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.58"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 152846,
+                        "name": "Amadou Dante",
+                        "number": 44,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/152846.png",
+                        "age": 25,
+                        "nationality": "Mali",
+                        "season_stats": {
+                            "total": {
+                                "games": 14,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 8,
+                                "pass_acc": 83,
+                                "tackles": 19,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.52"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 14,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 8,
+                                    "pass_acc": 83,
+                                    "tackles": 19,
+                                    "interceptions": 5,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.52"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 296085,
+                        "name": "Diogo Monteiro",
+                        "number": 6,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/296085.png",
+                        "age": 20,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 2,
+                                "pass_acc": 71,
+                                "tackles": 6,
+                                "interceptions": 5,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.70"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 2,
+                                    "pass_acc": 71,
+                                    "tackles": 6,
+                                    "interceptions": 5,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 283338,
+                        "name": "Mat\u00edas Rocha",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/283338.png",
+                        "age": 24,
+                        "nationality": "Uruguay",
+                        "season_stats": {
+                            "total": {
+                                "games": 8,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 3,
+                                "pass_acc": 89,
+                                "tackles": 5,
+                                "interceptions": 7,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.80"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 8,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 89,
+                                    "tackles": 5,
+                                    "interceptions": 7,
+                                    "yellow_cards": 2,
+                                    "red_cards": 1,
+                                    "rating": "6.80"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 364415,
+                        "name": "Yellu Santiago",
+                        "number": 20,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/364415.png",
+                        "age": 21,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 63,
+                                "tackles": 2,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.35"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 63,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.35"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 330286,
+                        "name": "Pedro Santos",
+                        "number": 89,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/330286.png",
+                        "age": 25,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 8,
+                                "pass_acc": 90,
+                                "tackles": 15,
+                                "interceptions": 8,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.86"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 10,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 8,
+                                    "pass_acc": 90,
+                                    "tackles": 15,
+                                    "interceptions": 8,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.86"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 161591,
+                        "name": "Miguel Puche",
+                        "number": 11,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/161591.png",
+                        "age": 24,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 24,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 11,
+                                "pass_acc": 81,
+                                "tackles": 11,
+                                "interceptions": 4,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.51"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 24,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 11,
+                                    "pass_acc": 81,
+                                    "tackles": 11,
+                                    "interceptions": 4,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.51"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 287590,
+                        "name": "Fally Mayulu",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/287590.png",
+                        "age": 23,
+                        "nationality": "France",
+                        "season_stats": {
+                            "total": {
+                                "games": 11,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 0,
+                                "pass_acc": 56,
+                                "tackles": 1,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.31"
+                            },
+                            "competitions": {
+                                "League Cup": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.20"
+                                },
+                                "Championship": {
+                                    "games": 10,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 56,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.43"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 166822,
+                        "name": "Brian Mansilla",
+                        "number": 24,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/166822.png",
+                        "age": 23,
+                        "nationality": "Uruguay",
+                        "season_stats": {
+                            "total": {
+                                "games": 16,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 6,
+                                "pass_acc": 67,
+                                "tackles": 9,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.48"
+                            },
+                            "competitions": {
+                                "Primeira Liga": {
+                                    "games": 16,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 6,
+                                    "pass_acc": 67,
+                                    "tackles": 9,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.48"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
             "coach": {
                 "id": 2810,
                 "name": "Vasco Seabra",
                 "photo": "https://media.api-sports.io/football/coachs/2810.png"
-            },
-            "formation": null
+            }
         },
         "lineup_checks": 0,
         "odds": {
