@@ -1455,20 +1455,21 @@ function buildLineupList(lineupData, gameData) {
                 : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
             // Absolute positioning tucks the text-based icon over the upper-left of the first letter
+            // Absolute positioning tucked at left: 0
             let prefix = '';
-            if (p.isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: -3px; left: -8px; font-size: 0.45rem;" title="Subbed in at ${p.subMinute}'">↻</span>`;
-            if (isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: -3px; left: -8px; font-size: 0.45rem;" title="Subbed out at ${p.subMinute}'">▲</span>`;
+            if (p.isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: -3px; left: 0; font-size: 0.45rem;" title="Subbed in at ${p.subMinute}'">↻</span>`;
+            if (isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: -3px; left: 0; font-size: 0.45rem;" title="Subbed out at ${p.subMinute}'">▲</span>`;
 
             const rowStyle = isSubbedOut ? `font-style: italic; opacity: 0.75; background-color: #fcfcfc; border-bottom: 1px dashed #dee2e6;` : `cursor: pointer; transition: background-color 0.2s; border-bottom: 1px solid #f1f3f5;`;
             const hoverAttr = isSubbedOut ? `` : `onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'"`;
             const toggleAttr = `onclick="openPlayerModal(this)"`;
 
-            // Name gets a position-relative wrapper and left margin
+            // Player name span gets PADDING instead of margin
             return `
                 <li class="d-flex align-items-center w-100 px-2 py-1 user-select-none" style="${rowStyle}" ${hoverAttr} ${toggleAttr} data-player="${encodedPlayer}">
                     <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
                     <div class="me-2">${photoHtml}</div>
-                    <span class="batter-name fw-bold text-dark text-truncate position-relative" style="font-size: 0.85rem; margin-left: 8px;" title="${originalName}">
+                    <span class="batter-name fw-bold text-dark text-truncate position-relative" style="font-size: 0.85rem; padding-left: 8px;" title="${originalName}">
                         ${prefix}${displaySafeName}
                     </span>
                     <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
