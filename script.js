@@ -617,10 +617,10 @@ function getCenterColumnHtml(data) {
             <div class="text-center w-100 px-1">
                 <div class="stat-label-tiny">${label}</div>
                 <div class="stat-bar-container">
-                    <div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${activeHColor}; color: ${hText}; ${textShadowH} ${borderH}">
+                    <div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${activeHColor}; color: ${hText}; font-weight: 500; ${textShadowH} ${borderH}">
                         ${displayH}
                     </div>
-                    <div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${activeAColor}; color: ${aText}; ${textShadowA} ${borderA}">
+                    <div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${activeAColor}; color: ${aText}; font-weight: 500; ${textShadowA} ${borderA}">
                         ${displayA}
                     </div>
                 </div>
