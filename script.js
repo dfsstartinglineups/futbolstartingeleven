@@ -1378,7 +1378,7 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
     let html = '';
     let tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
 
-    // NEW: Prevent white/super light colors from disappearing against the light grey background
+    // Prevent white/super light colors from disappearing against the light grey background
     if (getContrastColor(tColor) === '#000000') {
         tColor = '#495057';
     }
@@ -1389,12 +1389,13 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
 
         const gConf = groups[posKey];
 
+        // Drops font-weight to 600 and customizes column widths to give names more room
         html += `
-            <div class="d-flex w-100 px-2 py-1 align-items-center" style="background-color: #f1f3f5; font-size: 0.6rem; font-weight: 800; color: #495057; border-bottom: 1px solid #dee2e6;">
+            <div class="d-flex w-100 px-2 py-1 align-items-center" style="background-color: #f1f3f5; font-size: 0.6rem; font-weight: 600; color: #495057; border-bottom: 1px solid #dee2e6;">
                 <div style="flex: 1; text-align: left; color: ${tColor};">${gConf.title}</div>
-                <div style="width: 22px; text-align: center;">${gConf.stats[0]}</div>
-                <div style="width: 22px; text-align: center;">${gConf.stats[1]}</div>
-                <div style="width: 22px; text-align: center;">${gConf.stats[2]}</div>
+                <div style="width: 14px; text-align: center;">${gConf.stats[0]}</div>
+                <div style="width: 14px; text-align: center;">${gConf.stats[1]}</div>
+                <div style="width: 26px; text-align: center;">${gConf.stats[2]}</div>
                 <div style="width: 22px; text-align: center;">${gConf.stats[3]}</div>
             </div>
         `;
@@ -1409,16 +1410,20 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
             const v3 = lStats[gConf.keys[2]] || 0;
             const v4 = lStats[gConf.keys[3]] || 0;
 
+            // Absolute positioning tucks the text-based icon over the upper-left of the first letter
             let prefix = '';
-            if (p.isSubbedIn || p._isSubbedIn) prefix = `<sup class="text-primary fw-bold" style="font-size: 0.55rem; line-height: 0; margin-right: 2px;" title="Subbed In">↻</sup>`;
-            if (p._isSubbedOut) prefix = `<sup class="text-success fw-bold" style="font-size: 0.45rem; line-height: 0; margin-right: 2px;" title="Subbed Out">▲</sup>`;
+            if (p.isSubbedIn || p._isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: -3px; left: -8px; font-size: 0.45rem;">↻</span>`;
+            if (p._isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: -3px; left: -8px; font-size: 0.45rem;">▲</span>`;
 
+            // Name gets a position-relative wrapper, widths updated to match headers
             html += `
                 <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom user-select-none player-stat-row" style="font-size: 0.70rem; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" onclick="openPlayerModal(this)" data-player="${encodedPlayer}">
-                    <div class="text-truncate text-start fw-bold text-dark" style="flex: 1;">${prefix}${name}</div>
-                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v1}</div>
-                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v2}</div>
-                    <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v3}</div>
+                    <div class="text-truncate text-start fw-bold text-dark" style="flex: 1;">
+                        <span class="position-relative" style="margin-left: 8px;">${prefix}${name}</span>
+                    </div>
+                    <div class="text-muted" style="width: 14px; text-align: center; font-weight: 600;">${v1}</div>
+                    <div class="text-muted" style="width: 14px; text-align: center; font-weight: 600;">${v2}</div>
+                    <div class="text-muted" style="width: 26px; text-align: center; font-weight: 600;">${v3}</div>
                     <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v4}</div>
                 </div>
             `;
@@ -1449,19 +1454,21 @@ function buildLineupList(lineupData, gameData) {
                 ? `<img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #dee2e6;">`
                 : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
+            // Absolute positioning tucks the text-based icon over the upper-left of the first letter
             let prefix = '';
-            if (p.isSubbedIn) prefix = `<sup class="text-primary fw-bold" style="font-size: 0.55rem; line-height: 0; margin-right: 2px;" title="Subbed in at ${p.subMinute}'">↻</sup>`;
-            if (isSubbedOut) prefix = `<sup class="text-success fw-bold" style="font-size: 0.45rem; line-height: 0; margin-right: 2px;" title="Subbed out at ${p.subMinute}'">▲</sup>`;
+            if (p.isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: -3px; left: -8px; font-size: 0.45rem;" title="Subbed in at ${p.subMinute}'">↻</span>`;
+            if (isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: -3px; left: -8px; font-size: 0.45rem;" title="Subbed out at ${p.subMinute}'">▲</span>`;
 
             const rowStyle = isSubbedOut ? `font-style: italic; opacity: 0.75; background-color: #fcfcfc; border-bottom: 1px dashed #dee2e6;` : `cursor: pointer; transition: background-color 0.2s; border-bottom: 1px solid #f1f3f5;`;
             const hoverAttr = isSubbedOut ? `` : `onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'"`;
             const toggleAttr = `onclick="openPlayerModal(this)"`;
 
+            // Name gets a position-relative wrapper and left margin
             return `
                 <li class="d-flex align-items-center w-100 px-2 py-1 user-select-none" style="${rowStyle}" ${hoverAttr} ${toggleAttr} data-player="${encodedPlayer}">
                     <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
                     <div class="me-2">${photoHtml}</div>
-                    <span class="batter-name fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="${originalName}">
+                    <span class="batter-name fw-bold text-dark text-truncate position-relative" style="font-size: 0.85rem; margin-left: 8px;" title="${originalName}">
                         ${prefix}${displaySafeName}
                     </span>
                     <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
