@@ -1410,8 +1410,8 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
             const v4 = lStats[gConf.keys[3]] || 0;
 
             let prefix = '';
-            if (p.isSubbedIn || p._isSubbedIn) prefix = `<span class="text-primary" style="position: absolute; top: -2px; left: -9px; font-size: 0.10rem;" title="Subbed In">🔄</span>`;
-            if (p._isSubbedOut) prefix = `<span class="text-success" style="position: absolute; top: -2px; left: -9px; font-size: 0.10rem;" title="Subbed Out">▲</span>`;
+            if (p.isSubbedIn || p._isSubbedIn) prefix = `<span class="text-primary" style="position: absolute; top: -2px; left: -9px; font-size: 0.20rem;" title="Subbed In">🔄</span>`;
+            if (p._isSubbedOut) prefix = `<span class="text-success" style="position: absolute; top: -2px; left: -9px; font-size: 0.20rem;" title="Subbed Out">▲</span>`;
 
             html += `
                 <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom user-select-none player-stat-row" style="font-size: 0.70rem; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" onclick="openPlayerModal(this)" data-player="${encodedPlayer}">
@@ -1452,8 +1452,8 @@ function buildLineupList(lineupData, gameData) {
                 : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
             let prefix = '';
-            if (p.isSubbedIn) prefix = `<span class="text-primary" style="position: absolute; top: -2px; left: -9px; font-size: 0.10rem;" title="Subbed in at ${p.subMinute}'">🔄</span>`;
-            if (isSubbedOut) prefix = `<span class="text-success" style="position: absolute; top: -2px; left: -9px; font-size: 0.10rem;" title="Subbed out at ${p.subMinute}'">▲</span>`;
+            if (p.isSubbedIn) prefix = `<span class="text-primary" style="position: absolute; top: -2px; left: -9px; font-size: 0.20rem;" title="Subbed in at ${p.subMinute}'">🔄</span>`;
+            if (isSubbedOut) prefix = `<span class="text-success" style="position: absolute; top: -2px; left: -9px; font-size: 0.20rem;" title="Subbed out at ${p.subMinute}'">▲</span>`;
 
             const rowStyle = isSubbedOut ? `font-style: italic; opacity: 0.75; background-color: #fcfcfc; border-bottom: 1px dashed #dee2e6;` : `cursor: pointer; transition: background-color 0.2s; border-bottom: 1px solid #f1f3f5;`;
             const hoverAttr = isSubbedOut ? `` : `onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'"`;
