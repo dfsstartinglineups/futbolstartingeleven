@@ -37952,10 +37952,10 @@
                 "city": "Bergamo"
             },
             "status": {
-                "long": "Halftime",
-                "short": "HT",
-                "elapsed": 45,
-                "extra": 2
+                "long": "Second Half",
+                "short": "2H",
+                "elapsed": 47,
+                "extra": null
             }
         },
         "league": {
@@ -40856,7 +40856,7 @@
                         "id": 15909,
                         "name": "Martin Frese",
                         "number": 3,
-                        "pos": "M",
+                        "pos": "D",
                         "grid": "3:1",
                         "photo": "https://media.api-sports.io/football/players/15909.png",
                         "age": 27,
@@ -40917,8 +40917,79 @@
                             "fouls_drawn": 2,
                             "fouls_committed": 0,
                             "rating": "7"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "46"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 153408,
+                            "name": "Daniel Oyegoke",
+                            "number": 2,
+                            "pos": "D",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/153408.png",
+                            "age": 22,
+                            "nationality": "England",
+                            "season_stats": {
+                                "total": {
+                                    "games": 10,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 2,
+                                    "pass_acc": 65,
+                                    "tackles": 7,
+                                    "interceptions": 5,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.51"
+                                },
+                                "competitions": {
+                                    "Serie A": {
+                                        "games": 10,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 2,
+                                        "pass_acc": 65,
+                                        "tackles": 7,
+                                        "interceptions": 5,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.51"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -41367,75 +41438,6 @@
                                     "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "6.76"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 153408,
-                        "name": "Daniel Oyegoke",
-                        "number": 2,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/153408.png",
-                        "age": 22,
-                        "nationality": "England",
-                        "season_stats": {
-                            "total": {
-                                "games": 10,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 2,
-                                "pass_acc": 65,
-                                "tackles": 7,
-                                "interceptions": 5,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.51"
-                            },
-                            "competitions": {
-                                "Serie A": {
-                                    "games": 10,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 2,
-                                    "pass_acc": 65,
-                                    "tackles": 7,
-                                    "interceptions": 5,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.51"
                                 }
                             }
                         },
@@ -42123,6 +42125,17 @@
                 "type": "Goal",
                 "detail": "Normal Goal",
                 "assist": null
+            },
+            {
+                "time": "46",
+                "team_id": 504,
+                "player": "M. Frese",
+                "player_id": 15909,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "D. Oyegoke",
+                "player_out": "D. Oyegoke",
+                "player_out_id": 153408
             }
         ],
         "final_odds_check": true,
@@ -42140,10 +42153,10 @@
             },
             "away": {
                 "possession": 34,
-                "total_shots": 2,
+                "total_shots": 3,
                 "shots_on_target": 0,
                 "corners": 2,
-                "fouls": 9,
+                "fouls": 8,
                 "yellow_cards": 1,
                 "red_cards": 0
             }
@@ -51382,7 +51395,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 2
+                "extra": 3
             }
         },
         "league": {
@@ -51661,9 +51674,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 18,
+                            "passes": 21,
                             "key_passes": 0,
-                            "pass_acc": "17",
+                            "pass_acc": "20",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -51790,9 +51803,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 34,
+                            "passes": 37,
                             "key_passes": 1,
-                            "pass_acc": "34",
+                            "pass_acc": "37",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -51919,9 +51932,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 40,
+                            "passes": 42,
                             "key_passes": 0,
-                            "pass_acc": "36",
+                            "pass_acc": "38",
                             "tackles": 1,
                             "blocks": 1,
                             "interceptions": 0,
@@ -51934,7 +51947,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
-                            "rating": "6.9"
+                            "rating": "7"
                         }
                     }
                 },
@@ -52033,9 +52046,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 20,
+                            "passes": 21,
                             "key_passes": 1,
-                            "pass_acc": "17",
+                            "pass_acc": "18",
                             "tackles": 2,
                             "blocks": 0,
                             "interceptions": 0,
@@ -52132,9 +52145,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 24,
+                            "passes": 27,
                             "key_passes": 1,
-                            "pass_acc": "21",
+                            "pass_acc": "24",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -52246,9 +52259,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 19,
+                            "passes": 21,
                             "key_passes": 0,
-                            "pass_acc": "17",
+                            "pass_acc": "19",
                             "tackles": 3,
                             "blocks": 0,
                             "interceptions": 0,
@@ -52504,9 +52517,9 @@
                             "total_shots": 1,
                             "shots_on_target": 1,
                             "offsides": 0,
-                            "passes": 16,
+                            "passes": 17,
                             "key_passes": 3,
-                            "pass_acc": "15",
+                            "pass_acc": "16",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -52618,9 +52631,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 11,
+                            "passes": 15,
                             "key_passes": 2,
-                            "pass_acc": "9",
+                            "pass_acc": "13",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -55872,7 +55885,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 1
+                "extra": 2
             }
         },
         "league": {
@@ -60548,7 +60561,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 33,
+                "elapsed": 35,
                 "extra": null
             }
         },
@@ -92644,7 +92657,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 71,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -97287,7 +97300,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 72,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -101673,7 +101686,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 1,
+                "elapsed": 3,
                 "extra": null
             }
         },
@@ -107035,7 +107048,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 18,
+                "elapsed": 20,
                 "extra": null
             }
         },
