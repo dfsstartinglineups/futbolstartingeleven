@@ -18195,8 +18195,8 @@
                 "city": "Kashiwa"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
                 "extra": 5
             }
@@ -21140,8 +21140,8 @@
             {
                 "time": "90+4",
                 "team_id": 305,
-                "player": null,
-                "player_id": null,
+                "player": "M. Arai",
+                "player_id": 109197,
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
@@ -21169,7 +21169,8 @@
                 "yellow_cards": 2,
                 "red_cards": 0
             }
-        }
+        },
+        "match_ended_at": "2026-03-22T08:57:28.327474+00:00"
     },
     {
         "fixture": {
@@ -21191,7 +21192,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 5
+                "extra": 6
             }
         },
         "league": {
@@ -24236,8 +24237,8 @@
             {
                 "time": "90+4",
                 "team_id": 287,
-                "player": null,
-                "player_id": null,
+                "player": "I. Kiese",
+                "player_id": 988,
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
@@ -24248,18 +24249,18 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 51,
+                "possession": 52,
                 "total_shots": 19,
                 "shots_on_target": 6,
                 "corners": 6,
-                "fouls": 6,
-                "yellow_cards": 1,
+                "fouls": 7,
+                "yellow_cards": 2,
                 "red_cards": 0
             },
             "away": {
-                "possession": 49,
-                "total_shots": 14,
-                "shots_on_target": 5,
+                "possession": 48,
+                "total_shots": 15,
+                "shots_on_target": 6,
                 "corners": 2,
                 "fouls": 12,
                 "yellow_cards": 2,
@@ -36172,7 +36173,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 63,
+                "elapsed": 64,
                 "extra": null
             }
         },
@@ -36338,7 +36339,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 66,
+                "elapsed": 67,
                 "extra": null
             }
         },
@@ -36466,6 +36467,28 @@
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "65",
+                "team_id": 2761,
+                "player": "Nam Tae-Hee",
+                "player_id": 96733,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "Shin Sang-Eun",
+                "player_out": "Shin Sang-Eun",
+                "player_out_id": 305751
+            },
+            {
+                "time": "65",
+                "team_id": 2761,
+                "player": "Kim Shin-Jin",
+                "player_id": 356200,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "G. Paulauskas",
+                "player_out": "G. Paulauskas",
+                "player_out_id": 169262
             }
         ],
         "match_ended_at": null,
@@ -36493,7 +36516,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 62,
+                "elapsed": 63,
                 "extra": null
             }
         },
@@ -36819,9 +36842,20 @@
                         "id": 9602,
                         "name": "Patrick William",
                         "number": 3,
-                        "pos": "D",
-                        "grid": "2:1"
-                    }
+                        "pos": "M",
+                        "grid": "2:1",
+                        "isSubbedIn": true,
+                        "subMinute": "62"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 203476,
+                            "name": "Ho-jin Jeong",
+                            "number": 6,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -36905,15 +36939,6 @@
                         "name": "Hyeon-yeob kim",
                         "number": 21,
                         "pos": "G",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 203476,
-                        "name": "Ho-jin Jeong",
-                        "number": 6,
-                        "pos": "M",
                         "grid": null
                     }
                 },
@@ -37077,6 +37102,17 @@
                 "assist": "Shin Jae-Won",
                 "player_out": "Shin Jae-Won",
                 "player_out_id": 34526
+            },
+            {
+                "time": "62",
+                "team_id": 2745,
+                "player": "Patrick William",
+                "player_id": 9602,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "Jeong Ho-Jin",
+                "player_out": "Jeong Ho-Jin",
+                "player_out_id": 203476
             }
         ],
         "match_ended_at": null,
