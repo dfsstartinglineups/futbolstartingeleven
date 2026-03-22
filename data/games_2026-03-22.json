@@ -133381,7 +133381,8 @@
                 "red_cards": 0
             }
         },
-        "match_ended_at": "2026-03-22T21:05:30.888384+00:00"
+        "match_ended_at": "2026-03-22T21:05:30.888384+00:00",
+        "post_game_sync": true
     },
     {
         "fixture": {
@@ -152086,7 +152087,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 78,
+                "elapsed": 79,
                 "extra": null
             }
         },
@@ -155238,8 +155239,8 @@
             {
                 "time": "77",
                 "team_id": 1617,
-                "player": null,
-                "player_id": null,
+                "player": "I. Smith",
+                "player_id": 510681,
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
@@ -155250,16 +155251,16 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 36,
+                "possession": 35,
                 "total_shots": 4,
                 "shots_on_target": 1,
-                "corners": 1,
-                "fouls": 9,
+                "corners": 2,
+                "fouls": 10,
                 "yellow_cards": 1,
                 "red_cards": 1
             },
             "away": {
-                "possession": 64,
+                "possession": 65,
                 "total_shots": 17,
                 "shots_on_target": 6,
                 "corners": 7,
@@ -155418,7 +155419,7 @@
                         "id": 5171,
                         "name": "Juan Antonini",
                         "number": 6,
-                        "pos": "D",
+                        "pos": "F",
                         "grid": "2:4",
                         "photo": "https://media.api-sports.io/football/players/5171.png",
                         "age": 26,
@@ -155479,8 +155480,79 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
                             "rating": "6.9"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "89"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 5979,
+                            "name": "Ram\u00f3n \u00c1bila",
+                            "number": 50,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/5979.png",
+                            "age": 36,
+                            "nationality": "Argentina",
+                            "season_stats": {
+                                "total": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 56,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.35"
+                                },
+                                "competitions": {
+                                    "Liga Profesional Argentina": {
+                                        "games": 4,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 1,
+                                        "pass_acc": 56,
+                                        "tackles": 0,
+                                        "interceptions": 0,
+                                        "yellow_cards": 2,
+                                        "red_cards": 0,
+                                        "rating": "6.35"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -156844,75 +156916,6 @@
                                     "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "6.30"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 5979,
-                        "name": "Ram\u00f3n \u00c1bila",
-                        "number": 50,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/5979.png",
-                        "age": 36,
-                        "nationality": "Argentina",
-                        "season_stats": {
-                            "total": {
-                                "games": 4,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 1,
-                                "pass_acc": 56,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.35"
-                            },
-                            "competitions": {
-                                "Liga Profesional Argentina": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 1,
-                                    "pass_acc": 56,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 2,
-                                    "red_cards": 0,
-                                    "rating": "6.35"
                                 }
                             }
                         },
@@ -158706,6 +158709,17 @@
                 "assist": "P. Diaz",
                 "player_out": "P. Diaz",
                 "player_out_id": 2550
+            },
+            {
+                "time": "89",
+                "team_id": 2424,
+                "player": "J. Antonini",
+                "player_id": 5171,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "R. Abila",
+                "player_out": "R. Abila",
+                "player_out_id": 5979
             }
         ],
         "final_odds_check": true,
@@ -158725,8 +158739,8 @@
                 "possession": 62,
                 "total_shots": 8,
                 "shots_on_target": 2,
-                "corners": 6,
-                "fouls": 5,
+                "corners": 7,
+                "fouls": 6,
                 "yellow_cards": 2,
                 "red_cards": 0
             }
@@ -253909,7 +253923,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 75,
+                "elapsed": 76,
                 "extra": null
             }
         },
@@ -254015,7 +254029,7 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 13,
+                            "passes": 14,
                             "key_passes": 0,
                             "pass_acc": "7",
                             "tackles": 0,
@@ -254168,7 +254182,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 1,
                             "fouls_committed": 1,
-                            "rating": "7"
+                            "rating": "7.2"
                         }
                     }
                 },
@@ -254291,14 +254305,14 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 21,
+                            "passes": 22,
                             "key_passes": 0,
-                            "pass_acc": "20",
-                            "tackles": 0,
+                            "pass_acc": "21",
+                            "tackles": 1,
                             "blocks": 0,
                             "interceptions": 1,
-                            "duels_total": 1,
-                            "duels_won": 1,
+                            "duels_total": 2,
+                            "duels_won": 2,
                             "clearances": 0,
                             "saves": 0,
                             "conceded": 0,
@@ -254306,7 +254320,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
-                            "rating": "6.6"
+                            "rating": "6.9"
                         }
                     }
                 },
@@ -254366,7 +254380,7 @@
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 2,
-                            "duels_total": 6,
+                            "duels_total": 7,
                             "duels_won": 2,
                             "clearances": 0,
                             "saves": 0,
@@ -254376,8 +254390,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 1,
                             "rating": "6.5"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "73"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 81410,
+                            "name": "Eduardo Banguero",
+                            "number": 24,
+                            "pos": "D",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/81410.png",
+                            "age": 24,
+                            "nationality": "Colombia",
+                            "season_stats": {
+                                "total": {
+                                    "games": 7,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 3,
+                                    "pass_acc": 74,
+                                    "tackles": 2,
+                                    "interceptions": 6,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.34"
+                                },
+                                "competitions": {
+                                    "Primera A": {
+                                        "games": 7,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 2,
+                                        "key_passes": 3,
+                                        "pass_acc": 74,
+                                        "tackles": 2,
+                                        "interceptions": 6,
+                                        "yellow_cards": 1,
+                                        "red_cards": 0,
+                                        "rating": "6.34"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -254429,7 +254514,7 @@
                             "total_shots": 2,
                             "shots_on_target": 2,
                             "offsides": 0,
-                            "passes": 18,
+                            "passes": 19,
                             "key_passes": 0,
                             "pass_acc": "11",
                             "tackles": 1,
@@ -254498,9 +254583,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 36,
+                            "passes": 38,
                             "key_passes": 0,
-                            "pass_acc": "31",
+                            "pass_acc": "32",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 1,
@@ -254513,7 +254598,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 1,
-                            "rating": "6.9"
+                            "rating": "6.6"
                         }
                     }
                 },
@@ -254652,7 +254737,7 @@
                                 "red_cards": 0,
                                 "fouls_drawn": 0,
                                 "fouls_committed": 0,
-                                "rating": "N/A"
+                                "rating": "6.5"
                             }
                         }
                     ]
@@ -254792,7 +254877,7 @@
                                 "red_cards": 0,
                                 "fouls_drawn": 0,
                                 "fouls_committed": 0,
-                                "rating": "N/A"
+                                "rating": "6.5"
                             }
                         }
                     ]
@@ -254863,8 +254948,42 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 1,
                             "rating": "6.7"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "73"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 59678,
+                            "name": "Misael Mart\u00ednez",
+                            "number": 26,
+                            "pos": "F",
+                            "grid": null,
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 }
             ],
             "substitutes": [
@@ -254962,75 +255081,6 @@
                                     "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "6.20"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 81410,
-                        "name": "Eduardo Banguero",
-                        "number": 24,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/81410.png",
-                        "age": 24,
-                        "nationality": "Colombia",
-                        "season_stats": {
-                            "total": {
-                                "games": 7,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 2,
-                                "key_passes": 3,
-                                "pass_acc": 74,
-                                "tackles": 2,
-                                "interceptions": 6,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.34"
-                            },
-                            "competitions": {
-                                "Primera A": {
-                                    "games": 7,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 2,
-                                    "key_passes": 3,
-                                    "pass_acc": 74,
-                                    "tackles": 2,
-                                    "interceptions": 6,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "6.34"
                                 }
                             }
                         },
@@ -255249,38 +255299,6 @@
                             "rating": "N/A"
                         }
                     }
-                },
-                {
-                    "player": {
-                        "id": 59678,
-                        "name": "Misael Mart\u00ednez",
-                        "number": 26,
-                        "pos": "F",
-                        "grid": null,
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
                 }
             ],
             "coach": {
@@ -255428,13 +255446,13 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 31,
+                            "passes": 33,
                             "key_passes": 1,
-                            "pass_acc": "25",
+                            "pass_acc": "27",
                             "tackles": 2,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 3,
+                            "duels_total": 4,
                             "duels_won": 3,
                             "clearances": 0,
                             "saves": 0,
@@ -255443,7 +255461,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
-                            "rating": "6.7"
+                            "rating": "6.3"
                         }
                     }
                 },
@@ -255497,9 +255515,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 21,
+                            "passes": 22,
                             "key_passes": 0,
-                            "pass_acc": "19",
+                            "pass_acc": "20",
                             "tackles": 0,
                             "blocks": 1,
                             "interceptions": 1,
@@ -255706,9 +255724,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 51,
+                            "passes": 52,
                             "key_passes": 0,
-                            "pass_acc": "47",
+                            "pass_acc": "48",
                             "tackles": 4,
                             "blocks": 0,
                             "interceptions": 1,
@@ -255775,9 +255793,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 25,
+                            "passes": 26,
                             "key_passes": 0,
-                            "pass_acc": "16",
+                            "pass_acc": "17",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 2,
@@ -255790,7 +255808,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 1,
-                            "rating": "5.6"
+                            "rating": "5.9"
                         }
                     }
                 },
@@ -255914,9 +255932,9 @@
                                 "total_shots": 0,
                                 "shots_on_target": 0,
                                 "offsides": 0,
-                                "passes": 22,
+                                "passes": 23,
                                 "key_passes": 1,
-                                "pass_acc": "15",
+                                "pass_acc": "16",
                                 "tackles": 1,
                                 "blocks": 0,
                                 "interceptions": 0,
@@ -256054,9 +256072,9 @@
                                 "total_shots": 0,
                                 "shots_on_target": 0,
                                 "offsides": 0,
-                                "passes": 0,
+                                "passes": 1,
                                 "key_passes": 0,
-                                "pass_acc": 0,
+                                "pass_acc": "1",
                                 "tackles": 0,
                                 "blocks": 0,
                                 "interceptions": 0,
@@ -256334,14 +256352,14 @@
                                 "total_shots": 0,
                                 "shots_on_target": 0,
                                 "offsides": 0,
-                                "passes": 0,
+                                "passes": 2,
                                 "key_passes": 0,
                                 "pass_acc": 0,
                                 "tackles": 0,
                                 "blocks": 0,
                                 "interceptions": 0,
-                                "duels_total": 0,
-                                "duels_won": 0,
+                                "duels_total": 1,
+                                "duels_won": 1,
                                 "clearances": 0,
                                 "saves": 0,
                                 "conceded": 0,
@@ -256786,6 +256804,28 @@
                 "assist": "A. Colorado",
                 "player_out": "A. Colorado",
                 "player_out_id": 13397
+            },
+            {
+                "time": "73",
+                "team_id": 1141,
+                "player": "C. Lucumi",
+                "player_id": 288238,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "M. Martinez",
+                "player_out": "M. Martinez",
+                "player_out_id": 59678
+            },
+            {
+                "time": "73",
+                "team_id": 1141,
+                "player": "J. Lasso",
+                "player_id": 310208,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "E. Banguero",
+                "player_out": "E. Banguero",
+                "player_out_id": 81410
             }
         ],
         "match_ended_at": null,
