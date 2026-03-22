@@ -161225,7 +161225,7 @@
                         "id": 410229,
                         "name": "Italo",
                         "number": 77,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "4:1",
                         "photo": "https://media.api-sports.io/football/players/410229.png",
                         "age": 23,
@@ -161286,8 +161286,79 @@
                             "fouls_drawn": 2,
                             "fouls_committed": 1,
                             "rating": "6.2"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "78"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 10363,
+                            "name": "Marcinho",
+                            "number": 7,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/10363.png",
+                            "age": 30,
+                            "nationality": "Brazil",
+                            "season_stats": {
+                                "total": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 82,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.58"
+                                },
+                                "competitions": {
+                                    "Serie A": {
+                                        "games": 4,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 1,
+                                        "pass_acc": 82,
+                                        "tackles": 0,
+                                        "interceptions": 1,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.58"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -161897,75 +161968,6 @@
                 },
                 {
                     "player": {
-                        "id": 10363,
-                        "name": "Marcinho",
-                        "number": 7,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/10363.png",
-                        "age": 30,
-                        "nationality": "Brazil",
-                        "season_stats": {
-                            "total": {
-                                "games": 4,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 1,
-                                "pass_acc": 82,
-                                "tackles": 0,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.58"
-                            },
-                            "competitions": {
-                                "Serie A": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 1,
-                                    "pass_acc": 82,
-                                    "tackles": 0,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.58"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 54102,
                         "name": "Neto Pessoa",
                         "number": 18,
@@ -162164,6 +162166,17 @@
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "78",
+                "team_id": 132,
+                "player": "Italo",
+                "player_id": 410229,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "Marcinho",
+                "player_out": "Marcinho",
+                "player_out_id": 10363
             }
         ],
         "final_odds_check": true,
@@ -162171,17 +162184,17 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 50,
-                "total_shots": 10,
-                "shots_on_target": 5,
+                "possession": 49,
+                "total_shots": 11,
+                "shots_on_target": 6,
                 "corners": 4,
                 "fouls": 12,
                 "yellow_cards": 1,
                 "red_cards": 0
             },
             "away": {
-                "possession": 50,
-                "total_shots": 8,
+                "possession": 51,
+                "total_shots": 9,
                 "shots_on_target": 0,
                 "corners": 3,
                 "fouls": 6,
@@ -162209,7 +162222,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 76,
+                "elapsed": 77,
                 "extra": null
             }
         },
@@ -165885,21 +165898,21 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 45,
+                "possession": 43,
                 "total_shots": 11,
                 "shots_on_target": 5,
                 "corners": 4,
-                "fouls": 12,
+                "fouls": 13,
                 "yellow_cards": 2,
                 "red_cards": 0
             },
             "away": {
-                "possession": 55,
+                "possession": 57,
                 "total_shots": 12,
                 "shots_on_target": 3,
                 "corners": 1,
-                "fouls": 7,
-                "yellow_cards": 2,
+                "fouls": 8,
+                "yellow_cards": 3,
                 "red_cards": 0
             }
         }
@@ -165923,7 +165936,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 1,
+                "elapsed": 2,
                 "extra": null
             }
         },
@@ -168220,7 +168233,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 11,
+                "elapsed": 12,
                 "extra": null
             }
         },
@@ -171398,7 +171411,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 9,
+                "elapsed": 10,
                 "extra": null
             }
         },
@@ -175392,7 +175405,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 10,
+                "elapsed": 11,
                 "extra": null
             }
         },
@@ -175919,8 +175932,94 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
                             "rating": "N/A"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "6"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 308930,
+                            "name": "Salvador Mariscal",
+                            "number": 8,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/308930.png",
+                            "age": 22,
+                            "nationality": "Mexico",
+                            "season_stats": {
+                                "total": {
+                                    "games": 16,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 6,
+                                    "pass_acc": 0,
+                                    "tackles": 16,
+                                    "interceptions": 19,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.72"
+                                },
+                                "competitions": {
+                                    "Leagues Cup": {
+                                        "games": 2,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 0,
+                                        "pass_acc": 0,
+                                        "tackles": 4,
+                                        "interceptions": 1,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.75"
+                                    },
+                                    "Liga MX": {
+                                        "games": 14,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 6,
+                                        "pass_acc": 0,
+                                        "tackles": 12,
+                                        "interceptions": 18,
+                                        "yellow_cards": 2,
+                                        "red_cards": 0,
+                                        "rating": "6.70"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -176661,90 +176760,6 @@
                                     "yellow_cards": 2,
                                     "red_cards": 0,
                                     "rating": "6.46"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 308930,
-                        "name": "Salvador Mariscal",
-                        "number": 8,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/308930.png",
-                        "age": 22,
-                        "nationality": "Mexico",
-                        "season_stats": {
-                            "total": {
-                                "games": 16,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 6,
-                                "pass_acc": 0,
-                                "tackles": 16,
-                                "interceptions": 19,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.72"
-                            },
-                            "competitions": {
-                                "Leagues Cup": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 0,
-                                    "tackles": 4,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.75"
-                                },
-                                "Liga MX": {
-                                    "games": 14,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 6,
-                                    "pass_acc": 0,
-                                    "tackles": 12,
-                                    "interceptions": 18,
-                                    "yellow_cards": 2,
-                                    "red_cards": 0,
-                                    "rating": "6.70"
                                 }
                             }
                         },
@@ -178789,7 +178804,19 @@
             "fetched": false,
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "6",
+                "team_id": 2285,
+                "player": "C. Gruezo",
+                "player_id": 2577,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "S. Mariscal Murra",
+                "player_out": "S. Mariscal Murra",
+                "player_out_id": 308930
+            }
+        ],
         "final_odds_check": true,
         "refreshed_15m": true,
         "refreshed_5m": true,
@@ -269945,7 +269972,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 5,
+                "elapsed": 6,
                 "extra": null
             }
         },
