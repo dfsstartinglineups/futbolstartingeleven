@@ -65230,7 +65230,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 6
+                "extra": 7
             }
         },
         "league": {
@@ -68638,7 +68638,7 @@
                         "id": 47181,
                         "name": "Toni Mart\u00ednez",
                         "number": 11,
-                        "pos": "F",
+                        "pos": "D",
                         "grid": "4:1",
                         "photo": "https://media.api-sports.io/football/players/47181.png",
                         "age": 28,
@@ -68714,8 +68714,79 @@
                             "fouls_drawn": 2,
                             "fouls_committed": 2,
                             "rating": "9.2"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "90+4"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 106759,
+                            "name": "Ville Koski",
+                            "number": 16,
+                            "pos": "D",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/106759.png",
+                            "age": 23,
+                            "nationality": "Finland",
+                            "season_stats": {
+                                "total": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.50"
+                                },
+                                "competitions": {
+                                    "La Liga": {
+                                        "games": 1,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 0,
+                                        "pass_acc": 0,
+                                        "tackles": 1,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.50"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 }
             ],
             "substitutes": [
@@ -68813,75 +68884,6 @@
                                     "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "7.33"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 106759,
-                        "name": "Ville Koski",
-                        "number": 16,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/106759.png",
-                        "age": 23,
-                        "nationality": "Finland",
-                        "season_stats": {
-                            "total": {
-                                "games": 1,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 0,
-                                "tackles": 1,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.50"
-                            },
-                            "competitions": {
-                                "La Liga": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 0,
-                                    "tackles": 1,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.50"
                                 }
                             }
                         },
@@ -69308,6 +69310,17 @@
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "90+4",
+                "team_id": 542,
+                "player": "T. Martinez",
+                "player_id": 47181,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "V. Koski",
+                "player_out": "V. Koski",
+                "player_out_id": 106759
             }
         ],
         "final_odds_check": true,
@@ -69328,8 +69341,8 @@
                 "total_shots": 14,
                 "shots_on_target": 6,
                 "corners": 1,
-                "fouls": 15,
-                "yellow_cards": 1,
+                "fouls": 16,
+                "yellow_cards": 2,
                 "red_cards": 0
             }
         }
@@ -69353,7 +69366,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 81,
+                "elapsed": 82,
                 "extra": null
             }
         },
@@ -71410,8 +71423,79 @@
                             "fouls_drawn": 3,
                             "fouls_committed": 1,
                             "rating": "6.3"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "78"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 306063,
+                            "name": "Ryan Guilherme",
+                            "number": 8,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/306063.png",
+                            "age": 23,
+                            "nationality": "Brazil",
+                            "season_stats": {
+                                "total": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 87,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.78"
+                                },
+                                "competitions": {
+                                    "Primeira Liga": {
+                                        "games": 4,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 1,
+                                        "pass_acc": 87,
+                                        "tackles": 2,
+                                        "interceptions": 1,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.78"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -71969,75 +72053,6 @@
                 },
                 {
                     "player": {
-                        "id": 306063,
-                        "name": "Ryan Guilherme",
-                        "number": 8,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/306063.png",
-                        "age": 23,
-                        "nationality": "Brazil",
-                        "season_stats": {
-                            "total": {
-                                "games": 4,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 1,
-                                "pass_acc": 87,
-                                "tackles": 2,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.78"
-                            },
-                            "competitions": {
-                                "Primeira Liga": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 87,
-                                    "tackles": 2,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.78"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 96308,
                         "name": "Jo\u00e3o Gra\u00e7a",
                         "number": 21,
@@ -72258,15 +72273,6 @@
                 "player_out_id": 26767
             },
             {
-                "time": "65",
-                "team_id": 230,
-                "player": null,
-                "player_id": null,
-                "type": "Card",
-                "detail": "Yellow Card",
-                "assist": null
-            },
-            {
                 "time": "74",
                 "team_id": 226,
                 "player": "J. Blesa",
@@ -72285,6 +72291,26 @@
                 "assist": "Pizzi",
                 "player_out": "Pizzi",
                 "player_out_id": 572
+            },
+            {
+                "time": "78",
+                "team_id": 230,
+                "player": "A. Lacximicant",
+                "player_id": 313958,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "78",
+                "team_id": 226,
+                "player": "O. Pohlmann",
+                "player_id": 199936,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "Ryan Guilherme",
+                "player_out": "Ryan Guilherme",
+                "player_out_id": 306063
             }
         ],
         "final_odds_check": true,
@@ -72328,8 +72354,8 @@
                 "city": "Marseille"
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
                 "extra": 12
             }
@@ -72481,14 +72507,14 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 11,
+                            "passes": 13,
                             "key_passes": 0,
-                            "pass_acc": "9",
+                            "pass_acc": "11",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
+                            "duels_total": 1,
+                            "duels_won": 1,
                             "clearances": 0,
                             "saves": 1,
                             "conceded": 0,
@@ -72496,7 +72522,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
-                            "rating": "6.3"
+                            "rating": "6.7"
                         }
                     }
                 },
@@ -72610,9 +72636,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 14,
+                            "passes": 15,
                             "key_passes": 0,
-                            "pass_acc": "13",
+                            "pass_acc": "14",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -72724,9 +72750,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 28,
+                            "passes": 30,
                             "key_passes": 0,
-                            "pass_acc": "26",
+                            "pass_acc": "27",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 1,
@@ -72838,9 +72864,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 38,
+                            "passes": 41,
                             "key_passes": 0,
-                            "pass_acc": "36",
+                            "pass_acc": "38",
                             "tackles": 0,
                             "blocks": 1,
                             "interceptions": 1,
@@ -72952,9 +72978,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 22,
+                            "passes": 25,
                             "key_passes": 0,
-                            "pass_acc": "19",
+                            "pass_acc": "22",
                             "tackles": 0,
                             "blocks": 1,
                             "interceptions": 1,
@@ -73066,9 +73092,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 27,
+                            "passes": 33,
                             "key_passes": 1,
-                            "pass_acc": "25",
+                            "pass_acc": "31",
                             "tackles": 2,
                             "blocks": 0,
                             "interceptions": 0,
@@ -73180,13 +73206,13 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 21,
+                            "passes": 25,
                             "key_passes": 1,
-                            "pass_acc": "18",
+                            "pass_acc": "21",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 2,
+                            "duels_total": 3,
                             "duels_won": 0,
                             "clearances": 0,
                             "saves": 0,
@@ -73194,8 +73220,8 @@
                             "yellow_cards": 0,
                             "red_cards": 0,
                             "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "6.3"
+                            "fouls_committed": 1,
+                            "rating": "6.5"
                         }
                     }
                 },
@@ -73469,9 +73495,9 @@
                                 "total_shots": 1,
                                 "shots_on_target": 1,
                                 "offsides": 0,
-                                "passes": 8,
+                                "passes": 10,
                                 "key_passes": 0,
-                                "pass_acc": "8",
+                                "pass_acc": "10",
                                 "tackles": 0,
                                 "blocks": 0,
                                 "interceptions": 0,
@@ -73599,9 +73625,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 12,
+                            "passes": 15,
                             "key_passes": 0,
-                            "pass_acc": "12",
+                            "pass_acc": "14",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -73614,7 +73640,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 1,
                             "fouls_committed": 2,
-                            "rating": "6.7"
+                            "rating": "6.3"
                         }
                     }
                 },
@@ -73668,9 +73694,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 20,
+                            "passes": 24,
                             "key_passes": 2,
-                            "pass_acc": "16",
+                            "pass_acc": "20",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -73782,9 +73808,9 @@
                             "total_shots": 1,
                             "shots_on_target": 1,
                             "offsides": 0,
-                            "passes": 6,
+                            "passes": 7,
                             "key_passes": 0,
-                            "pass_acc": "5",
+                            "pass_acc": "6",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -74817,7 +74843,7 @@
                                 "total_shots": 0,
                                 "shots_on_target": 0,
                                 "offsides": 0,
-                                "passes": 0,
+                                "passes": 1,
                                 "key_passes": 0,
                                 "pass_acc": 0,
                                 "tackles": 0,
@@ -74932,9 +74958,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 18,
+                            "passes": 19,
                             "key_passes": 1,
-                            "pass_acc": "15",
+                            "pass_acc": "16",
                             "tackles": 2,
                             "blocks": 0,
                             "interceptions": 0,
@@ -75046,9 +75072,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 23,
+                            "passes": 26,
                             "key_passes": 0,
-                            "pass_acc": "23",
+                            "pass_acc": "26",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -75145,12 +75171,12 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 41,
+                            "passes": 45,
                             "key_passes": 0,
-                            "pass_acc": "38",
+                            "pass_acc": "40",
                             "tackles": 1,
                             "blocks": 1,
-                            "interceptions": 0,
+                            "interceptions": 1,
                             "duels_total": 1,
                             "duels_won": 1,
                             "clearances": 1,
@@ -75259,9 +75285,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 28,
+                            "passes": 29,
                             "key_passes": 0,
-                            "pass_acc": "23",
+                            "pass_acc": "24",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 2,
@@ -75373,20 +75399,20 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 20,
+                            "passes": 21,
                             "key_passes": 0,
-                            "pass_acc": "19",
+                            "pass_acc": "20",
                             "tackles": 3,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 5,
-                            "duels_won": 4,
+                            "duels_total": 6,
+                            "duels_won": 5,
                             "clearances": 0,
                             "saves": 0,
                             "conceded": 0,
                             "yellow_cards": 0,
                             "red_cards": 0,
-                            "fouls_drawn": 0,
+                            "fouls_drawn": 1,
                             "fouls_committed": 0,
                             "rating": "6.9"
                         }
@@ -75487,13 +75513,13 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 26,
+                            "passes": 28,
                             "key_passes": 0,
-                            "pass_acc": "24",
+                            "pass_acc": "25",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 1,
-                            "duels_total": 2,
+                            "duels_total": 1,
                             "duels_won": 1,
                             "clearances": 0,
                             "saves": 0,
@@ -75502,7 +75528,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
-                            "rating": "6.7"
+                            "rating": "6.6"
                         }
                     }
                 },
@@ -75601,9 +75627,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 10,
+                            "passes": 12,
                             "key_passes": 0,
-                            "pass_acc": "8",
+                            "pass_acc": "10",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -75715,9 +75741,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 23,
+                            "passes": 25,
                             "key_passes": 2,
-                            "pass_acc": "22",
+                            "pass_acc": "24",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -75829,9 +75855,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 20,
+                            "passes": 22,
                             "key_passes": 1,
-                            "pass_acc": "16",
+                            "pass_acc": "18",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 1,
@@ -75934,7 +75960,7 @@
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 1,
+                            "duels_total": 2,
                             "duels_won": 0,
                             "clearances": 0,
                             "saves": 0,
@@ -75943,7 +75969,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
-                            "rating": "6.5"
+                            "rating": "6.2"
                         }
                     }
                 }
@@ -76818,16 +76844,16 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 47,
+                "possession": 49,
                 "total_shots": 5,
                 "shots_on_target": 2,
                 "corners": 0,
-                "fouls": 5,
+                "fouls": 6,
                 "yellow_cards": 1,
                 "red_cards": 0
             },
             "away": {
-                "possession": 53,
+                "possession": 51,
                 "total_shots": 6,
                 "shots_on_target": 1,
                 "corners": 2,
@@ -83820,7 +83846,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 42,
+                "elapsed": 43,
                 "extra": null
             }
         },
@@ -83941,9 +83967,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 10,
+                            "passes": 14,
                             "key_passes": 0,
-                            "pass_acc": "6",
+                            "pass_acc": "10",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -84025,9 +84051,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 9,
+                            "passes": 11,
                             "key_passes": 0,
-                            "pass_acc": "8",
+                            "pass_acc": "10",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 0,
@@ -84109,7 +84135,7 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 10,
+                            "passes": 11,
                             "key_passes": 2,
                             "pass_acc": "8",
                             "tackles": 0,
@@ -84124,7 +84150,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
-                            "rating": "6.7"
+                            "rating": "6.3"
                         }
                     }
                 },
@@ -84193,14 +84219,14 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 14,
+                            "passes": 19,
                             "key_passes": 1,
-                            "pass_acc": "12",
-                            "tackles": 0,
+                            "pass_acc": "17",
+                            "tackles": 1,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 8,
-                            "duels_won": 3,
+                            "duels_total": 9,
+                            "duels_won": 4,
                             "clearances": 0,
                             "saves": 0,
                             "conceded": 0,
@@ -84208,7 +84234,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 2,
-                            "rating": "6.7"
+                            "rating": "6.6"
                         }
                     }
                 },
@@ -84277,7 +84303,7 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 9,
+                            "passes": 10,
                             "key_passes": 1,
                             "pass_acc": "6",
                             "tackles": 0,
@@ -84391,9 +84417,9 @@
                             "total_shots": 2,
                             "shots_on_target": 2,
                             "offsides": 0,
-                            "passes": 17,
+                            "passes": 19,
                             "key_passes": 0,
-                            "pass_acc": "13",
+                            "pass_acc": "15",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 0,
@@ -84559,9 +84585,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 1,
-                            "passes": 8,
+                            "passes": 9,
                             "key_passes": 0,
-                            "pass_acc": "5",
+                            "pass_acc": "6",
                             "tackles": 2,
                             "blocks": 0,
                             "interceptions": 0,
@@ -84727,9 +84753,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 10,
+                            "passes": 12,
                             "key_passes": 0,
-                            "pass_acc": "10",
+                            "pass_acc": "11",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 0,
@@ -84811,9 +84837,9 @@
                             "total_shots": 1,
                             "shots_on_target": 1,
                             "offsides": 2,
-                            "passes": 14,
+                            "passes": 15,
                             "key_passes": 0,
-                            "pass_acc": "10",
+                            "pass_acc": "11",
                             "tackles": 2,
                             "blocks": 0,
                             "interceptions": 0,
@@ -85749,9 +85775,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 26,
+                            "passes": 29,
                             "key_passes": 0,
-                            "pass_acc": "19",
+                            "pass_acc": "22",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -85848,9 +85874,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 42,
-                            "key_passes": 0,
-                            "pass_acc": "39",
+                            "passes": 45,
+                            "key_passes": 1,
+                            "pass_acc": "40",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -85863,7 +85889,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
-                            "rating": "6.5"
+                            "rating": "6.3"
                         }
                     }
                 },
@@ -85932,9 +85958,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 30,
+                            "passes": 32,
                             "key_passes": 0,
-                            "pass_acc": "29",
+                            "pass_acc": "31",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 0,
@@ -86130,9 +86156,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 12,
+                            "passes": 14,
                             "key_passes": 0,
-                            "pass_acc": "12",
+                            "pass_acc": "14",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 1,
@@ -86226,16 +86252,16 @@
                         "live_stats": {
                             "goals": 0,
                             "assists": 0,
-                            "total_shots": 0,
+                            "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 20,
+                            "passes": 22,
                             "key_passes": 0,
-                            "pass_acc": "17",
+                            "pass_acc": "19",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 2,
-                            "duels_total": 5,
+                            "duels_total": 6,
                             "duels_won": 2,
                             "clearances": 0,
                             "saves": 0,
@@ -86244,7 +86270,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
-                            "rating": "6.3"
+                            "rating": "6.5"
                         }
                     }
                 },
@@ -86328,9 +86354,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 16,
+                            "passes": 17,
                             "key_passes": 0,
-                            "pass_acc": "14",
+                            "pass_acc": "15",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 0,
@@ -86343,7 +86369,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
-                            "rating": "6.3"
+                            "rating": "6.5"
                         }
                     }
                 },
@@ -86427,13 +86453,13 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 9,
+                            "passes": 10,
                             "key_passes": 2,
-                            "pass_acc": "9",
+                            "pass_acc": "10",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 1,
+                            "duels_total": 2,
                             "duels_won": 1,
                             "clearances": 0,
                             "saves": 0,
@@ -86625,9 +86651,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 9,
+                            "passes": 11,
                             "key_passes": 0,
-                            "pass_acc": "7",
+                            "pass_acc": "8",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -87583,7 +87609,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 11,
+                "elapsed": 12,
                 "extra": null
             }
         },
@@ -91357,7 +91383,7 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 77,
+                "possession": 82,
                 "total_shots": 1,
                 "shots_on_target": 0,
                 "corners": 2,
@@ -91366,8 +91392,8 @@
                 "red_cards": 0
             },
             "away": {
-                "possession": 23,
-                "total_shots": 0,
+                "possession": 18,
+                "total_shots": 1,
                 "shots_on_target": 0,
                 "corners": 0,
                 "fouls": 1,
@@ -91395,7 +91421,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 2,
+                "elapsed": 3,
                 "extra": null
             }
         },
@@ -138664,7 +138690,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 69,
+                "elapsed": 70,
                 "extra": null
             }
         },
@@ -142680,7 +142706,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 67,
+                "elapsed": 68,
                 "extra": null
             }
         },
@@ -146589,7 +146615,7 @@
                 "player_id": 330261,
                 "type": "Goal",
                 "detail": "Normal Goal",
-                "assist": null
+                "assist": "P. Brouwer"
             }
         ],
         "match_ended_at": null,
@@ -146637,7 +146663,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 41,
+                "elapsed": 42,
                 "extra": null
             }
         },
@@ -152211,7 +152237,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 11,
+                "elapsed": 12,
                 "extra": null
             }
         },
@@ -168136,8 +168162,2358 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
+        "homeLineup": {
+            "team": {
+                "id": 735,
+                "name": "St. Truiden",
+                "logo": "https://media.api-sports.io/football/teams/735.png",
+                "colors": {
+                    "player": {
+                        "primary": "ffea00",
+                        "number": "121212",
+                        "border": "ffea00"
+                    },
+                    "goalkeeper": {
+                        "primary": "6ea3d4",
+                        "number": "121212",
+                        "border": "6ea3d4"
+                    }
+                }
+            },
+            "formation": "4-2-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 162482,
+                        "name": "L\u00e9o Kokubo",
+                        "number": 16,
+                        "pos": "G",
+                        "grid": "1:1",
+                        "photo": "https://media.api-sports.io/football/players/162482.png",
+                        "age": 24,
+                        "nationality": "Japan",
+                        "season_stats": {
+                            "total": {
+                                "games": 28,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 84,
+                                "conceded": 31,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 69,
+                                "tackles": 4,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.23"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 28,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 84,
+                                    "conceded": 31,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 69,
+                                    "tackles": 4,
+                                    "interceptions": 0,
+                                    "yellow_cards": 4,
+                                    "red_cards": 0,
+                                    "rating": "7.23"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 381316,
+                        "name": "Robert-Jan Vanwesemael",
+                        "number": 60,
+                        "pos": "D",
+                        "grid": "2:4",
+                        "photo": "https://media.api-sports.io/football/players/381316.png",
+                        "age": 23,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 25,
+                                "goals": 1,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 23,
+                                "pass_acc": 79,
+                                "tackles": 41,
+                                "interceptions": 21,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.74"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 25,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 23,
+                                    "pass_acc": 79,
+                                    "tackles": 41,
+                                    "interceptions": 21,
+                                    "yellow_cards": 8,
+                                    "red_cards": 0,
+                                    "rating": "6.74"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 32954,
+                        "name": "Shogo Taniguchi",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": "2:3",
+                        "photo": "https://media.api-sports.io/football/players/32954.png",
+                        "age": 34,
+                        "nationality": "Japan",
+                        "season_stats": {
+                            "total": {
+                                "games": 28,
+                                "goals": 1,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 8,
+                                "pass_acc": 89,
+                                "tackles": 26,
+                                "interceptions": 25,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.04"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 28,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 8,
+                                    "pass_acc": 89,
+                                    "tackles": 26,
+                                    "interceptions": 25,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "7.04"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 279,
+                        "name": "Lo\u00efc Mbe Soh",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/279.png",
+                        "age": 24,
+                        "nationality": "France",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 1,
+                                "pass_acc": 90,
+                                "tackles": 6,
+                                "interceptions": 8,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.40"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 6,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 90,
+                                    "tackles": 6,
+                                    "interceptions": 8,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.40"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 199153,
+                        "name": "Taiga Hata",
+                        "number": 3,
+                        "pos": "D",
+                        "grid": "2:1",
+                        "photo": "https://media.api-sports.io/football/players/199153.png",
+                        "age": 23,
+                        "nationality": "Japan",
+                        "season_stats": {
+                            "total": {
+                                "games": 24,
+                                "goals": 0,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 16,
+                                "pass_acc": 80,
+                                "tackles": 29,
+                                "interceptions": 12,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.70"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 24,
+                                    "goals": 0,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 16,
+                                    "pass_acc": 80,
+                                    "tackles": 29,
+                                    "interceptions": 12,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 33805,
+                        "name": "Rihito Yamamoto",
+                        "number": 6,
+                        "pos": "M",
+                        "grid": "3:2",
+                        "photo": "https://media.api-sports.io/football/players/33805.png",
+                        "age": 24,
+                        "nationality": "Japan",
+                        "season_stats": {
+                            "total": {
+                                "games": 27,
+                                "goals": 5,
+                                "assists": 5,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 13,
+                                "key_passes": 48,
+                                "pass_acc": 80,
+                                "tackles": 53,
+                                "interceptions": 39,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.09"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 27,
+                                    "goals": 5,
+                                    "assists": 5,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 13,
+                                    "key_passes": 48,
+                                    "pass_acc": 80,
+                                    "tackles": 53,
+                                    "interceptions": 39,
+                                    "yellow_cards": 6,
+                                    "red_cards": 0,
+                                    "rating": "7.09"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 20839,
+                        "name": "Abdoulaye Sissako",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:1",
+                        "photo": "https://media.api-sports.io/football/players/20839.png",
+                        "age": 27,
+                        "nationality": "France",
+                        "season_stats": {
+                            "total": {
+                                "games": 28,
+                                "goals": 1,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 13,
+                                "pass_acc": 82,
+                                "tackles": 70,
+                                "interceptions": 32,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.81"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 28,
+                                    "goals": 1,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 13,
+                                    "pass_acc": 82,
+                                    "tackles": 70,
+                                    "interceptions": 32,
+                                    "yellow_cards": 4,
+                                    "red_cards": 0,
+                                    "rating": "6.81"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 137403,
+                        "name": "Arbnor Muja",
+                        "number": 7,
+                        "pos": "M",
+                        "grid": "4:3",
+                        "photo": "https://media.api-sports.io/football/players/137403.png",
+                        "age": 27,
+                        "nationality": "Albania",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 84,
+                                "tackles": 2,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.80"
+                            },
+                            "competitions": {
+                                "UEFA Europa League": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "S\u00fcper Lig": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 84,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.80"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 32923,
+                        "name": "Ryotaro Ito",
+                        "number": 13,
+                        "pos": "M",
+                        "grid": "4:2",
+                        "photo": "https://media.api-sports.io/football/players/32923.png",
+                        "age": 27,
+                        "nationality": "Japan",
+                        "season_stats": {
+                            "total": {
+                                "games": 25,
+                                "goals": 7,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 23,
+                                "key_passes": 78,
+                                "pass_acc": 83,
+                                "tackles": 16,
+                                "interceptions": 9,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.36"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 25,
+                                    "goals": 7,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 23,
+                                    "key_passes": 78,
+                                    "pass_acc": 83,
+                                    "tackles": 16,
+                                    "interceptions": 9,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.36"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 342652,
+                        "name": "Ilias Sebaoui",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": "4:1",
+                        "photo": "https://media.api-sports.io/football/players/342652.png",
+                        "age": 24,
+                        "nationality": "Morocco",
+                        "season_stats": {
+                            "total": {
+                                "games": 28,
+                                "goals": 4,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 21,
+                                "key_passes": 25,
+                                "pass_acc": 78,
+                                "tackles": 35,
+                                "interceptions": 12,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.91"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 28,
+                                    "goals": 4,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 21,
+                                    "key_passes": 25,
+                                    "pass_acc": 78,
+                                    "tackles": 35,
+                                    "interceptions": 12,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.91"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 375930,
+                        "name": "Keisuke Goto",
+                        "number": 42,
+                        "pos": "F",
+                        "grid": "5:1",
+                        "photo": "https://media.api-sports.io/football/players/375930.png",
+                        "age": 20,
+                        "nationality": "Japan",
+                        "season_stats": {
+                            "total": {
+                                "games": 26,
+                                "goals": 10,
+                                "assists": 5,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 18,
+                                "key_passes": 19,
+                                "pass_acc": 67,
+                                "tackles": 29,
+                                "interceptions": 10,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.85"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 26,
+                                    "goals": 10,
+                                    "assists": 5,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 18,
+                                    "key_passes": 19,
+                                    "pass_acc": 67,
+                                    "tackles": 29,
+                                    "interceptions": 10,
+                                    "yellow_cards": 4,
+                                    "red_cards": 0,
+                                    "rating": "6.85"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 377293,
+                        "name": "Matt Lendfers",
+                        "number": 21,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/377293.png",
+                        "age": 19,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 105474,
+                        "name": "Visar Musliu",
+                        "number": 26,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/105474.png",
+                        "age": 31,
+                        "nationality": "North Macedonia",
+                        "season_stats": {
+                            "total": {
+                                "games": 20,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 4,
+                                "pass_acc": 86,
+                                "tackles": 24,
+                                "interceptions": 34,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.09"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 20,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 4,
+                                    "pass_acc": 86,
+                                    "tackles": 24,
+                                    "interceptions": 34,
+                                    "yellow_cards": 4,
+                                    "red_cards": 0,
+                                    "rating": "7.09"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 8448,
+                        "name": "Simen Jukler\u00f8d",
+                        "number": 18,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/8448.png",
+                        "age": 31,
+                        "nationality": "Norway",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 8516,
+                        "name": "Wolke Janssens",
+                        "number": 22,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/8516.png",
+                        "age": 30,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 83,
+                                "tackles": 1,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.75"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 83,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.75"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 37671,
+                        "name": "Joedrick Pupe",
+                        "number": 23,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/37671.png",
+                        "age": 28,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 0,
+                                "pass_acc": 83,
+                                "tackles": 5,
+                                "interceptions": 4,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.10"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 83,
+                                    "tackles": 5,
+                                    "interceptions": 4,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.10"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 428636,
+                        "name": "Alouis Diriken",
+                        "number": 33,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/428636.png",
+                        "age": 21,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 0,
+                                "pass_acc": 88,
+                                "tackles": 4,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.60"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 88,
+                                    "tackles": 4,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 274277,
+                        "name": "Ryan Merlen",
+                        "number": 14,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/274277.png",
+                        "age": 23,
+                        "nationality": "France",
+                        "season_stats": {
+                            "total": {
+                                "games": 22,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 12,
+                                "pass_acc": 79,
+                                "tackles": 4,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.70"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 22,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 12,
+                                    "pass_acc": 79,
+                                    "tackles": 4,
+                                    "interceptions": 2,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 419870,
+                        "name": "Oumar Diouf",
+                        "number": 77,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/419870.png",
+                        "age": 21,
+                        "nationality": "Senegal",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 415721,
+                        "name": "Kaito Matsuzawa",
+                        "number": 38,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/415721.png",
+                        "age": 24,
+                        "nationality": "Japan",
+                        "season_stats": {
+                            "total": {
+                                "games": 20,
+                                "goals": 2,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 3,
+                                "pass_acc": 79,
+                                "tackles": 8,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.74"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 20,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 3,
+                                    "pass_acc": 79,
+                                    "tackles": 8,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.74"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "coach": {
+                "id": 25770,
+                "name": "Wouter Vrancken",
+                "photo": "https://media.api-sports.io/football/coachs/25770.png"
+            }
+        },
+        "awayLineup": {
+            "team": {
+                "id": 1393,
+                "name": "Union St. Gilloise",
+                "logo": "https://media.api-sports.io/football/teams/1393.png",
+                "colors": {
+                    "player": {
+                        "primary": "f9d635",
+                        "number": "0f0f0f",
+                        "border": "f9d635"
+                    },
+                    "goalkeeper": {
+                        "primary": "33c93e",
+                        "number": "f0f0f0",
+                        "border": "33c93e"
+                    }
+                }
+            },
+            "formation": "3-3-3-1",
+            "startXI": [
+                {
+                    "player": {
+                        "id": 181815,
+                        "name": "Vic Chambaere",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": "1:1",
+                        "photo": "https://media.api-sports.io/football/players/181815.png",
+                        "age": 22,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 11,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 13,
+                                "conceded": 9,
+                                "shots_on": 0,
+                                "key_passes": 1,
+                                "pass_acc": 65,
+                                "tackles": 1,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "5.97"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 3,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "5.20"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 8,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 13,
+                                    "conceded": 6,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 65,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.74"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 290546,
+                        "name": "Fedde Leysen",
+                        "number": 48,
+                        "pos": "D",
+                        "grid": "2:3",
+                        "photo": "https://media.api-sports.io/football/players/290546.png",
+                        "age": 22,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 65,
+                                "goals": 3,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 13,
+                                "pass_acc": 85,
+                                "tackles": 108,
+                                "interceptions": 50,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.86"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 35,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 5,
+                                    "pass_acc": 0,
+                                    "tackles": 53,
+                                    "interceptions": 28,
+                                    "yellow_cards": 4,
+                                    "red_cards": 0,
+                                    "rating": "6.71"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 7,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.30"
+                                },
+                                "UEFA Champions League": {
+                                    "games": 7,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 83,
+                                    "tackles": 16,
+                                    "interceptions": 4,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.40"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 22,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 7,
+                                    "pass_acc": 85,
+                                    "tackles": 32,
+                                    "interceptions": 18,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "7.02"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 19850,
+                        "name": "Christian Burgess",
+                        "number": 16,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/19850.png",
+                        "age": 34,
+                        "nationality": "England",
+                        "season_stats": {
+                            "total": {
+                                "games": 71,
+                                "goals": 6,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 16,
+                                "key_passes": 13,
+                                "pass_acc": 64,
+                                "tackles": 101,
+                                "interceptions": 102,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.27"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 37,
+                                    "goals": 5,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 9,
+                                    "key_passes": 3,
+                                    "pass_acc": 46,
+                                    "tackles": 47,
+                                    "interceptions": 64,
+                                    "yellow_cards": 11,
+                                    "red_cards": 0,
+                                    "rating": "7.12"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 4,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.90"
+                                },
+                                "UEFA Champions League": {
+                                    "games": 8,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 81,
+                                    "tackles": 11,
+                                    "interceptions": 9,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 25,
+                                    "goals": 1,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 10,
+                                    "pass_acc": 86,
+                                    "tackles": 39,
+                                    "interceptions": 27,
+                                    "yellow_cards": 9,
+                                    "red_cards": 0,
+                                    "rating": "7.41"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 20176,
+                        "name": "Ross Sykes",
+                        "number": 26,
+                        "pos": "D",
+                        "grid": "2:1",
+                        "photo": "https://media.api-sports.io/football/players/20176.png",
+                        "age": 26,
+                        "nationality": "England",
+                        "season_stats": {
+                            "total": {
+                                "games": 63,
+                                "goals": 5,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 21,
+                                "key_passes": 18,
+                                "pass_acc": 78,
+                                "tackles": 43,
+                                "interceptions": 63,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.98"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 34,
+                                    "goals": 2,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 5,
+                                    "key_passes": 5,
+                                    "pass_acc": 0,
+                                    "tackles": 10,
+                                    "interceptions": 19,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.83"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "UEFA Champions League": {
+                                    "games": 6,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 73,
+                                    "tackles": 9,
+                                    "interceptions": 11,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.94"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 22,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 15,
+                                    "key_passes": 12,
+                                    "pass_acc": 80,
+                                    "tackles": 24,
+                                    "interceptions": 33,
+                                    "yellow_cards": 6,
+                                    "red_cards": 0,
+                                    "rating": "7.16"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 338735,
+                        "name": "Anan Khalaili",
+                        "number": 25,
+                        "pos": "M",
+                        "grid": "3:3",
+                        "photo": "https://media.api-sports.io/football/players/338735.png",
+                        "age": 21,
+                        "nationality": "Israel",
+                        "season_stats": {
+                            "total": {
+                                "games": 72,
+                                "goals": 7,
+                                "assists": 5,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 27,
+                                "key_passes": 80,
+                                "pass_acc": 78,
+                                "tackles": 161,
+                                "interceptions": 82,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.18"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 36,
+                                    "goals": 2,
+                                    "assists": 4,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 14,
+                                    "key_passes": 28,
+                                    "pass_acc": 0,
+                                    "tackles": 81,
+                                    "interceptions": 32,
+                                    "yellow_cards": 6,
+                                    "red_cards": 0,
+                                    "rating": "7.20"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 4,
+                                    "interceptions": 5,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "UEFA Champions League": {
+                                    "games": 8,
+                                    "goals": 3,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 12,
+                                    "pass_acc": 73,
+                                    "tackles": 35,
+                                    "interceptions": 13,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.53"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 27,
+                                    "goals": 2,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 9,
+                                    "key_passes": 39,
+                                    "pass_acc": 80,
+                                    "tackles": 41,
+                                    "interceptions": 32,
+                                    "yellow_cards": 5,
+                                    "red_cards": 0,
+                                    "rating": "7.08"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 8939,
+                        "name": "Rob Schoofs",
+                        "number": 17,
+                        "pos": "M",
+                        "grid": "3:2",
+                        "photo": "https://media.api-sports.io/football/players/8939.png",
+                        "age": 31,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 29,
+                                "goals": 2,
+                                "assists": 4,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 4,
+                                "key_passes": 34,
+                                "pass_acc": 79,
+                                "tackles": 19,
+                                "interceptions": 13,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.71"
+                            },
+                            "competitions": {
+                                "UEFA Champions League": {
+                                    "games": 7,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 81,
+                                    "tackles": 4,
+                                    "interceptions": 3,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 22,
+                                    "goals": 2,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 31,
+                                    "pass_acc": 79,
+                                    "tackles": 15,
+                                    "interceptions": 10,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.80"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 314145,
+                        "name": "Guilherme Smith",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": "3:1",
+                        "photo": "https://media.api-sports.io/football/players/314145.png",
+                        "age": 22,
+                        "nationality": "Brazil",
+                        "season_stats": {
+                            "total": {
+                                "games": 13,
+                                "goals": 2,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 5,
+                                "pass_acc": 77,
+                                "tackles": 26,
+                                "interceptions": 10,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.04"
+                            },
+                            "competitions": {
+                                "UEFA Champions League": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 75,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 11,
+                                    "goals": 2,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 5,
+                                    "key_passes": 5,
+                                    "pass_acc": 77,
+                                    "tackles": 24,
+                                    "interceptions": 9,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "7.19"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 350850,
+                        "name": "Besfort Zeneli",
+                        "number": 23,
+                        "pos": "F",
+                        "grid": "4:3",
+                        "photo": "https://media.api-sports.io/football/players/350850.png",
+                        "age": 23,
+                        "nationality": "Kosovo",
+                        "season_stats": {
+                            "total": {
+                                "games": 8,
+                                "goals": 1,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 5,
+                                "pass_acc": 70,
+                                "tackles": 3,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.88"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 8,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 5,
+                                    "pass_acc": 70,
+                                    "tackles": 3,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.88"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 4408,
+                        "name": "Adem Zorgane",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "4:2",
+                        "photo": "https://media.api-sports.io/football/players/4408.png",
+                        "age": 25,
+                        "nationality": "Algeria",
+                        "season_stats": {
+                            "total": {
+                                "games": 67,
+                                "goals": 6,
+                                "assists": 12,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 21,
+                                "key_passes": 96,
+                                "pass_acc": 72,
+                                "tackles": 131,
+                                "interceptions": 58,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.83"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 31,
+                                    "goals": 4,
+                                    "assists": 7,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 9,
+                                    "key_passes": 62,
+                                    "pass_acc": 57,
+                                    "tackles": 67,
+                                    "interceptions": 34,
+                                    "yellow_cards": 4,
+                                    "red_cards": 1,
+                                    "rating": "7.23"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.30"
+                                },
+                                "UEFA Champions League": {
+                                    "games": 8,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 6,
+                                    "pass_acc": 86,
+                                    "tackles": 16,
+                                    "interceptions": 4,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.81"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 27,
+                                    "goals": 2,
+                                    "assists": 4,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 8,
+                                    "key_passes": 27,
+                                    "pass_acc": 85,
+                                    "tackles": 48,
+                                    "interceptions": 20,
+                                    "yellow_cards": 4,
+                                    "red_cards": 0,
+                                    "rating": "7.00"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 127414,
+                        "name": "Anouar Ait El Hadj",
+                        "number": 10,
+                        "pos": "F",
+                        "grid": "4:1",
+                        "photo": "https://media.api-sports.io/football/players/127414.png",
+                        "age": 23,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 70,
+                                "goals": 6,
+                                "assists": 9,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 24,
+                                "key_passes": 87,
+                                "pass_acc": 82,
+                                "tackles": 56,
+                                "interceptions": 20,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.26"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 35,
+                                    "goals": 4,
+                                    "assists": 6,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 11,
+                                    "key_passes": 30,
+                                    "pass_acc": 0,
+                                    "tackles": 30,
+                                    "interceptions": 8,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.08"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "8.00"
+                                },
+                                "UEFA Champions League": {
+                                    "games": 7,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 12,
+                                    "pass_acc": 79,
+                                    "tackles": 8,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.09"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 27,
+                                    "goals": 0,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 8,
+                                    "key_passes": 44,
+                                    "pass_acc": 83,
+                                    "tackles": 17,
+                                    "interceptions": 10,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.87"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 286895,
+                        "name": "Mateo Biondic",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "5:1",
+                        "photo": "https://media.api-sports.io/football/players/286895.png",
+                        "age": 22,
+                        "nationality": "Germany",
+                        "season_stats": {
+                            "total": {
+                                "games": 1,
+                                "goals": 1,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 1,
+                                "pass_acc": 52,
+                                "tackles": 1,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.48"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 1,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 1,
+                                    "pass_acc": 52,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.48"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 444481,
+                        "name": "Giorgi Kavlashvili",
+                        "number": 18,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/444481.png",
+                        "age": 18,
+                        "nationality": "Georgia",
+                        "season_stats": {
+                            "total": {
+                                "games": 1,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 8443,
+                        "name": "Jens Teunckens",
+                        "number": 21,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/8443.png",
+                        "age": 27,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 466871,
+                        "name": "Massire Sylla",
+                        "number": 29,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/466871.png",
+                        "age": 20,
+                        "nationality": "Senegal",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 5967,
+                        "name": "Kevin Mac Allister",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/5967.png",
+                        "age": 28,
+                        "nationality": "Argentina",
+                        "season_stats": {
+                            "total": {
+                                "games": 68,
+                                "goals": 5,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 12,
+                                "key_passes": 19,
+                                "pass_acc": 83,
+                                "tackles": 230,
+                                "interceptions": 99,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.00"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 34,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 5,
+                                    "pass_acc": 0,
+                                    "tackles": 107,
+                                    "interceptions": 49,
+                                    "yellow_cards": 12,
+                                    "red_cards": 1,
+                                    "rating": "7.17"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 2,
+                                    "interceptions": 4,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "UEFA Champions League": {
+                                    "games": 8,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 4,
+                                    "pass_acc": 82,
+                                    "tackles": 29,
+                                    "interceptions": 9,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 25,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 10,
+                                    "pass_acc": 83,
+                                    "tackles": 92,
+                                    "interceptions": 37,
+                                    "yellow_cards": 9,
+                                    "red_cards": 0,
+                                    "rating": "7.33"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 271610,
+                        "name": "Yari Stevens",
+                        "number": 99,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 271875,
+                        "name": "Louis Patris",
+                        "number": 27,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/271875.png",
+                        "age": 24,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 26,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 5,
+                                "key_passes": 18,
+                                "pass_acc": 67,
+                                "tackles": 38,
+                                "interceptions": 22,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.74"
+                            },
+                            "competitions": {
+                                "UEFA Champions League": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 3,
+                                    "pass_acc": 57,
+                                    "tackles": 9,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.56"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 21,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 15,
+                                    "pass_acc": 69,
+                                    "tackles": 29,
+                                    "interceptions": 19,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.93"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 303680,
+                        "name": "Ivan Pavli\u0107",
+                        "number": 14,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/303680.png",
+                        "age": 24,
+                        "nationality": "Netherlands",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 40,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {
+                                "Jupiler Pro League": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 40,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 76579,
+                        "name": "Guillaume Fran\u00e7ois",
+                        "number": 19,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/76579.png",
+                        "age": 35,
+                        "nationality": "Belgium",
+                        "season_stats": {
+                            "total": {
+                                "games": 67,
+                                "goals": 0,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 20,
+                                "pass_acc": 0,
+                                "tackles": 30,
+                                "interceptions": 14,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.65"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 33,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 10,
+                                    "pass_acc": 0,
+                                    "tackles": 15,
+                                    "interceptions": 7,
+                                    "yellow_cards": 2,
+                                    "red_cards": 1,
+                                    "rating": "6.65"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 33,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 10,
+                                    "pass_acc": 0,
+                                    "tackles": 15,
+                                    "interceptions": 7,
+                                    "yellow_cards": 2,
+                                    "red_cards": 1,
+                                    "rating": "6.65"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 455438,
+                        "name": "Marc Giger",
+                        "number": 20,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/455438.png",
+                        "age": 21,
+                        "nationality": "Switzerland",
+                        "season_stats": {
+                            "total": {
+                                "games": 35,
+                                "goals": 3,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 10,
+                                "key_passes": 13,
+                                "pass_acc": 78,
+                                "tackles": 18,
+                                "interceptions": 6,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.85"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 13,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.30"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "UEFA Champions League": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 3,
+                                    "pass_acc": 70,
+                                    "tackles": 4,
+                                    "interceptions": 2,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.54"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 16,
+                                    "goals": 3,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 8,
+                                    "key_passes": 7,
+                                    "pass_acc": 80,
+                                    "tackles": 12,
+                                    "interceptions": 2,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.68"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 359006,
+                        "name": "Mohammed Fuseini",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/359006.png",
+                        "age": 23,
+                        "nationality": "Ghana",
+                        "season_stats": {
+                            "total": {
+                                "games": 30,
+                                "goals": 4,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 12,
+                                "pass_acc": 76,
+                                "tackles": 9,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.61"
+                            },
+                            "competitions": {
+                                "Super Cup": {
+                                    "games": 9,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.82"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 9,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 2,
+                                    "pass_acc": 0,
+                                    "tackles": 3,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.82"
+                                },
+                                "UEFA Champions League": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 63,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.40"
+                                },
+                                "Jupiler Pro League": {
+                                    "games": 10,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 8,
+                                    "pass_acc": 78,
+                                    "tackles": 3,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.39"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "coach": {
+                "id": 25728,
+                "name": "David Hubert",
+                "photo": "https://media.api-sports.io/football/coachs/25728.png"
+            }
+        },
         "lineup_checks": 0,
         "odds": {
             "home": "3.50",
