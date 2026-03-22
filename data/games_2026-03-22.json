@@ -70139,7 +70139,7 @@
                         "id": 129728,
                         "name": "Jordan Holsgrove",
                         "number": 10,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "3:2",
                         "photo": "https://media.api-sports.io/football/players/129728.png",
                         "age": 26,
@@ -70200,8 +70200,79 @@
                             "fouls_drawn": 2,
                             "fouls_committed": 2,
                             "rating": "6.9"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "85"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 162713,
+                            "name": "Alejandro Marqu\u00e9s",
+                            "number": 9,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/162713.png",
+                            "age": 25,
+                            "nationality": "Venezuela",
+                            "season_stats": {
+                                "total": {
+                                    "games": 19,
+                                    "goals": 4,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 10,
+                                    "key_passes": 4,
+                                    "pass_acc": 67,
+                                    "tackles": 5,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.59"
+                                },
+                                "competitions": {
+                                    "Primeira Liga": {
+                                        "games": 19,
+                                        "goals": 4,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 10,
+                                        "key_passes": 4,
+                                        "pass_acc": 67,
+                                        "tackles": 5,
+                                        "interceptions": 3,
+                                        "yellow_cards": 1,
+                                        "red_cards": 0,
+                                        "rating": "6.59"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -70715,75 +70786,6 @@
                                     "yellow_cards": 1,
                                     "red_cards": 0,
                                     "rating": "6.38"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 162713,
-                        "name": "Alejandro Marqu\u00e9s",
-                        "number": 9,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/162713.png",
-                        "age": 25,
-                        "nationality": "Venezuela",
-                        "season_stats": {
-                            "total": {
-                                "games": 19,
-                                "goals": 4,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 10,
-                                "key_passes": 4,
-                                "pass_acc": 67,
-                                "tackles": 5,
-                                "interceptions": 3,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.59"
-                            },
-                            "competitions": {
-                                "Primeira Liga": {
-                                    "games": 19,
-                                    "goals": 4,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 10,
-                                    "key_passes": 4,
-                                    "pass_acc": 67,
-                                    "tackles": 5,
-                                    "interceptions": 3,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "6.59"
                                 }
                             }
                         },
@@ -72331,6 +72333,26 @@
                 "team_id": 226,
                 "player": "N. Abbey",
                 "player_id": 275567,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "85",
+                "team_id": 230,
+                "player": "J. Holsgrove",
+                "player_id": 129728,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "A. Marques",
+                "player_out": "A. Marques",
+                "player_out_id": 162713
+            },
+            {
+                "time": "86",
+                "team_id": 226,
+                "player": null,
+                "player_id": null,
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
@@ -80447,7 +80469,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 46,
+                "elapsed": 47,
                 "extra": null
             }
         },
@@ -87632,7 +87654,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 16,
+                "elapsed": 17,
                 "extra": null
             }
         },
@@ -91444,7 +91466,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 8,
+                "elapsed": 9,
                 "extra": null
             }
         },
@@ -94466,7 +94488,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 5,
+                "elapsed": 6,
                 "extra": null
             }
         },
@@ -139674,7 +139696,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 75,
+                "elapsed": 76,
                 "extra": null
             }
         },
@@ -143690,7 +143712,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 72,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -147645,8 +147667,8 @@
                 "city": "London"
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
                 "extra": 1
             }
@@ -153221,7 +153243,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 17,
+                "elapsed": 18,
                 "extra": null
             }
         },
