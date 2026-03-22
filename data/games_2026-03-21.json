@@ -264166,7 +264166,7 @@
                         "id": 95446,
                         "name": "Robert Morales",
                         "number": 31,
-                        "pos": "M",
+                        "pos": "D",
                         "grid": "4:2",
                         "photo": "https://media.api-sports.io/football/players/95446.png",
                         "age": 26,
@@ -264227,8 +264227,63 @@
                             "fouls_drawn": 2,
                             "fouls_committed": 4,
                             "rating": "6.2"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "90+7"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 265676,
+                            "name": "Antonio Leone",
+                            "number": 24,
+                            "pos": "D",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/265676.png",
+                            "age": 21,
+                            "nationality": "Mexico",
+                            "season_stats": {
+                                "total": {
+                                    "games": 0,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "competitions": {}
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -264780,59 +264835,6 @@
                                     "rating": "6.58"
                                 }
                             }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 265676,
-                        "name": "Antonio Leone",
-                        "number": 24,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/265676.png",
-                        "age": 21,
-                        "nationality": "Mexico",
-                        "season_stats": {
-                            "total": {
-                                "games": 0,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 0,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "N/A"
-                            },
-                            "competitions": {}
                         },
                         "live_stats": {
                             "goals": 0,
@@ -267880,6 +267882,17 @@
                 "type": "Goal",
                 "detail": "Penalty",
                 "assist": null
+            },
+            {
+                "time": "90+7",
+                "team_id": 2286,
+                "player": "R. Morales",
+                "player_id": 95446,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "T. Leone",
+                "player_out": "T. Leone",
+                "player_out_id": 265676
             }
         ],
         "match_ended_at": null,
@@ -267893,7 +267906,7 @@
                 "total_shots": 7,
                 "shots_on_target": 2,
                 "corners": 2,
-                "fouls": 16,
+                "fouls": 15,
                 "yellow_cards": 3,
                 "red_cards": 0
             },
@@ -267902,7 +267915,7 @@
                 "total_shots": 7,
                 "shots_on_target": 4,
                 "corners": 3,
-                "fouls": 7,
+                "fouls": 8,
                 "yellow_cards": 3,
                 "red_cards": 0
             }
