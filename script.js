@@ -1290,7 +1290,7 @@ function renderGames() {
     });
 
     filteredGames.sort((a, b) => {
-        // NEW: Array containing all "dead" statuses (Finished, Postponed, Cancelled, Abandoned)
+        // Array containing all "dead" statuses (Finished, Postponed, Cancelled, Abandoned)
         const deadStatuses = ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD'];
         
         const isFinishedA = deadStatuses.includes(a.fixture.status.short);
@@ -1301,6 +1301,42 @@ function renderGames() {
         
         return new Date(a.fixture.date) - new Date(b.fixture.date);
     });
+
+    
+    if (filteredGames.length === 0) {
+        const params = getUrlParams();
+        const isLeagueFiltered = params.league && params.league !== 'top';
+        
+        // Find the actual league name for the message
+        let leagueName = "matches";
+        if (isLeagueFiltered) {
+            for (const region in LEAGUE_GROUPS) {
+                const found = LEAGUE_GROUPS[region].find(l => l.key === params.league);
+                if (found) { leagueName = found.name; break; }
+            }
+        }
+
+        
+        const titleMsg = isLeagueFiltered ? `No ${leagueName} Matches Today` : `No Matches Found`;
+        const bodyMsg = `There are no ${leagueName} matches scheduled for ${params.date}. Check back on matchday for live starting XIs, real-time odds, injuries, and live scores.`;
+
+        
+        const actionBtn = isLeagueFiltered 
+            ? `<a href="/" class="btn btn-dark mt-3 fw-bold shadow-sm px-4" style="border-radius: 20px;">View All Today's Matches</a>` 
+            : ``;
+
+        container.innerHTML = `
+            <div class="col-12 col-md-8 mx-auto mt-4 mb-5">
+                <div class="card shadow-sm border text-center py-5 px-3" style="background-color: #fff; border-radius: 12px; border-color: #dee2e6 !important;">
+                    <div style="font-size: 3.5rem; margin-bottom: 10px; opacity: 0.8;">📅</div>
+                    <h2 class="h4 fw-bold text-dark mb-2">${titleMsg}</h2>
+                    <p class="text-muted mb-3 mx-auto" style="max-width: 500px; font-size: 0.95rem; line-height: 1.5;">${bodyMsg}</p>
+                    <div>${actionBtn}</div>
+                </div>
+            </div>`;
+        return; // Stop here so it doesn't try to draw cards
+    }
+    // --- END NEW LOGIC ---
 
     filteredGames.forEach(item => container.appendChild(createGameCard(item)));
     
