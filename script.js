@@ -1255,24 +1255,23 @@ function handleHashNavigation() {
 async function init() {
     const params = getUrlParams();
     
-    
-    
     renderLeagueMenu(params.league, params.date);
     
     const container = document.getElementById('games-container');
     const datePicker = document.getElementById('date-picker');
-    // ... rest of the function remains unchanged
+    
     if (datePicker) datePicker.value = params.date;
 
     container.innerHTML = `<div class="col-12 text-center mt-5 pt-5"><div class="spinner-border text-success" role="status"></div><p class="mt-3 text-muted fw-bold">Loading Pitch Data...</p></div>`;
     
     ALL_GAMES_DATA = await fetchMatchesData(params);
-
-    if (!ALL_GAMES_DATA || ALL_GAMES_DATA.length === 0) {
-        container.innerHTML = `<div class="col-12 text-center mt-5"><div class="alert alert-light border shadow-sm py-4"><h5 class="text-muted mb-0">No matches found for ${params.date}.</h5></div></div>`;
-        return;
+    
+    // Safety check: if fetch failed entirely, just set it to an empty array
+    if (!ALL_GAMES_DATA) {
+        ALL_GAMES_DATA = [];
     }
 
+    // REMOVED THE EARLY EXIT! Now it always proceeds to renderGames()
     renderGames();
     handleHashNavigation(); 
     setInterval(updateLiveGames, 30000); 
