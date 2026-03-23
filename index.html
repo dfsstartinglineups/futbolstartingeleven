@@ -87,6 +87,14 @@
                     // 4. Overwrite Canonical URL
                     const canonical = document.getElementById('canonical-url');
                     if (canonical) canonical.href = currentUrl;
+
+                    // 5. NEW: Wait for the body to load, then swap the H1 tag!
+                    window.addEventListener('DOMContentLoaded', () => {
+                        const h1Tag = document.querySelector('h1');
+                        if (h1Tag) {
+                            h1Tag.textContent = "Live " + leagueName + " Starting Lineups, Scores & Match Odds";
+                        }
+                    });
                 }
             }
         })();
