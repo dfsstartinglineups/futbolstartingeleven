@@ -780,38 +780,7 @@ function getUrlParams() {
     return { league: params.get('league') || 'top', date: params.get('date') || DEFAULT_DATE };
 }
 
-function updatePageMetadata(leagueKey) {
-    const h1Tag = document.querySelector('h1');
 
-    // If it's the default homepage, use the master tags
-    if (leagueKey === 'top') {
-        document.title = "Live Soccer-Futbol-Football Starting Lineups, Scores, Injuries & Odds | FutbolStartingEleven";
-        document.querySelector('meta[name="description"]').setAttribute("content", "Real-time soccer and football starting XIs, live match scores, goalscorers, injuries, and betting odds. Up-to-the-minute data for Premier League, Champions League, MLS, La Liga, and global football.");
-        if (h1Tag) h1Tag.textContent = "Live Soccer-Futbol-Football Starting Lineups, Scores & Match Odds";
-        return;
-    }
-
-    // Otherwise, find the specific league name
-    let leagueName = "";
-    for (const region in LEAGUE_GROUPS) {
-        const found = LEAGUE_GROUPS[region].find(l => l.key === leagueKey);
-        if (found) { leagueName = found.name; break; }
-    }
-
-    // Inject the targeted page metadata
-    if (leagueName) {
-        document.title = `Live ${leagueName} Starting Lineups, Scores & Match Odds | FutbolStartingEleven`;
-        
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) {
-            metaDesc.setAttribute("content", `Real-time ${leagueName} starting XIs, live match scores, injuries, goalscorers, and betting odds. Fast, ad-free live updates for today's matches.`);
-        }
-        
-        if (h1Tag) {
-            h1Tag.textContent = `Live ${leagueName} Starting Lineups, Scores & Match Odds`;
-        }
-    }
-}
 
 function renderLeagueMenu(activeLeague, currentDate) {
     const desktopMenu = document.getElementById('league-menu-desktop');
@@ -1286,8 +1255,7 @@ function handleHashNavigation() {
 async function init() {
     const params = getUrlParams();
     
-    // Update document title and meta description instantly
-    updatePageMetadata(params.league);
+    
     
     renderLeagueMenu(params.league, params.date);
     
