@@ -1307,7 +1307,7 @@ function renderGames() {
         const isLeagueFiltered = params.league && params.league !== 'top';
         
         // Find the actual league name for the message
-        let leagueName = "matches";
+        let leagueName = "Global Football";
         if (isLeagueFiltered) {
             for (const region in LEAGUE_GROUPS) {
                 const found = LEAGUE_GROUPS[region].find(l => l.key === params.league);
@@ -1315,22 +1315,34 @@ function renderGames() {
             }
         }
 
-        
-        const titleMsg = isLeagueFiltered ? `No ${leagueName} Matches Today` : `No Matches Found`;
-        const bodyMsg = `There are no ${leagueName} matches scheduled for ${params.date}. Check back on matchday for live starting XIs, real-time odds, injuries, and live scores.`;
+        // SEO FIX: Never use "No Matches" in the H2! Frame it as a positive Hub.
+        const titleMsg = `${leagueName} Live Hub`;
+        const bodyMsg = `The fixture list is currently clear for <strong>${params.date}</strong>. When ${leagueName} clubs are in action, this dashboard automatically updates in real-time.`;
 
-        
-        const actionBtn = isLeagueFiltered 
-            ? `<a href="/" class="btn btn-dark mt-3 fw-bold shadow-sm px-4" style="border-radius: 20px;">View All Today's Matches</a>` 
-            : ``;
+        // Give Googlebot (and users) an internal link to keep crawling
+        const actionBtn = `<a href="/" class="btn btn-dark mt-2 fw-bold shadow-sm px-4 py-2" style="border-radius: 20px;">View Active Global Matches</a>`;
 
         container.innerHTML = `
             <div class="col-12 col-md-8 mx-auto mt-4 mb-5">
-                <div class="card shadow-sm border text-center py-5 px-3" style="background-color: #fff; border-radius: 12px; border-color: #dee2e6 !important;">
-                    <div style="font-size: 3.5rem; margin-bottom: 10px; opacity: 0.8;">📅</div>
-                    <h2 class="h4 fw-bold text-dark mb-2">${titleMsg}</h2>
-                    <p class="text-muted mb-3 mx-auto" style="max-width: 500px; font-size: 0.95rem; line-height: 1.5;">${bodyMsg}</p>
-                    <div>${actionBtn}</div>
+                <div class="card shadow-sm border text-start py-4 px-4" style="background-color: #fff; border-radius: 12px; border-color: #dee2e6 !important;">
+                    <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                        <div style="font-size: 2.5rem; margin-right: 15px;">🏟️</div>
+                        <h2 class="h4 fw-bold text-dark mb-0">${titleMsg}</h2>
+                    </div>
+                    
+                    <p class="text-dark mb-4" style="font-size: 0.95rem; line-height: 1.5;">${bodyMsg}</p>
+                    
+                    <h3 class="h6 fw-bold text-dark mb-3">What to expect on matchday:</h3>
+                    <div class="row text-muted mb-3" style="font-size: 0.9rem;">
+                        <div class="col-sm-6 mb-3">📋 <strong>Confirmed Starting XIs:</strong> Formations and starters updated right before kickoff.</div>
+                        <div class="col-sm-6 mb-3">⚡ <strong>Live Match Events:</strong> Real-time goals, cards, and substitutions.</div>
+                        <div class="col-sm-6 mb-3">📊 <strong>Live Team Stats:</strong> Possession, shots on target, and corner tracking.</div>
+                        <div class="col-sm-6 mb-3">📈 <strong>Live Odds:</strong> Up-to-the-minute moneyline and totals.</div>
+                    </div>
+                    
+                    <div class="text-center pt-3">
+                        ${actionBtn}
+                    </div>
                 </div>
             </div>`;
         return; // Stop here so it doesn't try to draw cards
