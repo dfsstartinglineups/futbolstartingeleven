@@ -165950,7 +165950,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 57,
+                "elapsed": 58,
                 "extra": null
             }
         },
@@ -169199,7 +169199,7 @@
                 "player_id": 45017,
                 "type": "Goal",
                 "detail": "Normal Goal",
-                "assist": null
+                "assist": "A. Pellegrino"
             }
         ],
         "final_odds_check": true,
@@ -169246,7 +169246,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 71,
+                "elapsed": 72,
                 "extra": null
             }
         },
@@ -170912,7 +170912,7 @@
                         "id": 456286,
                         "name": "Agust\u00edn Massaccesi",
                         "number": 22,
-                        "pos": "D",
+                        "pos": "F",
                         "grid": "2:3",
                         "photo": "https://media.api-sports.io/football/players/456286.png",
                         "age": 23,
@@ -170957,8 +170957,79 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 1,
                             "rating": "6.5"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "69"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 5396,
+                            "name": "Mat\u00edas Tissera",
+                            "number": 17,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/5396.png",
+                            "age": 29,
+                            "nationality": "Argentina",
+                            "season_stats": {
+                                "total": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 100,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.20"
+                                },
+                                "competitions": {
+                                    "Liga Profesional Argentina": {
+                                        "games": 1,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 0,
+                                        "pass_acc": 100,
+                                        "tackles": 0,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.20"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -172224,75 +172295,6 @@
                 },
                 {
                     "player": {
-                        "id": 5396,
-                        "name": "Mat\u00edas Tissera",
-                        "number": 17,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/5396.png",
-                        "age": 29,
-                        "nationality": "Argentina",
-                        "season_stats": {
-                            "total": {
-                                "games": 1,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 0,
-                                "pass_acc": 100,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.20"
-                            },
-                            "competitions": {
-                                "Liga Profesional Argentina": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 0,
-                                    "pass_acc": 100,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.20"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 560419,
                         "name": "Luca Rafaelli",
                         "number": 72,
@@ -172413,10 +172415,21 @@
             {
                 "time": "69",
                 "team_id": 478,
+                "player": "A. Massaccesi",
+                "player_id": 456286,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "M. Tissera",
+                "player_out": "M. Tissera",
+                "player_out_id": 5396
+            },
+            {
+                "time": "69",
+                "team_id": 478,
                 "player": "M. Fonseca",
                 "player_id": 161860,
                 "type": "subst",
-                "detail": "Substitution 1",
+                "detail": "Substitution 2",
                 "assist": "N. Guerra",
                 "player_out": "N. Guerra",
                 "player_out_id": 11839
@@ -172465,7 +172478,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 66,
+                "elapsed": 67,
                 "extra": null
             }
         },
@@ -176531,7 +176544,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 72,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -274855,7 +274868,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 67,
+                "elapsed": 68,
                 "extra": null
             }
         },
