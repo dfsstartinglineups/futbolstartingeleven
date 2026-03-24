@@ -63,6 +63,7 @@ const LEAGUE_GROUPS = {
     ],
     "International": [
         { key: "worldcup", id: 1, name: "World Cup" },
+        { key: "friendlies", id: 10, name: "Friendlies" },
         { key: "euros", id: 4, name: "Euro Championship" },
         { key: "copaamerica", id: 9, name: "Copa America" },
         { key: "uefanations", id: 5, name: "UEFA Nations League" },
@@ -101,6 +102,7 @@ const LEAGUE_ABBREV = {
     9: "COPA",       // Copa America
     5: "UNL",        // UEFA Nations League
     531: "CNL",      // CONCACAF Nations League
+    10: "FRNDLY",    // International Friendly
 
     // --- Americas ---
     253: "MLS",      // Major League Soccer
