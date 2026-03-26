@@ -3422,7 +3422,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 71,
+                "elapsed": 72,
                 "extra": null
             }
         },
@@ -5561,7 +5561,7 @@
                         "id": 363371,
                         "name": "Neider Ospina",
                         "number": 10,
-                        "pos": "M",
+                        "pos": "D",
                         "grid": "4:4",
                         "photo": "https://media.api-sports.io/football/players/363371.png",
                         "age": 22,
@@ -5622,8 +5622,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 2,
                             "rating": "6.5"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "71"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 16569,
+                            "name": "Dennis Quintero",
+                            "number": 26,
+                            "pos": "D",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/16569.png",
+                            "age": 28,
+                            "nationality": "Ecuador",
+                            "season_stats": {
+                                "total": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 82,
+                                    "tackles": 3,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.68"
+                                },
+                                "competitions": {
+                                    "Primera A": {
+                                        "games": 5,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 0,
+                                        "pass_acc": 82,
+                                        "tackles": 3,
+                                        "interceptions": 1,
+                                        "yellow_cards": 0,
+                                        "red_cards": 1,
+                                        "rating": "6.68"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -6100,75 +6171,6 @@
                 },
                 {
                     "player": {
-                        "id": 16569,
-                        "name": "Dennis Quintero",
-                        "number": 26,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/16569.png",
-                        "age": 28,
-                        "nationality": "Ecuador",
-                        "season_stats": {
-                            "total": {
-                                "games": 5,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 82,
-                                "tackles": 3,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.68"
-                            },
-                            "competitions": {
-                                "Primera A": {
-                                    "games": 5,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 82,
-                                    "tackles": 3,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 1,
-                                    "rating": "6.68"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 13716,
                         "name": "Kelvin Osorio",
                         "number": 33,
@@ -6393,6 +6395,17 @@
                 "assist": "M. Sierra",
                 "player_out": "M. Sierra",
                 "player_out_id": 36269
+            },
+            {
+                "time": "71",
+                "team_id": 1464,
+                "player": "N. Ospina",
+                "player_id": 363371,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "D. Quintero",
+                "player_out": "D. Quintero",
+                "player_out_id": 16569
             }
         ],
         "match_ended_at": null,
@@ -12415,7 +12428,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 62,
+                "elapsed": 64,
                 "extra": null
             }
         },
@@ -12530,7 +12543,7 @@
                             "duels_total": 2,
                             "duels_won": 2,
                             "clearances": 0,
-                            "saves": 1,
+                            "saves": 2,
                             "conceded": 0,
                             "yellow_cards": 0,
                             "red_cards": 0,
@@ -12659,9 +12672,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 50,
+                            "passes": 52,
                             "key_passes": 0,
-                            "pass_acc": "43",
+                            "pass_acc": "45",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 0,
@@ -12728,14 +12741,14 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 57,
+                            "passes": 59,
                             "key_passes": 0,
-                            "pass_acc": "52",
-                            "tackles": 2,
+                            "pass_acc": "54",
+                            "tackles": 3,
                             "blocks": 0,
                             "interceptions": 2,
-                            "duels_total": 3,
-                            "duels_won": 3,
+                            "duels_total": 4,
+                            "duels_won": 4,
                             "clearances": 0,
                             "saves": 0,
                             "conceded": 0,
@@ -12743,7 +12756,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
-                            "rating": "6.6"
+                            "rating": "6.9"
                         }
                     }
                 },
@@ -12797,9 +12810,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 27,
+                            "passes": 28,
                             "key_passes": 0,
-                            "pass_acc": "19",
+                            "pass_acc": "20",
                             "tackles": 3,
                             "blocks": 0,
                             "interceptions": 1,
@@ -12919,7 +12932,7 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 34,
+                            "passes": 35,
                             "key_passes": 1,
                             "pass_acc": "23",
                             "tackles": 3,
@@ -13116,7 +13129,7 @@
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 8,
+                            "duels_total": 9,
                             "duels_won": 5,
                             "clearances": 0,
                             "saves": 0,
@@ -13124,8 +13137,8 @@
                             "yellow_cards": 0,
                             "red_cards": 0,
                             "fouls_drawn": 1,
-                            "fouls_committed": 2,
-                            "rating": "8.3"
+                            "fouls_committed": 3,
+                            "rating": "8"
                         }
                     }
                 },
@@ -14031,7 +14044,7 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 28,
+                            "passes": 29,
                             "key_passes": 0,
                             "pass_acc": "21",
                             "tackles": 2,
@@ -14317,16 +14330,16 @@
                             "tackles": 2,
                             "blocks": 3,
                             "interceptions": 0,
-                            "duels_total": 4,
-                            "duels_won": 2,
+                            "duels_total": 5,
+                            "duels_won": 3,
                             "clearances": 3,
                             "saves": 0,
                             "conceded": 0,
                             "yellow_cards": 0,
                             "red_cards": 0,
-                            "fouls_drawn": 0,
+                            "fouls_drawn": 1,
                             "fouls_committed": 1,
-                            "rating": "6.7"
+                            "rating": "6.6"
                         }
                     }
                 },
@@ -14386,7 +14399,7 @@
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 5,
+                            "duels_total": 6,
                             "duels_won": 1,
                             "clearances": 0,
                             "saves": 0,
@@ -14516,8 +14529,8 @@
                             "live_stats": {
                                 "goals": 0,
                                 "assists": 0,
-                                "total_shots": 0,
-                                "shots_on_target": 0,
+                                "total_shots": 1,
+                                "shots_on_target": 1,
                                 "offsides": 0,
                                 "passes": 0,
                                 "key_passes": 0,
@@ -15114,7 +15127,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 24,
+                "elapsed": 25,
                 "extra": null
             }
         },
