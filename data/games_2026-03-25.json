@@ -3419,9 +3419,9 @@
                 "city": "Cali"
             },
             "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
+                "long": "First Half",
+                "short": "1H",
+                "elapsed": 1,
                 "extra": null
             }
         },
@@ -3454,8 +3454,8 @@
             }
         },
         "goals": {
-            "home": null,
-            "away": null
+            "home": 0,
+            "away": 0
         },
         "homeLineup": {
             "team": {
@@ -5469,7 +5469,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 3
+                "extra": 4
             }
         },
         "league": {
@@ -11180,7 +11180,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 8
+                "extra": 9
             }
         },
         "league": {
@@ -11259,6 +11259,15 @@
                 "type": "Goal",
                 "detail": "Normal Goal",
                 "assist": "L. Ovalle"
+            },
+            {
+                "time": "45+8",
+                "team_id": 2997,
+                "player": null,
+                "player_id": null,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
             }
         ],
         "match_ended_at": null,
@@ -13025,8 +13034,34 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
+        "homeLineup": {
+            "team": {
+                "id": 18451,
+                "name": "San Diego Wave W",
+                "logo": "https://media.api-sports.io/football/teams/18451.png",
+                "colors": null
+            },
+            "coach": {
+                "id": 28023,
+                "name": "Jonas Eidevall",
+                "photo": "https://media.api-sports.io/football/coachs/28023.png"
+            },
+            "formation": null
+        },
+        "awayLineup": {
+            "team": {
+                "id": 3001,
+                "name": "Portland Thorns W",
+                "logo": "https://media.api-sports.io/football/teams/3001.png",
+                "colors": null
+            },
+            "coach": {
+                "id": 28108,
+                "name": "Robert Vilahamn",
+                "photo": "https://media.api-sports.io/football/coachs/28108.png"
+            },
+            "formation": null
+        },
         "lineup_checks": 0,
         "odds": {
             "home": "1.85",
