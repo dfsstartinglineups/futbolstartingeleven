@@ -70,7 +70,6 @@ TOP_LEAGUE_IDS = [
 
     # --- INTERNATIONAL (National Teams) ---
     1,   # FIFA World Cup
-    10,  #International Friendlies
     4,   # UEFA Euro Championship
     9,   # Copa America
     5,   # UEFA Nations League
