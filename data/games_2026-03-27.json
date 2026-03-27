@@ -4038,26 +4038,53 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
+        "homeLineup": {
+            "team": {
+                "id": 4,
+                "name": "Russia",
+                "logo": "https://media.api-sports.io/football/teams/4.png",
+                "colors": null
+            },
+            "coach": {
+                "id": 0,
+                "name": null,
+                "photo": null
+            },
+            "formation": null
+        },
+        "awayLineup": {
+            "team": {
+                "id": 5164,
+                "name": "Nicaragua",
+                "logo": "https://media.api-sports.io/football/teams/5164.png",
+                "colors": null
+            },
+            "coach": {
+                "id": 503,
+                "name": "Marco Antonio Figueroa Montero",
+                "photo": "https://media.api-sports.io/football/coachs/503.png"
+            },
+            "formation": null
+        },
         "lineup_checks": 0,
         "odds": {
             "home": "1.03",
-            "draw": "14.00",
-            "away": "35.00",
+            "draw": "13.75",
+            "away": "34.00",
             "total": "3.75",
-            "over": "1.85",
-            "under": "1.85"
+            "over": "1.89",
+            "under": "1.8"
         },
-        "last_odds_check": "2026-03-27T00:00:37.383289+00:00",
+        "last_odds_check": "2026-03-27T15:30:38.221260+00:00",
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 4
+            "checks": 5
         },
         "events": [],
         "match_ended_at": null,
-        "post_game_sync": false
+        "post_game_sync": false,
+        "final_odds_check": true
     },
     {
         "fixture": {
@@ -5343,9 +5370,9 @@
                 "city": null
             },
             "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
                 "extra": null
             }
         },
@@ -5378,8 +5405,8 @@
             }
         },
         "goals": {
-            "home": null,
-            "away": null
+            "home": 2,
+            "away": 1
         },
         "homeLineup": null,
         "awayLineup": null,
@@ -5399,7 +5426,7 @@
             "checks": 7
         },
         "events": [],
-        "match_ended_at": null,
+        "match_ended_at": "2026-03-27T15:30:39.966965+00:00",
         "post_game_sync": false,
         "refreshed_15m": true,
         "refreshed_5m": true
@@ -5501,7 +5528,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 75,
+                "elapsed": 76,
                 "extra": null
             }
         },
@@ -5809,7 +5836,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 29,
+                "elapsed": 30,
                 "extra": null
             }
         },
