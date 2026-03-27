@@ -2989,7 +2989,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 63,
+                "elapsed": 64,
                 "extra": null
             }
         },
@@ -3241,7 +3241,7 @@
                         "id": 13605,
                         "name": "John Garc\u00eda",
                         "number": 2,
-                        "pos": "D",
+                        "pos": "M",
                         "grid": "2:2",
                         "photo": "https://media.api-sports.io/football/players/13605.png",
                         "age": 36,
@@ -3302,8 +3302,79 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
                             "rating": "6.9"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "64"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 351926,
+                            "name": "Juan \u00c1valo",
+                            "number": 24,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/351926.png",
+                            "age": 24,
+                            "nationality": "Colombia",
+                            "season_stats": {
+                                "total": {
+                                    "games": 7,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 8,
+                                    "pass_acc": 84,
+                                    "tackles": 4,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.67"
+                                },
+                                "competitions": {
+                                    "Primera A": {
+                                        "games": 7,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 2,
+                                        "key_passes": 8,
+                                        "pass_acc": 84,
+                                        "tackles": 4,
+                                        "interceptions": 2,
+                                        "yellow_cards": 2,
+                                        "red_cards": 0,
+                                        "rating": "6.67"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -4022,75 +4093,6 @@
                                     "yellow_cards": 1,
                                     "red_cards": 0,
                                     "rating": "7.16"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 351926,
-                        "name": "Juan \u00c1valo",
-                        "number": 24,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/351926.png",
-                        "age": 24,
-                        "nationality": "Colombia",
-                        "season_stats": {
-                            "total": {
-                                "games": 7,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 2,
-                                "key_passes": 8,
-                                "pass_acc": 84,
-                                "tackles": 4,
-                                "interceptions": 2,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.67"
-                            },
-                            "competitions": {
-                                "Primera A": {
-                                    "games": 7,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 2,
-                                    "key_passes": 8,
-                                    "pass_acc": 84,
-                                    "tackles": 4,
-                                    "interceptions": 2,
-                                    "yellow_cards": 2,
-                                    "red_cards": 0,
-                                    "rating": "6.67"
                                 }
                             }
                         },
@@ -5640,7 +5642,19 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "64",
+                "team_id": 1144,
+                "player": "J. Garcia",
+                "player_id": 13605,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "J. E. Avalo Trejos",
+                "player_out": "J. E. Avalo Trejos",
+                "player_out_id": 351926
+            }
+        ],
         "match_ended_at": null,
         "post_game_sync": false,
         "final_odds_check": true,
