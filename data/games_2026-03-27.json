@@ -11763,7 +11763,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 84,
+                "elapsed": 85,
                 "extra": null
             }
         },
@@ -11797,7 +11797,7 @@
         },
         "goals": {
             "home": 2,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
@@ -12860,7 +12860,7 @@
                         "id": 297583,
                         "name": "Jeyland Mitchell",
                         "number": 3,
-                        "pos": "D",
+                        "pos": "M",
                         "grid": "2:5",
                         "photo": "https://media.api-sports.io/football/players/297583.png",
                         "age": 21,
@@ -12898,8 +12898,56 @@
                                     "rating": "N/A"
                                 }
                             }
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "80"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 14146,
+                            "name": "Jefferson Brenes",
+                            "number": 13,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/14146.png",
+                            "age": 28,
+                            "nationality": "Costa Rica",
+                            "season_stats": {
+                                "total": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.20"
+                                },
+                                "competitions": {
+                                    "World Cup - Qualification CONCACAF": {
+                                        "games": 1,
+                                        "goals": 0,
+                                        "assists": 1,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 1,
+                                        "pass_acc": 0,
+                                        "tackles": 0,
+                                        "interceptions": 1,
+                                        "yellow_cards": 1,
+                                        "red_cards": 0,
+                                        "rating": "7.20"
+                                    }
+                                }
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -13580,52 +13628,6 @@
                 },
                 {
                     "player": {
-                        "id": 14146,
-                        "name": "Jefferson Brenes",
-                        "number": 13,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/14146.png",
-                        "age": 28,
-                        "nationality": "Costa Rica",
-                        "season_stats": {
-                            "total": {
-                                "games": 1,
-                                "goals": 0,
-                                "assists": 1,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 1,
-                                "pass_acc": 0,
-                                "tackles": 0,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.20"
-                            },
-                            "competitions": {
-                                "World Cup - Qualification CONCACAF": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 1,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 0,
-                                    "tackles": 0,
-                                    "interceptions": 1,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "7.20"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 14106,
                         "name": "Douglas L\u00f3pez",
                         "number": 16,
@@ -13866,6 +13868,26 @@
                 "type": "Goal",
                 "detail": "Normal Goal",
                 "assist": "M. Al Mardi"
+            },
+            {
+                "time": "80",
+                "team_id": 29,
+                "player": "J. Mitchell",
+                "player_id": 297583,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "J. Brenes",
+                "player_out": "J. Brenes",
+                "player_out_id": 14146
+            },
+            {
+                "time": "84",
+                "team_id": 29,
+                "player": null,
+                "player_id": null,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
             }
         ],
         "match_ended_at": null,
@@ -18908,7 +18930,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 83,
+                "elapsed": 84,
                 "extra": null
             }
         },
@@ -22376,7 +22398,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 11,
+                "elapsed": 12,
                 "extra": null
             }
         },
@@ -25515,7 +25537,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 49,
+                "elapsed": 50,
                 "extra": null
             }
         },
@@ -28025,12 +28047,13 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "match_ended_at": null,
         "post_game_sync": false,
-        "final_odds_check": true
+        "final_odds_check": true,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -45504,22 +45527,23 @@
         "awayLineup": null,
         "lineup_checks": 0,
         "odds": {
-            "home": "2.60",
-            "draw": "2.85",
-            "away": "2.80",
+            "home": "2.65",
+            "draw": "2.95",
+            "away": "3.10",
             "total": "1.5",
-            "over": "1.55",
-            "under": "2.35"
+            "over": "1.62",
+            "under": "2.2"
         },
-        "last_odds_check": "2026-03-27T00:00:42.529882+00:00",
+        "last_odds_check": "2026-03-27T19:15:37.383440+00:00",
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 4
+            "checks": 5
         },
         "events": [],
         "match_ended_at": null,
-        "post_game_sync": false
+        "post_game_sync": false,
+        "final_odds_check": true
     },
     {
         "fixture": {
