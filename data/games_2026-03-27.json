@@ -18,7 +18,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 66,
+                "elapsed": 67,
                 "extra": null
             }
         },
@@ -424,7 +424,7 @@
                         "id": 33241,
                         "name": "Yuta Goke",
                         "number": 5,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "3:3",
                         "photo": "https://media.api-sports.io/football/players/33241.png",
                         "age": 26,
@@ -485,8 +485,79 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 1,
                             "rating": "6.2"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "63"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 54491,
+                            "name": "Jean Patric",
+                            "number": 26,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/54491.png",
+                            "age": 28,
+                            "nationality": "Brazil",
+                            "season_stats": {
+                                "total": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.80"
+                                },
+                                "competitions": {
+                                    "J1 League": {
+                                        "games": 3,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 1,
+                                        "pass_acc": 0,
+                                        "tackles": 0,
+                                        "interceptions": 1,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.80"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -1331,75 +1402,6 @@
                                     "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "6.83"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 54491,
-                        "name": "Jean Patric",
-                        "number": 26,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/54491.png",
-                        "age": 28,
-                        "nationality": "Brazil",
-                        "season_stats": {
-                            "total": {
-                                "games": 3,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 1,
-                                "pass_acc": 0,
-                                "tackles": 0,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.80"
-                            },
-                            "competitions": {
-                                "J1 League": {
-                                    "games": 3,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 1,
-                                    "pass_acc": 0,
-                                    "tackles": 0,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.80"
                                 }
                             }
                         },
@@ -2839,6 +2841,17 @@
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "63",
+                "team_id": 289,
+                "player": "Y. Goke",
+                "player_id": 33241,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "Jean Patric",
+                "player_out": "Jean Patric",
+                "player_out_id": 54491
             }
         ],
         "final_odds_check": true,
@@ -2847,9 +2860,9 @@
         "team_stats": {
             "home": {
                 "possession": 57,
-                "total_shots": 4,
+                "total_shots": 6,
                 "shots_on_target": 0,
-                "corners": 0,
+                "corners": 1,
                 "fouls": 11,
                 "yellow_cards": 2,
                 "red_cards": 0
