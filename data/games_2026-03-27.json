@@ -7939,8 +7939,34 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
+        "homeLineup": {
+            "team": {
+                "id": 18450,
+                "name": "Angel City W",
+                "logo": "https://media.api-sports.io/football/teams/18450.png",
+                "colors": null
+            },
+            "coach": {
+                "id": 28034,
+                "name": "Alexander Straus",
+                "photo": "https://media.api-sports.io/football/coachs/28034.png"
+            },
+            "formation": null
+        },
+        "awayLineup": {
+            "team": {
+                "id": 2998,
+                "name": "Houston Dash W",
+                "logo": "https://media.api-sports.io/football/teams/2998.png",
+                "colors": null
+            },
+            "coach": {
+                "id": 28024,
+                "name": "Fabrice Gautrat",
+                "photo": "https://media.api-sports.io/football/coachs/28024.png"
+            },
+            "formation": null
+        },
         "lineup_checks": 0,
         "odds": {
             "home": "1.85",
@@ -61451,7 +61477,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 79,
+                "elapsed": 80,
                 "extra": null
             }
         },
@@ -64309,8 +64335,42 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
                             "rating": "6.3"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "79"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 296183,
+                            "name": "Khadim Diaw",
+                            "number": 98,
+                            "pos": "D",
+                            "grid": null,
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -64994,38 +65054,6 @@
                 },
                 {
                     "player": {
-                        "id": 296183,
-                        "name": "Khadim Diaw",
-                        "number": 98,
-                        "pos": "D",
-                        "grid": null,
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 293942,
                         "name": "Nouh Mohamed El Abd",
                         "number": 96,
@@ -65416,6 +65444,17 @@
                 "assist": "E. Palacios",
                 "player_out": "E. Palacios",
                 "player_out_id": 6002
+            },
+            {
+                "time": "79",
+                "team_id": 1491,
+                "player": "A. Abeid",
+                "player_id": 46937,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "K. Diaw",
+                "player_out": "K. Diaw",
+                "player_out_id": 296183
             }
         ],
         "match_ended_at": null,
