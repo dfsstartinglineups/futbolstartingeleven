@@ -3846,7 +3846,7 @@
                         "id": 290326,
                         "name": "Clo\u00e9 Lacasse",
                         "number": 24,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "4:1",
                         "photo": "https://media.api-sports.io/football/players/290326.png",
                         "age": 32,
@@ -3907,8 +3907,79 @@
                             "fouls_drawn": 2,
                             "fouls_committed": 2,
                             "rating": "6.5"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "63"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 545213,
+                            "name": "Kiana Palacios",
+                            "number": 21,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/545213.png",
+                            "age": 29,
+                            "nationality": null,
+                            "season_stats": {
+                                "total": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 62,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.50"
+                                },
+                                "competitions": {
+                                    "NWSL Women": {
+                                        "games": 1,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 1,
+                                        "pass_acc": 62,
+                                        "tackles": 0,
+                                        "interceptions": 1,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.50"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -4309,75 +4380,6 @@
                             "rating": "N/A"
                         }
                     }
-                },
-                {
-                    "player": {
-                        "id": 545213,
-                        "name": "Kiana Palacios",
-                        "number": 21,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/545213.png",
-                        "age": 29,
-                        "nationality": null,
-                        "season_stats": {
-                            "total": {
-                                "games": 1,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 1,
-                                "pass_acc": 62,
-                                "tackles": 0,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.50"
-                            },
-                            "competitions": {
-                                "NWSL Women": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 62,
-                                    "tackles": 0,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.50"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
                 }
             ],
             "coach": {
@@ -4497,6 +4499,17 @@
                 "assist": "C. Brown",
                 "player_out": "C. Brown",
                 "player_out_id": 461509
+            },
+            {
+                "time": "63",
+                "team_id": 3004,
+                "player": "C. Lacasse",
+                "player_id": 290326,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "K. Palacios",
+                "player_out": "K. Palacios",
+                "player_out_id": 545213
             }
         ],
         "match_ended_at": null,
@@ -4543,7 +4556,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 5,
+                "elapsed": 6,
                 "extra": null
             }
         },
@@ -10419,7 +10432,7 @@
             }
         ],
         "match_ended_at": "2026-03-28T16:05:35.280104+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "refreshed_15m": true,
         "refreshed_5m": true
     },
@@ -12149,7 +12162,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 74,
+                "elapsed": 75,
                 "extra": null
             }
         },
@@ -16651,7 +16664,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 34,
+                "elapsed": 35,
                 "extra": null
             }
         },
@@ -21668,7 +21681,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 15,
+                "elapsed": 16,
                 "extra": null
             }
         },
@@ -25697,7 +25710,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 33,
+                "elapsed": 34,
                 "extra": null
             }
         },
@@ -29724,7 +29737,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 77,
+                "elapsed": 78,
                 "extra": null
             }
         },
