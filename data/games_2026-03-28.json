@@ -315,7 +315,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 53,
+                "elapsed": 54,
                 "extra": null
             }
         },
@@ -583,7 +583,7 @@
                         "id": 59664,
                         "name": "Santiago Orozco",
                         "number": 6,
-                        "pos": "D",
+                        "pos": "M",
                         "grid": "2:2",
                         "photo": "https://media.api-sports.io/football/players/59664.png",
                         "age": 29,
@@ -644,8 +644,79 @@
                             "fouls_drawn": 2,
                             "fouls_committed": 0,
                             "rating": "6.9"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "53"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 126093,
+                            "name": "Juan Ceballos",
+                            "number": 8,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/126093.png",
+                            "age": 27,
+                            "nationality": "Colombia",
+                            "season_stats": {
+                                "total": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 2,
+                                    "pass_acc": 90,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                },
+                                "competitions": {
+                                    "Primera A": {
+                                        "games": 4,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 2,
+                                        "pass_acc": 90,
+                                        "tackles": 1,
+                                        "interceptions": 1,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.63"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -1591,75 +1662,6 @@
                                     "yellow_cards": 1,
                                     "red_cards": 1,
                                     "rating": "6.43"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 126093,
-                        "name": "Juan Ceballos",
-                        "number": 8,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/126093.png",
-                        "age": 27,
-                        "nationality": "Colombia",
-                        "season_stats": {
-                            "total": {
-                                "games": 4,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 2,
-                                "pass_acc": 90,
-                                "tackles": 1,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.63"
-                            },
-                            "competitions": {
-                                "Primera A": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 2,
-                                    "pass_acc": 90,
-                                    "tackles": 1,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.63"
                                 }
                             }
                         },
@@ -3157,6 +3159,17 @@
                 "assist": "J. Quinones",
                 "player_out": "J. Quinones",
                 "player_out_id": 419766
+            },
+            {
+                "time": "53",
+                "team_id": 1470,
+                "player": "S. Orozco",
+                "player_id": 59664,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "J. Ceballos",
+                "player_out": "J. Ceballos",
+                "player_out_id": 126093
             }
         ],
         "match_ended_at": null,
@@ -46088,7 +46101,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 16,
+                "elapsed": 17,
                 "extra": null
             }
         },
