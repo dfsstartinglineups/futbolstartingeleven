@@ -63,6 +63,7 @@ const LEAGUE_GROUPS = {
     ],
     "International": [
         { key: "worldcup", id: 1, name: "World Cup" },
+        { key: "friendlies", id: 10, name: "Friendlies" },
         { key: "euros", id: 4, name: "Euro Championship" },
         { key: "copaamerica", id: 9, name: "Copa America" },
         { key: "uefanations", id: 5, name: "UEFA Nations League" },
@@ -101,6 +102,7 @@ const LEAGUE_ABBREV = {
     9: "COPA",       // Copa America
     5: "UNL",        // UEFA Nations League
     531: "CNL",      // CONCACAF Nations League
+    10: "INTL",      // International Friendlies
 
     // --- Americas ---
     253: "MLS",      // Major League Soccer
@@ -141,7 +143,7 @@ const LEAGUE_MAP_ESPN = {
     // New Additions
     203: "tur.1", 144: "bel.1", 179: "sco.1", 119: "den.1", 239: "col.1", 188: "aus.1", 292: "kor.1",
     11: "conmebol.sudamericana", 143: "esp.copa_del_rey", 137: "ita.coppa_italia", 81: "ger.dfb_pokal", 
-    5: "uefa.nations", 531: "concacaf.nations", 44: "eng.w.1", 254: "usa.nwsl"
+    5: "uefa.nations", 531: "concacaf.nations", 44: "eng.w.1", 254: "usa.nwsl", 10: "fifa.friendly"
 };
 
 window.toggleExpand = function(el) {
