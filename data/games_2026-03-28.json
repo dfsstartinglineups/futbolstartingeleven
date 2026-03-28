@@ -517,7 +517,7 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 1
+            "checks": 2
         },
         "events": [],
         "match_ended_at": null,
@@ -542,7 +542,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 62,
+                "elapsed": 63,
                 "extra": null
             }
         },
@@ -959,8 +959,19 @@
                         "name": "Seung Won Lee",
                         "number": 8,
                         "pos": "M",
-                        "grid": "3:2"
-                    }
+                        "grid": "3:2",
+                        "isSubbedIn": true,
+                        "subMinute": "61"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 224652,
+                            "name": "Min-woo Seo",
+                            "number": 4,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -1035,15 +1046,6 @@
                         "name": "Jeong Seung-Bin",
                         "number": 3,
                         "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 224652,
-                        "name": "Min-woo Seo",
-                        "number": 4,
-                        "pos": "M",
                         "grid": null
                     }
                 },
@@ -1138,6 +1140,17 @@
                 "assist": "Goh Young-Jun",
                 "player_out": "Goh Young-Jun",
                 "player_out_id": 201279
+            },
+            {
+                "time": "61",
+                "team_id": 2746,
+                "player": "Lee Seung-Won",
+                "player_id": 403349,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "Seo Min-Woo",
+                "player_out": "Seo Min-Woo",
+                "player_out_id": 224652
             }
         ],
         "match_ended_at": null,
@@ -1849,7 +1862,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 20,
+                "elapsed": 21,
                 "extra": null
             }
         },
@@ -2840,7 +2853,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 15,
+                "elapsed": 16,
                 "extra": null
             }
         },
