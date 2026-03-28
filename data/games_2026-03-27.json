@@ -5816,7 +5816,7 @@
             }
         ],
         "match_ended_at": "2026-03-27T22:57:29.841418+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "final_odds_check": true,
         "refreshed_15m": true,
         "refreshed_5m": true,
@@ -59508,10 +59508,10 @@
                 "city": null
             },
             "status": {
-                "long": "Halftime",
-                "short": "HT",
-                "elapsed": 45,
-                "extra": 3
+                "long": "Second Half",
+                "short": "2H",
+                "elapsed": 46,
+                "extra": null
             }
         },
         "league": {
@@ -62790,7 +62790,7 @@
                         "id": 8543,
                         "name": "Aboubakary Koita",
                         "number": 7,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "4:1",
                         "photo": "https://media.api-sports.io/football/players/8543.png",
                         "age": 27,
@@ -62866,8 +62866,42 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 1,
                             "rating": "6.5"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "46"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 129676,
+                            "name": "Papa Ndiaga Yade",
+                            "number": 91,
+                            "pos": "F",
+                            "grid": null,
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -63161,38 +63195,6 @@
                 },
                 {
                     "player": {
-                        "id": 129676,
-                        "name": "Papa Ndiaga Yade",
-                        "number": 91,
-                        "pos": "F",
-                        "grid": null,
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 341816,
                         "name": "Sidi Amar Bouna",
                         "number": 88,
@@ -63329,13 +63331,24 @@
                 "assist": null
             },
             {
-                "time": "39",
+                "time": "38",
                 "team_id": 1491,
                 "player": "L. Ba",
                 "player_id": 15483,
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "46",
+                "team_id": 1491,
+                "player": "A. Koita",
+                "player_id": 8543,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "P. Yade",
+                "player_out": "P. Yade",
+                "player_out_id": 129676
             }
         ],
         "match_ended_at": null,
