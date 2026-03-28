@@ -5860,7 +5860,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 83,
+                "elapsed": 85,
                 "extra": null
             }
         },
@@ -6976,7 +6976,7 @@
                         "id": 13725,
                         "name": "Fredy Salazar",
                         "number": 11,
-                        "pos": "M",
+                        "pos": "D",
                         "grid": "4:1",
                         "photo": "https://media.api-sports.io/football/players/13725.png",
                         "age": 30,
@@ -7052,8 +7052,79 @@
                             "fouls_drawn": 2,
                             "fouls_committed": 0,
                             "rating": "6.7"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "84"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 13699,
+                            "name": "Israel Alba",
+                            "number": 18,
+                            "pos": "D",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/13699.png",
+                            "age": 30,
+                            "nationality": "Colombia",
+                            "season_stats": {
+                                "total": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 79,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.15"
+                                },
+                                "competitions": {
+                                    "Primera A": {
+                                        "games": 2,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 1,
+                                        "pass_acc": 79,
+                                        "tackles": 0,
+                                        "interceptions": 1,
+                                        "yellow_cards": 1,
+                                        "red_cards": 0,
+                                        "rating": "7.15"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -7141,75 +7212,6 @@
                 }
             ],
             "substitutes": [
-                {
-                    "player": {
-                        "id": 13699,
-                        "name": "Israel Alba",
-                        "number": 18,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/13699.png",
-                        "age": 30,
-                        "nationality": "Colombia",
-                        "season_stats": {
-                            "total": {
-                                "games": 2,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 1,
-                                "pass_acc": 79,
-                                "tackles": 0,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.15"
-                            },
-                            "competitions": {
-                                "Primera A": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 79,
-                                    "tackles": 0,
-                                    "interceptions": 1,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "7.15"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
                 {
                     "player": {
                         "id": 326883,
@@ -8898,6 +8900,17 @@
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "84",
+                "team_id": 1131,
+                "player": "J. Salazar",
+                "player_id": 13725,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "I. Alba",
+                "player_out": "I. Alba",
+                "player_out_id": 13699
             }
         ],
         "match_ended_at": null,
@@ -8907,7 +8920,7 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 59,
+                "possession": 60,
                 "total_shots": 13,
                 "shots_on_target": 5,
                 "corners": 3,
@@ -8916,11 +8929,11 @@
                 "red_cards": 0
             },
             "away": {
-                "possession": 41,
-                "total_shots": 7,
-                "shots_on_target": 3,
+                "possession": 40,
+                "total_shots": 8,
+                "shots_on_target": 4,
                 "corners": 4,
-                "fouls": 17,
+                "fouls": 18,
                 "yellow_cards": 3,
                 "red_cards": 0
             }
@@ -8945,7 +8958,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 44,
+                "elapsed": 45,
                 "extra": null
             }
         },
@@ -9051,9 +9064,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 19,
+                            "passes": 20,
                             "key_passes": 0,
-                            "pass_acc": "13",
+                            "pass_acc": "14",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -9342,7 +9355,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
-                            "rating": "6.2"
+                            "rating": "6.5"
                         }
                     }
                 },
@@ -9396,14 +9409,14 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 8,
+                            "passes": 9,
                             "key_passes": 0,
-                            "pass_acc": "6",
+                            "pass_acc": "7",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 9,
-                            "duels_won": 4,
+                            "duels_total": 10,
+                            "duels_won": 5,
                             "clearances": 0,
                             "saves": 0,
                             "conceded": 0,
@@ -9411,7 +9424,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 2,
                             "fouls_committed": 1,
-                            "rating": "6.5"
+                            "rating": "6.3"
                         }
                     }
                 },
@@ -9480,7 +9493,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 1,
-                            "rating": "6.5"
+                            "rating": "6.3"
                         }
                     }
                 },
@@ -9609,7 +9622,7 @@
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 3,
+                            "duels_total": 2,
                             "duels_won": 0,
                             "clearances": 0,
                             "saves": 0,
@@ -9618,7 +9631,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 2,
-                            "rating": "6.3"
+                            "rating": "6.2"
                         }
                     }
                 },
@@ -9678,16 +9691,16 @@
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 5,
-                            "duels_won": 0,
+                            "duels_total": 6,
+                            "duels_won": 1,
                             "clearances": 0,
                             "saves": 0,
                             "conceded": 0,
                             "yellow_cards": 0,
                             "red_cards": 0,
-                            "fouls_drawn": 0,
+                            "fouls_drawn": 1,
                             "fouls_committed": 2,
-                            "rating": "6.3"
+                            "rating": "6.2"
                         }
                     }
                 },
@@ -10336,9 +10349,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 8,
+                            "passes": 9,
                             "key_passes": 0,
-                            "pass_acc": "6",
+                            "pass_acc": "7",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -10405,14 +10418,14 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 17,
-                            "key_passes": 0,
-                            "pass_acc": "9",
+                            "passes": 18,
+                            "key_passes": 1,
+                            "pass_acc": "11",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 1,
-                            "duels_total": 3,
-                            "duels_won": 3,
+                            "duels_total": 2,
+                            "duels_won": 2,
                             "clearances": 0,
                             "saves": 0,
                             "conceded": 0,
@@ -10420,7 +10433,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
-                            "rating": "7.2"
+                            "rating": "7.5"
                         }
                     }
                 },
@@ -10474,9 +10487,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 22,
+                            "passes": 23,
                             "key_passes": 0,
-                            "pass_acc": "18",
+                            "pass_acc": "19",
                             "tackles": 1,
                             "blocks": 1,
                             "interceptions": 0,
@@ -10549,7 +10562,7 @@
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 2,
+                            "duels_total": 3,
                             "duels_won": 2,
                             "clearances": 0,
                             "saves": 0,
@@ -10557,8 +10570,8 @@
                             "yellow_cards": 0,
                             "red_cards": 0,
                             "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "6.6"
+                            "fouls_committed": 1,
+                            "rating": "6.7"
                         }
                     }
                 },
@@ -10618,7 +10631,7 @@
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 6,
+                            "duels_total": 7,
                             "duels_won": 6,
                             "clearances": 0,
                             "saves": 0,
@@ -10819,9 +10832,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 8,
+                            "passes": 9,
                             "key_passes": 0,
-                            "pass_acc": "6",
+                            "pass_acc": "7",
                             "tackles": 2,
                             "blocks": 0,
                             "interceptions": 1,
@@ -10888,9 +10901,9 @@
                             "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 7,
+                            "passes": 9,
                             "key_passes": 3,
-                            "pass_acc": "4",
+                            "pass_acc": "6",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -10954,11 +10967,11 @@
                         "live_stats": {
                             "goals": 0,
                             "assists": 0,
-                            "total_shots": 0,
+                            "total_shots": 1,
                             "shots_on_target": 0,
                             "offsides": 0,
                             "passes": 9,
-                            "key_passes": 0,
+                            "key_passes": 1,
                             "pass_acc": "5",
                             "tackles": 0,
                             "blocks": 0,
@@ -10972,7 +10985,7 @@
                             "red_cards": 0,
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
-                            "rating": "6.5"
+                            "rating": "6.2"
                         }
                     }
                 },
@@ -11026,9 +11039,9 @@
                             "total_shots": 3,
                             "shots_on_target": 1,
                             "offsides": 0,
-                            "passes": 5,
+                            "passes": 6,
                             "key_passes": 1,
-                            "pass_acc": "2",
+                            "pass_acc": "3",
                             "tackles": 1,
                             "blocks": 0,
                             "interceptions": 0,
