@@ -6479,7 +6479,7 @@
                         "id": 13681,
                         "name": "Kevin Londo\u00f1o",
                         "number": 7,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "4:3",
                         "photo": "https://media.api-sports.io/football/players/13681.png",
                         "age": 32,
@@ -6555,8 +6555,79 @@
                             "fouls_drawn": 2,
                             "fouls_committed": 0,
                             "rating": "6.9"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "72"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 538259,
+                            "name": "Gleyfer Medina",
+                            "number": 13,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/538259.png",
+                            "age": 21,
+                            "nationality": null,
+                            "season_stats": {
+                                "total": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.25"
+                                },
+                                "competitions": {
+                                    "Primera A": {
+                                        "games": 2,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 0,
+                                        "pass_acc": 0,
+                                        "tackles": 0,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.25"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -7273,75 +7344,6 @@
                                     "yellow_cards": 1,
                                     "red_cards": 0,
                                     "rating": "6.62"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 538259,
-                        "name": "Gleyfer Medina",
-                        "number": 13,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/538259.png",
-                        "age": 21,
-                        "nationality": null,
-                        "season_stats": {
-                            "total": {
-                                "games": 2,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 0,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.25"
-                            },
-                            "competitions": {
-                                "Primera A": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 0,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.25"
                                 }
                             }
                         },
@@ -8824,6 +8826,17 @@
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "72",
+                "team_id": 1131,
+                "player": "K. Londono",
+                "player_id": 13681,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "G. Medina",
+                "player_out": "G. Medina",
+                "player_out_id": 538259
             }
         ],
         "match_ended_at": null,
@@ -8871,7 +8884,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 32,
+                "elapsed": 33,
                 "extra": null
             }
         },
