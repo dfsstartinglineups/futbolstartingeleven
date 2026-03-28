@@ -315,7 +315,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 25,
+                "elapsed": 26,
                 "extra": null
             }
         },
@@ -928,7 +928,7 @@
                         "id": 408371,
                         "name": "Eduar Ar\u00edzalas",
                         "number": 11,
-                        "pos": "M",
+                        "pos": "D",
                         "grid": "3:1",
                         "photo": "https://media.api-sports.io/football/players/408371.png",
                         "age": 24,
@@ -989,8 +989,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
                             "rating": "7.3"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "23"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 13355,
+                            "name": "Omar Albornoz",
+                            "number": 80,
+                            "pos": "D",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/13355.png",
+                            "age": 30,
+                            "nationality": "Colombia",
+                            "season_stats": {
+                                "total": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 100,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.30"
+                                },
+                                "competitions": {
+                                    "Primera A": {
+                                        "games": 1,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 1,
+                                        "pass_acc": 100,
+                                        "tackles": 1,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.30"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -1380,75 +1451,6 @@
                                     "yellow_cards": 3,
                                     "red_cards": 0,
                                     "rating": "6.34"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 13355,
-                        "name": "Omar Albornoz",
-                        "number": 80,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/13355.png",
-                        "age": 30,
-                        "nationality": "Colombia",
-                        "season_stats": {
-                            "total": {
-                                "games": 1,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 1,
-                                "pass_acc": 100,
-                                "tackles": 1,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.30"
-                            },
-                            "competitions": {
-                                "Primera A": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 1,
-                                    "pass_acc": 100,
-                                    "tackles": 1,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.30"
                                 }
                             }
                         },
@@ -3064,6 +3066,17 @@
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "23",
+                "team_id": 1470,
+                "player": "E. Arizalas",
+                "player_id": 408371,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "O. Albornoz",
+                "player_out": "O. Albornoz",
+                "player_out_id": 13355
             }
         ],
         "match_ended_at": null,
@@ -3073,7 +3086,7 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 58,
+                "possession": 54,
                 "total_shots": 1,
                 "shots_on_target": 1,
                 "corners": 0,
@@ -3082,11 +3095,11 @@
                 "red_cards": 0
             },
             "away": {
-                "possession": 42,
+                "possession": 46,
                 "total_shots": 1,
                 "shots_on_target": 0,
                 "corners": 0,
-                "fouls": 4,
+                "fouls": 5,
                 "yellow_cards": 0,
                 "red_cards": 0
             }
@@ -10586,7 +10599,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 57,
+                "elapsed": 58,
                 "extra": null
             }
         },
@@ -13303,16 +13316,16 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 59,
-                "total_shots": 13,
-                "shots_on_target": 4,
+                "possession": 58,
+                "total_shots": 15,
+                "shots_on_target": 5,
                 "corners": 3,
                 "fouls": 6,
                 "yellow_cards": 1,
                 "red_cards": 0
             },
             "away": {
-                "possession": 41,
+                "possession": 42,
                 "total_shots": 4,
                 "shots_on_target": 3,
                 "corners": 3,
@@ -38255,7 +38268,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 88,
+                "elapsed": 89,
                 "extra": null
             }
         },
@@ -43303,7 +43316,7 @@
                 "player_id": 407652,
                 "type": "Goal",
                 "detail": "Normal Goal",
-                "assist": null
+                "assist": "R. Pepi"
             }
         ],
         "match_ended_at": null,
