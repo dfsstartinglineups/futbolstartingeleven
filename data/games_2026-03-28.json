@@ -315,7 +315,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 2,
+                "elapsed": 3,
                 "extra": null
             }
         },
@@ -3051,7 +3051,27 @@
         "post_game_sync": false,
         "final_odds_check": true,
         "refreshed_15m": true,
-        "refreshed_5m": true
+        "refreshed_5m": true,
+        "team_stats": {
+            "home": {
+                "possession": 67,
+                "total_shots": 0,
+                "shots_on_target": 0,
+                "corners": 0,
+                "fouls": 0,
+                "yellow_cards": 0,
+                "red_cards": 0
+            },
+            "away": {
+                "possession": 33,
+                "total_shots": 0,
+                "shots_on_target": 0,
+                "corners": 0,
+                "fouls": 1,
+                "yellow_cards": 0,
+                "red_cards": 0
+            }
+        }
     },
     {
         "fixture": {
@@ -38207,7 +38227,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 65,
+                "elapsed": 66,
                 "extra": null
             }
         },
@@ -41665,7 +41685,7 @@
                         "id": 1417,
                         "name": "Alexis Saelemaekers",
                         "number": 22,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "4:3",
                         "photo": "https://media.api-sports.io/football/players/1417.png",
                         "age": 26,
@@ -41756,8 +41776,124 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
                             "rating": "7.6"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "66"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 25458,
+                            "name": "Dodi Lukebakio",
+                            "number": 14,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/25458.png",
+                            "age": 28,
+                            "nationality": "Belgium",
+                            "season_stats": {
+                                "total": {
+                                    "games": 17,
+                                    "goals": 1,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 17,
+                                    "key_passes": 32,
+                                    "pass_acc": 80,
+                                    "tackles": 10,
+                                    "interceptions": 4,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.00"
+                                },
+                                "competitions": {
+                                    "Ta\u00e7a de Portugal": {
+                                        "games": 1,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 2,
+                                        "key_passes": 1,
+                                        "pass_acc": 0,
+                                        "tackles": 1,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.70"
+                                    },
+                                    "UEFA Champions League": {
+                                        "games": 4,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 6,
+                                        "key_passes": 5,
+                                        "pass_acc": 82,
+                                        "tackles": 4,
+                                        "interceptions": 0,
+                                        "yellow_cards": 2,
+                                        "red_cards": 0,
+                                        "rating": "6.73"
+                                    },
+                                    "Primeira Liga": {
+                                        "games": 10,
+                                        "goals": 0,
+                                        "assists": 3,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 8,
+                                        "key_passes": 17,
+                                        "pass_acc": 78,
+                                        "tackles": 5,
+                                        "interceptions": 3,
+                                        "yellow_cards": 1,
+                                        "red_cards": 0,
+                                        "rating": "7.27"
+                                    },
+                                    "La Liga": {
+                                        "games": 2,
+                                        "goals": 1,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 9,
+                                        "pass_acc": 86,
+                                        "tackles": 0,
+                                        "interceptions": 1,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "7.30"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -42755,120 +42891,6 @@
                 },
                 {
                     "player": {
-                        "id": 25458,
-                        "name": "Dodi Lukebakio",
-                        "number": 14,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/25458.png",
-                        "age": 28,
-                        "nationality": "Belgium",
-                        "season_stats": {
-                            "total": {
-                                "games": 17,
-                                "goals": 1,
-                                "assists": 3,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 17,
-                                "key_passes": 32,
-                                "pass_acc": 80,
-                                "tackles": 10,
-                                "interceptions": 4,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.00"
-                            },
-                            "competitions": {
-                                "Ta\u00e7a de Portugal": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 2,
-                                    "key_passes": 1,
-                                    "pass_acc": 0,
-                                    "tackles": 1,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.70"
-                                },
-                                "UEFA Champions League": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 6,
-                                    "key_passes": 5,
-                                    "pass_acc": 82,
-                                    "tackles": 4,
-                                    "interceptions": 0,
-                                    "yellow_cards": 2,
-                                    "red_cards": 0,
-                                    "rating": "6.73"
-                                },
-                                "Primeira Liga": {
-                                    "games": 10,
-                                    "goals": 0,
-                                    "assists": 3,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 8,
-                                    "key_passes": 17,
-                                    "pass_acc": 78,
-                                    "tackles": 5,
-                                    "interceptions": 3,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "7.27"
-                                },
-                                "La Liga": {
-                                    "games": 2,
-                                    "goals": 1,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 9,
-                                    "pass_acc": 86,
-                                    "tackles": 0,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.30"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 2926,
                         "name": "Youri Tielemans",
                         "number": 8,
@@ -43240,7 +43262,7 @@
                 "player_out_id": 312964
             },
             {
-                "time": "64",
+                "time": "62",
                 "team_id": 1,
                 "player": "B. Mechele",
                 "player_id": 69,
@@ -43249,6 +43271,17 @@
                 "assist": "A. Theate",
                 "player_out": "A. Theate",
                 "player_out_id": 204043
+            },
+            {
+                "time": "66",
+                "team_id": 1,
+                "player": "A. Saelemaekers",
+                "player_id": 1417,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "D. Lukebakio",
+                "player_out": "D. Lukebakio",
+                "player_out_id": 25458
             }
         ],
         "match_ended_at": null,
