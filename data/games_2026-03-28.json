@@ -313,8 +313,8 @@
                 "city": null
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
                 "extra": 7
             }
@@ -3110,6 +3110,24 @@
                 "team_id": 1132,
                 "player": "J. Palma",
                 "player_id": 577041,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "45+7",
+                "team_id": 1132,
+                "player": null,
+                "player_id": null,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "45+7",
+                "team_id": 1470,
+                "player": null,
+                "player_id": null,
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
@@ -10635,7 +10653,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 84,
+                "elapsed": 85,
                 "extra": null
             }
         },
@@ -13011,8 +13029,63 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 1,
                             "rating": "6.2"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "82"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 265019,
+                            "name": "Kyra Carusa",
+                            "number": 66,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/265019.png",
+                            "age": 30,
+                            "nationality": "Republic of Ireland",
+                            "season_stats": {
+                                "total": {
+                                    "games": 0,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "competitions": {}
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 }
             ],
             "substitutes": [
@@ -13243,59 +13316,6 @@
                             "rating": "N/A"
                         }
                     }
-                },
-                {
-                    "player": {
-                        "id": 265019,
-                        "name": "Kyra Carusa",
-                        "number": 66,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/265019.png",
-                        "age": 30,
-                        "nationality": "Republic of Ireland",
-                        "season_stats": {
-                            "total": {
-                                "games": 0,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 0,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "N/A"
-                            },
-                            "competitions": {}
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
                 }
             ],
             "coach": {
@@ -13439,6 +13459,17 @@
                 "assist": "A. White",
                 "player_out": "A. White",
                 "player_out_id": 647494
+            },
+            {
+                "time": "82",
+                "team_id": 16487,
+                "player": "A. Sentnor",
+                "player_id": 536152,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "K. Carusa",
+                "player_out": "K. Carusa",
+                "player_out_id": 265019
             }
         ],
         "match_ended_at": null,
@@ -13449,7 +13480,7 @@
         "team_stats": {
             "home": {
                 "possession": 62,
-                "total_shots": 17,
+                "total_shots": 18,
                 "shots_on_target": 7,
                 "corners": 3,
                 "fouls": 8,
@@ -44462,12 +44493,13 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 6
+            "checks": 7
         },
         "events": [],
         "match_ended_at": null,
         "post_game_sync": false,
         "final_odds_check": true,
-        "refreshed_15m": true
+        "refreshed_15m": true,
+        "refreshed_5m": true
     }
 ]
