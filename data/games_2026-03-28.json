@@ -315,7 +315,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 40,
+                "elapsed": 41,
                 "extra": null
             }
         },
@@ -10635,7 +10635,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 72,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -12546,7 +12546,7 @@
                         "id": 380003,
                         "name": "Michelle Cooper",
                         "number": 17,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "4:3",
                         "photo": "https://media.api-sports.io/football/players/380003.png",
                         "age": 23,
@@ -12607,8 +12607,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
                             "rating": "6.5"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "70"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 413090,
+                            "name": "Haley Hopkins",
+                            "number": 13,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/413090.png",
+                            "age": 27,
+                            "nationality": "USA",
+                            "season_stats": {
+                                "total": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 66,
+                                    "tackles": 2,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "competitions": {
+                                    "NWSL Women": {
+                                        "games": 1,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 1,
+                                        "pass_acc": 66,
+                                        "tackles": 2,
+                                        "interceptions": 2,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.90"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -13173,75 +13244,6 @@
                 },
                 {
                     "player": {
-                        "id": 413090,
-                        "name": "Haley Hopkins",
-                        "number": 13,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/413090.png",
-                        "age": 27,
-                        "nationality": "USA",
-                        "season_stats": {
-                            "total": {
-                                "games": 1,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 1,
-                                "pass_acc": 66,
-                                "tackles": 2,
-                                "interceptions": 2,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.90"
-                            },
-                            "competitions": {
-                                "NWSL Women": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 1,
-                                    "pass_acc": 66,
-                                    "tackles": 2,
-                                    "interceptions": 2,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.90"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 265019,
                         "name": "Kyra Carusa",
                         "number": 66,
@@ -13404,6 +13406,17 @@
                 "assist": "P. Hocking",
                 "player_out": "P. Hocking",
                 "player_out_id": 413093
+            },
+            {
+                "time": "70",
+                "team_id": 16487,
+                "player": "M. Cooper",
+                "player_id": 380003,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "H. Hopkins",
+                "player_out": "H. Hopkins",
+                "player_out_id": 413090
             }
         ],
         "match_ended_at": null,
