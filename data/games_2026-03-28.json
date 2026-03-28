@@ -542,7 +542,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 54,
+                "elapsed": 56,
                 "extra": null
             }
         },
@@ -669,18 +669,40 @@
                         "id": 550949,
                         "name": "Yong-hak Kim",
                         "number": 30,
-                        "pos": "M",
-                        "grid": "3:4"
-                    }
+                        "pos": "F",
+                        "grid": "3:4",
+                        "isSubbedIn": true,
+                        "subMinute": "46"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 36440,
+                            "name": "Juninho Rocha",
+                            "number": 11,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
                         "id": 406348,
                         "name": "Kento Nishiya",
                         "number": 31,
-                        "pos": "M",
-                        "grid": "3:3"
-                    }
+                        "pos": "D",
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "46"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 34569,
+                            "name": "Wanderson",
+                            "number": 77,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -749,15 +771,6 @@
                 },
                 {
                     "player": {
-                        "id": 34569,
-                        "name": "Wanderson",
-                        "number": 77,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 423700,
                         "name": "Chang-woo Lee",
                         "number": 14,
@@ -771,15 +784,6 @@
                         "name": "Sung-Yueng Ki",
                         "number": 40,
                         "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 36440,
-                        "name": "Juninho Rocha",
-                        "number": 11,
-                        "pos": "F",
                         "grid": null
                     }
                 },
@@ -972,9 +976,20 @@
                         "id": 301577,
                         "name": "Kang Yun-Gu",
                         "number": 14,
-                        "pos": "F",
-                        "grid": "4:2"
-                    }
+                        "pos": "M",
+                        "grid": "4:2",
+                        "isSubbedIn": true,
+                        "subMinute": "46"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 201279,
+                            "name": "Young-jun Goh",
+                            "number": 11,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -1028,15 +1043,6 @@
                         "id": 224652,
                         "name": "Min-woo Seo",
                         "number": 4,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 201279,
-                        "name": "Young-jun Goh",
-                        "number": 11,
                         "pos": "M",
                         "grid": null
                     }
@@ -1099,6 +1105,39 @@
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "46",
+                "team_id": 2764,
+                "player": "Kim Yong-Hak",
+                "player_id": 550949,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "J. da Rocha Junior",
+                "player_out": "J. da Rocha Junior",
+                "player_out_id": 36440
+            },
+            {
+                "time": "46",
+                "team_id": 2764,
+                "player": "K. Nishiya",
+                "player_id": 406348,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "Wanderson",
+                "player_out": "Wanderson",
+                "player_out_id": 34569
+            },
+            {
+                "time": "46",
+                "team_id": 2746,
+                "player": "Y. Kang",
+                "player_id": 301577,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "Goh Young-Jun",
+                "player_out": "Goh Young-Jun",
+                "player_out_id": 201279
             }
         ],
         "match_ended_at": null,
@@ -2801,7 +2840,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 7,
+                "elapsed": 9,
                 "extra": null
             }
         },
