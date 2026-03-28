@@ -74,11 +74,22 @@ TOP_LEAGUE_IDS = [
     9,   # Copa America
     5,   # UEFA Nations League
     531, # CONCACAF Nations League
+    10,  # International Friendlies
 
     # --- WOMEN'S LEAGUES ---
     44,  # Women's Super League / WSL (England)
     254  # NWSL (USA)
 ]
+
+def is_youth_team(home_name, away_name):
+    """
+    Regex filter to detect Youth National Teams (e.g. U17, U19, U21, U23).
+    \b ensures it matches a whole word.
+    """
+    pattern = r'\bU-?\d{2}\b'
+    if re.search(pattern, home_name, re.IGNORECASE) or re.search(pattern, away_name, re.IGNORECASE):
+        return True
+    return False
 
 def fetch_data(endpoint):
     req = urllib.request.Request(f"{API_HOST}/{endpoint}")
@@ -376,6 +387,12 @@ def build_daily_games(date_str):
 
     formatted_games = []
     for game in [g for g in fixtures_data["response"] if g['league']['id'] in TOP_LEAGUE_IDS]:
+        home_name = game['teams']['home']['name']
+        away_name = game['teams']['away']['name']
+        
+        # Skip this iteration if it's a youth match!
+        if is_youth_team(home_name, away_name):
+            continue
         home_id, away_id, league_id_str = str(game['teams']['home']['id']), str(game['teams']['away']['id']), str(game['league']['id'])
         
         # --- FIX: STRICT LEAGUE MATCHING ONLY (No domestic fallback!) ---
@@ -446,7 +463,12 @@ def process_date(target_date, force_master_sync=False):
 
                 # --- NEW SCHEDULE ADDITION CHECK ---
                 existing_fixture_ids = {g['fixture']['id'] for g in daily_games}
-                new_games_to_add = [g for g in fixtures_data["response"] if g['league']['id'] in TOP_LEAGUE_IDS and g['fixture']['id'] not in existing_fixture_ids]
+                new_games_to_add = [
+                    g for g in fixtures_data["response"] 
+                    if g['league']['id'] in TOP_LEAGUE_IDS 
+                    and g['fixture']['id'] not in existing_fixture_ids
+                    and not is_youth_team(g['teams']['home']['name'], g['teams']['away']['name'])
+                ]
                 
                 if new_games_to_add:
                     print(f"[{date_str}] Found {len(new_games_to_add)} newly scheduled games. Injecting...")
