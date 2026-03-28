@@ -1749,7 +1749,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 72,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -1782,7 +1782,7 @@
             }
         },
         "goals": {
-            "home": 0,
+            "home": 1,
             "away": 2
         },
         "homeLineup": {
@@ -2441,8 +2441,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 1,
                             "rating": "6.7"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "69"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 68958,
+                            "name": "Nichelle Prince",
+                            "number": 12,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/68958.png",
+                            "age": 30,
+                            "nationality": "Canada",
+                            "season_stats": {
+                                "total": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 2,
+                                    "pass_acc": 80,
+                                    "tackles": 6,
+                                    "interceptions": 4,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.80"
+                                },
+                                "competitions": {
+                                    "NWSL Women": {
+                                        "games": 2,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 2,
+                                        "pass_acc": 80,
+                                        "tackles": 6,
+                                        "interceptions": 4,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.80"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -2885,75 +2956,6 @@
                                     "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "6.45"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 68958,
-                        "name": "Nichelle Prince",
-                        "number": 12,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/68958.png",
-                        "age": 30,
-                        "nationality": "Canada",
-                        "season_stats": {
-                            "total": {
-                                "games": 2,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 2,
-                                "pass_acc": 80,
-                                "tackles": 6,
-                                "interceptions": 4,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.80"
-                            },
-                            "competitions": {
-                                "NWSL Women": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 2,
-                                    "pass_acc": 80,
-                                    "tackles": 6,
-                                    "interceptions": 4,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.80"
                                 }
                             }
                         },
@@ -4514,11 +4516,22 @@
             {
                 "time": "68",
                 "team_id": 27377,
-                "player": null,
-                "player_id": null,
+                "player": "A. Cano",
+                "player_id": 371978,
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "69",
+                "team_id": 27377,
+                "player": "F. Najjemba",
+                "player_id": 546557,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "N. Prince",
+                "player_out": "N. Prince",
+                "player_out_id": 68958
             }
         ],
         "match_ended_at": null,
@@ -4531,8 +4544,8 @@
                 "total_shots": 7,
                 "shots_on_target": 1,
                 "corners": 3,
-                "fouls": 19,
-                "yellow_cards": 3,
+                "fouls": 20,
+                "yellow_cards": 4,
                 "red_cards": 0
             },
             "away": {
@@ -4540,7 +4553,7 @@
                 "total_shots": 7,
                 "shots_on_target": 3,
                 "corners": 3,
-                "fouls": 9,
+                "fouls": 10,
                 "yellow_cards": 2,
                 "red_cards": 0
             }
@@ -4565,7 +4578,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 11,
+                "elapsed": 12,
                 "extra": null
             }
         },
@@ -12180,7 +12193,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 80,
+                "elapsed": 81,
                 "extra": null
             }
         },
@@ -16644,7 +16657,7 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 60,
+                "possession": 61,
                 "total_shots": 12,
                 "shots_on_target": 6,
                 "corners": 7,
@@ -16653,7 +16666,7 @@
                 "red_cards": 0
             },
             "away": {
-                "possession": 40,
+                "possession": 39,
                 "total_shots": 3,
                 "shots_on_target": 1,
                 "corners": 4,
@@ -16682,7 +16695,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 40,
+                "elapsed": 41,
                 "extra": null
             }
         },
@@ -21699,7 +21712,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 21,
+                "elapsed": 22,
                 "extra": null
             }
         },
@@ -21733,7 +21746,7 @@
         },
         "goals": {
             "home": 0,
-            "away": 1
+            "away": 2
         },
         "homeLineup": {
             "team": {
@@ -25681,6 +25694,15 @@
                 "type": "Goal",
                 "detail": "Normal Goal",
                 "assist": null
+            },
+            {
+                "time": "22",
+                "team_id": 18,
+                "player": null,
+                "player_id": null,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
             }
         ],
         "match_ended_at": null,
@@ -25728,7 +25750,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 39,
+                "elapsed": 40,
                 "extra": null
             }
         },
@@ -29755,7 +29777,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 83,
+                "elapsed": 84,
                 "extra": null
             }
         },
