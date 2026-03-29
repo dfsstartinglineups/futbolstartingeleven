@@ -736,8 +736,8 @@
                 "city": "Leicester"
             },
             "status": {
-                "long": "First Half",
-                "short": "1H",
+                "long": "Halftime",
+                "short": "HT",
                 "elapsed": 45,
                 "extra": 2
             }
@@ -903,7 +903,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 89,
+                "elapsed": 90,
                 "extra": null
             }
         },
@@ -1118,8 +1118,40 @@
                                     "rating": "6.90"
                                 }
                             }
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "89"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 70016,
+                            "name": "Klaudijus Upstas",
+                            "number": 19,
+                            "pos": "D",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/70016.png",
+                            "age": 31,
+                            "nationality": "Lithuania",
+                            "season_stats": {
+                                "total": {
+                                    "games": 0,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "competitions": {}
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -1489,36 +1521,6 @@
                         "number": 5,
                         "pos": "D",
                         "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 70016,
-                        "name": "Klaudijus Upstas",
-                        "number": 19,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/70016.png",
-                        "age": 31,
-                        "nationality": "Lithuania",
-                        "season_stats": {
-                            "total": {
-                                "games": 0,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 0,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "N/A"
-                            },
-                            "competitions": {}
-                        }
                     }
                 },
                 {
@@ -2693,6 +2695,17 @@
                 "assist": "G. Kvernadze",
                 "player_out": "G. Kvernadze",
                 "player_out_id": 311251
+            },
+            {
+                "time": "89",
+                "team_id": 1097,
+                "player": "A. Tutyskinas",
+                "player_id": 325384,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "K. Upstas",
+                "player_out": "K. Upstas",
+                "player_out_id": 70016
             }
         ],
         "match_ended_at": null,
@@ -2721,7 +2734,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 2
+                "extra": 3
             }
         },
         "league": {
