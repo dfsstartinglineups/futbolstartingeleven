@@ -738,7 +738,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 22,
+                "elapsed": 23,
                 "extra": null
             }
         },
@@ -893,7 +893,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 64,
+                "elapsed": 65,
                 "extra": null
             }
         },
@@ -1233,8 +1233,19 @@
                         "name": "Gratas Sirg\u0117das",
                         "number": 11,
                         "pos": "M",
-                        "grid": "3:3"
-                    }
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "62"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 69941,
+                            "name": "Deividas \u0160e\u0161plaukis",
+                            "number": 21,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -1242,8 +1253,19 @@
                         "name": "Modestas Vorobjovas",
                         "number": 6,
                         "pos": "M",
-                        "grid": "3:2"
-                    }
+                        "grid": "3:2",
+                        "isSubbedIn": true,
+                        "subMinute": "62"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 380588,
+                            "name": "Lukas Michelbrink",
+                            "number": 16,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -1535,24 +1557,6 @@
                 },
                 {
                     "player": {
-                        "id": 380588,
-                        "name": "Lukas Michelbrink",
-                        "number": 16,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 69941,
-                        "name": "Deividas \u0160e\u0161plaukis",
-                        "number": 21,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 32225,
                         "name": "Edgaras Dubickas",
                         "number": 9,
@@ -1693,8 +1697,19 @@
                         "name": "Ilia Beriashvili",
                         "number": 5,
                         "pos": "D",
-                        "grid": "2:3"
-                    }
+                        "grid": "2:3",
+                        "isSubbedIn": true,
+                        "subMinute": "64"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 204163,
+                            "name": "Iva Gelashvili",
+                            "number": 5,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -2216,15 +2231,6 @@
                 },
                 {
                     "player": {
-                        "id": 204163,
-                        "name": "Iva Gelashvili",
-                        "number": 5,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 265741,
                         "name": "Giorgi Gocholeishvili",
                         "number": 13,
@@ -2497,6 +2503,50 @@
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "62",
+                "team_id": 1097,
+                "player": "G. Sirgedas",
+                "player_id": 69899,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "D. Sesplaukis",
+                "player_out": "D. Sesplaukis",
+                "player_out_id": 69941
+            },
+            {
+                "time": "62",
+                "team_id": 1097,
+                "player": "A. Kucys",
+                "player_id": 626811,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "E. Dubickas",
+                "player_out": "E. Dubickas",
+                "player_out_id": 32225
+            },
+            {
+                "time": "62",
+                "team_id": 1097,
+                "player": "M. Vorobjovas",
+                "player_id": 55900,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "L. Michelbrink",
+                "player_out": "L. Michelbrink",
+                "player_out_id": 380588
+            },
+            {
+                "time": "64",
+                "team_id": 1104,
+                "player": "I. Beriashvili",
+                "player_id": 24355,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "I. Gelashvili",
+                "player_out": "I. Gelashvili",
+                "player_out_id": 204163
             }
         ],
         "match_ended_at": null,
@@ -2524,7 +2574,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 22,
+                "elapsed": 23,
                 "extra": null
             }
         },
