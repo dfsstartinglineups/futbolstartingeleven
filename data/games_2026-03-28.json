@@ -3301,8 +3301,8 @@
                 "city": null
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
                 "extra": 5
             }
@@ -6229,10 +6229,10 @@
                 "player_id": 13522,
                 "type": "Goal",
                 "detail": "Normal Goal",
-                "assist": null
+                "assist": "B. Rovira"
             }
         ],
-        "match_ended_at": null,
+        "match_ended_at": "2026-03-29T01:07:34.953892+00:00",
         "post_game_sync": false,
         "final_odds_check": true,
         "refreshed_15m": true,
@@ -19251,7 +19251,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 1
+                "extra": 2
             }
         },
         "league": {
@@ -19510,8 +19510,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
                             "rating": "5.9"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "89"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 68645,
+                            "name": "Felicitas Rauch",
+                            "number": 11,
+                            "pos": "D",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/68645.png",
+                            "age": 29,
+                            "nationality": "Germany",
+                            "season_stats": {
+                                "total": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "competitions": {
+                                    "NWSL Women": {
+                                        "games": 1,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 0,
+                                        "pass_acc": 0,
+                                        "tackles": 0,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "N/A"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -20201,75 +20272,6 @@
                                 "rating": "N/A"
                             },
                             "competitions": {}
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 68645,
-                        "name": "Felicitas Rauch",
-                        "number": 11,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/68645.png",
-                        "age": 29,
-                        "nationality": "Germany",
-                        "season_stats": {
-                            "total": {
-                                "games": 1,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 0,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "N/A"
-                            },
-                            "competitions": {
-                                "NWSL Women": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 0,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "N/A"
-                                }
-                            }
                         },
                         "live_stats": {
                             "goals": 0,
@@ -22031,6 +22033,17 @@
                 "assist": "T. Boade",
                 "player_out": "T. Boade",
                 "player_out_id": 360245
+            },
+            {
+                "time": "89",
+                "team_id": 2999,
+                "player": "U. Shiragaki",
+                "player_id": 614802,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "F. Rauch",
+                "player_out": "F. Rauch",
+                "player_out_id": 68645
             }
         ],
         "match_ended_at": null,
@@ -22078,7 +22091,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 20,
+                "elapsed": 21,
                 "extra": null
             }
         },
@@ -54648,7 +54661,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 4,
+                "elapsed": 5,
                 "extra": null
             }
         },
@@ -54784,9 +54797,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 3,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "3",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -54928,9 +54941,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 4,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "4",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -54960,9 +54973,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 2,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "2",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -55044,9 +55057,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 1,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "1",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -55128,9 +55141,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 3,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "3",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -55302,20 +55315,20 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 3,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "3",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
+                            "duels_total": 1,
+                            "duels_won": 1,
                             "clearances": 0,
                             "saves": 0,
                             "conceded": 0,
                             "yellow_cards": 0,
                             "red_cards": 0,
-                            "fouls_drawn": 0,
+                            "fouls_drawn": 1,
                             "fouls_committed": 0,
                             "rating": "N/A"
                         }
@@ -55416,9 +55429,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 1,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "1",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -55529,15 +55542,15 @@
                             "assists": 0,
                             "total_shots": 0,
                             "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
+                            "offsides": 1,
+                            "passes": 3,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "1",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
+                            "duels_total": 1,
+                            "duels_won": 1,
                             "clearances": 0,
                             "saves": 0,
                             "conceded": 0,
@@ -55629,9 +55642,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 2,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "1",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -55797,9 +55810,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 1,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "1",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -56310,7 +56323,7 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 1,
                             "key_passes": 0,
                             "pass_acc": 0,
                             "tackles": 0,
@@ -56538,9 +56551,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 1,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "1",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -56658,7 +56671,7 @@
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 0,
+                            "duels_total": 1,
                             "duels_won": 0,
                             "clearances": 0,
                             "saves": 0,
@@ -56880,9 +56893,9 @@
                             "total_shots": 0,
                             "shots_on_target": 0,
                             "offsides": 0,
-                            "passes": 0,
+                            "passes": 1,
                             "key_passes": 0,
-                            "pass_acc": 0,
+                            "pass_acc": "1",
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
@@ -56970,7 +56983,7 @@
                             "tackles": 0,
                             "blocks": 0,
                             "interceptions": 0,
-                            "duels_total": 0,
+                            "duels_total": 1,
                             "duels_won": 0,
                             "clearances": 0,
                             "saves": 0,
@@ -56978,7 +56991,7 @@
                             "yellow_cards": 0,
                             "red_cards": 0,
                             "fouls_drawn": 0,
-                            "fouls_committed": 0,
+                            "fouls_committed": 1,
                             "rating": "N/A"
                         }
                     }
@@ -57098,7 +57111,7 @@
                             "pass_acc": 0,
                             "tackles": 0,
                             "blocks": 0,
-                            "interceptions": 0,
+                            "interceptions": 1,
                             "duels_total": 0,
                             "duels_won": 0,
                             "clearances": 0,
