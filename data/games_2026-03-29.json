@@ -738,7 +738,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 35,
+                "elapsed": 36,
                 "extra": null
             }
         },
@@ -903,7 +903,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 77,
+                "elapsed": 78,
                 "extra": null
             }
         },
@@ -1727,8 +1727,19 @@
                         "name": "Lasha Dvali",
                         "number": 3,
                         "pos": "D",
-                        "grid": "2:2"
-                    }
+                        "grid": "2:2",
+                        "isSubbedIn": true,
+                        "subMinute": "75"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 61224,
+                            "name": "Luka Lochoshvili",
+                            "number": 4,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -1866,7 +1877,7 @@
                         "id": 24597,
                         "name": "Irakli Azarovi",
                         "number": 16,
-                        "pos": "D",
+                        "pos": "M",
                         "grid": "3:1",
                         "photo": "https://media.api-sports.io/football/players/24597.png",
                         "age": 23,
@@ -1919,17 +1930,91 @@
                                     "rating": "6.30"
                                 }
                             }
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "75"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 2181,
+                            "name": "Georgiy Tsitaishvili",
+                            "number": 19,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/2181.png",
+                            "age": 25,
+                            "nationality": "Georgia",
+                            "season_stats": {
+                                "total": {
+                                    "games": 27,
+                                    "goals": 2,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 5,
+                                    "key_passes": 36,
+                                    "pass_acc": 79,
+                                    "tackles": 16,
+                                    "interceptions": 11,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.86"
+                                },
+                                "competitions": {
+                                    "Coupe de France": {
+                                        "games": 2,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 5,
+                                        "pass_acc": 0,
+                                        "tackles": 2,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "7.05"
+                                    },
+                                    "Ligue 1": {
+                                        "games": 25,
+                                        "goals": 2,
+                                        "assists": 1,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 4,
+                                        "key_passes": 31,
+                                        "pass_acc": 79,
+                                        "tackles": 14,
+                                        "interceptions": 11,
+                                        "yellow_cards": 2,
+                                        "red_cards": 0,
+                                        "rating": "6.67"
+                                    }
+                                }
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
                         "id": 24743,
                         "name": "Zuriko Davitashvili",
                         "number": 9,
-                        "pos": "F",
-                        "grid": "4:3"
-                    }
+                        "pos": "M",
+                        "grid": "4:3",
+                        "isSubbedIn": true,
+                        "subMinute": "75"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 24674,
+                            "name": "Nika Gagnidze",
+                            "number": 20,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -2232,15 +2317,6 @@
                 },
                 {
                     "player": {
-                        "id": 61224,
-                        "name": "Luka Lochoshvili",
-                        "number": 4,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 265741,
                         "name": "Giorgi Gocholeishvili",
                         "number": 13,
@@ -2320,76 +2396,6 @@
                         "id": 24585,
                         "name": "Vladimer Mamuchashvili",
                         "number": 18,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 2181,
-                        "name": "Georgiy Tsitaishvili",
-                        "number": 19,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/2181.png",
-                        "age": 25,
-                        "nationality": "Georgia",
-                        "season_stats": {
-                            "total": {
-                                "games": 27,
-                                "goals": 2,
-                                "assists": 1,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 5,
-                                "key_passes": 36,
-                                "pass_acc": 79,
-                                "tackles": 16,
-                                "interceptions": 11,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.86"
-                            },
-                            "competitions": {
-                                "Coupe de France": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 5,
-                                    "pass_acc": 0,
-                                    "tackles": 2,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.05"
-                                },
-                                "Ligue 1": {
-                                    "games": 25,
-                                    "goals": 2,
-                                    "assists": 1,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 4,
-                                    "key_passes": 31,
-                                    "pass_acc": 79,
-                                    "tackles": 14,
-                                    "interceptions": 11,
-                                    "yellow_cards": 2,
-                                    "red_cards": 0,
-                                    "rating": "6.67"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 24674,
-                        "name": "Nika Gagnidze",
-                        "number": 20,
                         "pos": "M",
                         "grid": null
                     }
@@ -2584,6 +2590,39 @@
                 "type": "Goal",
                 "detail": "Penalty",
                 "assist": null
+            },
+            {
+                "time": "75",
+                "team_id": 1104,
+                "player": "L. Dvali",
+                "player_id": 28327,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "L. Lochoshvili",
+                "player_out": "L. Lochoshvili",
+                "player_out_id": 61224
+            },
+            {
+                "time": "75",
+                "team_id": 1104,
+                "player": "Z. Davitashvili",
+                "player_id": 24743,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "N. Gagnidze",
+                "player_out": "N. Gagnidze",
+                "player_out_id": 24674
+            },
+            {
+                "time": "75",
+                "team_id": 1104,
+                "player": "I. Azarovi",
+                "player_id": 24597,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "G. Tsitaishvili",
+                "player_out": "G. Tsitaishvili",
+                "player_out_id": 2181
             }
         ],
         "match_ended_at": null,
@@ -2611,7 +2650,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 34,
+                "elapsed": 36,
                 "extra": null
             }
         },
