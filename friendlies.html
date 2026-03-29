@@ -36,68 +36,10 @@
     <link rel="canonical" id="canonical-url" href="https://futbolstartingeleven.com/friendlies.html">
 
     <script>
-        (function() {
-            const params = new URLSearchParams(window.location.search);
-            const leagueKey = params.get('league');
-
-            if (leagueKey && leagueKey !== 'top') {
-                const leagueNames = {
-                    "epl": "Premier League", "laliga": "La Liga", "seriea": "Serie A",
-                    "championship": "Championship", "bundesliga": "Bundesliga", "ligue1": "Ligue 1",
-                    "eredivisie": "Eredivisie", "portugal": "Primeira Liga", "turkey": "Süper Lig",
-                    "belgium": "Pro League", "scotland": "Premiership", "denmark": "Superliga",
-                    "mls": "MLS", "ligamx": "Liga MX", "brazil": "Brasileirão", "argentina": "Liga Profesional",
-                    "colombia": "Primera A", "saudi": "Saudi Pro League", "japan": "J1 League",
-                    "australia": "A-League", "k1": "K League 1", "ucl": "Champions League",
-                    "europa": "Europa League", "conference": "Conference League", "libertadores": "Copa Libertadores",
-                    "sudamericana": "Copa Sudamericana", "concacaf": "Champions Cup", "leaguescup": "Leagues Cup",
-                    "facup": "FA Cup", "eflcup": "EFL Cup", "copadelrey": "Copa del Rey", "coppaitalia": "Coppa Italia",
-                    "dfbpokal": "DFB-Pokal", "worldcup": "World Cup", "euros": "Euro Championship",
-                    "copaamerica": "Copa America", "uefanations": "UEFA Nations League",
-                    "concacafnations": "CONCACAF Nations League", "wsl": "Women's Super League", "nwsl": "NWSL",
-                    "friendlies": "International Matches"
-                };
-
-                const leagueName = leagueNames[leagueKey];
-                
-                if (leagueName) {
-                    const baseUrl = "https://futbolstartingeleven.com/";
-                    const currentUrl = baseUrl + "?league=" + leagueKey;
-                    const title = "Live " + leagueName + " Starting Lineups, Scores & Match Odds | FutbolStartingEleven";
-                    const desc = "Real-time " + leagueName + " starting XIs, live match scores, injuries, goalscorers, and betting odds. Fast, ad-free live updates for today's matches.";
-
-                    // 1. Immediately swap the document title
-                    document.title = title;
-                    
-                    // 2. Helper function to safely overwrite meta tags
-                    const setMeta = (selector, content) => {
-                        const tag = document.querySelector(selector);
-                        if (tag) tag.setAttribute("content", content);
-                    };
-
-                    // 3. Overwrite standard, Open Graph, and Twitter tags
-                    setMeta('meta[name="description"]', desc);
-                    setMeta('meta[property="og:title"]', title);
-                    setMeta('meta[property="og:description"]', desc);
-                    setMeta('meta[property="og:url"]', currentUrl);
-                    setMeta('meta[name="twitter:title"]', title);
-                    setMeta('meta[name="twitter:description"]', desc);
-                    setMeta('meta[name="twitter:url"]', currentUrl);
-                    
-                    // 4. Overwrite Canonical URL
-                    const canonical = document.getElementById('canonical-url');
-                    if (canonical) canonical.href = currentUrl;
-
-                    // 5. NEW: Wait for the body to load, then swap the H1 tag!
-                    window.addEventListener('DOMContentLoaded', () => {
-                        const h1Tag = document.querySelector('h1');
-                        if (h1Tag) {
-                            h1Tag.textContent = "Live " + leagueName + " Starting Lineups, Scores & Match Odds";
-                        }
-                    });
-                }
-            }
-        })();
+        // Force the URL parameters so script.js knows to load the friendlies
+        if (!window.location.search.includes('league=friendlies')) {
+            window.history.replaceState(null, null, "?league=friendlies" + window.location.hash);
+        }
     </script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -322,7 +264,7 @@
 </nav>
 
 <div class="container mt-3 mb-3 text-center">
-    <h1 class="h5 fw-bold text-dark mb-1">Live Soccer-Futbol-Football Starting Lineups, Scores & Match Odds</h1>
+    <h1 class="h5 fw-bold text-dark mb-1">Live International Friendlies Starting Lineups, Scores & Match Odds</h1>
     
     <p class="text-muted mb-2" style="font-size: 0.85rem;">Real-time starting XIs, match injuries, goalscorers, and betting odds for global football.</p>
     
