@@ -738,7 +738,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 38,
+                "elapsed": 40,
                 "extra": null
             }
         },
@@ -903,7 +903,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 80,
+                "elapsed": 81,
                 "extra": null
             }
         },
@@ -1233,9 +1233,20 @@
                         "id": 210027,
                         "name": "Motiejus Burba",
                         "number": 7,
-                        "pos": "M",
-                        "grid": "3:4"
-                    }
+                        "pos": "F",
+                        "grid": "3:4",
+                        "isSubbedIn": true,
+                        "subMinute": "79"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 69923,
+                            "name": "Meinardas Mikulenas",
+                            "number": 22,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -1570,15 +1581,6 @@
                         "id": 32225,
                         "name": "Edgaras Dubickas",
                         "number": 9,
-                        "pos": "F",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 69923,
-                        "name": "Meinardas Mikulenas",
-                        "number": 22,
                         "pos": "F",
                         "grid": null
                     }
@@ -2627,11 +2629,22 @@
             {
                 "time": "79",
                 "team_id": 1097,
-                "player": null,
-                "player_id": null,
+                "player": "G. Gineitis",
+                "player_id": 343189,
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "79",
+                "team_id": 1097,
+                "player": "M. Burba",
+                "player_id": 210027,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "M. Mikulenas",
+                "player_out": "M. Mikulenas",
+                "player_out_id": 69923
             }
         ],
         "match_ended_at": null,
@@ -2659,7 +2672,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 38,
+                "elapsed": 39,
                 "extra": null
             }
         },
