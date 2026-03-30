@@ -7048,7 +7048,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 80,
+                "elapsed": 81,
                 "extra": null
             }
         },
@@ -12744,7 +12744,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 4
+                "extra": 5
             }
         },
         "league": {
@@ -15028,7 +15028,7 @@
                         "id": 536120,
                         "name": "Barbra Banda",
                         "number": 11,
-                        "pos": "F",
+                        "pos": "D",
                         "grid": "5:1",
                         "photo": "https://media.api-sports.io/football/players/536120.png",
                         "age": 25,
@@ -15089,8 +15089,63 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 1,
                             "rating": "6.2"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "90+2"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 461524,
+                            "name": "Hannah Anderson",
+                            "number": 41,
+                            "pos": "D",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/461524.png",
+                            "age": 24,
+                            "nationality": "USA",
+                            "season_stats": {
+                                "total": {
+                                    "games": 0,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "competitions": {}
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 }
             ],
             "substitutes": [
@@ -15104,59 +15159,6 @@
                         "photo": "https://media.api-sports.io/football/players/647505.png",
                         "age": null,
                         "nationality": null,
-                        "season_stats": {
-                            "total": {
-                                "games": 0,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 0,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "N/A"
-                            },
-                            "competitions": {}
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 461524,
-                        "name": "Hannah Anderson",
-                        "number": 41,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/461524.png",
-                        "age": 24,
-                        "nationality": "USA",
                         "season_stats": {
                             "total": {
                                 "games": 0,
@@ -15595,6 +15597,17 @@
                 "type": "Card",
                 "detail": "Yellow Card",
                 "assist": null
+            },
+            {
+                "time": "90+2",
+                "team_id": 3000,
+                "player": "B. Banda",
+                "player_id": 536120,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "H. Anderson",
+                "player_out": "H. Anderson",
+                "player_out_id": 461524
             }
         ],
         "match_ended_at": null,
