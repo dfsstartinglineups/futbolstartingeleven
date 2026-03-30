@@ -18,7 +18,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 67,
+                "elapsed": 68,
                 "extra": null
             }
         },
@@ -2311,7 +2311,7 @@
                         "id": 305821,
                         "name": "Matheus Martins",
                         "number": 11,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "3:1",
                         "photo": "https://media.api-sports.io/football/players/305821.png",
                         "age": 22,
@@ -2402,8 +2402,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
                             "rating": "6.3"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "59"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 10432,
+                            "name": "J\u00fanior Santos",
+                            "number": 17,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/10432.png",
+                            "age": 31,
+                            "nationality": "Brazil",
+                            "season_stats": {
+                                "total": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 50,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.30"
+                                },
+                                "competitions": {
+                                    "Serie A": {
+                                        "games": 1,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 0,
+                                        "pass_acc": 50,
+                                        "tackles": 1,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.30"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -3644,75 +3715,6 @@
                             "rating": "N/A"
                         }
                     }
-                },
-                {
-                    "player": {
-                        "id": 10432,
-                        "name": "J\u00fanior Santos",
-                        "number": 17,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/10432.png",
-                        "age": 31,
-                        "nationality": "Brazil",
-                        "season_stats": {
-                            "total": {
-                                "games": 1,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 50,
-                                "tackles": 1,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.30"
-                            },
-                            "competitions": {
-                                "Serie A": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 50,
-                                    "tackles": 1,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.30"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
                 }
             ],
             "coach": {
@@ -3841,6 +3843,17 @@
                 "assist": "L. M. Villalba Jaume",
                 "player_out": "L. M. Villalba Jaume",
                 "player_out_id": 308798
+            },
+            {
+                "time": "59",
+                "team_id": 120,
+                "player": "Matheus Martins",
+                "player_id": 305821,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "Junior Santos",
+                "player_out": "Junior Santos",
+                "player_out_id": 10432
             },
             {
                 "time": "61",
@@ -6953,7 +6966,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 38,
+                "elapsed": 39,
                 "extra": null
             }
         },
