@@ -7048,7 +7048,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 48,
+                "elapsed": 50,
                 "extra": null
             }
         },
@@ -10148,26 +10148,53 @@
             "home": null,
             "away": null
         },
-        "homeLineup": null,
-        "awayLineup": null,
+        "homeLineup": {
+            "team": {
+                "id": 1464,
+                "name": "Llaneros",
+                "logo": "https://media.api-sports.io/football/teams/1464.png",
+                "colors": null
+            },
+            "coach": {
+                "id": 25808,
+                "name": "Jose Garcia",
+                "photo": "https://media.api-sports.io/football/coachs/25808.png"
+            },
+            "formation": null
+        },
+        "awayLineup": {
+            "team": {
+                "id": 1136,
+                "name": "Once Caldas",
+                "logo": "https://media.api-sports.io/football/teams/1136.png",
+                "colors": null
+            },
+            "coach": {
+                "id": 25778,
+                "name": "Hernan Herrera",
+                "photo": "https://media.api-sports.io/football/coachs/25778.png"
+            },
+            "formation": null
+        },
         "lineup_checks": 0,
         "odds": {
-            "home": "2.76",
+            "home": "2.72",
             "draw": "3.25",
-            "away": "2.48",
+            "away": "2.54",
             "total": "2.5",
-            "over": "2.1",
-            "under": "1.73"
+            "over": "1.83",
+            "under": "1.95"
         },
-        "last_odds_check": "2026-03-29T01:30:38.727296+00:00",
+        "last_odds_check": "2026-03-30T00:30:35.657215+00:00",
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 4
+            "checks": 5
         },
         "events": [],
         "match_ended_at": null,
-        "post_game_sync": false
+        "post_game_sync": false,
+        "final_odds_check": true
     },
     {
         "fixture": {
@@ -10794,7 +10821,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 63,
+                "elapsed": 64,
                 "extra": null
             }
         },
@@ -13545,6 +13572,15 @@
                 "assist": "J. Dudley",
                 "player_out": "J. Dudley",
                 "player_out_id": 637407
+            },
+            {
+                "time": "63",
+                "team_id": 3000,
+                "player": null,
+                "player_id": null,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
             }
         ],
         "match_ended_at": null,
