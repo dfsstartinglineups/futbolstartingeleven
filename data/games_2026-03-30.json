@@ -38,8 +38,8 @@
                 "name": "United Arab Emirates",
                 "logo": "https://media.api-sports.io/football/teams/1563.png",
                 "winner": null,
-                "rank": null,
-                "record": null
+                "rank": "",
+                "record": ""
             },
             "away": {
                 "id": 1098,
@@ -73,7 +73,7 @@
         },
         "events": [],
         "match_ended_at": null,
-        "post_game_sync": false
+        "post_game_sync": true
     },
     {
         "fixture": {
@@ -94,7 +94,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 72,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -147,9 +147,108 @@
             "away": [],
             "checks": 0
         },
-        "events": [],
+        "events": [
+            {
+                "time": "7",
+                "team_id": 1136,
+                "player": "J. A. Zapata Ramirez",
+                "player_id": 59637,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
+            },
+            {
+                "time": "40",
+                "team_id": 1136,
+                "player": "P. Gomez",
+                "player_id": 126094,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "44",
+                "team_id": 1464,
+                "player": "K. Rincon",
+                "player_id": 538332,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
+            },
+            {
+                "time": "45",
+                "team_id": 1464,
+                "player": "K. Rincon",
+                "player_id": 538332,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "46",
+                "team_id": 1136,
+                "player": "P. Gomez",
+                "player_id": 126094,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "M. Zuleta",
+                "player_out": "M. Zuleta",
+                "player_out_id": 406431
+            },
+            {
+                "time": "46",
+                "team_id": 1136,
+                "player": "J. Alvarado",
+                "player_id": 181420,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "J. Quinones",
+                "player_out": "J. Quinones",
+                "player_out_id": 59564
+            },
+            {
+                "time": "52",
+                "team_id": 1464,
+                "player": "K. Rincon",
+                "player_id": 538332,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "M. Sierra",
+                "player_out": "M. Sierra",
+                "player_out_id": 36269
+            },
+            {
+                "time": "64",
+                "team_id": 1464,
+                "player": "K. Caicedo",
+                "player_id": 554917,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            }
+        ],
         "match_ended_at": null,
-        "post_game_sync": false
+        "post_game_sync": false,
+        "team_stats": {
+            "home": {
+                "possession": 48,
+                "total_shots": 9,
+                "shots_on_target": 4,
+                "corners": 7,
+                "fouls": 7,
+                "yellow_cards": 2,
+                "red_cards": 0
+            },
+            "away": {
+                "possession": 52,
+                "total_shots": 6,
+                "shots_on_target": 2,
+                "corners": 1,
+                "fouls": 4,
+                "yellow_cards": 1,
+                "red_cards": 0
+            }
+        }
     },
     {
         "fixture": {
@@ -170,7 +269,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 32,
+                "elapsed": 33,
                 "extra": null
             }
         },
@@ -223,9 +322,48 @@
             "away": [],
             "checks": 0
         },
-        "events": [],
+        "events": [
+            {
+                "time": "6",
+                "team_id": 1106,
+                "player": "G. Kastanos",
+                "player_id": 867,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "L. Loizou"
+            },
+            {
+                "time": "30",
+                "team_id": 1106,
+                "player": "C. Charalampous",
+                "player_id": 15379,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
+            }
+        ],
         "match_ended_at": null,
-        "post_game_sync": false
+        "post_game_sync": false,
+        "team_stats": {
+            "home": {
+                "possession": 50,
+                "total_shots": 0,
+                "shots_on_target": 2,
+                "corners": 0,
+                "fouls": 0,
+                "yellow_cards": 0,
+                "red_cards": 0
+            },
+            "away": {
+                "possession": 50,
+                "total_shots": 0,
+                "shots_on_target": 0,
+                "corners": 0,
+                "fouls": 3,
+                "yellow_cards": 0,
+                "red_cards": 0
+            }
+        }
     },
     {
         "fixture": {
@@ -286,18 +424,18 @@
         "awayLineup": null,
         "lineup_checks": 0,
         "odds": {
-            "home": "TBD",
-            "draw": "TBD",
-            "away": "TBD",
-            "total": "TBD",
-            "over": "TBD",
-            "under": "TBD"
+            "home": "1.17",
+            "draw": "7.00",
+            "away": "14.50",
+            "total": "3.5",
+            "over": "1.83",
+            "under": "1.95"
         },
-        "last_odds_check": null,
+        "last_odds_check": "2026-03-30T16:33:36.418912+00:00",
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 0
+            "checks": 4
         },
         "events": [],
         "match_ended_at": null,
@@ -362,18 +500,18 @@
         "awayLineup": null,
         "lineup_checks": 0,
         "odds": {
-            "home": "TBD",
-            "draw": "TBD",
-            "away": "TBD",
-            "total": "TBD",
-            "over": "TBD",
-            "under": "TBD"
+            "home": "2.12",
+            "draw": "3.30",
+            "away": "3.40",
+            "total": "2.5",
+            "over": "2.1",
+            "under": "1.7"
         },
-        "last_odds_check": null,
+        "last_odds_check": "2026-03-30T16:33:36.825594+00:00",
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 0
+            "checks": 3
         },
         "events": [],
         "match_ended_at": null,
@@ -438,18 +576,18 @@
         "awayLineup": null,
         "lineup_checks": 0,
         "odds": {
-            "home": "TBD",
-            "draw": "TBD",
-            "away": "TBD",
-            "total": "TBD",
-            "over": "TBD",
-            "under": "TBD"
+            "home": "1.68",
+            "draw": "3.65",
+            "away": "5.00",
+            "total": "2.5",
+            "over": "2.0",
+            "under": "1.8"
         },
-        "last_odds_check": null,
+        "last_odds_check": "2026-03-30T16:33:37.233671+00:00",
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 0
+            "checks": 3
         },
         "events": [],
         "match_ended_at": null,
