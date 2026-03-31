@@ -11925,7 +11925,7 @@
                         "id": 13785,
                         "name": "Jhon Vel\u00e1squez",
                         "number": 10,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "4:3",
                         "photo": "https://media.api-sports.io/football/players/13785.png",
                         "age": 30,
@@ -11986,8 +11986,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 1,
                             "rating": "6.2"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "80"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 415272,
+                            "name": "Jhoiner Salas",
+                            "number": 24,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/415272.png",
+                            "age": 22,
+                            "nationality": "Colombia",
+                            "season_stats": {
+                                "total": {
+                                    "games": 4,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 3,
+                                    "pass_acc": 86,
+                                    "tackles": 2,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.68"
+                                },
+                                "competitions": {
+                                    "Primera A": {
+                                        "games": 4,
+                                        "goals": 1,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 3,
+                                        "pass_acc": 86,
+                                        "tackles": 2,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.68"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -12310,75 +12381,6 @@
                                     "yellow_cards": 2,
                                     "red_cards": 0,
                                     "rating": "6.90"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 415272,
-                        "name": "Jhoiner Salas",
-                        "number": 24,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/415272.png",
-                        "age": 22,
-                        "nationality": "Colombia",
-                        "season_stats": {
-                            "total": {
-                                "games": 4,
-                                "goals": 1,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 3,
-                                "pass_acc": 86,
-                                "tackles": 2,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.68"
-                            },
-                            "competitions": {
-                                "Primera A": {
-                                    "games": 4,
-                                    "goals": 1,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 3,
-                                    "pass_acc": 86,
-                                    "tackles": 2,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.68"
                                 }
                             }
                         },
@@ -12923,6 +12925,17 @@
                 "assist": "J. Cajares",
                 "player_out": "J. Cajares",
                 "player_out_id": 555101
+            },
+            {
+                "time": "80",
+                "team_id": 1147,
+                "player": "J. Velasquez",
+                "player_id": 13785,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "J. Salas",
+                "player_out": "J. Salas",
+                "player_out_id": 415272
             }
         ],
         "match_ended_at": null,
@@ -12932,20 +12945,20 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 46,
+                "possession": 47,
                 "total_shots": 7,
                 "shots_on_target": 3,
-                "corners": 8,
+                "corners": 10,
                 "fouls": 7,
                 "yellow_cards": 2,
                 "red_cards": 0
             },
             "away": {
-                "possession": 54,
+                "possession": 53,
                 "total_shots": 9,
                 "shots_on_target": 4,
                 "corners": 1,
-                "fouls": 8,
+                "fouls": 9,
                 "yellow_cards": 5,
                 "red_cards": 0
             }
