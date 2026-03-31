@@ -3219,9 +3219,9 @@
                 "logo": "https://media.api-sports.io/football/teams/1093.png",
                 "colors": {
                     "player": {
-                        "primary": "ffffff",
-                        "number": "dd0000",
-                        "border": "ffffff"
+                        "primary": "fe0116",
+                        "number": "ffffff",
+                        "border": "fe0116"
                     },
                     "goalkeeper": {
                         "primary": "f5ed05",
@@ -4603,12 +4603,13 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "match_ended_at": null,
         "post_game_sync": false,
-        "final_odds_check": true
+        "final_odds_check": true,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -4683,7 +4684,7 @@
                     }
                 }
             },
-            "formation": "4-1-4-1",
+            "formation": "4-3-3",
             "startXI": [
                 {
                     "player": {
@@ -4962,7 +4963,7 @@
                     "player": {
                         "id": 55880,
                         "name": "Dirk Carlson",
-                        "number": 23,
+                        "number": 13,
                         "pos": "D",
                         "grid": "2:2",
                         "photo": "https://media.api-sports.io/football/players/55880.png",
@@ -5172,11 +5173,132 @@
                 },
                 {
                     "player": {
+                        "id": 70363,
+                        "name": "Marvin Martins",
+                        "number": 8,
+                        "pos": "M",
+                        "grid": "3:3",
+                        "photo": "https://media.api-sports.io/football/players/70363.png",
+                        "age": 30,
+                        "nationality": "Luxembourg",
+                        "season_stats": {
+                            "total": {
+                                "games": 28,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 7,
+                                "pass_acc": 76,
+                                "tackles": 24,
+                                "interceptions": 19,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.69"
+                            },
+                            "competitions": {
+                                "Eredivisie": {
+                                    "games": 17,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 7,
+                                    "pass_acc": 0,
+                                    "tackles": 17,
+                                    "interceptions": 13,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "Bundesliga": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                },
+                                "UEFA Europa Conference League": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 45,
+                                    "tackles": 6,
+                                    "interceptions": 4,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.80"
+                                },
+                                "Friendlies": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "UEFA Nations League": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 91,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.45"
+                                },
+                                "World Cup - Qualification Europe": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 84,
+                                    "tackles": 1,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
                         "id": 140612,
                         "name": "Mathias Olesen",
                         "number": 19,
                         "pos": "M",
-                        "grid": "3:1",
+                        "grid": "3:2",
                         "photo": "https://media.api-sports.io/football/players/140612.png",
                         "age": 24,
                         "nationality": "Luxembourg",
@@ -5278,193 +5400,11 @@
                 },
                 {
                     "player": {
-                        "id": 23125,
-                        "name": "Vincent Thill",
-                        "number": 15,
-                        "pos": "M",
-                        "grid": "4:4",
-                        "photo": "https://media.api-sports.io/football/players/23125.png",
-                        "age": 25,
-                        "nationality": "Luxembourg",
-                        "season_stats": {
-                            "total": {
-                                "games": 13,
-                                "goals": 2,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 0,
-                                "pass_acc": 82,
-                                "tackles": 4,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.70"
-                            },
-                            "competitions": {
-                                "Premyer Liqa": {
-                                    "games": 11,
-                                    "goals": 1,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 0,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "N/A"
-                                },
-                                "Cup": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 0,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "N/A"
-                                },
-                                "UEFA Nations League": {
-                                    "games": 1,
-                                    "goals": 1,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 0,
-                                    "pass_acc": 82,
-                                    "tackles": 4,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.70"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 20583,
-                        "name": "Christopher Martins Pereira",
-                        "number": 8,
-                        "pos": "M",
-                        "grid": "4:3",
-                        "photo": "https://media.api-sports.io/football/players/20583.png",
-                        "age": 28,
-                        "nationality": "Luxembourg",
-                        "season_stats": {
-                            "total": {
-                                "games": 46,
-                                "goals": 9,
-                                "assists": 5,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 12,
-                                "key_passes": 21,
-                                "pass_acc": 87,
-                                "tackles": 46,
-                                "interceptions": 20,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.75"
-                            },
-                            "competitions": {
-                                "Premier League": {
-                                    "games": 23,
-                                    "goals": 3,
-                                    "assists": 5,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 11,
-                                    "key_passes": 16,
-                                    "pass_acc": 0,
-                                    "tackles": 31,
-                                    "interceptions": 12,
-                                    "yellow_cards": 7,
-                                    "red_cards": 0,
-                                    "rating": "6.96"
-                                },
-                                "Cup": {
-                                    "games": 10,
-                                    "goals": 6,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 0,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "N/A"
-                                },
-                                "Friendlies": {
-                                    "games": 3,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 0,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "N/A"
-                                },
-                                "UEFA Nations League": {
-                                    "games": 6,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 90,
-                                    "tackles": 10,
-                                    "interceptions": 3,
-                                    "yellow_cards": 3,
-                                    "red_cards": 0,
-                                    "rating": "6.87"
-                                },
-                                "World Cup - Qualification Europe": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 4,
-                                    "pass_acc": 82,
-                                    "tackles": 5,
-                                    "interceptions": 5,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "6.43"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 25918,
                         "name": "Leandro Barreiro",
                         "number": 16,
                         "pos": "M",
-                        "grid": "4:2",
+                        "grid": "3:1",
                         "photo": "https://media.api-sports.io/football/players/25918.png",
                         "age": 25,
                         "nationality": "Luxembourg",
@@ -5566,45 +5506,75 @@
                 },
                 {
                     "player": {
-                        "id": 380518,
-                        "name": "Aiman Dardari",
-                        "number": 9,
+                        "id": 23125,
+                        "name": "Vincent Thill",
+                        "number": 15,
                         "pos": "F",
-                        "grid": "4:1",
-                        "photo": "https://media.api-sports.io/football/players/380518.png",
-                        "age": 20,
+                        "grid": "4:3",
+                        "photo": "https://media.api-sports.io/football/players/23125.png",
+                        "age": 25,
                         "nationality": "Luxembourg",
                         "season_stats": {
                             "total": {
-                                "games": 3,
-                                "goals": 0,
+                                "games": 13,
+                                "goals": 2,
                                 "assists": 0,
                                 "saves": 0,
                                 "conceded": 0,
-                                "shots_on": 0,
+                                "shots_on": 1,
                                 "key_passes": 0,
-                                "pass_acc": 60,
-                                "tackles": 0,
+                                "pass_acc": 82,
+                                "tackles": 4,
                                 "interceptions": 0,
                                 "yellow_cards": 0,
                                 "red_cards": 0,
-                                "rating": "6.33"
+                                "rating": "7.70"
                             },
                             "competitions": {
-                                "Bundesliga": {
-                                    "games": 3,
+                                "Premyer Liqa": {
+                                    "games": 11,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "N/A"
+                                },
+                                "Cup": {
+                                    "games": 1,
                                     "goals": 0,
                                     "assists": 0,
                                     "saves": 0,
                                     "conceded": 0,
                                     "shots_on": 0,
                                     "key_passes": 0,
-                                    "pass_acc": 60,
+                                    "pass_acc": 0,
                                     "tackles": 0,
                                     "interceptions": 0,
-                                    "yellow_cards": 1,
+                                    "yellow_cards": 0,
                                     "red_cards": 0,
-                                    "rating": "6.33"
+                                    "rating": "N/A"
+                                },
+                                "UEFA Nations League": {
+                                    "games": 1,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 82,
+                                    "tackles": 4,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.70"
                                 }
                             }
                         }
@@ -5616,7 +5586,7 @@
                         "name": "Danel Sinani",
                         "number": 10,
                         "pos": "F",
-                        "grid": "5:1",
+                        "grid": "4:2",
                         "photo": "https://media.api-sports.io/football/players/1672.png",
                         "age": 28,
                         "nationality": "Luxembourg",
@@ -5670,39 +5640,55 @@
                             }
                         }
                     }
-                }
-            ],
-            "substitutes": [
+                },
                 {
                     "player": {
-                        "id": 592754,
-                        "name": "Tiago Pereira Cardoso",
-                        "number": 12,
-                        "pos": "G",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/592754.png",
-                        "age": 19,
-                        "nationality": null,
+                        "id": 380518,
+                        "name": "Aiman Dardari",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": "4:1",
+                        "photo": "https://media.api-sports.io/football/players/380518.png",
+                        "age": 20,
+                        "nationality": "Luxembourg",
                         "season_stats": {
                             "total": {
-                                "games": 0,
+                                "games": 3,
                                 "goals": 0,
                                 "assists": 0,
                                 "saves": 0,
                                 "conceded": 0,
                                 "shots_on": 0,
                                 "key_passes": 0,
-                                "pass_acc": 0,
+                                "pass_acc": 60,
                                 "tackles": 0,
                                 "interceptions": 0,
                                 "yellow_cards": 0,
                                 "red_cards": 0,
-                                "rating": "N/A"
+                                "rating": "6.33"
                             },
-                            "competitions": {}
+                            "competitions": {
+                                "Bundesliga": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 60,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.33"
+                                }
+                            }
                         }
                     }
-                },
+                }
+            ],
+            "substitutes": [
                 {
                     "player": {
                         "id": 119280,
@@ -6538,6 +6524,52 @@
                             }
                         }
                     }
+                },
+                {
+                    "player": {
+                        "id": 25227,
+                        "name": "Tim Kips",
+                        "number": 12,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/25227.png",
+                        "age": 25,
+                        "nationality": "Luxembourg",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 12,
+                                "conceded": 3,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.50"
+                            },
+                            "competitions": {
+                                "3. Liga": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 12,
+                                    "conceded": 3,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.50"
+                                }
+                            }
+                        }
+                    }
                 }
             ],
             "coach": {
@@ -6920,7 +6952,7 @@
                         "id": 112689,
                         "name": "Ryan Camenzuli",
                         "number": 3,
-                        "pos": "M",
+                        "pos": "D",
                         "grid": "2:1",
                         "photo": "https://media.api-sports.io/football/players/112689.png",
                         "age": 31,
@@ -7057,7 +7089,7 @@
                         "id": 112396,
                         "name": "Alexander Satariano",
                         "number": 23,
-                        "pos": "F",
+                        "pos": "M",
                         "grid": "3:1",
                         "photo": "https://media.api-sports.io/football/players/112396.png",
                         "age": 24,
@@ -7209,7 +7241,7 @@
                         "id": 112489,
                         "name": "Paul Mbong",
                         "number": 8,
-                        "pos": "F",
+                        "pos": "M",
                         "grid": "4:2",
                         "photo": "https://media.api-sports.io/football/players/112489.png",
                         "age": 24,
@@ -8424,7 +8456,7 @@
                         "id": 394708,
                         "name": "Keyon Ewurum",
                         "number": 19,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": null,
                         "photo": "https://media.api-sports.io/football/players/394708.png",
                         "age": 18,
@@ -8591,12 +8623,13 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "match_ended_at": null,
         "post_game_sync": false,
-        "final_odds_check": true
+        "final_odds_check": true,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -10749,7 +10782,7 @@
                     }
                 }
             },
-            "formation": "4-3-3",
+            "formation": "3-4-3",
             "startXI": [
                 {
                     "player": {
@@ -10799,118 +10832,11 @@
                 },
                 {
                     "player": {
-                        "id": 951,
-                        "name": "Michel Aebischer",
-                        "number": 20,
-                        "pos": "D",
-                        "grid": "2:4",
-                        "photo": "https://media.api-sports.io/football/players/951.png",
-                        "age": 28,
-                        "nationality": "Switzerland",
-                        "season_stats": {
-                            "total": {
-                                "games": 31,
-                                "goals": 1,
-                                "assists": 1,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 2,
-                                "key_passes": 29,
-                                "pass_acc": 85,
-                                "tackles": 66,
-                                "interceptions": 33,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.85"
-                            },
-                            "competitions": {
-                                "Serie A": {
-                                    "games": 28,
-                                    "goals": 1,
-                                    "assists": 1,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 2,
-                                    "key_passes": 28,
-                                    "pass_acc": 85,
-                                    "tackles": 57,
-                                    "interceptions": 29,
-                                    "yellow_cards": 5,
-                                    "red_cards": 0,
-                                    "rating": "6.96"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 2803,
-                        "name": "Nico Elvedi",
-                        "number": 4,
-                        "pos": "D",
-                        "grid": "2:3",
-                        "photo": "https://media.api-sports.io/football/players/2803.png",
-                        "age": 29,
-                        "nationality": "Switzerland",
-                        "season_stats": {
-                            "total": {
-                                "games": 29,
-                                "goals": 2,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 2,
-                                "key_passes": 8,
-                                "pass_acc": 88,
-                                "tackles": 37,
-                                "interceptions": 29,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.23"
-                            },
-                            "competitions": {
-                                "DFB Pokal": {
-                                    "games": 3,
-                                    "goals": 2,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 2,
-                                    "key_passes": 0,
-                                    "pass_acc": 52,
-                                    "tackles": 2,
-                                    "interceptions": 4,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.50"
-                                },
-                                "Bundesliga": {
-                                    "games": 26,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 8,
-                                    "pass_acc": 92,
-                                    "tackles": 35,
-                                    "interceptions": 25,
-                                    "yellow_cards": 2,
-                                    "red_cards": 0,
-                                    "rating": "6.96"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 5,
                         "name": "Manuel Akanji",
                         "number": 5,
                         "pos": "D",
-                        "grid": "2:2",
+                        "grid": "2:3",
                         "photo": "https://media.api-sports.io/football/players/5.png",
                         "age": 30,
                         "nationality": "Switzerland",
@@ -10997,11 +10923,254 @@
                 },
                 {
                     "player": {
+                        "id": 2810,
+                        "name": "Denis Zakaria",
+                        "number": 6,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/2810.png",
+                        "age": 29,
+                        "nationality": "Switzerland",
+                        "season_stats": {
+                            "total": {
+                                "games": 52,
+                                "goals": 8,
+                                "assists": 7,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 18,
+                                "key_passes": 24,
+                                "pass_acc": 62,
+                                "tackles": 82,
+                                "interceptions": 70,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.98"
+                            },
+                            "competitions": {
+                                "Friendlies Clubs": {
+                                    "games": 27,
+                                    "goals": 6,
+                                    "assists": 4,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 11,
+                                    "key_passes": 16,
+                                    "pass_acc": 40,
+                                    "tackles": 41,
+                                    "interceptions": 34,
+                                    "yellow_cards": 5,
+                                    "red_cards": 0,
+                                    "rating": "7.19"
+                                },
+                                "Coupe de France": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 3,
+                                    "pass_acc": 41,
+                                    "tackles": 8,
+                                    "interceptions": 2,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "7.03"
+                                },
+                                "UEFA Champions League": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 0,
+                                    "pass_acc": 91,
+                                    "tackles": 11,
+                                    "interceptions": 12,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                },
+                                "Ligue 1": {
+                                    "games": 16,
+                                    "goals": 2,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 5,
+                                    "pass_acc": 93,
+                                    "tackles": 22,
+                                    "interceptions": 22,
+                                    "yellow_cards": 3,
+                                    "red_cards": 1,
+                                    "rating": "6.98"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2803,
+                        "name": "Nico Elvedi",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": "2:1",
+                        "photo": "https://media.api-sports.io/football/players/2803.png",
+                        "age": 29,
+                        "nationality": "Switzerland",
+                        "season_stats": {
+                            "total": {
+                                "games": 29,
+                                "goals": 2,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 8,
+                                "pass_acc": 88,
+                                "tackles": 37,
+                                "interceptions": 29,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.23"
+                            },
+                            "competitions": {
+                                "DFB Pokal": {
+                                    "games": 3,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 0,
+                                    "pass_acc": 52,
+                                    "tackles": 2,
+                                    "interceptions": 4,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.50"
+                                },
+                                "Bundesliga": {
+                                    "games": 26,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 8,
+                                    "pass_acc": 92,
+                                    "tackles": 35,
+                                    "interceptions": 25,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.96"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 163032,
+                        "name": "Fabian Rieder",
+                        "number": 22,
+                        "pos": "M",
+                        "grid": "3:4",
+                        "photo": "https://media.api-sports.io/football/players/163032.png",
+                        "age": 23,
+                        "nationality": "Switzerland",
+                        "season_stats": {
+                            "total": {
+                                "games": 29,
+                                "goals": 3,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 8,
+                                "key_passes": 30,
+                                "pass_acc": 73,
+                                "tackles": 25,
+                                "interceptions": 11,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.43"
+                            },
+                            "competitions": {
+                                "Friendlies Clubs": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.50"
+                                },
+                                "Ligue 1": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 2,
+                                    "pass_acc": 82,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.30"
+                                },
+                                "DFB Pokal": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.20"
+                                },
+                                "Bundesliga": {
+                                    "games": 24,
+                                    "goals": 3,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 8,
+                                    "key_passes": 27,
+                                    "pass_acc": 72,
+                                    "tackles": 21,
+                                    "interceptions": 9,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.71"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
                         "id": 264705,
                         "name": "Ardon Jashari",
                         "number": 14,
-                        "pos": "D",
-                        "grid": "2:1",
+                        "pos": "M",
+                        "grid": "3:3",
                         "photo": "https://media.api-sports.io/football/players/264705.png",
                         "age": 23,
                         "nationality": "Switzerland",
@@ -11107,7 +11276,7 @@
                         "name": "Remo Freuler",
                         "number": 8,
                         "pos": "M",
-                        "grid": "3:3",
+                        "grid": "3:2",
                         "photo": "https://media.api-sports.io/football/players/2807.png",
                         "age": 33,
                         "nationality": "Switzerland",
@@ -11179,181 +11348,45 @@
                 },
                 {
                     "player": {
-                        "id": 2810,
-                        "name": "Denis Zakaria",
-                        "number": 6,
+                        "id": 951,
+                        "name": "Michel Aebischer",
+                        "number": 20,
                         "pos": "M",
-                        "grid": "3:2",
-                        "photo": "https://media.api-sports.io/football/players/2810.png",
-                        "age": 29,
+                        "grid": "3:1",
+                        "photo": "https://media.api-sports.io/football/players/951.png",
+                        "age": 28,
                         "nationality": "Switzerland",
                         "season_stats": {
                             "total": {
-                                "games": 52,
-                                "goals": 8,
-                                "assists": 7,
+                                "games": 31,
+                                "goals": 1,
+                                "assists": 1,
                                 "saves": 0,
                                 "conceded": 0,
-                                "shots_on": 18,
-                                "key_passes": 24,
-                                "pass_acc": 62,
-                                "tackles": 82,
-                                "interceptions": 70,
+                                "shots_on": 2,
+                                "key_passes": 29,
+                                "pass_acc": 85,
+                                "tackles": 66,
+                                "interceptions": 33,
                                 "yellow_cards": 0,
                                 "red_cards": 0,
-                                "rating": "6.98"
+                                "rating": "6.85"
                             },
                             "competitions": {
-                                "Friendlies Clubs": {
-                                    "games": 27,
-                                    "goals": 6,
-                                    "assists": 4,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 11,
-                                    "key_passes": 16,
-                                    "pass_acc": 40,
-                                    "tackles": 41,
-                                    "interceptions": 34,
-                                    "yellow_cards": 5,
-                                    "red_cards": 0,
-                                    "rating": "7.19"
-                                },
-                                "Coupe de France": {
-                                    "games": 3,
-                                    "goals": 0,
-                                    "assists": 2,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 2,
-                                    "key_passes": 3,
-                                    "pass_acc": 41,
-                                    "tackles": 8,
-                                    "interceptions": 2,
-                                    "yellow_cards": 2,
-                                    "red_cards": 0,
-                                    "rating": "7.03"
-                                },
-                                "UEFA Champions League": {
-                                    "games": 6,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 3,
-                                    "key_passes": 0,
-                                    "pass_acc": 91,
-                                    "tackles": 11,
-                                    "interceptions": 12,
-                                    "yellow_cards": 3,
-                                    "red_cards": 0,
-                                    "rating": "6.73"
-                                },
-                                "Ligue 1": {
-                                    "games": 16,
-                                    "goals": 2,
+                                "Serie A": {
+                                    "games": 28,
+                                    "goals": 1,
                                     "assists": 1,
                                     "saves": 0,
                                     "conceded": 0,
                                     "shots_on": 2,
-                                    "key_passes": 5,
-                                    "pass_acc": 93,
-                                    "tackles": 22,
-                                    "interceptions": 22,
-                                    "yellow_cards": 3,
-                                    "red_cards": 1,
-                                    "rating": "6.98"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 163032,
-                        "name": "Fabian Rieder",
-                        "number": 22,
-                        "pos": "M",
-                        "grid": "3:1",
-                        "photo": "https://media.api-sports.io/football/players/163032.png",
-                        "age": 23,
-                        "nationality": "Switzerland",
-                        "season_stats": {
-                            "total": {
-                                "games": 29,
-                                "goals": 3,
-                                "assists": 3,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 8,
-                                "key_passes": 30,
-                                "pass_acc": 73,
-                                "tackles": 25,
-                                "interceptions": 11,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.43"
-                            },
-                            "competitions": {
-                                "Friendlies Clubs": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 0,
-                                    "tackles": 1,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
+                                    "key_passes": 28,
+                                    "pass_acc": 85,
+                                    "tackles": 57,
+                                    "interceptions": 29,
+                                    "yellow_cards": 5,
                                     "red_cards": 0,
-                                    "rating": "6.50"
-                                },
-                                "Ligue 1": {
-                                    "games": 3,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 2,
-                                    "pass_acc": 82,
-                                    "tackles": 3,
-                                    "interceptions": 2,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.30"
-                                },
-                                "DFB Pokal": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 0,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.20"
-                                },
-                                "Bundesliga": {
-                                    "games": 24,
-                                    "goals": 3,
-                                    "assists": 3,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 8,
-                                    "key_passes": 27,
-                                    "pass_acc": 72,
-                                    "tackles": 21,
-                                    "interceptions": 9,
-                                    "yellow_cards": 2,
-                                    "red_cards": 0,
-                                    "rating": "6.71"
+                                    "rating": "6.96"
                                 }
                             }
                         }
@@ -12492,12 +12525,13 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "match_ended_at": null,
         "post_game_sync": false,
-        "final_odds_check": true
+        "final_odds_check": true,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -13019,7 +13053,7 @@
                     "player": {
                         "id": 178749,
                         "name": "Lazar Samard\u017ei\u0107",
-                        "number": 20,
+                        "number": 22,
                         "pos": "M",
                         "grid": "3:1",
                         "photo": "https://media.api-sports.io/football/players/178749.png",
@@ -13095,7 +13129,7 @@
                     "player": {
                         "id": 1818,
                         "name": "Mijat Ga\u0107inovi\u0107",
-                        "number": 8,
+                        "number": 7,
                         "pos": "M",
                         "grid": "4:3",
                         "photo": "https://media.api-sports.io/football/players/1818.png",
@@ -13248,7 +13282,7 @@
                         "id": 45804,
                         "name": "Veljko Birman\u010devi\u0107",
                         "number": 14,
-                        "pos": "F",
+                        "pos": "M",
                         "grid": "4:1",
                         "photo": "https://media.api-sports.io/football/players/45804.png",
                         "age": 27,
@@ -14354,9 +14388,9 @@
                 "logo": "https://media.api-sports.io/football/teams/23.png",
                 "colors": {
                     "player": {
-                        "primary": "f9faf9",
-                        "number": "083a30",
-                        "border": "f9faf9"
+                        "primary": "0b5648",
+                        "number": "f6fbf4",
+                        "border": "0b5648"
                     },
                     "goalkeeper": {
                         "primary": "050505",
@@ -14506,41 +14540,11 @@
                 },
                 {
                     "player": {
-                        "id": 327574,
-                        "name": "Rayan Hamed",
-                        "number": 17,
-                        "pos": "D",
-                        "grid": "2:3",
-                        "photo": "https://media.api-sports.io/football/players/327574.png",
-                        "age": 23,
-                        "nationality": "Malawi",
-                        "season_stats": {
-                            "total": {
-                                "games": 0,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 0,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "N/A"
-                            },
-                            "competitions": {}
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 2628,
                         "name": "Muteb Al-Mufarrij",
                         "number": 3,
                         "pos": "D",
-                        "grid": "2:2",
+                        "grid": "2:3",
                         "photo": "https://media.api-sports.io/football/players/2628.png",
                         "age": 29,
                         "nationality": "Saudi Arabia",
@@ -14577,6 +14581,36 @@
                                     "rating": "6.85"
                                 }
                             }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 327574,
+                        "name": "Rayan Hamed",
+                        "number": 17,
+                        "pos": "D",
+                        "grid": "2:2",
+                        "photo": "https://media.api-sports.io/football/players/327574.png",
+                        "age": 23,
+                        "nationality": "Malawi",
+                        "season_stats": {
+                            "total": {
+                                "games": 0,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "N/A"
+                            },
+                            "competitions": {}
                         }
                     }
                 },
@@ -14691,7 +14725,7 @@
                         "id": 381176,
                         "name": "Marwan Alsahafi",
                         "number": 8,
-                        "pos": "F",
+                        "pos": "M",
                         "grid": "3:3",
                         "photo": "https://media.api-sports.io/football/players/381176.png",
                         "age": 21,
@@ -14858,7 +14892,7 @@
                         "id": 44349,
                         "name": "Mohamed Kanno",
                         "number": 28,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "4:3",
                         "photo": "https://media.api-sports.io/football/players/44349.png",
                         "age": 31,
@@ -15070,7 +15104,7 @@
                         "id": 351914,
                         "name": "Abdulaziz Al-Aliwa",
                         "number": 14,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "4:1",
                         "photo": "https://media.api-sports.io/football/players/351914.png",
                         "age": 21,
@@ -15127,6 +15161,915 @@
                     }
                 }
             ],
+            "substitutes": [
+                {
+                    "player": {
+                        "id": 44684,
+                        "name": "Khalifah Al-Dawsari",
+                        "number": 5,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/44684.png",
+                        "age": 26,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 19,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 6,
+                                "pass_acc": 0,
+                                "tackles": 33,
+                                "interceptions": 13,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.59"
+                            },
+                            "competitions": {
+                                "Pro League": {
+                                    "games": 19,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 6,
+                                    "pass_acc": 0,
+                                    "tackles": 33,
+                                    "interceptions": 13,
+                                    "yellow_cards": 4,
+                                    "red_cards": 1,
+                                    "rating": "6.59"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 326984,
+                        "name": "Mohammed Mahzari",
+                        "number": 26,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/326984.png",
+                        "age": 23,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 24,
+                                "goals": 1,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 4,
+                                "key_passes": 19,
+                                "pass_acc": 40,
+                                "tackles": 82,
+                                "interceptions": 33,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.94"
+                            },
+                            "competitions": {
+                                "Pro League": {
+                                    "games": 24,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 19,
+                                    "pass_acc": 40,
+                                    "tackles": 82,
+                                    "interceptions": 33,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.94"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44701,
+                        "name": "Khalid Al-Ghannam",
+                        "number": 20,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/44701.png",
+                        "age": 25,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 1,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.70"
+                            },
+                            "competitions": {
+                                "FIFA Club World Cup": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 147812,
+                        "name": "Ayman Yahya",
+                        "number": 18,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/147812.png",
+                        "age": 24,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 30,
+                                "goals": 2,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 7,
+                                "key_passes": 16,
+                                "pass_acc": 84,
+                                "tackles": 38,
+                                "interceptions": 23,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.97"
+                            },
+                            "competitions": {
+                                "AFC Cup": {
+                                    "games": 4,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 1,
+                                    "pass_acc": 86,
+                                    "tackles": 5,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.93"
+                                },
+                                "Pro League": {
+                                    "games": 19,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 10,
+                                    "pass_acc": 84,
+                                    "tackles": 27,
+                                    "interceptions": 17,
+                                    "yellow_cards": 3,
+                                    "red_cards": 0,
+                                    "rating": "6.85"
+                                },
+                                "World Cup - Qualification Asia": {
+                                    "games": 7,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 5,
+                                    "pass_acc": 0,
+                                    "tackles": 6,
+                                    "interceptions": 5,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.13"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44315,
+                        "name": "Abdullah Al-Khaibari",
+                        "number": 15,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/44315.png",
+                        "age": 29,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 73,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 17,
+                                "pass_acc": 69,
+                                "tackles": 86,
+                                "interceptions": 21,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.84"
+                            },
+                            "competitions": {
+                                "King's Cup": {
+                                    "games": 28,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 4,
+                                    "pass_acc": 41,
+                                    "tackles": 41,
+                                    "interceptions": 10,
+                                    "yellow_cards": 6,
+                                    "red_cards": 0,
+                                    "rating": "6.76"
+                                },
+                                "Friendlies Clubs": {
+                                    "games": 7,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 9,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                },
+                                "AFC Cup": {
+                                    "games": 7,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 1,
+                                    "pass_acc": 94,
+                                    "tackles": 7,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.23"
+                                },
+                                "Pro League": {
+                                    "games": 24,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 10,
+                                    "pass_acc": 95,
+                                    "tackles": 23,
+                                    "interceptions": 7,
+                                    "yellow_cards": 5,
+                                    "red_cards": 0,
+                                    "rating": "6.77"
+                                },
+                                "World Cup - Qualification Asia": {
+                                    "games": 7,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 0,
+                                    "tackles": 6,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44551,
+                        "name": "Saleh Al-Shehri",
+                        "number": 11,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/44551.png",
+                        "age": 32,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 53,
+                                "goals": 10,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 22,
+                                "key_passes": 16,
+                                "pass_acc": 78,
+                                "tackles": 13,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.56"
+                            },
+                            "competitions": {
+                                "King's Cup": {
+                                    "games": 26,
+                                    "goals": 3,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 12,
+                                    "key_passes": 7,
+                                    "pass_acc": 0,
+                                    "tackles": 4,
+                                    "interceptions": 3,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                },
+                                "AFC Champions League": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 78,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.33"
+                                },
+                                "Pro League": {
+                                    "games": 13,
+                                    "goals": 3,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 5,
+                                    "pass_acc": 78,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.53"
+                                },
+                                "World Cup - Qualification Asia": {
+                                    "games": 10,
+                                    "goals": 4,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 8,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.76"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 306380,
+                        "name": "Musab Al Juwayr",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/306380.png",
+                        "age": 22,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 19,
+                                "goals": 3,
+                                "assists": 3,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 30,
+                                "pass_acc": 86,
+                                "tackles": 16,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.81"
+                            },
+                            "competitions": {
+                                "FIFA Club World Cup": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 86,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.24"
+                                },
+                                "World Cup - Qualification Asia": {
+                                    "games": 14,
+                                    "goals": 3,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 5,
+                                    "key_passes": 29,
+                                    "pass_acc": 0,
+                                    "tackles": 15,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.39"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44324,
+                        "name": "Firas Al-Buraikan",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/44324.png",
+                        "age": 25,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 48,
+                                "goals": 9,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 19,
+                                "key_passes": 28,
+                                "pass_acc": 69,
+                                "tackles": 48,
+                                "interceptions": 8,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.79"
+                            },
+                            "competitions": {
+                                "FIFA Intercontinental Cup": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                },
+                                "AFC Champions League": {
+                                    "games": 7,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 4,
+                                    "pass_acc": 78,
+                                    "tackles": 8,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
+                                },
+                                "Pro League": {
+                                    "games": 25,
+                                    "goals": 3,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 10,
+                                    "pass_acc": 67,
+                                    "tackles": 27,
+                                    "interceptions": 7,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.68"
+                                },
+                                "World Cup - Qualification Asia": {
+                                    "games": 15,
+                                    "goals": 5,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 11,
+                                    "key_passes": 14,
+                                    "pass_acc": 0,
+                                    "tackles": 13,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.17"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44341,
+                        "name": "Salman Al-Faraj",
+                        "number": 7,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/44341.png",
+                        "age": 36,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 37,
+                                "goals": 0,
+                                "assists": 2,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 2,
+                                "key_passes": 23,
+                                "pass_acc": 0,
+                                "tackles": 15,
+                                "interceptions": 14,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.76"
+                            },
+                            "competitions": {
+                                "King's Cup": {
+                                    "games": 23,
+                                    "goals": 0,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 11,
+                                    "pass_acc": 0,
+                                    "tackles": 11,
+                                    "interceptions": 11,
+                                    "yellow_cards": 2,
+                                    "red_cards": 0,
+                                    "rating": "6.77"
+                                },
+                                "Pro League": {
+                                    "games": 14,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 12,
+                                    "pass_acc": 0,
+                                    "tackles": 4,
+                                    "interceptions": 3,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.75"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44510,
+                        "name": "Mohammed Al-Majhad",
+                        "number": 6,
+                        "pos": "M",
+                        "grid": null
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44367,
+                        "name": "Ali Majrashi",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/44367.png",
+                        "age": 26,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 31,
+                                "goals": 1,
+                                "assists": 5,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 5,
+                                "key_passes": 18,
+                                "pass_acc": 78,
+                                "tackles": 89,
+                                "interceptions": 34,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.76"
+                            },
+                            "competitions": {
+                                "FIFA Intercontinental Cup": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.00"
+                                },
+                                "AFC Champions League": {
+                                    "games": 7,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 4,
+                                    "pass_acc": 77,
+                                    "tackles": 22,
+                                    "interceptions": 8,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                },
+                                "Pro League": {
+                                    "games": 20,
+                                    "goals": 1,
+                                    "assists": 3,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 11,
+                                    "pass_acc": 79,
+                                    "tackles": 54,
+                                    "interceptions": 23,
+                                    "yellow_cards": 6,
+                                    "red_cards": 1,
+                                    "rating": "6.96"
+                                },
+                                "World Cup - Qualification Asia": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 3,
+                                    "pass_acc": 0,
+                                    "tackles": 13,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.33"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 44449,
+                        "name": "Ahmed Al-Kassar",
+                        "number": 22,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/44449.png",
+                        "age": 34,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 8,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 12,
+                                "conceded": 7,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 77,
+                                "tackles": 1,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.84"
+                            },
+                            "competitions": {
+                                "Pro League": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 2,
+                                    "conceded": 2,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 77,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "World Cup - Qualification Asia": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 10,
+                                    "conceded": 5,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.78"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 193288,
+                        "name": "Nawaf Al-Aqidi",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/193288.png",
+                        "age": 25,
+                        "nationality": "Saudi Arabia",
+                        "season_stats": {
+                            "total": {
+                                "games": 17,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 34,
+                                "conceded": 16,
+                                "shots_on": 0,
+                                "key_passes": 1,
+                                "pass_acc": 74,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.89"
+                            },
+                            "competitions": {
+                                "Pro League": {
+                                    "games": 11,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 25,
+                                    "conceded": 12,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 74,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 1,
+                                    "rating": "6.86"
+                                },
+                                "World Cup - Qualification Asia": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 9,
+                                    "conceded": 4,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 0,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.92"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 543009,
+                        "name": "Mohammed Al-Yami",
+                        "number": 30,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/543009.png",
+                        "age": 28,
+                        "nationality": null,
+                        "season_stats": {
+                            "total": {
+                                "games": 10,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 25,
+                                "conceded": 8,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 86,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.31"
+                            },
+                            "competitions": {
+                                "AFC Champions League": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 12,
+                                    "conceded": 1,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 83,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "8.00"
+                                },
+                                "Pro League": {
+                                    "games": 8,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 13,
+                                    "conceded": 7,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 87,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.63"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
             "coach": {
                 "id": 344,
                 "name": "Herve Renard",
@@ -15146,12 +16089,13 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "match_ended_at": null,
         "post_game_sync": false,
-        "final_odds_check": true
+        "final_odds_check": true,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -18077,12 +19021,13 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "match_ended_at": null,
         "post_game_sync": false,
-        "final_odds_check": true
+        "final_odds_check": true,
+        "refreshed_15m": true
     },
     {
         "fixture": {
@@ -19162,12 +20107,13 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "match_ended_at": null,
         "post_game_sync": false,
-        "final_odds_check": true
+        "final_odds_check": true,
+        "refreshed_15m": true
     },
     {
         "fixture": {
