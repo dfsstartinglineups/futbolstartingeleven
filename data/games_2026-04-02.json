@@ -6358,7 +6358,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 64,
+                "elapsed": 65,
                 "extra": null
             }
         },
@@ -7182,7 +7182,7 @@
                         "id": 5684,
                         "name": "Facundo Bruera",
                         "number": 7,
-                        "pos": "F",
+                        "pos": "M",
                         "grid": "4:2",
                         "photo": "https://media.api-sports.io/football/players/5684.png",
                         "age": 27,
@@ -7243,8 +7243,79 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
                             "rating": "6.3"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "46"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 306707,
+                            "name": "Tom\u00e1s Porra",
+                            "number": 8,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/306707.png",
+                            "age": 21,
+                            "nationality": "Argentina",
+                            "season_stats": {
+                                "total": {
+                                    "games": 8,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 9,
+                                    "pass_acc": 0,
+                                    "tackles": 11,
+                                    "interceptions": 11,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.58"
+                                },
+                                "competitions": {
+                                    "Liga Profesional Argentina": {
+                                        "games": 8,
+                                        "goals": 0,
+                                        "assists": 1,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 9,
+                                        "pass_acc": 0,
+                                        "tackles": 11,
+                                        "interceptions": 11,
+                                        "yellow_cards": 2,
+                                        "red_cards": 0,
+                                        "rating": "6.58"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 1,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 11,
+                                "key_passes": 0,
+                                "pass_acc": "10",
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 1,
+                                "duels_total": 1,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "6.3"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -7454,75 +7525,6 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 0,
                             "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 306707,
-                        "name": "Tom\u00e1s Porra",
-                        "number": 8,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/306707.png",
-                        "age": 21,
-                        "nationality": "Argentina",
-                        "season_stats": {
-                            "total": {
-                                "games": 8,
-                                "goals": 0,
-                                "assists": 1,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 9,
-                                "pass_acc": 0,
-                                "tackles": 11,
-                                "interceptions": 11,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.58"
-                            },
-                            "competitions": {
-                                "Liga Profesional Argentina": {
-                                    "games": 8,
-                                    "goals": 0,
-                                    "assists": 1,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 9,
-                                    "pass_acc": 0,
-                                    "tackles": 11,
-                                    "interceptions": 11,
-                                    "yellow_cards": 2,
-                                    "red_cards": 0,
-                                    "rating": "6.58"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 1,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 11,
-                            "key_passes": 0,
-                            "pass_acc": "10",
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 1,
-                            "duels_total": 1,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "6.3"
                         }
                     }
                 },
@@ -9633,12 +9635,23 @@
                 "player_out_id": 390809
             },
             {
+                "time": "46",
+                "team_id": 2432,
+                "player": "F. Bruera",
+                "player_id": 5684,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "T. Porra",
+                "player_out": "T. Porra",
+                "player_out_id": 306707
+            },
+            {
                 "time": "61",
                 "team_id": 2432,
                 "player": "I. Tapia",
                 "player_id": 59328,
                 "type": "subst",
-                "detail": "Substitution 3",
+                "detail": "Substitution 4",
                 "assist": "N. Briasco",
                 "player_out": "N. Briasco",
                 "player_out_id": 6189
@@ -9689,7 +9702,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 24,
+                "elapsed": 25,
                 "extra": null
             }
         },
