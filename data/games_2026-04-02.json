@@ -18,7 +18,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 81,
+                "elapsed": 82,
                 "extra": null
             }
         },
@@ -1725,7 +1725,7 @@
                         "id": 269546,
                         "name": "Thomas Kevin Aquilina",
                         "number": 39,
-                        "pos": "D",
+                        "pos": "M",
                         "grid": "2:4",
                         "photo": "https://media.api-sports.io/football/players/269546.png",
                         "age": 24,
@@ -1786,8 +1786,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
                             "rating": "6.5"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "80"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 473565,
+                            "name": "Alex Nunes",
+                            "number": 24,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/473565.png",
+                            "age": 18,
+                            "nationality": "Australia",
+                            "season_stats": {
+                                "total": {
+                                    "games": 5,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 64,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.40"
+                                },
+                                "competitions": {
+                                    "A-League": {
+                                        "games": 5,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 0,
+                                        "pass_acc": 64,
+                                        "tackles": 1,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.40"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -2782,75 +2853,6 @@
                 },
                 {
                     "player": {
-                        "id": 473565,
-                        "name": "Alex Nunes",
-                        "number": 24,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/473565.png",
-                        "age": 18,
-                        "nationality": "Australia",
-                        "season_stats": {
-                            "total": {
-                                "games": 5,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 64,
-                                "tackles": 1,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.40"
-                            },
-                            "competitions": {
-                                "A-League": {
-                                    "games": 5,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 64,
-                                    "tackles": 1,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.40"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 592556,
                         "name": "Alex Nassiep",
                         "number": 20,
@@ -3078,6 +3080,17 @@
                 "assist": "L. Rose",
                 "player_out": "L. Rose",
                 "player_out_id": 296508
+            },
+            {
+                "time": "80",
+                "team_id": 946,
+                "player": "T. Aquilina",
+                "player_id": 269546,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "A. Nunes",
+                "player_out": "A. Nunes",
+                "player_out_id": 473565
             }
         ],
         "match_ended_at": null,
@@ -3125,7 +3138,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 19,
+                "elapsed": 20,
                 "extra": null
             }
         },
@@ -6154,7 +6167,7 @@
         "refreshed_5m": true,
         "team_stats": {
             "home": {
-                "possession": 50,
+                "possession": 58,
                 "total_shots": 4,
                 "shots_on_target": 2,
                 "corners": 0,
@@ -6163,7 +6176,7 @@
                 "red_cards": 0
             },
             "away": {
-                "possession": 50,
+                "possession": 42,
                 "total_shots": 0,
                 "shots_on_target": 0,
                 "corners": 2,
