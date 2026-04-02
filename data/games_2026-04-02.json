@@ -10098,7 +10098,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 72,
+                "elapsed": 73,
                 "extra": null
             }
         },
@@ -12383,7 +12383,7 @@
                         "id": 133614,
                         "name": "Mat\u00edas Fern\u00e1ndez",
                         "number": 10,
-                        "pos": "F",
+                        "pos": "M",
                         "grid": "4:3",
                         "photo": "https://media.api-sports.io/football/players/133614.png",
                         "age": 24,
@@ -12444,8 +12444,79 @@
                             "fouls_drawn": 0,
                             "fouls_committed": 1,
                             "rating": "5.9"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "69"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 194899,
+                            "name": "Gonzalo R\u00edos",
+                            "number": 11,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/194899.png",
+                            "age": 26,
+                            "nationality": "Argentina",
+                            "season_stats": {
+                                "total": {
+                                    "games": 9,
+                                    "goals": 1,
+                                    "assists": 2,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 4,
+                                    "key_passes": 9,
+                                    "pass_acc": 76,
+                                    "tackles": 2,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.67"
+                                },
+                                "competitions": {
+                                    "Liga Profesional Argentina": {
+                                        "games": 9,
+                                        "goals": 1,
+                                        "assists": 2,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 4,
+                                        "key_passes": 9,
+                                        "pass_acc": 76,
+                                        "tackles": 2,
+                                        "interceptions": 2,
+                                        "yellow_cards": 1,
+                                        "red_cards": 0,
+                                        "rating": "6.67"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -12838,75 +12909,6 @@
                                 "rating": "N/A"
                             },
                             "competitions": {}
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 194899,
-                        "name": "Gonzalo R\u00edos",
-                        "number": 11,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/194899.png",
-                        "age": 26,
-                        "nationality": "Argentina",
-                        "season_stats": {
-                            "total": {
-                                "games": 9,
-                                "goals": 1,
-                                "assists": 2,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 4,
-                                "key_passes": 9,
-                                "pass_acc": 76,
-                                "tackles": 2,
-                                "interceptions": 2,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.67"
-                            },
-                            "competitions": {
-                                "Liga Profesional Argentina": {
-                                    "games": 9,
-                                    "goals": 1,
-                                    "assists": 2,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 4,
-                                    "key_passes": 9,
-                                    "pass_acc": 76,
-                                    "tackles": 2,
-                                    "interceptions": 2,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "6.67"
-                                }
-                            }
                         },
                         "live_stats": {
                             "goals": 0,
@@ -13413,6 +13415,17 @@
                 "assist": "A. Arce",
                 "player_out": "A. Arce",
                 "player_out_id": 95460
+            },
+            {
+                "time": "69",
+                "team_id": 473,
+                "player": "M. Fernandez",
+                "player_id": 133614,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "G. Rios",
+                "player_out": "G. Rios",
+                "player_out_id": 194899
             }
         ],
         "match_ended_at": null,
@@ -13461,7 +13474,7 @@
                 "long": "First Half",
                 "short": "1H",
                 "elapsed": 45,
-                "extra": 4
+                "extra": 5
             }
         },
         "league": {
