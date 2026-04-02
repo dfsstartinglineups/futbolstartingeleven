@@ -6358,7 +6358,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 82,
+                "elapsed": 83,
                 "extra": null
             }
         },
@@ -8704,7 +8704,7 @@
                         "id": 5918,
                         "name": "Mauricio Mart\u00ednez",
                         "number": 14,
-                        "pos": "F",
+                        "pos": "M",
                         "grid": "4:1",
                         "photo": "https://media.api-sports.io/football/players/5918.png",
                         "age": 32,
@@ -8765,8 +8765,79 @@
                             "fouls_drawn": 2,
                             "fouls_committed": 0,
                             "rating": "7.5"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "81"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 637596,
+                            "name": "Facundo Alaggia",
+                            "number": 35,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/637596.png",
+                            "age": 20,
+                            "nationality": null,
+                            "season_stats": {
+                                "total": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 88,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "competitions": {
+                                    "Liga Profesional Argentina": {
+                                        "games": 1,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 0,
+                                        "key_passes": 1,
+                                        "pass_acc": 88,
+                                        "tackles": 1,
+                                        "interceptions": 0,
+                                        "yellow_cards": 0,
+                                        "red_cards": 0,
+                                        "rating": "6.90"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -9292,75 +9363,6 @@
                 },
                 {
                     "player": {
-                        "id": 637596,
-                        "name": "Facundo Alaggia",
-                        "number": 35,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/637596.png",
-                        "age": 20,
-                        "nationality": null,
-                        "season_stats": {
-                            "total": {
-                                "games": 1,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 1,
-                                "pass_acc": 88,
-                                "tackles": 1,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.90"
-                            },
-                            "competitions": {
-                                "Liga Profesional Argentina": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 88,
-                                    "tackles": 1,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.90"
-                                }
-                            }
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 449511,
                         "name": "Alexis Gonz\u00e1lez",
                         "number": 32,
@@ -9690,6 +9692,17 @@
                 "assist": "M. Duarte",
                 "player_out": "M. Duarte",
                 "player_out_id": 311372
+            },
+            {
+                "time": "81",
+                "team_id": 474,
+                "player": "M. Martinez",
+                "player_id": 5918,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "F. Alaggia",
+                "player_out": "F. Alaggia",
+                "player_out_id": 637596
             }
         ],
         "match_ended_at": null,
