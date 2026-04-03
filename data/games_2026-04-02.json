@@ -38875,7 +38875,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 78,
+                "elapsed": 79,
                 "extra": null
             }
         },
@@ -39143,7 +39143,7 @@
                         "id": 81333,
                         "name": "Jorge Cardona",
                         "number": 2,
-                        "pos": "D",
+                        "pos": "M",
                         "grid": "2:2",
                         "photo": "https://media.api-sports.io/football/players/81333.png",
                         "age": 26,
@@ -39204,8 +39204,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 0,
                             "rating": "7"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "78"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 200154,
+                            "name": "Kevin Cuesta",
+                            "number": 23,
+                            "pos": "M",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/200154.png",
+                            "age": 25,
+                            "nationality": "Colombia",
+                            "season_stats": {
+                                "total": {
+                                    "games": 7,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 3,
+                                    "pass_acc": 87,
+                                    "tackles": 4,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.76"
+                                },
+                                "competitions": {
+                                    "Primera A": {
+                                        "games": 7,
+                                        "goals": 1,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 2,
+                                        "key_passes": 3,
+                                        "pass_acc": 87,
+                                        "tackles": 4,
+                                        "interceptions": 3,
+                                        "yellow_cards": 1,
+                                        "red_cards": 0,
+                                        "rating": "6.76"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -40191,75 +40262,6 @@
                                 "rating": "N/A"
                             },
                             "competitions": {}
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 200154,
-                        "name": "Kevin Cuesta",
-                        "number": 23,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/200154.png",
-                        "age": 25,
-                        "nationality": "Colombia",
-                        "season_stats": {
-                            "total": {
-                                "games": 7,
-                                "goals": 1,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 2,
-                                "key_passes": 3,
-                                "pass_acc": 87,
-                                "tackles": 4,
-                                "interceptions": 3,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.76"
-                            },
-                            "competitions": {
-                                "Primera A": {
-                                    "games": 7,
-                                    "goals": 1,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 2,
-                                    "key_passes": 3,
-                                    "pass_acc": 87,
-                                    "tackles": 4,
-                                    "interceptions": 3,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "6.76"
-                                }
-                            }
                         },
                         "live_stats": {
                             "goals": 0,
@@ -42060,6 +42062,17 @@
                 "assist": "H. Palacios",
                 "player_out": "H. Palacios",
                 "player_out_id": 13313
+            },
+            {
+                "time": "78",
+                "team_id": 1136,
+                "player": "J. Cardona",
+                "player_id": 81333,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "K. A. Cuesta Rodriguez",
+                "player_out": "K. A. Cuesta Rodriguez",
+                "player_out_id": 200154
             }
         ],
         "match_ended_at": null,
