@@ -1,4 +1,15 @@
 // ==========================================
+// FIREBASE INITIALIZATION
+// ==========================================
+const firebaseConfig = {
+    databaseURL: "https://nbastartingfive-8b420-default-rtdb.firebaseio.com/"
+};
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
+// ==========================================
 // CONFIGURATION
 // ==========================================
 const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
@@ -755,10 +766,18 @@ function getOddsHtml(data) {
 }
 
 function getInjuriesHtml(data) {
-    if (!data.injuries || (data.injuries.home.length === 0 && data.injuries.away.length === 0)) return '';
+    // 1. Firebase deletes empty arrays. Safely recreate them if they are missing!
+    const homeInjuries = (data.injuries && data.injuries.home) ? data.injuries.home : [];
+    const awayInjuries = (data.injuries && data.injuries.away) ? data.injuries.away : [];
     
-    const cleanHomeInj = data.injuries.home.map(n => shortenPlayerName(n));
-    const cleanAwayInj = data.injuries.away.map(n => shortenPlayerName(n));
+    // 2. If both arrays are truly empty, hide the injury banner
+    if (homeInjuries.length === 0 && awayInjuries.length === 0) {
+        return '';
+    }
+    
+    // 3. If we made it here, there ARE injuries to display!
+    const cleanHomeInj = homeInjuries.map(n => shortenPlayerName(n));
+    const cleanAwayInj = awayInjuries.map(n => shortenPlayerName(n));
     
     const hInj = cleanHomeInj.join(', ') || 'None';
     const aInj = cleanAwayInj.join(', ') || 'None';
@@ -1013,179 +1032,8 @@ window.switchLineupTab = function(fixId, tabName) {
     checkOverflows();
 };
 
-// ==========================================
-// UPDATED SILENT SYNC ENGINE (Syncs Both Views)
-// ==========================================
-async function updateLiveGames() {
-    const params = getUrlParams();
-    const newData = await fetchMatchesData(params);
-    if (!newData) return; 
 
-    if (newData.length !== ALL_GAMES_DATA.length) {
-        ALL_GAMES_DATA = newData;
-        renderGames();
-        return;
-    }
 
-    const oldData = [...ALL_GAMES_DATA]; 
-    ALL_GAMES_DATA = newData;
-    
-    newData.forEach(match => {
-        const fixId = match.fixture.id;
-        const oldMatch = oldData.find(m => m.fixture.id === fixId);
-        
-        // Target specific containers inside the Full View
-        const timeEl = document.getElementById(`time-${fixId}`);
-        const scoreEl = document.getElementById(`score-${fixId}`);
-        const eventsEl = document.getElementById(`events-${fixId}`);
-        const oddsEl = document.getElementById(`odds-${fixId}`);
-        const injuriesEl = document.getElementById(`injuries-${fixId}`);
-        
-        if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
-            
-            // --- THE FIX: DYNAMIC WIDTH TRANSITION ---
-            // If the game just transitioned to Live, smoothly stretch the columns and shrink the logos!
-            if (!oldMatch.team_stats && match.team_stats) {
-                const hCol = scoreEl.previousElementSibling;
-                const aCol = scoreEl.nextElementSibling;
-                if (hCol && aCol) {
-                    hCol.style.width = '25%';
-                    aCol.style.width = '25%';
-                    scoreEl.style.width = '50%';
-                    
-                    const hImg = hCol.querySelector('img');
-                    const aImg = aCol.querySelector('img');
-                    if (hImg) { hImg.style.width = '35px'; hImg.style.height = '35px'; }
-                    if (aImg) { aImg.style.width = '35px'; aImg.style.height = '35px'; }
-                    
-                    const hName = hCol.querySelector('.fw-bold.text-truncate');
-                    const aName = aCol.querySelector('.fw-bold.text-truncate');
-                    if (hName) hName.style.fontSize = '0.75rem';
-                    if (aName) aName.style.fontSize = '0.75rem';
-                }
-            }
-
-            // FULL VIEW UPDATES
-            const newTimeHtml = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
-            const newCenterHtml = getCenterColumnHtml(match).trim();
-            const newEventsHtml = getEventsHtml(match).trim();
-            const newOddsHtml = getOddsHtml(match).trim();
-            const newInjuriesHtml = getInjuriesHtml(match).trim();
-            
-            if (timeEl.innerHTML.trim() !== newTimeHtml) timeEl.innerHTML = newTimeHtml;
-            
-            if (scoreEl.innerHTML.trim() !== newCenterHtml) {
-                scoreEl.innerHTML = newCenterHtml;
-            }
-            
-            const eventsWasExpanded = eventsEl.querySelector('.is-expanded') !== null;
-            if (eventsEl.innerHTML.trim() !== newEventsHtml) {
-                eventsEl.innerHTML = newEventsHtml;
-                if (eventsWasExpanded) {
-                    const toggleSection = eventsEl.querySelector('.border-top');
-                    if (toggleSection) {
-                        toggleSection.classList.add('is-expanded');
-                        toggleSection.querySelectorAll('.event-collapsed').forEach(el => el.classList.add('d-none'));
-                        toggleSection.querySelectorAll('.event-expanded').forEach(el => el.classList.remove('d-none'));
-                    }
-                }
-            }
-            
-            if (oddsEl.innerHTML.trim() !== newOddsHtml) oddsEl.innerHTML = newOddsHtml;
-
-            const injuriesWasExpanded = injuriesEl.querySelector('.is-expanded') !== null;
-            if (injuriesEl.innerHTML.trim() !== newInjuriesHtml) {
-                injuriesEl.innerHTML = newInjuriesHtml;
-                if (injuriesWasExpanded) {
-                    const toggleSection = injuriesEl.querySelector('.expandable-section');
-                    if (toggleSection) toggleExpand(toggleSection);
-                }
-            }
-        }
-        
-        // RIBBON VIEW UPDATE
-        const ribbonEl = document.getElementById(`ribbon-${fixId}`);
-        if (ribbonEl) {
-            const newRibbonHtml = getRibbonHtml(match).trim();
-            if (ribbonEl.innerHTML.trim() !== newRibbonHtml) ribbonEl.innerHTML = newRibbonHtml;
-        }
-        
-        // EVENT HIGHLIGHTS & IN-PLACE GRID UPDATES
-        if (oldMatch) {
-            const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
-            const newEvLen = match.events ? match.events.length : 0;
-            
-            // Trigger Flash Highlights
-            if (newEvLen > oldEvLen) {
-                const latestEvent = match.events[newEvLen - 1]; 
-                const cardEl = document.getElementById(`card-${fixId}`);
-                if (cardEl && latestEvent) {
-                    if (latestEvent.type === 'Goal') { triggerCardHighlight(cardEl, 'goal'); } 
-                    else if (latestEvent.type === 'Card' && latestEvent.detail) {
-                        if (latestEvent.detail.includes('Second') || latestEvent.detail.includes('Yellow / Red')) {
-                            triggerCardHighlight(cardEl, 'yellow_card');
-                            setTimeout(() => { triggerCardHighlight(cardEl, 'red_card'); }, 4500); 
-                        } else if (latestEvent.detail.includes('Red')) { triggerCardHighlight(cardEl, 'red_card'); } 
-                        else if (latestEvent.detail.includes('Yellow')) { triggerCardHighlight(cardEl, 'yellow_card'); }
-                    } else if (latestEvent.type === 'subst') { triggerCardHighlight(cardEl, 'subst'); }
-                }
-            }
-
-            // PRECISION IN-PLACE UPDATES (Preserves Expand/Collapse State!)
-            const viewXiEl = document.getElementById(`view-xi-${fixId}`);
-            if (viewXiEl) {
-                const newXiHtml = `
-                    <div class="row g-0 bg-white">
-                        <div class="col-6 border-end">${buildLineupList(match.homeLineup, match)}</div>
-                        <div class="col-6">${buildLineupList(match.awayLineup, match)}</div>
-                    </div>
-                `;
-                if (viewXiEl.innerHTML.trim() !== newXiHtml.trim()) viewXiEl.innerHTML = newXiHtml;
-            }
-
-            const viewStatsEl = document.getElementById(`view-stats-${fixId}`);
-            if (viewStatsEl) {
-                let hColor = match.homeLineup?.team?.colors?.player?.primary ? `#${match.homeLineup.team.colors.player.primary}` : '#0d6efd';
-                let aColor = match.awayLineup?.team?.colors?.player?.primary ? `#${match.awayLineup.team.colors.player.primary}` : '#dc3545';
-                if (colorDistance(hColor, aColor) < 60) aColor = '#343a40';
-
-                const newStatsHtml = `
-                    <div class="row g-0 bg-white">
-                        <div class="col-6 border-end">${buildLiveStatsGrid(match.homeLineup, hColor)}</div>
-                        <div class="col-6">${buildLiveStatsGrid(match.awayLineup, aColor)}</div>
-                    </div>
-                `;
-                if (viewStatsEl.innerHTML.trim() !== newStatsHtml.trim()) viewStatsEl.innerHTML = newStatsHtml;
-            }
-
-            // --- THE FIX: SMART REVEAL & TAB TRANSITIONS ---
-            const wasPreGame = ['NS', 'TBD'].includes(oldMatch.fixture.status.short);
-            const isNowLive = !['NS', 'TBD'].includes(match.fixture.status.short);
-            const isFinished = ['FT', 'AET', 'PEN'].includes(match.fixture.status.short);
-
-            const xiTab = document.getElementById(`tab-xi-${fixId}`);
-            const statsTab = document.getElementById(`tab-stats-${fixId}`);
-            
-            // Update tab text appropriately based on game status
-            if (xiTab) xiTab.textContent = isFinished ? "FINAL XI" : "STARTING XI";
-            if (statsTab) statsTab.textContent = isFinished ? "FINAL STATS" : "LIVE STATS";
-
-            if (match.team_stats && statsTab) {
-                const wasHidden = statsTab.classList.contains('d-none');
-                if (wasHidden) {
-                    statsTab.classList.remove('d-none');
-                }
-                
-                // Force the DOM switch if the tab was just unhidden OR the game just transitioned to live
-                if (wasHidden || (wasPreGame && isNowLive)) {
-                    switchLineupTab(fixId, 'stats');
-                }
-            }
-        }
-    });
-
-    requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
-}
 
 function handleHashNavigation() {
     if (window.location.hash) {
@@ -1254,29 +1102,234 @@ function handleHashNavigation() {
     }
 }
 
+let isFirstLoad = true; // Track if it's the initial page load
+
 async function init() {
     const params = getUrlParams();
-    
     renderLeagueMenu(params.league, params.date);
     
     const container = document.getElementById('games-container');
     const datePicker = document.getElementById('date-picker');
-    
     if (datePicker) datePicker.value = params.date;
 
     container.innerHTML = `<div class="col-12 text-center mt-5 pt-5"><div class="spinner-border text-success" role="status"></div><p class="mt-3 text-muted fw-bold">Loading Pitch Data...</p></div>`;
     
+    const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+
+    // ALWAYS LOAD THE BASELINE FIRST
     ALL_GAMES_DATA = await fetchMatchesData(params);
-    
-    // Safety check: if fetch failed entirely, just set it to an empty array
+    if (!ALL_GAMES_DATA) ALL_GAMES_DATA = [];
+
+    // ==========================================
+    // 1. THE REAL-TIME PATH (Today's Games)
+    // ==========================================
+    if (params.date === todayStr) {
+        console.log("📡 Connecting to Firebase Realtime Stream...");
+        const liveRef = db.ref('futbol_live_games');
+        
+        liveRef.on('value', (snapshot) => {
+            const incomingData = snapshot.val();
+            
+            if (incomingData) {
+                let liveGamesArray = Object.values(incomingData);
+                
+                // --- THE FIX: FILTER THE FIREBASE FIREHOSE ---
+                // If we are looking at a specific league, throw away any Firebase updates for other leagues!
+                if (params.league !== 'top') {
+                    const targetId = SUPPORTED_LEAGUES[params.league].id;
+                    liveGamesArray = liveGamesArray.filter(g => g.league.id === targetId);
+                }
+
+                console.log("⚡ Firebase Update Received!", liveGamesArray.length, "relevant games active.");
+
+                if (isFirstLoad) {
+                    // First load: Merge the filtered live games into our full daily schedule
+                    liveGamesArray.forEach(liveGame => {
+                        const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
+                        if (index !== -1) ALL_GAMES_DATA[index] = liveGame; // Update existing
+                        else ALL_GAMES_DATA.push(liveGame); // Add if missing
+                    });
+                    
+                    renderGames();
+                    handleHashNavigation(); 
+                    isFirstLoad = false;
+                } else {
+                    // Subsequent loads: Pass ONLY the filtered live games to the surgical updater
+                    syncLiveDOM(liveGamesArray);
+                }
+            } else {
+                console.log("💤 Firebase is empty. Relying on baseline JSON.");
+                if (isFirstLoad) {
+                    renderGames();
+                    handleHashNavigation();
+                    isFirstLoad = false;
+                }
+            }
+        });
+    } 
+    // ==========================================
+    // 2. THE STATIC PATH (Past/Future Games)
+    // ==========================================
+    else {
+        console.log(`Rendering static archive for ${params.date}...`);
+        renderGames();
+        handleHashNavigation();
+    }
+}
+// ==========================================
+// SURGICAL DOM UPDATER (Prevents flashing)
+// ==========================================
+function syncLiveDOM(liveGamesArray) {
+    liveGamesArray.forEach(match => {
+        const fixId = match.fixture.id;
+        
+        // 1. Find the old version of this specific match in our master array
+        const oldMatchIndex = ALL_GAMES_DATA.findIndex(m => m.fixture.id === fixId);
+        let oldMatch = null;
+
+        // 2. Safely merge the new data into the master array
+        if (oldMatchIndex !== -1) {
+            oldMatch = ALL_GAMES_DATA[oldMatchIndex];
+            ALL_GAMES_DATA[oldMatchIndex] = match; 
+        } else {
+            ALL_GAMES_DATA.push(match);
+        }
+        
+        // 3. Grab all the HTML elements for this match
+        const timeEl = document.getElementById(`time-${fixId}`);
+        const scoreEl = document.getElementById(`score-${fixId}`);
+        const eventsEl = document.getElementById(`events-${fixId}`);
+        const oddsEl = document.getElementById(`odds-${fixId}`);
+        const injuriesEl = document.getElementById(`injuries-${fixId}`);
+        
+        if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
+            
+            // DYNAMIC WIDTH TRANSITION
+            if (oldMatch && !oldMatch.team_stats && match.team_stats) {
+                const hCol = scoreEl.previousElementSibling;
+                const aCol = scoreEl.nextElementSibling;
+                if (hCol && aCol) {
+                    hCol.style.width = '25%'; aCol.style.width = '25%'; scoreEl.style.width = '50%';
+                    const hImg = hCol.querySelector('img'); const aImg = aCol.querySelector('img');
+                    if (hImg) { hImg.style.width = '35px'; hImg.style.height = '35px'; }
+                    if (aImg) { aImg.style.width = '35px'; aImg.style.height = '35px'; }
+                    const hName = hCol.querySelector('.fw-bold.text-truncate');
+                    const aName = aCol.querySelector('.fw-bold.text-truncate');
+                    if (hName) hName.style.fontSize = '0.75rem';
+                    if (aName) aName.style.fontSize = '0.75rem';
+                }
+            }
+
+            // FULL VIEW UPDATES
+            const newTimeHtml = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
+            const newCenterHtml = getCenterColumnHtml(match).trim();
+            const newEventsHtml = getEventsHtml(match).trim();
+            const newOddsHtml = getOddsHtml(match).trim();
+            const newInjuriesHtml = getInjuriesHtml(match).trim();
+            
+            if (timeEl.innerHTML.trim() !== newTimeHtml) timeEl.innerHTML = newTimeHtml;
+            if (scoreEl.innerHTML.trim() !== newCenterHtml) scoreEl.innerHTML = newCenterHtml;
+            
+            const eventsWasExpanded = eventsEl.querySelector('.is-expanded') !== null;
+            if (eventsEl.innerHTML.trim() !== newEventsHtml) {
+                eventsEl.innerHTML = newEventsHtml;
+                if (eventsWasExpanded) {
+                    const toggleSection = eventsEl.querySelector('.border-top');
+                    if (toggleSection) {
+                        toggleSection.classList.add('is-expanded');
+                        toggleSection.querySelectorAll('.event-collapsed').forEach(el => el.classList.add('d-none'));
+                        toggleSection.querySelectorAll('.event-expanded').forEach(el => el.classList.remove('d-none'));
+                    }
+                }
+            }
+            
+            if (oddsEl.innerHTML.trim() !== newOddsHtml) oddsEl.innerHTML = newOddsHtml;
+
+            const injuriesWasExpanded = injuriesEl.querySelector('.is-expanded') !== null;
+            if (injuriesEl.innerHTML.trim() !== newInjuriesHtml) {
+                injuriesEl.innerHTML = newInjuriesHtml;
+                if (injuriesWasExpanded) {
+                    const toggleSection = injuriesEl.querySelector('.expandable-section');
+                    if (toggleSection) toggleExpand(toggleSection);
+                }
+            }
+        }
+        
+        // RIBBON VIEW UPDATE
+        const ribbonEl = document.getElementById(`ribbon-${fixId}`);
+        if (ribbonEl) {
+            const newRibbonHtml = getRibbonHtml(match).trim();
+            if (ribbonEl.innerHTML.trim() !== newRibbonHtml) ribbonEl.innerHTML = newRibbonHtml;
+        }
+        
+        // EVENT HIGHLIGHTS & IN-PLACE GRID UPDATES
+        if (oldMatch) {
+            const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
+            const newEvLen = match.events ? match.events.length : 0;
+            
+            // Trigger Flash Highlights
+            if (newEvLen > oldEvLen) {
+                const latestEvent = match.events[newEvLen - 1]; 
+                const cardEl = document.getElementById(`card-${fixId}`);
+                if (cardEl && latestEvent) {
+                    if (latestEvent.type === 'Goal') { triggerCardHighlight(cardEl, 'goal'); } 
+                    else if (latestEvent.type === 'Card' && latestEvent.detail) {
+                        if (latestEvent.detail.includes('Second') || latestEvent.detail.includes('Yellow / Red')) {
+                            triggerCardHighlight(cardEl, 'yellow_card');
+                            setTimeout(() => { triggerCardHighlight(cardEl, 'red_card'); }, 4500); 
+                        } else if (latestEvent.detail.includes('Red')) { triggerCardHighlight(cardEl, 'red_card'); } 
+                        else if (latestEvent.detail.includes('Yellow')) { triggerCardHighlight(cardEl, 'yellow_card'); }
+                    } else if (latestEvent.type === 'subst') { triggerCardHighlight(cardEl, 'subst'); }
+                }
+            }
+
+            // IN-PLACE GRID UPDATES (Lineups & Stats)
+            const viewXiEl = document.getElementById(`view-xi-${fixId}`);
+            if (viewXiEl) {
+                const newXiHtml = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLineupList(match.homeLineup, match)}</div><div class="col-6">${buildLineupList(match.awayLineup, match)}</div></div>`;
+                if (viewXiEl.innerHTML.trim() !== newXiHtml.trim()) viewXiEl.innerHTML = newXiHtml;
+            }
+
+            const viewStatsEl = document.getElementById(`view-stats-${fixId}`);
+            if (viewStatsEl) {
+                let hColor = match.homeLineup?.team?.colors?.player?.primary ? `#${match.homeLineup.team.colors.player.primary}` : '#0d6efd';
+                let aColor = match.awayLineup?.team?.colors?.player?.primary ? `#${match.awayLineup.team.colors.player.primary}` : '#dc3545';
+                if (colorDistance(hColor, aColor) < 60) aColor = '#343a40';
+
+                const newStatsHtml = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLiveStatsGrid(match.homeLineup, hColor)}</div><div class="col-6">${buildLiveStatsGrid(match.awayLineup, aColor)}</div></div>`;
+                if (viewStatsEl.innerHTML.trim() !== newStatsHtml.trim()) viewStatsEl.innerHTML = newStatsHtml;
+            }
+
+            // SMART REVEAL & TAB TRANSITIONS
+            const wasPreGame = ['NS', 'TBD'].includes(oldMatch.fixture.status.short);
+            const isNowLive = !['NS', 'TBD'].includes(match.fixture.status.short);
+            const isFinished = ['FT', 'AET', 'PEN'].includes(match.fixture.status.short);
+
+            const xiTab = document.getElementById(`tab-xi-${fixId}`);
+            const statsTab = document.getElementById(`tab-stats-${fixId}`);
+            
+            if (xiTab) xiTab.textContent = isFinished ? "FINAL XI" : "STARTING XI";
+            if (statsTab) statsTab.textContent = isFinished ? "FINAL STATS" : "LIVE STATS";
+
+            if (match.team_stats && statsTab) {
+                const wasHidden = statsTab.classList.contains('d-none');
+                if (wasHidden) statsTab.classList.remove('d-none');
+                if (wasHidden || (wasPreGame && isNowLive)) switchLineupTab(fixId, 'stats');
+            }
+        }
+    });
+
+    requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
+}
+
+// Helper function to load the static file created by your General Manager script
+async function fallbackToStaticJSON(params) {
+    ALL_GAMES_DATA = await fetchMatchesData(params);
     if (!ALL_GAMES_DATA) {
         ALL_GAMES_DATA = [];
     }
-
-    // REMOVED THE EARLY EXIT! Now it always proceeds to renderGames()
     renderGames();
-    handleHashNavigation(); 
-    setInterval(updateLiveGames, 30000); 
+    handleHashNavigation();
 }
 
 function renderGames() {
