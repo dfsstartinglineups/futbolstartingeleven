@@ -4,7 +4,6 @@ import requests
 import zoneinfo
 import time
 from datetime import datetime, timedelta
-import base64
 
 # --- FIREBASE IMPORTS ---
 import firebase_admin
@@ -42,8 +41,6 @@ os.makedirs(LIVE_DIR, exist_ok=True)
 API_HOST = "https://v3.football.api-sports.io"
 API_KEY = os.environ.get("FOOTBALL_API_KEY")
 
-ARCHIVED_DATES = set()
-
 # ==========================================================
 # --- HELPER FUNCTIONS ---
 # ==========================================================
@@ -58,43 +55,6 @@ def fetch_api(endpoint):
     except Exception as e:
         print(f"⚠️ API Fetch Failed ({endpoint}): {e}")
         return None
-
-def archive_to_github(date_str, json_data):
-    """Pushes the final JSON file to the GitHub repository permanently"""
-    token = os.environ.get("GITHUB_TOKEN")
-    repo = os.environ.get("GITHUB_REPO") 
-    
-    if not token or not repo:
-        print("⚠️ GitHub credentials missing. Skipping permanent archive.")
-        return False
-
-    url = f"https://api.github.com/repos/{repo}/contents/data/LIVE/futbol_live_{date_str}.json"
-    headers = {
-        "Authorization": f"token {token}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-
-    sha = None
-    get_res = requests.get(url, headers=headers)
-    if get_res.status_code == 200:
-        sha = get_res.json().get("sha")
-
-    content_b64 = base64.b64encode(json.dumps(json_data, indent=2).encode('utf-8')).decode('utf-8')
-    data = {
-        "message": f"⚽ Auto-archiving final live futbol data for {date_str}",
-        "content": content_b64,
-        "branch": "main" 
-    }
-    if sha: 
-        data["sha"] = sha
-
-    put_res = requests.put(url, headers=headers, json=data)
-    if put_res.status_code in [200, 201]:
-        print(f"📦 Successfully archived Futbol {date_str} to GitHub!")
-        return True
-    else:
-        print(f"❌ Failed to archive to GitHub: {put_res.text}")
-        return False
 
 # ==========================================================
 # --- CORE ENGINE LOGIC ---
@@ -155,15 +115,20 @@ def main():
         is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
         is_finished = status in ['FT', 'AET', 'PEN']
         
-        # 🛑 10-MINUTE COOLDOWN FOR FINISHED GAMES
+        # 🛑 TWO-TIER COOLDOWN FOR FINISHED GAMES (The Baton Pass)
         if is_finished:
             if fix_id in old_live_data and 'match_ended_at' in old_live_data[fix_id]:
                 ended_time_str = old_live_data[fix_id]['match_ended_at']
                 try:
                     ended_time = datetime.fromisoformat(ended_time_str)
-                    if now_est > ended_time + timedelta(minutes=10):
+                    mins_since_end = (now_est - ended_time).total_seconds() / 60
+                    
+                    if mins_since_end > 95:
+                        continue # Baton passed to GM! Drop completely from Firebase.
+                    elif mins_since_end > 10:
                         new_live_data[fix_id] = old_live_data[fix_id]
-                        continue # Safely locked. Skip active polling.
+                        active_games_found += 1 # Keep Firebase alive so the UI doesn't blackout!
+                        continue # Skip API polling to save limits.
                 except: pass
 
         if not is_playing and not is_finished:
@@ -278,28 +243,32 @@ def main():
                         in_is_starter = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("startXI", []))
                         out_is_sub_err = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("substitutes", []))
                         if in_is_starter and out_is_sub_err:
-                            s_idx = next(i for i, s in enumerate(lineup["startXI"]) if str(s["player"]["id"]) == player_in_id)
-                            sub_idx = next(i for i, s in enumerate(lineup["substitutes"]) if str(s["player"]["id"]) == player_out_id)
-                            temp = lineup["startXI"][s_idx]
-                            lineup["startXI"][s_idx] = lineup["substitutes"][sub_idx]
-                            lineup["substitutes"][sub_idx] = temp
-                            in_is_sub, out_is_starter = True, True
+                            try:
+                                s_idx = next(i for i, s in enumerate(lineup["startXI"]) if str(s["player"]["id"]) == player_in_id)
+                                sub_idx = next(i for i, s in enumerate(lineup["substitutes"]) if str(s["player"]["id"]) == player_out_id)
+                                temp = lineup["startXI"][s_idx]
+                                lineup["startXI"][s_idx] = lineup["substitutes"][sub_idx]
+                                lineup["substitutes"][sub_idx] = temp
+                                in_is_sub, out_is_starter = True, True
+                            except StopIteration: pass
                             
                         if in_is_sub and out_is_starter:
-                            incoming_sub = next(s for s in lineup["substitutes"] if str(s["player"]["id"]) == player_in_id)
-                            for slot in lineup["startXI"]:
-                                if str(slot["player"]["id"]) == player_out_id:
-                                    if "sub_history" not in slot:
-                                        slot["sub_history"] = []
-                                    slot["sub_history"].insert(0, slot["player"].copy())
-                                    
-                                    slot["player"] = incoming_sub["player"]
-                                    slot["player"]["isSubbedIn"] = True
-                                    slot["player"]["subMinute"] = ev["time"]
-                                    slot["player"]["pos"] = slot["sub_history"][0].get("pos", "M")
-                                    
-                                    lineup["substitutes"] = [s for s in lineup["substitutes"] if str(s["player"]["id"]) != player_in_id]
-                                    break
+                            try:
+                                incoming_sub = next(s for s in lineup["substitutes"] if str(s["player"]["id"]) == player_in_id)
+                                for slot in lineup["startXI"]:
+                                    if str(slot["player"]["id"]) == player_out_id:
+                                        if "sub_history" not in slot:
+                                            slot["sub_history"] = []
+                                        slot["sub_history"].insert(0, slot["player"].copy())
+                                        
+                                        slot["player"] = incoming_sub["player"]
+                                        slot["player"]["isSubbedIn"] = True
+                                        slot["player"]["subMinute"] = ev["time"]
+                                        slot["player"]["pos"] = slot["sub_history"][0].get("pos", "M")
+                                        
+                                        lineup["substitutes"] = [s for s in lineup["substitutes"] if str(s["player"]["id"]) != player_in_id]
+                                        break
+                            except StopIteration: pass
 
             # Attach Live Stats
             for side in ["homeLineup", "awayLineup"]:
@@ -341,22 +310,12 @@ def main():
         # Are there actively playing games, or just games in cooldown?
         has_live_games = any(g['fixture']['status']['short'] in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT'] for g in new_live_data.values())
     else:
-        global ARCHIVED_DATES
         print("\n💤 No active futbol games right now.")
         
         # 1. Wipe Firebase clean
         if firebase_admin._apps:
             try: db.reference('futbol_live_games').delete()
             except: pass
-
-        # 2. Push permanent archive to GitHub 10 mins after ALL games end
-        unstarted_games = sum(1 for e in fixtures_data.get('response', []) if e['fixture']['status']['short'] in ['NS', 'TBD'])
-        
-        if unstarted_games == 0 and current_date_str not in ARCHIVED_DATES and new_live_data:
-            if any(g['fixture']['status']['short'] in ['FT', 'AET', 'PEN'] for g in new_live_data.values()):
-                success = archive_to_github(current_date_str, new_live_data)
-                if success:
-                    ARCHIVED_DATES.add(current_date_str)
 
     return has_live_games
 
