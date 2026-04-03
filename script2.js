@@ -1102,7 +1102,7 @@ function handleHashNavigation() {
     }
 }
 
-let isFirstLoad = true; // NEW: Track if it's the initial page load
+let isFirstLoad = true; // Track if it's the initial page load
 
 async function init() {
     const params = getUrlParams();
@@ -1116,6 +1116,11 @@ async function init() {
     
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
+    // --- NEW: ALWAYS LOAD THE BASELINE FIRST ---
+    // This ensures we have the upcoming (NS) games in memory before Firebase even speaks.
+    ALL_GAMES_DATA = await fetchMatchesData(params);
+    if (!ALL_GAMES_DATA) ALL_GAMES_DATA = [];
+
     // ==========================================
     // 1. THE REAL-TIME PATH (Today's Games)
     // ==========================================
@@ -1123,27 +1128,35 @@ async function init() {
         console.log("📡 Connecting to Firebase Realtime Stream...");
         const liveRef = db.ref('futbol_live_games');
         
-        // Listen for instant updates pushed by the Python Engine
         liveRef.on('value', (snapshot) => {
             const incomingData = snapshot.val();
             
             if (incomingData) {
-                const newData = Object.values(incomingData);
-                console.log("⚡ Firebase Update Received!", newData.length, "games active.");
+                const liveGamesArray = Object.values(incomingData);
+                console.log("⚡ Firebase Update Received!", liveGamesArray.length, "games active/finished.");
 
-                // If it's the first load, or the total number of games changed, redraw everything
-                if (isFirstLoad || newData.length !== ALL_GAMES_DATA.length) {
-                    ALL_GAMES_DATA = newData;
+                if (isFirstLoad) {
+                    // First load: Merge the live games into our full daily schedule
+                    liveGamesArray.forEach(liveGame => {
+                        const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
+                        if (index !== -1) ALL_GAMES_DATA[index] = liveGame; // Update existing
+                        else ALL_GAMES_DATA.push(liveGame); // Add if missing
+                    });
+                    
                     renderGames();
                     handleHashNavigation(); 
                     isFirstLoad = false;
                 } else {
-                    // Otherwise, do a surgical update so open menus don't close!
-                    syncLiveDOM(newData);
+                    // Subsequent loads: Pass ONLY the live games to the surgical updater
+                    syncLiveDOM(liveGamesArray);
                 }
             } else {
-                console.log("💤 Firebase is empty. Loading baseline JSON.");
-                fallbackToStaticJSON(params);
+                console.log("💤 Firebase is empty. Relying on baseline JSON.");
+                if (isFirstLoad) {
+                    renderGames();
+                    handleHashNavigation();
+                    isFirstLoad = false;
+                }
             }
         });
     } 
@@ -1151,22 +1164,31 @@ async function init() {
     // 2. THE STATIC PATH (Past/Future Games)
     // ==========================================
     else {
-        console.log(`Fetching static archive for ${params.date}...`);
-        fallbackToStaticJSON(params);
+        console.log(`Rendering static archive for ${params.date}...`);
+        renderGames();
+        handleHashNavigation();
     }
 }
-
 // ==========================================
 // SURGICAL DOM UPDATER (Prevents flashing)
 // ==========================================
-function syncLiveDOM(newData) {
-    const oldData = [...ALL_GAMES_DATA]; 
-    ALL_GAMES_DATA = newData;
-    
-    newData.forEach(match => {
+function syncLiveDOM(liveGamesArray) {
+    liveGamesArray.forEach(match => {
         const fixId = match.fixture.id;
-        const oldMatch = oldData.find(m => m.fixture.id === fixId);
         
+        // 1. Find the old version of this specific match in our master array
+        const oldMatchIndex = ALL_GAMES_DATA.findIndex(m => m.fixture.id === fixId);
+        let oldMatch = null;
+
+        // 2. Safely merge the new data into the master array
+        if (oldMatchIndex !== -1) {
+            oldMatch = ALL_GAMES_DATA[oldMatchIndex];
+            ALL_GAMES_DATA[oldMatchIndex] = match; 
+        } else {
+            ALL_GAMES_DATA.push(match);
+        }
+        
+        // 3. Grab all the HTML elements for this match
         const timeEl = document.getElementById(`time-${fixId}`);
         const scoreEl = document.getElementById(`score-${fixId}`);
         const eventsEl = document.getElementById(`events-${fixId}`);
@@ -1292,7 +1314,6 @@ function syncLiveDOM(newData) {
 
     requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
 }
-
 
 // Helper function to load the static file created by your General Manager script
 async function fallbackToStaticJSON(params) {
