@@ -1116,8 +1116,7 @@ async function init() {
     
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
-    // --- NEW: ALWAYS LOAD THE BASELINE FIRST ---
-    // This ensures we have the upcoming (NS) games in memory before Firebase even speaks.
+    // ALWAYS LOAD THE BASELINE FIRST
     ALL_GAMES_DATA = await fetchMatchesData(params);
     if (!ALL_GAMES_DATA) ALL_GAMES_DATA = [];
 
@@ -1132,11 +1131,19 @@ async function init() {
             const incomingData = snapshot.val();
             
             if (incomingData) {
-                const liveGamesArray = Object.values(incomingData);
-                console.log("⚡ Firebase Update Received!", liveGamesArray.length, "games active/finished.");
+                let liveGamesArray = Object.values(incomingData);
+                
+                // --- THE FIX: FILTER THE FIREBASE FIREHOSE ---
+                // If we are looking at a specific league, throw away any Firebase updates for other leagues!
+                if (params.league !== 'top') {
+                    const targetId = SUPPORTED_LEAGUES[params.league].id;
+                    liveGamesArray = liveGamesArray.filter(g => g.league.id === targetId);
+                }
+
+                console.log("⚡ Firebase Update Received!", liveGamesArray.length, "relevant games active.");
 
                 if (isFirstLoad) {
-                    // First load: Merge the live games into our full daily schedule
+                    // First load: Merge the filtered live games into our full daily schedule
                     liveGamesArray.forEach(liveGame => {
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
                         if (index !== -1) ALL_GAMES_DATA[index] = liveGame; // Update existing
@@ -1147,7 +1154,7 @@ async function init() {
                     handleHashNavigation(); 
                     isFirstLoad = false;
                 } else {
-                    // Subsequent loads: Pass ONLY the live games to the surgical updater
+                    // Subsequent loads: Pass ONLY the filtered live games to the surgical updater
                     syncLiveDOM(liveGamesArray);
                 }
             } else {
