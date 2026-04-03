@@ -26,7 +26,6 @@ jobs:
           FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
         run: |
           python scraper.py
-          python sitemap_generator.py
         
       - name: Commit and Push changes
         run: |
