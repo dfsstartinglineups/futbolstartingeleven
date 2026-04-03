@@ -24150,7 +24150,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 70,
+                "elapsed": 71,
                 "extra": null
             }
         },
@@ -24703,7 +24703,7 @@
                         "id": 13178,
                         "name": "Cristian Alvarez",
                         "number": 10,
-                        "pos": "M",
+                        "pos": "F",
                         "grid": "4:2",
                         "photo": "https://media.api-sports.io/football/players/13178.png",
                         "age": 33,
@@ -24764,8 +24764,79 @@
                             "fouls_drawn": 1,
                             "fouls_committed": 1,
                             "rating": "7.5"
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "68"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 13488,
+                            "name": "Wilfrido De la Rosa",
+                            "number": 7,
+                            "pos": "F",
+                            "grid": null,
+                            "photo": "https://media.api-sports.io/football/players/13488.png",
+                            "age": 32,
+                            "nationality": "Colombia",
+                            "season_stats": {
+                                "total": {
+                                    "games": 6,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 3,
+                                    "pass_acc": 69,
+                                    "tackles": 2,
+                                    "interceptions": 3,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.33"
+                                },
+                                "competitions": {
+                                    "Primera A": {
+                                        "games": 6,
+                                        "goals": 0,
+                                        "assists": 0,
+                                        "saves": 0,
+                                        "conceded": 0,
+                                        "shots_on": 1,
+                                        "key_passes": 3,
+                                        "pass_acc": 69,
+                                        "tackles": 2,
+                                        "interceptions": 3,
+                                        "yellow_cards": 3,
+                                        "red_cards": 0,
+                                        "rating": "6.33"
+                                    }
+                                }
+                            },
+                            "live_stats": {
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": 0,
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "N/A"
+                            }
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -25074,75 +25145,6 @@
                                 "rating": "N/A"
                             },
                             "competitions": {}
-                        },
-                        "live_stats": {
-                            "goals": 0,
-                            "assists": 0,
-                            "total_shots": 0,
-                            "shots_on_target": 0,
-                            "offsides": 0,
-                            "passes": 0,
-                            "key_passes": 0,
-                            "pass_acc": 0,
-                            "tackles": 0,
-                            "blocks": 0,
-                            "interceptions": 0,
-                            "duels_total": 0,
-                            "duels_won": 0,
-                            "clearances": 0,
-                            "saves": 0,
-                            "conceded": 0,
-                            "yellow_cards": 0,
-                            "red_cards": 0,
-                            "fouls_drawn": 0,
-                            "fouls_committed": 0,
-                            "rating": "N/A"
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 13488,
-                        "name": "Wilfrido De la Rosa",
-                        "number": 7,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/13488.png",
-                        "age": 32,
-                        "nationality": "Colombia",
-                        "season_stats": {
-                            "total": {
-                                "games": 6,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 3,
-                                "pass_acc": 69,
-                                "tackles": 2,
-                                "interceptions": 3,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.33"
-                            },
-                            "competitions": {
-                                "Primera A": {
-                                    "games": 6,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 3,
-                                    "pass_acc": 69,
-                                    "tackles": 2,
-                                    "interceptions": 3,
-                                    "yellow_cards": 3,
-                                    "red_cards": 0,
-                                    "rating": "6.33"
-                                }
-                            }
                         },
                         "live_stats": {
                             "goals": 0,
@@ -27091,6 +27093,17 @@
                 "assist": "J. Angulo",
                 "player_out": "J. Angulo",
                 "player_out_id": 538170
+            },
+            {
+                "time": "68",
+                "team_id": 1133,
+                "player": "Jopito",
+                "player_id": 13178,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "W. De La Rosa",
+                "player_out": "W. De La Rosa",
+                "player_out_id": 13488
             }
         ],
         "match_ended_at": null,
@@ -27138,7 +27151,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 62,
+                "elapsed": 63,
                 "extra": null
             }
         },
@@ -30427,7 +30440,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 20,
+                "elapsed": 21,
                 "extra": null
             }
         },
@@ -34374,7 +34387,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 19,
+                "elapsed": 20,
                 "extra": null
             }
         },
