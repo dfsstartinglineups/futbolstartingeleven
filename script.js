@@ -157,6 +157,52 @@ const LEAGUE_MAP_ESPN = {
     5: "uefa.nations", 531: "concacaf.nations", 44: "eng.w.1", 254: "usa.nwsl", 10: "fifa.friendly"
 };
 
+// ==========================================
+// NEW: SMART MERGE & FIREBASE REPAIR
+// ==========================================
+function mergeAndRepairMatch(liveMatch, staticMatch) {
+    // 1. Start with the fresh live data from Firebase
+    let merged = { ...liveMatch };
+
+    // 2. Preserve static JSON data if Firebase omits it
+    if (staticMatch) {
+        if (!merged.homeLineup && staticMatch.homeLineup) merged.homeLineup = staticMatch.homeLineup;
+        if (!merged.awayLineup && staticMatch.awayLineup) merged.awayLineup = staticMatch.awayLineup;
+        if (!merged.odds && staticMatch.odds) merged.odds = staticMatch.odds;
+        if (!merged.injuries && staticMatch.injuries) merged.injuries = staticMatch.injuries;
+    }
+
+    // 3. Fix the Firebase Array-to-Object Mutation
+    ['homeLineup', 'awayLineup'].forEach(side => {
+        if (merged[side]) {
+            if (merged[side].startXI && !Array.isArray(merged[side].startXI)) {
+                merged[side].startXI = Object.values(merged[side].startXI);
+            }
+            if (merged[side].substitutes && !Array.isArray(merged[side].substitutes)) {
+                merged[side].substitutes = Object.values(merged[side].substitutes);
+            }
+            if (merged[side].startXI) {
+                merged[side].startXI.forEach(slot => {
+                    if (slot.sub_history && !Array.isArray(slot.sub_history)) {
+                        slot.sub_history = Object.values(slot.sub_history);
+                    }
+                });
+            }
+        }
+    });
+
+    // 4. Protect Events and Injuries
+    if (merged.events && !Array.isArray(merged.events)) {
+        merged.events = Object.values(merged.events);
+    }
+    if (merged.injuries) {
+        if (merged.injuries.home && !Array.isArray(merged.injuries.home)) merged.injuries.home = Object.values(merged.injuries.home);
+        if (merged.injuries.away && !Array.isArray(merged.injuries.away)) merged.injuries.away = Object.values(merged.injuries.away);
+    }
+
+    return merged;
+}
+
 window.toggleExpand = function(el) {
     const isExpanded = el.classList.toggle('is-expanded');
     const targets = el.querySelectorAll('.truncate-target');
@@ -1146,8 +1192,11 @@ async function init() {
                     // First load: Merge the filtered live games into our full daily schedule
                     liveGamesArray.forEach(liveGame => {
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
-                        if (index !== -1) ALL_GAMES_DATA[index] = liveGame; // Update existing
-                        else ALL_GAMES_DATA.push(liveGame); // Add if missing
+                        if (index !== -1) {
+                            ALL_GAMES_DATA[index] = mergeAndRepairMatch(liveGame, ALL_GAMES_DATA[index]);
+                        } else {
+                            ALL_GAMES_DATA.push(mergeAndRepairMatch(liveGame, null));
+                        }
                     });
                     
                     renderGames();
@@ -1190,8 +1239,10 @@ function syncLiveDOM(liveGamesArray) {
         // 2. Safely merge the new data into the master array
         if (oldMatchIndex !== -1) {
             oldMatch = ALL_GAMES_DATA[oldMatchIndex];
+            match = mergeAndRepairMatch(match, oldMatch);
             ALL_GAMES_DATA[oldMatchIndex] = match; 
         } else {
+            match = mergeAndRepairMatch(match, null);
             ALL_GAMES_DATA.push(match);
         }
         
