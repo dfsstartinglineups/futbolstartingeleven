@@ -161,43 +161,78 @@ const LEAGUE_MAP_ESPN = {
 // NEW: SMART MERGE & FIREBASE REPAIR
 // ==========================================
 function mergeAndRepairMatch(liveMatch, staticMatch) {
-    // 1. Start with the fresh live data from Firebase
     let merged = { ...liveMatch };
 
-    // 2. Preserve static JSON data if Firebase omits it
-    if (staticMatch) {
-        if (!merged.homeLineup && staticMatch.homeLineup) merged.homeLineup = staticMatch.homeLineup;
-        if (!merged.awayLineup && staticMatch.awayLineup) merged.awayLineup = staticMatch.awayLineup;
-        if (!merged.odds && staticMatch.odds) merged.odds = staticMatch.odds;
-        if (!merged.injuries && staticMatch.injuries) merged.injuries = staticMatch.injuries;
-    }
-
-    // 3. Fix the Firebase Array-to-Object Mutation
+    // 1. Fix the Firebase Array-to-Object Mutation FIRST so we can iterate safely
     ['homeLineup', 'awayLineup'].forEach(side => {
         if (merged[side]) {
-            if (merged[side].startXI && !Array.isArray(merged[side].startXI)) {
-                merged[side].startXI = Object.values(merged[side].startXI);
-            }
-            if (merged[side].substitutes && !Array.isArray(merged[side].substitutes)) {
-                merged[side].substitutes = Object.values(merged[side].substitutes);
-            }
+            if (merged[side].startXI && !Array.isArray(merged[side].startXI)) merged[side].startXI = Object.values(merged[side].startXI);
+            if (merged[side].substitutes && !Array.isArray(merged[side].substitutes)) merged[side].substitutes = Object.values(merged[side].substitutes);
             if (merged[side].startXI) {
                 merged[side].startXI.forEach(slot => {
-                    if (slot.sub_history && !Array.isArray(slot.sub_history)) {
-                        slot.sub_history = Object.values(slot.sub_history);
-                    }
+                    if (slot.sub_history && !Array.isArray(slot.sub_history)) slot.sub_history = Object.values(slot.sub_history);
                 });
             }
         }
     });
 
-    // 4. Protect Events and Injuries
-    if (merged.events && !Array.isArray(merged.events)) {
-        merged.events = Object.values(merged.events);
-    }
+    // Protect Events and Injuries
+    if (merged.events && !Array.isArray(merged.events)) merged.events = Object.values(merged.events);
     if (merged.injuries) {
         if (merged.injuries.home && !Array.isArray(merged.injuries.home)) merged.injuries.home = Object.values(merged.injuries.home);
         if (merged.injuries.away && !Array.isArray(merged.injuries.away)) merged.injuries.away = Object.values(merged.injuries.away);
+    }
+
+    // 2. Deep Merge static JSON data to preserve Substitutions, Photos, and Bench
+    if (staticMatch) {
+        if (!merged.odds && staticMatch.odds) merged.odds = staticMatch.odds;
+        if (!merged.injuries && staticMatch.injuries) merged.injuries = staticMatch.injuries;
+
+        ['homeLineup', 'awayLineup'].forEach(side => {
+            if (staticMatch[side]) {
+                if (!merged[side]) {
+                    // Live feed completely omitted the lineup, restore the whole thing
+                    merged[side] = staticMatch[side];
+                } else {
+                    // Preserve missing base lineup properties
+                    if (!merged[side].formation && staticMatch[side].formation) merged[side].formation = staticMatch[side].formation;
+                    if (!merged[side].substitutes && staticMatch[side].substitutes) merged[side].substitutes = staticMatch[side].substitutes;
+                    if (!merged[side].team && staticMatch[side].team) merged[side].team = staticMatch[side].team;
+
+                    // Deep merge Starting XI slots to protect sub_history & photos
+                    if (merged[side].startXI && staticMatch[side].startXI) {
+                        merged[side].startXI.forEach((liveSlot, idx) => {
+                            // Match by player ID or fallback to array index
+                            const staticSlot = staticMatch[side].startXI.find(s => s.player && liveSlot.player && s.player.id === liveSlot.player.id) || staticMatch[side].startXI[idx];
+                            if (staticSlot) {
+                                // Restore Sub History
+                                if (!liveSlot.sub_history && staticSlot.sub_history) liveSlot.sub_history = staticSlot.sub_history;
+                                
+                                // Restore Player metadata (photos, numbers, sub statuses)
+                                if (liveSlot.player && staticSlot.player) {
+                                    if (!liveSlot.player.photo && staticSlot.player.photo) liveSlot.player.photo = staticSlot.player.photo;
+                                    if (!liveSlot.player.number && staticSlot.player.number) liveSlot.player.number = staticSlot.player.number;
+                                    if (liveSlot.player.isSubbedIn === undefined && staticSlot.player.isSubbedIn !== undefined) liveSlot.player.isSubbedIn = staticSlot.player.isSubbedIn;
+                                    if (liveSlot.player.subMinute === undefined && staticSlot.player.subMinute !== undefined) liveSlot.player.subMinute = staticSlot.player.subMinute;
+                                }
+                            }
+                        });
+                    }
+
+                    // Deep merge Substitutes
+                    if (merged[side].substitutes && staticMatch[side].substitutes) {
+                        merged[side].substitutes.forEach((liveSub, idx) => {
+                            const staticSub = staticMatch[side].substitutes.find(s => s.player && liveSub.player && s.player.id === liveSub.player.id) || staticMatch[side].substitutes[idx];
+                            if (staticSub && liveSub.player && staticSub.player) {
+                                if (!liveSub.player.photo && staticSub.player.photo) liveSub.player.photo = staticSub.player.photo;
+                                if (!liveSub.player.number && staticSub.player.number) liveSub.player.number = staticSub.player.number;
+                                if (liveSub.player.isSubbedIn === undefined && staticSub.player.isSubbedIn !== undefined) liveSub.player.isSubbedIn = staticSub.player.isSubbedIn;
+                            }
+                        });
+                    }
+                }
+            }
+        });
     }
 
     return merged;
