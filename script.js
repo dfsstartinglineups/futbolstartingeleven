@@ -15,7 +15,6 @@ const db = typeof firebase !== 'undefined' ? firebase.database() : null;
 const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 let ALL_GAMES_DATA = []; 
 
-// Check local storage for the user's saved preferences
 let savedLineupState = localStorage.getItem('futbolLineupsExpanded');
 let globalLineupsExpanded = savedLineupState !== null ? savedLineupState === 'true' : true; 
 
@@ -109,40 +108,6 @@ const LEAGUE_MAP_ESPN = {
     11: "conmebol.sudamericana", 143: "esp.copa_del_rey", 137: "ita.coppa_italia", 81: "ger.dfb_pokal", 
     5: "uefa.nations", 531: "concacaf.nations", 44: "eng.w.1", 254: "usa.nwsl", 10: "fifa.friendly"
 };
-
-// ==========================================
-// PURE FIREBASE ARRAY REPAIR
-// ==========================================
-// This stops Firebase from crashing the UI by converting all nested objects back into standard arrays.
-function repairFirebaseArrays(match) {
-    if (!match) return match;
-
-    ['homeLineup', 'awayLineup'].forEach(side => {
-        if (match[side]) {
-            if (match[side].startXI && !Array.isArray(match[side].startXI)) {
-                match[side].startXI = Object.values(match[side].startXI);
-            }
-            if (match[side].substitutes && !Array.isArray(match[side].substitutes)) {
-                match[side].substitutes = Object.values(match[side].substitutes);
-            }
-            if (match[side].startXI) {
-                match[side].startXI.forEach(slot => {
-                    if (slot.sub_history && !Array.isArray(slot.sub_history)) {
-                        slot.sub_history = Object.values(slot.sub_history);
-                    }
-                });
-            }
-        }
-    });
-
-    if (match.events && !Array.isArray(match.events)) match.events = Object.values(match.events);
-    if (match.injuries) {
-        if (match.injuries.home && !Array.isArray(match.injuries.home)) match.injuries.home = Object.values(match.injuries.home);
-        if (match.injuries.away && !Array.isArray(match.injuries.away)) match.injuries.away = Object.values(match.injuries.away);
-    }
-
-    return match;
-}
 
 window.toggleExpand = function(el) {
     const isExpanded = el.classList.toggle('is-expanded');
@@ -1070,7 +1035,40 @@ async function init() {
 
                 if (isFirstLoad) {
                     liveGamesArray.forEach(liveGame => {
-                        let repairedGame = deepCloneAndRepair(liveGame);
+                        let repairedGame = liveGame; // No merge. Just accept the Python payload.
+                        
+                        // But we still need to fix the arrays if Firebase scrambled them.
+                        if (repairedGame.homeLineup && !Array.isArray(repairedGame.homeLineup.startXI)) {
+                            repairedGame.homeLineup.startXI = Object.values(repairedGame.homeLineup.startXI);
+                        }
+                        if (repairedGame.homeLineup && !Array.isArray(repairedGame.homeLineup.substitutes)) {
+                            repairedGame.homeLineup.substitutes = Object.values(repairedGame.homeLineup.substitutes);
+                        }
+                        if (repairedGame.awayLineup && !Array.isArray(repairedGame.awayLineup.startXI)) {
+                            repairedGame.awayLineup.startXI = Object.values(repairedGame.awayLineup.startXI);
+                        }
+                        if (repairedGame.awayLineup && !Array.isArray(repairedGame.awayLineup.substitutes)) {
+                            repairedGame.awayLineup.substitutes = Object.values(repairedGame.awayLineup.substitutes);
+                        }
+
+                        // Fix sub_history objects
+                        if (repairedGame.homeLineup && repairedGame.homeLineup.startXI) {
+                            repairedGame.homeLineup.startXI.forEach(slot => {
+                                if (slot.sub_history && !Array.isArray(slot.sub_history)) {
+                                    slot.sub_history = Object.values(slot.sub_history);
+                                }
+                            });
+                        }
+                        if (repairedGame.awayLineup && repairedGame.awayLineup.startXI) {
+                            repairedGame.awayLineup.startXI.forEach(slot => {
+                                if (slot.sub_history && !Array.isArray(slot.sub_history)) {
+                                    slot.sub_history = Object.values(slot.sub_history);
+                                }
+                            });
+                        }
+
+                        if (repairedGame.events && !Array.isArray(repairedGame.events)) repairedGame.events = Object.values(repairedGame.events);
+                        
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === repairedGame.fixture.id);
                         if (index !== -1) {
                             ALL_GAMES_DATA[index] = repairedGame;
@@ -1102,7 +1100,37 @@ async function init() {
 
 function syncLiveDOM(liveGamesArray) {
     liveGamesArray.forEach(rawMatch => {
-        let match = deepCloneAndRepair(rawMatch);
+        let match = rawMatch; // No deep clone merge. Trust Python.
+        
+        // Repair the arrays so the UI doesn't choke.
+        if (match.homeLineup && !Array.isArray(match.homeLineup.startXI)) {
+            match.homeLineup.startXI = Object.values(match.homeLineup.startXI);
+        }
+        if (match.homeLineup && !Array.isArray(match.homeLineup.substitutes)) {
+            match.homeLineup.substitutes = Object.values(match.homeLineup.substitutes);
+        }
+        if (match.awayLineup && !Array.isArray(match.awayLineup.startXI)) {
+            match.awayLineup.startXI = Object.values(match.awayLineup.startXI);
+        }
+        if (match.awayLineup && !Array.isArray(match.awayLineup.substitutes)) {
+            match.awayLineup.substitutes = Object.values(match.awayLineup.substitutes);
+        }
+        if (match.homeLineup && match.homeLineup.startXI) {
+            match.homeLineup.startXI.forEach(slot => {
+                if (slot.sub_history && !Array.isArray(slot.sub_history)) {
+                    slot.sub_history = Object.values(slot.sub_history);
+                }
+            });
+        }
+        if (match.awayLineup && match.awayLineup.startXI) {
+            match.awayLineup.startXI.forEach(slot => {
+                if (slot.sub_history && !Array.isArray(slot.sub_history)) {
+                    slot.sub_history = Object.values(slot.sub_history);
+                }
+            });
+        }
+        if (match.events && !Array.isArray(match.events)) match.events = Object.values(match.events);
+
         const fixId = match.fixture.id;
         
         const oldMatchIndex = ALL_GAMES_DATA.findIndex(m => m.fixture.id === fixId);
@@ -1319,17 +1347,24 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
     let flatPlayers = [];
 
     lineupData.startXI.forEach(slot => {
-        flatPlayers.push({ ...slot.player, _isSubbedOut: false });
+        // Look here: The Python payload puts player directly inside slot, NOT nested!
+        let activePlayer = slot.player || slot;
+        flatPlayers.push({ ...activePlayer, _isSubbedOut: false });
+        
         if (slot.sub_history) {
-            slot.sub_history.forEach(h => flatPlayers.push({ ...h, _isSubbedOut: true }));
+            slot.sub_history.forEach(h => {
+                let subPlayer = h.player || h; // Fix the nesting check here too
+                flatPlayers.push({ ...subPlayer, _isSubbedOut: true });
+            });
         }
     });
 
     if (lineupData.substitutes) {
         lineupData.substitutes.forEach(sub => {
-            if (sub.player.live_stats && Object.values(sub.player.live_stats).some(v => v !== 0 && v !== "N/A" && v !== "0")) {
-                if (!flatPlayers.find(p => p.id === sub.player.id)) {
-                    flatPlayers.push({ ...sub.player, _isSubbedIn: true, _isSubbedOut: false });
+            let benchPlayer = sub.player || sub;
+            if (benchPlayer.live_stats && Object.values(benchPlayer.live_stats).some(v => v !== 0 && v !== "N/A" && v !== "0")) {
+                if (!flatPlayers.find(p => p.id === benchPlayer.id)) {
+                    flatPlayers.push({ ...benchPlayer, _isSubbedIn: true, _isSubbedOut: false });
                 }
             }
         });
@@ -1399,13 +1434,15 @@ function buildLineupList(lineupData, gameData) {
     
     const listItems = lineupData.startXI.map(slot => {
         const renderRow = (p, isSubbedOut) => {
-            const safePos = p.pos || '-';
-            const originalName = p.name || 'Unknown';
-            const displaySafeName = shortenPlayerName(originalName);
-            const safeNum = p.number || '';
-            const photoUrl = p.photo || '';
+            let activePlayer = p.player || p; // The Fix: Check both nested and flat structures
             
-            const encodedPlayer = encodeURIComponent(JSON.stringify(p));
+            const safePos = activePlayer.pos || '-';
+            const originalName = activePlayer.name || 'Unknown';
+            const displaySafeName = shortenPlayerName(originalName);
+            const safeNum = activePlayer.number || '';
+            const photoUrl = activePlayer.photo || '';
+            
+            const encodedPlayer = encodeURIComponent(JSON.stringify(activePlayer));
             let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
             
             const photoHtml = photoUrl && photoUrl.includes("http") 
@@ -1413,8 +1450,8 @@ function buildLineupList(lineupData, gameData) {
                 : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
             let prefix = '';
-            if (p.isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: -3px; left: 0; font-size: 0.45rem;" title="Subbed in at ${p.subMinute}'">↻</span>`;
-            if (isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: -3px; left: 0; font-size: 0.45rem;" title="Subbed out at ${p.subMinute}'">▲</span>`;
+            if (activePlayer.isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: -3px; left: 0; font-size: 0.45rem;" title="Subbed in at ${activePlayer.subMinute}'">↻</span>`;
+            if (isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: -3px; left: 0; font-size: 0.45rem;" title="Subbed out at ${activePlayer.subMinute}'">▲</span>`;
 
             const rowStyle = isSubbedOut ? `font-style: italic; opacity: 0.75; background-color: #fcfcfc; border-bottom: 1px dashed #dee2e6;` : `cursor: pointer; transition: background-color 0.2s; border-bottom: 1px solid #f1f3f5;`;
             const hoverAttr = isSubbedOut ? `` : `onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'"`;
@@ -1431,7 +1468,7 @@ function buildLineupList(lineupData, gameData) {
                 </li>`;
         };
 
-        let html = renderRow(slot.player, false);
+        let html = renderRow(slot, false);
         if (slot.sub_history && slot.sub_history.length > 0) {
             slot.sub_history.forEach(hPlayer => {
                 html += renderRow(hPlayer, true);
