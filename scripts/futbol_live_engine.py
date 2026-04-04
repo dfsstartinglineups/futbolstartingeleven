@@ -104,6 +104,8 @@ def main():
     
     for d in potential_dates:
         d_str = d.strftime("%Y-%m-%d")
+        # NOTE: We use the local file path ONLY for checking if we can retire 
+        # completed days to save API calls.
         base_path = os.path.join(DATA_DIR, f"games_{d_str}.json")
         
         if not os.path.exists(base_path):
@@ -152,19 +154,33 @@ def main():
 
     for target_date in dates_to_process:
         current_date_str = target_date.strftime("%Y-%m-%d")
-        base_file_path = os.path.join(DATA_DIR, f"games_{current_date_str}.json")
         live_file_path = os.path.join(LIVE_DIR, f"futbol_live_{current_date_str}.json")
         
-        if not os.path.exists(base_file_path):
+        # --- NEW: FETCH DIRECTLY FROM GITHUB ---
+        github_raw_url = f"https://raw.githubusercontent.com/dfsstartinglineups/futbolstartingeleven/refs/heads/main/data/games_{current_date_str}.json"
+        
+        try:
+            # We add a dummy header to bypass heavy GitHub caching
+            headers = {'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
+            response = requests.get(github_raw_url, headers=headers, timeout=10)
+            
+            if response.status_code == 404:
+                # Normal behavior if tomorrow's file isn't created yet
+                missing_schedule = True
+                continue
+                
+            response.raise_for_status()
+            daily_games = response.json()
+            
+        except Exception as e:
+            print(f"⚠️ Failed to fetch fresh schedule from GitHub for {current_date_str}: {e}")
             missing_schedule = True
             continue
-            
-        with open(base_file_path, 'r') as f:
-            daily_games = json.load(f)
             
         if not daily_games:
             missing_schedule = True
             continue
+        # ---------------------------------------
 
         for base_game in daily_games:
             g_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
