@@ -132,8 +132,13 @@ def main():
                 else:
                     # The scraper hasn't synced yet. Keep pushing the final memory to Firebase.
                     if fix_id in old_live_data:
-                        day_live_data[fix_id] = old_live_data[fix_id]
-                        all_new_live_data[fix_id] = old_live_data[fix_id]
+                        # Grab the memory, but FORCE the status to update to FT/AET/PEN
+                        live_game_obj = old_live_data[fix_id]
+                        live_game_obj['fixture']['status'] = latest_data['fixture']['status']
+                        live_game_obj['goals'] = latest_data['goals']
+                        
+                        day_live_data[fix_id] = live_game_obj
+                        all_new_live_data[fix_id] = live_game_obj
                         active_games_found += 1 
                     continue 
 
