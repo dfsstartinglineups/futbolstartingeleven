@@ -266,8 +266,9 @@ def main():
                         parsed_events.append(event_obj)
                 live_game_obj["events"] = parsed_events
 
+
             # =========================================================
-            # B. STATELESS TEAM STATS FETCH
+            # B. STATELESS TEAM STATS FETCH 
             # =========================================================
             stats_data = fetch_api(f"fixtures/statistics?fixture={fix_id}")
             has_deep_stats_this_loop = False
@@ -412,7 +413,6 @@ def main():
                             sub["player"]["live_stats"] = live_player_map[p_id]
                         elif p_id in old_player_stats:
                             sub["player"]["live_stats"] = old_player_stats[p_id]
-
 
             day_live_data[fix_id] = live_game_obj
             all_new_live_data[fix_id] = live_game_obj
