@@ -68,7 +68,6 @@ def main():
     now_est = datetime.now(ny_tz)
     now_ts = now_est.timestamp()
     
-    # 1. Identify potential dates to check (Yesterday/Today)
     potential_dates = [now_est]
     if now_est.hour < 12:
         potential_dates.insert(0, now_est - timedelta(days=1))
@@ -81,12 +80,14 @@ def main():
         base_path = os.path.join(DATA_DIR, f"games_{d_str}.json")
         
         if not os.path.exists(base_path):
+            dates_to_process.append(d)
             continue
             
         with open(base_path, 'r') as f:
             try:
                 check_games = json.load(f)
             except:
+                dates_to_process.append(d)
                 continue
         
         all_done = True
@@ -110,6 +111,7 @@ def main():
     active_games_found = 0
     has_live_games = False
     next_upcoming_ts = None  
+    missing_schedule = False
 
     # 1. LOAD PREVIOUS LIVE MEMORY
     old_live_data = {}
@@ -129,14 +131,41 @@ def main():
         live_file_path = os.path.join(LIVE_DIR, f"futbol_live_{current_date_str}.json")
         
         if not os.path.exists(base_file_path):
+            missing_schedule = True
             continue
             
         with open(base_file_path, 'r') as f:
             daily_games = json.load(f)
             
         if not daily_games:
+            missing_schedule = True
             continue
 
+        # =========================================================
+        # THE FIX: JSON-FIRST ALARM CLOCK
+        # Let the local schedule dictate if we sleep or stay awake!
+        # =========================================================
+        for base_game in daily_games:
+            g_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
+            g_synced = base_game.get('post_game_sync', False)
+            g_ts = base_game.get('fixture', {}).get('timestamp', 0)
+            
+            # Ignore games that are totally done or permanently canceled
+            if (g_status in ['FT', 'AET', 'PEN'] and g_synced) or g_status in ['PST', 'CANC', 'ABD', 'AWD', 'WO']:
+                continue
+                
+            if g_ts <= now_ts:
+                # The kickoff time is right now or in the past. We MUST stay awake.
+                if not has_live_games: 
+                    print(f"👀 Local JSON: Games should be live right now (e.g., {base_game['teams']['home']['name']}). Forcing engine awake.")
+                has_live_games = True
+            else:
+                # Game is in the future. Track it.
+                if next_upcoming_ts is None or g_ts < next_upcoming_ts:
+                    next_upcoming_ts = g_ts
+        # =========================================================
+
+        # Now we make the API call. Even if this fails, `has_live_games` is safely set.
         fixtures_data = fetch_api(f"fixtures?date={current_date_str}&timezone=America/New_York")
         if not fixtures_data or not fixtures_data.get("response"):
             continue
@@ -173,23 +202,9 @@ def main():
                     continue 
 
             if not is_playing and not is_finished:
-                # Ignore permanently cancelled/postponed games so we don't get stuck awake
-                if status in ['PST', 'CANC', 'ABD', 'AWD', 'WO']:
-                    continue
-                    
-                game_ts = base_game.get('fixture', {}).get('timestamp', 0)
-                if game_ts > now_ts:
-                    if next_upcoming_ts is None or game_ts < next_upcoming_ts:
-                        next_upcoming_ts = game_ts
-                else:
-                    # THE FIX: Timestamp is in the past, but the game isn't finished and isn't 'playing' yet.
-                    # This means kickoff is delayed or the API is slow to flip to '1H'. STAY AWAKE!
-                    print(f"👀 {latest_data['teams']['home']['name']} is past its kickoff time but not live yet. Staying awake.")
-                    has_live_games = True
                 continue 
 
             active_games_found += 1
-            if is_playing: has_live_games = True
 
             if status == 'HT':
                 if fix_id in old_live_data and 'events' in old_live_data[fix_id]:
@@ -394,6 +409,10 @@ def main():
         calculated_sleep = max(60, min(target_sleep, 3600))
         print(f"⏰ Next game approaches. Calculated sleep: {int(calculated_sleep)}s")
         return calculated_sleep
+        
+    if missing_schedule:
+        print("📭 Today's schedule hasn't been built by the scraper yet. Waiting 2 minutes...")
+        return 120
             
     print("📭 No live games, no delayed games, and no future games found. Sleeping for 1 hour.")
     return 3600 
