@@ -77,7 +77,7 @@ def main():
     active_games_found = 0
     has_live_games = False
 
-    # 1. LOAD PREVIOUS LIVE MEMORY FOR ALL RELEVANT DATES (For cooldown tracking)
+    # 1. LOAD PREVIOUS LIVE MEMORY FOR ALL RELEVANT DATES (For holding finished games)
     old_live_data = {}
     for d in dates_to_process:
         date_str = d.strftime("%Y-%m-%d")
@@ -121,21 +121,21 @@ def main():
             is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
             is_finished = status in ['FT', 'AET', 'PEN']
             
+            # --- EXACTLY WHAT YOU ASKED FOR ---
+            base_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
+            scraper_has_synced = (base_status in ['FT', 'AET', 'PEN']) or base_game.get('post_game_sync', False)
+            
             if is_finished:
-                if fix_id in old_live_data and 'match_ended_at' in old_live_data[fix_id]:
-                    ended_time_str = old_live_data[fix_id]['match_ended_at']
-                    try:
-                        ended_time = datetime.fromisoformat(ended_time_str)
-                        mins_since_end = (now_est - ended_time).total_seconds() / 60
-                        
-                        if mins_since_end > 95:
-                            continue 
-                        elif mins_since_end > 10:
-                            day_live_data[fix_id] = old_live_data[fix_id]
-                            all_new_live_data[fix_id] = old_live_data[fix_id]
-                            active_games_found += 1 
-                            continue 
-                    except: pass
+                if scraper_has_synced:
+                    # The scraper finished syncing. Drop from Firebase immediately.
+                    continue 
+                else:
+                    # The scraper hasn't synced yet. Keep pushing the final memory to Firebase.
+                    if fix_id in old_live_data:
+                        day_live_data[fix_id] = old_live_data[fix_id]
+                        all_new_live_data[fix_id] = old_live_data[fix_id]
+                        active_games_found += 1 
+                    continue 
 
             if not is_playing and not is_finished:
                 continue 
@@ -148,11 +148,6 @@ def main():
             live_game_obj = dict(base_game) 
             live_game_obj['fixture']['status'] = latest_data['fixture']['status']
             live_game_obj['goals'] = latest_data['goals']
-            
-            if is_finished and ('match_ended_at' not in old_live_data.get(fix_id, {})):
-                live_game_obj['match_ended_at'] = now_est.isoformat()
-            elif is_finished:
-                live_game_obj['match_ended_at'] = old_live_data[fix_id]['match_ended_at']
 
             # A. FETCH EVENTS (Goals, Cards, Subs)
             events_data = fetch_api(f"fixtures/events?fixture={fix_id}")
