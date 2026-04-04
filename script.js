@@ -788,10 +788,18 @@ function getOddsHtml(data) {
 }
 
 function getInjuriesHtml(data) {
-    if (!data.injuries || (data.injuries.home.length === 0 && data.injuries.away.length === 0)) return '';
+    // Safely extract the arrays. If Firebase deleted them, default to empty arrays []
+    const homeInjuries = (data.injuries && Array.isArray(data.injuries.home)) ? data.injuries.home : [];
+    const awayInjuries = (data.injuries && Array.isArray(data.injuries.away)) ? data.injuries.away : [];
     
-    const cleanHomeInj = data.injuries.home.map(n => shortenPlayerName(n));
-    const cleanAwayInj = data.injuries.away.map(n => shortenPlayerName(n));
+    // If both arrays are empty, hide the injury banner completely
+    if (homeInjuries.length === 0 && awayInjuries.length === 0) {
+        return '';
+    }
+    
+    // If we made it here, there ARE injuries to display! Safely map them.
+    const cleanHomeInj = homeInjuries.map(n => shortenPlayerName(n));
+    const cleanAwayInj = awayInjuries.map(n => shortenPlayerName(n));
     
     const hInj = cleanHomeInj.join(', ') || 'None';
     const aInj = cleanAwayInj.join(', ') || 'None';
