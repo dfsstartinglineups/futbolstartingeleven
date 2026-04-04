@@ -121,7 +121,7 @@ def main():
             is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
             is_finished = status in ['FT', 'AET', 'PEN']
             
-            # --- EXACTLY WHAT YOU ASKED FOR ---
+            # --- EXACTLY WHAT YOU ASKED FOR: PURE SYNC CHECK ---
             base_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
             scraper_has_synced = (base_status in ['FT', 'AET', 'PEN']) or base_game.get('post_game_sync', False)
             
@@ -142,6 +142,24 @@ def main():
 
             active_games_found += 1
             if is_playing: has_live_games = True
+
+            # --- HALFTIME API SAVER ---
+            if status == 'HT':
+                print(f"☕ Halftime: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']}. Pausing heavy API pulls.")
+                live_game_obj = dict(base_game) 
+                live_game_obj['fixture']['status'] = latest_data['fixture']['status']
+                live_game_obj['goals'] = latest_data['goals']
+                
+                if fix_id in old_live_data:
+                    live_game_obj['events'] = old_live_data[fix_id].get('events', [])
+                    live_game_obj['team_stats'] = old_live_data[fix_id].get('team_stats', {})
+                    for side in ['homeLineup', 'awayLineup']:
+                        if side in old_live_data[fix_id]:
+                            live_game_obj[side] = old_live_data[fix_id][side]
+                
+                day_live_data[fix_id] = live_game_obj
+                all_new_live_data[fix_id] = live_game_obj
+                continue
             
             print(f"⚽ Processing Live Match: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']} ({status})")
             
