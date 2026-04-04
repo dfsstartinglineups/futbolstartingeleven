@@ -144,22 +144,27 @@ def main():
             if is_playing: has_live_games = True
 
             # --- HALFTIME API SAVER ---
+            # --- THE SMART HALFTIME PAUSE (FIXED) ---
             if status == 'HT':
-                print(f"☕ Halftime: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']}. Pausing heavy API pulls.")
-                live_game_obj = dict(base_game) 
-                live_game_obj['fixture']['status'] = latest_data['fixture']['status']
-                live_game_obj['goals'] = latest_data['goals']
-                
-                if fix_id in old_live_data:
-                    live_game_obj['events'] = old_live_data[fix_id].get('events', [])
-                    live_game_obj['team_stats'] = old_live_data[fix_id].get('team_stats', {})
-                    for side in ['homeLineup', 'awayLineup']:
-                        if side in old_live_data[fix_id]:
-                            live_game_obj[side] = old_live_data[fix_id][side]
-                
-                day_live_data[fix_id] = live_game_obj
-                all_new_live_data[fix_id] = live_game_obj
-                continue
+                # Check if we actually have a fully populated game in memory
+                if fix_id in old_live_data and 'events' in old_live_data[fix_id]:
+                    print(f"☕ Halftime: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']}. Pausing API pulls.")
+                    
+                    # Grab the ENTIRE working object from memory so nothing is dropped
+                    live_game_obj = old_live_data[fix_id]
+                    
+                    # Update only the live clock and goals
+                    live_game_obj['fixture']['status'] = latest_data['fixture']['status']
+                    live_game_obj['goals'] = latest_data['goals']
+                    
+                    day_live_data[fix_id] = live_game_obj
+                    all_new_live_data[fix_id] = live_game_obj
+                    continue # Safe to skip API calls
+                else:
+                    # We have no memory of the 1st half. We CANNOT skip. 
+                    print(f"⚠️ Halftime but no memory found. Doing a full pull to build the HT baseline.")
+                    pass # Falls through to do the API pulls below
+            # ----------------------------------------
             
             print(f"⚽ Processing Live Match: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']} ({status})")
             
