@@ -696,25 +696,38 @@ def process_date(target_date, force_master_sync=False):
                     game["injuries"]["checks"] = target_level
                     updated = True
 
-            # 4. LINEUPS (Continuous polling from T-90 to T+5)
+            # 4. LINEUPS (Throttled Continuous Polling)
             has_full_lineup = bool(game.get('homeLineup') and game.get('homeLineup').get('startXI'))
             
-            # The Polling Window: Start checking 90 mins before kickoff, stop checking 5 mins after kickoff.
-            # The Polling Window: Start checking 90 mins before kickoff, stop checking 120 mins AFTER kickoff (for delays).
-            in_polling_window = (-5 <= time_to_kickoff_minutes <= 90)
+            # Check our 5-Minute Cooldown Lock
+            last_check_str = game.get("last_lineup_check")
+            if last_check_str:
+                try:
+                    last_check_time = datetime.fromisoformat(last_check_str)
+                except ValueError:
+                    last_check_time = datetime.min.replace(tzinfo=timezone.utc)
+            else:
+                last_check_time = datetime.min.replace(tzinfo=timezone.utc)
+                
+            mins_since_last_check = (now - last_check_time).total_seconds() / 60
             
-            # Late Scratch Checks: Force a re-check at exactly 15m and 5m before kickoff, even if we already have the lineup.
+            # Late Scratch Checks
             needs_15m_refresh = (time_to_kickoff_minutes <= 15) and not game.get("refreshed_15m", False)
             needs_5m_refresh = (time_to_kickoff_minutes <= 5) and not game.get("refreshed_5m", False)
             
-            # STRICT RULE: ONLY fetch if the game has NOT started ('NS')
-            needs_lineup = (latest_status == 'NS') and (
-                (in_polling_window and not has_full_lineup) or 
+            # Keep checking from T-90 all the way until the game officially ends
+            is_eligible_for_lineup = not is_finished and not is_dead and time_to_kickoff_minutes <= 90
+            
+            # ONLY fetch if we don't have it AND it's been 5+ mins since our last check (or a forced refresh)
+            needs_lineup = is_eligible_for_lineup and (
+                (not has_full_lineup and mins_since_last_check >= 5) or 
                 needs_15m_refresh or 
                 needs_5m_refresh
             )
             
             if needs_lineup:
+                game["last_lineup_check"] = now.isoformat() # 🔒 Lock it for 5 minutes
+                
                 lineups_data = fetch_lineups(fixture_id)
                 if lineups_data and lineups_data.get("response") and len(lineups_data["response"]) >= 2:
                     print(f"[{fixture_id}] Lineup found at T-{int(time_to_kickoff_minutes)} mins!")
@@ -722,7 +735,7 @@ def process_date(target_date, force_master_sync=False):
                     enriched = inject_player_stats(lineups_data["response"], season)
                     game['homeLineup'], game['awayLineup'] = enriched[0], enriched[1]
                 
-                # Mark late refreshes as complete so they only fire exactly once
+                # Mark late refreshes as complete
                 if time_to_kickoff_minutes <= 15: game["refreshed_15m"] = True
                 if time_to_kickoff_minutes <= 5:  game["refreshed_5m"] = True
                 
