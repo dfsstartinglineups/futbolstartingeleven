@@ -381,7 +381,7 @@ def main():
 
     # 4. SLEEP CALCULATION
     if has_live_games:
-        return 20 
+        return 30 
 
     if next_upcoming_ts:
         target_sleep = (next_upcoming_ts - now_ts) - 120 
