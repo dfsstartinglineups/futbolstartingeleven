@@ -76,7 +76,6 @@ def main():
     dates_to_process = []
     
     # --- THE DATE RETIREMENT CHECK ---
-    # Only process dates that actually have unfinished or unsynced games.
     for d in potential_dates:
         d_str = d.strftime("%Y-%m-%d")
         base_path = os.path.join(DATA_DIR, f"games_{d_str}.json")
@@ -94,7 +93,6 @@ def main():
         for g in check_games:
             status = g.get('fixture', {}).get('status', {}).get('short', '')
             synced = g.get('post_game_sync', False)
-            # If even ONE game isn't finished OR isn't synced, we must keep polling this date.
             if status not in ['FT', 'AET', 'PEN'] or not synced:
                 all_done = False
                 break
@@ -104,10 +102,9 @@ def main():
         else:
             dates_to_process.append(d)
 
-    # If everything is retired, sleep and wait for a new day.
     if not dates_to_process:
         print("💤 All scheduled dates are finished and synced. No API calls needed.")
-        return 600 # Check again in 10 minutes
+        return 600 
 
     all_new_live_data = {}
     active_games_found = 0
@@ -158,7 +155,6 @@ def main():
             is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
             is_finished = status in ['FT', 'AET', 'PEN']
             
-            # --- PURE SYNC CHECK ---
             base_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
             scraper_has_synced = (base_status in ['FT', 'AET', 'PEN']) or base_game.get('post_game_sync', False)
             
@@ -167,7 +163,6 @@ def main():
                     continue 
                 else:
                     if fix_id in old_live_data:
-                        # Grab memory and update to FT so UI is correct while waiting for sync
                         live_game_obj = old_live_data[fix_id]
                         live_game_obj['fixture']['status'] = latest_data['fixture']['status']
                         live_game_obj['goals'] = latest_data['goals']
@@ -178,7 +173,6 @@ def main():
                     continue 
 
             if not is_playing and not is_finished:
-                # Track the next kickoff time for sleep calculation
                 game_ts = base_game.get('fixture', {}).get('timestamp', 0)
                 if game_ts > now_ts:
                     if next_upcoming_ts is None or game_ts < next_upcoming_ts:
@@ -188,7 +182,6 @@ def main():
             active_games_found += 1
             if is_playing: has_live_games = True
 
-            # --- THE SMART HALFTIME PAUSE ---
             if status == 'HT':
                 if fix_id in old_live_data and 'events' in old_live_data[fix_id]:
                     print(f"☕ Halftime: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']}. Pausing API pulls.")
@@ -210,7 +203,7 @@ def main():
             live_game_obj['fixture']['status'] = latest_data['fixture']['status']
             live_game_obj['goals'] = latest_data['goals']
 
-            # A. FETCH EVENTS (Goals, Cards, Subs)
+            # A. FETCH EVENTS
             events_data = fetch_api(f"fixtures/events?fixture={fix_id}")
             parsed_events = []
             if events_data and events_data.get("response"):
@@ -238,47 +231,48 @@ def main():
                         parsed_events.append(event_obj)
                 live_game_obj["events"] = parsed_events
 
-            # B. FETCH TEAM STATS (The "Stats Desert" Check)
+            # B. THE SAFE "STATS DESERT" CHECK
             elapsed = latest_data['fixture']['status'].get('elapsed') or 0
             no_deep_stats = False
+            
             if fix_id in old_live_data:
                 no_deep_stats = old_live_data[fix_id].get("no_deep_stats", False)
-                
+            
+            # If we are 25 minutes in and the scraper STILL hasn't given us a Starting XI, the game is a true desert.
+            if not no_deep_stats and elapsed > 25:
+                has_home_xi = bool(live_game_obj.get("homeLineup", {}).get("startXI"))
+                if not has_home_xi:
+                    print(f"📉 Stats Desert: 25 mins in and no lineups for {latest_data['teams']['home']['name']}. Skipping deep stats.")
+                    no_deep_stats = True
+            
             live_game_obj["no_deep_stats"] = no_deep_stats
 
             if not no_deep_stats:
                 stats_data = fetch_api(f"fixtures/statistics?fixture={fix_id}")
-                
-                # If API returns an empty list [] after 10 mins, kill deep stats for this game.
-                if stats_data and isinstance(stats_data.get("response"), list):
-                    if len(stats_data["response"]) == 0 and elapsed > 10:
-                        print(f"📉 Stats Desert: {latest_data['teams']['home']['name']} has no deep data. Skipping pulls.")
-                        no_deep_stats = True
-                        live_game_obj["no_deep_stats"] = True
-                    elif len(stats_data["response"]) > 0:
-                        team_stats = {"home": {}, "away": {}}
-                        for t_stat in stats_data["response"]:
-                            side = "home" if t_stat["team"]["id"] == latest_data["teams"]["home"]["id"] else "away"
-                            parsed_t_stats = {
-                                "possession": 50, "total_shots": 0, "shots_on_target": 0,
-                                "corners": 0, "fouls": 0, "yellow_cards": 0, "red_cards": 0
-                            }
-                            for s in t_stat["statistics"]:
-                                val = s["value"]
-                                if val is None: continue
-                                stype = s["type"]
-                                if stype == "Ball Possession": parsed_t_stats["possession"] = int(str(val).replace('%', ''))
-                                elif stype == "Total Shots": parsed_t_stats["total_shots"] = int(val)
-                                elif stype == "Shots on Goal": parsed_t_stats["shots_on_target"] = int(val)
-                                elif stype == "Corner Kicks": parsed_t_stats["corners"] = int(val)
-                                elif stype == "Fouls": parsed_t_stats["fouls"] = int(val)
-                                elif stype == "Yellow Cards": parsed_t_stats["yellow_cards"] = int(val)
-                                elif stype == "Red Cards": parsed_t_stats["red_cards"] = int(val)
-                            team_stats[side] = parsed_t_stats
-                        live_game_obj["team_stats"] = team_stats
+                if stats_data and isinstance(stats_data.get("response"), list) and len(stats_data["response"]) > 0:
+                    team_stats = {"home": {}, "away": {}}
+                    for t_stat in stats_data["response"]:
+                        side = "home" if t_stat["team"]["id"] == latest_data["teams"]["home"]["id"] else "away"
+                        parsed_t_stats = {
+                            "possession": 50, "total_shots": 0, "shots_on_target": 0,
+                            "corners": 0, "fouls": 0, "yellow_cards": 0, "red_cards": 0
+                        }
+                        for s in t_stat["statistics"]:
+                            val = s["value"]
+                            if val is None: continue
+                            stype = s["type"]
+                            if stype == "Ball Possession": parsed_t_stats["possession"] = int(str(val).replace('%', ''))
+                            elif stype == "Total Shots": parsed_t_stats["total_shots"] = int(val)
+                            elif stype == "Shots on Goal": parsed_t_stats["shots_on_target"] = int(val)
+                            elif stype == "Corner Kicks": parsed_t_stats["corners"] = int(val)
+                            elif stype == "Fouls": parsed_t_stats["fouls"] = int(val)
+                            elif stype == "Yellow Cards": parsed_t_stats["yellow_cards"] = int(val)
+                            elif stype == "Red Cards": parsed_t_stats["red_cards"] = int(val)
+                        team_stats[side] = parsed_t_stats
+                    live_game_obj["team_stats"] = team_stats
 
-                # C. FETCH PLAYER STATS
-                if not no_deep_stats and live_game_obj.get("homeLineup") and live_game_obj.get("awayLineup"):
+                # C. FETCH PLAYER STATS & APPLY SUBSTITUTIONS
+                if live_game_obj.get("homeLineup") and live_game_obj.get("awayLineup"):
                     live_players_data = fetch_api(f"fixtures/players?fixture={fix_id}")
                     live_player_map = {}
                     
@@ -303,12 +297,58 @@ def main():
                                     "rating": p_stats.get("games", {}).get("rating") or "N/A"
                                 }
 
-                    # Inject Substitutions & Attach Stats... (Rest of lineup logic remains same)
+                    # FULLY RESTORED: Inject Substitutions dynamically
+                    for ev in parsed_events:
+                        if ev["type"] == "subst":
+                            player_in_id = str(ev["player_id"])
+                            player_out_id = str(ev["player_out_id"])
+                            
+                            for side in ["homeLineup", "awayLineup"]:
+                                lineup = live_game_obj[side]
+                                
+                                in_is_sub = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("substitutes", []))
+                                out_is_starter = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("startXI", []))
+                                
+                                # API Error Correction
+                                in_is_starter = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("startXI", []))
+                                out_is_sub_err = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("substitutes", []))
+                                if in_is_starter and out_is_sub_err:
+                                    try:
+                                        s_idx = next(i for i, s in enumerate(lineup["startXI"]) if str(s["player"]["id"]) == player_in_id)
+                                        sub_idx = next(i for i, s in enumerate(lineup["substitutes"]) if str(s["player"]["id"]) == player_out_id)
+                                        temp = lineup["startXI"][s_idx]
+                                        lineup["startXI"][s_idx] = lineup["substitutes"][sub_idx]
+                                        lineup["substitutes"][sub_idx] = temp
+                                        in_is_sub, out_is_starter = True, True
+                                    except StopIteration: pass
+                                    
+                                if in_is_sub and out_is_starter:
+                                    try:
+                                        incoming_sub = next(s for s in lineup["substitutes"] if str(s["player"]["id"]) == player_in_id)
+                                        for slot in lineup["startXI"]:
+                                            if str(slot["player"]["id"]) == player_out_id:
+                                                if "sub_history" not in slot:
+                                                    slot["sub_history"] = []
+                                                slot["sub_history"].insert(0, slot["player"].copy())
+                                                
+                                                slot["player"] = incoming_sub["player"]
+                                                slot["player"]["isSubbedIn"] = True
+                                                slot["player"]["subMinute"] = ev["time"]
+                                                slot["player"]["pos"] = slot["sub_history"][0].get("pos", "M")
+                                                
+                                                lineup["substitutes"] = [s for s in lineup["substitutes"] if str(s["player"]["id"]) != player_in_id]
+                                                break
+                                    except StopIteration: pass
+
+                    # Attach Live Stats
                     for side in ["homeLineup", "awayLineup"]:
                         lineup = live_game_obj[side]
                         for slot in lineup.get("startXI", []):
                             p_id = str(slot["player"]["id"])
                             if p_id in live_player_map: slot["player"]["live_stats"] = live_player_map[p_id]
+                            for sub_hist in slot.get("sub_history", []):
+                                h_id = str(sub_hist["id"])
+                                if h_id in live_player_map: sub_hist["live_stats"] = live_player_map[h_id]
                         for sub in lineup.get("substitutes", []):
                             p_id = str(sub["player"]["id"])
                             if p_id in live_player_map: sub["player"]["live_stats"] = live_player_map[p_id]
