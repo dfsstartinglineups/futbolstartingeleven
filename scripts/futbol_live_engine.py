@@ -57,22 +57,35 @@ def fetch_api(endpoint):
         print(f"⚠️ API Fetch Failed ({endpoint}): {e}")
         return None
 
-def sanitize_keys(obj):
+def inspect_and_sanitize(obj, current_path="root"):
     """
-    Recursively scrubs Firebase-illegal characters (.$#[]/) from dictionary keys.
-    This guarantees Firebase will never reject the payload.
+    Recursively walks the JSON tree. If it finds an illegal Firebase key, 
+    it prints the EXACT path to the console so you can see the culprit, 
+    and then safely fixes it.
     """
     if isinstance(obj, dict):
         new_dict = {}
         for k, v in obj.items():
-            # Force to string, default to "empty_key" if somehow blank
-            safe_key = str(k) if str(k) else "empty_key"
-            # Replace illegal Firebase characters with an underscore
-            safe_key = re.sub(r'[.$#\[\]/]', '_', safe_key)
-            new_dict[safe_key] = sanitize_keys(v)
+            k_str = str(k).strip()
+            safe_key = k_str
+            
+            # 1. Check for empty keys
+            if not k_str:
+                print(f"🚨 FIREBASE ALERT: Empty key found at path [ {current_path} ]. Forcing to 'empty_key'.")
+                safe_key = "empty_key"
+            
+            # 2. Check for Firebase illegal characters: . $ # [ ] /
+            illegal_match = re.search(r'[.$#\[\]/]', safe_key)
+            if illegal_match:
+                print(f"🚨 FIREBASE ALERT: Illegal character '{illegal_match.group()}' found in key '{k_str}' at path [ {current_path} -> {k_str} ]. Replacing with underscore.")
+                safe_key = re.sub(r'[.$#\[\]/]', '_', safe_key)
+                
+            new_dict[safe_key] = inspect_and_sanitize(v, f"{current_path} -> {safe_key}")
         return new_dict
+        
     elif isinstance(obj, list):
-        return [sanitize_keys(item) for item in obj]
+        # Pass the array index into the path so you know exactly which item in the list failed
+        return [inspect_and_sanitize(item, f"{current_path}[{i}]") for i, item in enumerate(obj)]
     else:
         return obj
 
@@ -405,8 +418,8 @@ def main():
     if active_games_found > 0:
         if firebase_admin._apps:
             try:
-                # 🛡️ Run the data through the sanitizer to strip illegal Firebase characters
-                safe_payload = sanitize_keys(all_new_live_data)
+                # 🔍 Inspect and fix the payload before pushing
+                safe_payload = inspect_and_sanitize(all_new_live_data)
                 
                 ref = db.reference('futbol_live_games')
                 ref.set(safe_payload)
