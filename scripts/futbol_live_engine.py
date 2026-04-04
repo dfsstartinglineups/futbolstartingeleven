@@ -143,7 +143,6 @@ def main():
             active_games_found += 1
             if is_playing: has_live_games = True
 
-            # --- HALFTIME API SAVER ---
             # --- THE SMART HALFTIME PAUSE (FIXED) ---
             if status == 'HT':
                 # Check if we actually have a fully populated game in memory
