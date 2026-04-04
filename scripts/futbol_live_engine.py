@@ -142,7 +142,6 @@ def main():
 
             if not is_playing and not is_finished:
                 # --- SMART SLEEP TRACKER ---
-                # Find the closest upcoming game timestamp in the future
                 game_ts = base_game.get('fixture', {}).get('timestamp', 0)
                 if game_ts > now_ts:
                     if next_upcoming_ts is None or game_ts < next_upcoming_ts:
@@ -204,7 +203,7 @@ def main():
 
 
             # =========================================================
-            # THE "STATS DESERT" OPTIMIZATION
+            # THE "STATS DESERT" OPTIMIZATION (Simplified: Stats Only)
             # =========================================================
             elapsed = latest_data['fixture']['status'].get('elapsed') or 0
             no_deep_stats = False
@@ -213,11 +212,13 @@ def main():
                 no_deep_stats = old_live_data[fix_id].get("no_deep_stats", False)
                 
             if not no_deep_stats and elapsed > 10:
-                has_lineups = bool(live_game_obj.get("homeLineup"))
-                has_team_stats = bool(old_live_data.get(fix_id, {}).get("team_stats", {}).get("home"))
+                # Check if we have received ANY team stats by this point
+                has_team_stats = False
+                if fix_id in old_live_data and old_live_data[fix_id].get("team_stats", {}).get("home"):
+                    has_team_stats = True
                 
-                if not has_lineups and not has_team_stats:
-                    print(f"📉 Stats Desert: {latest_data['teams']['home']['name']} has no deep data after 10 mins. Disabling heavy API pulls.")
+                if not has_team_stats:
+                    print(f"📉 Stats Desert: {latest_data['teams']['home']['name']} lacks deep stats after 10 mins. Limiting to events only.")
                     no_deep_stats = True
                     
             live_game_obj["no_deep_stats"] = no_deep_stats
