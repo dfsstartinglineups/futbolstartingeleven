@@ -62,13 +62,13 @@ def fetch_api(endpoint):
 def main():
     if not API_KEY:
         print("❌ Missing FOOTBALL_API_KEY. Exiting.")
-        return False
+        return 3600 # Sleep an hour and try again
 
     ny_tz = zoneinfo.ZoneInfo("America/New_York")
     now_est = datetime.now(ny_tz)
+    now_ts = now_est.timestamp()
     
     # --- THE MULTI-DAY FIX ---
-    # Look at today. If it's before noon, also look at yesterday (to catch late Liga MX / early Japan games simultaneously).
     dates_to_process = [now_est]
     if now_est.hour < 12:
         dates_to_process.insert(0, now_est - timedelta(days=1))
@@ -76,8 +76,9 @@ def main():
     all_new_live_data = {}
     active_games_found = 0
     has_live_games = False
+    next_upcoming_ts = None  # Tracks the exact timestamp of the next game
 
-    # 1. LOAD PREVIOUS LIVE MEMORY FOR ALL RELEVANT DATES (For holding finished games)
+    # 1. LOAD PREVIOUS LIVE MEMORY
     old_live_data = {}
     for d in dates_to_process:
         date_str = d.strftime("%Y-%m-%d")
@@ -121,18 +122,15 @@ def main():
             is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
             is_finished = status in ['FT', 'AET', 'PEN']
             
-            # --- EXACTLY WHAT YOU ASKED FOR: PURE SYNC CHECK ---
+            # --- PURE SYNC CHECK ---
             base_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
             scraper_has_synced = (base_status in ['FT', 'AET', 'PEN']) or base_game.get('post_game_sync', False)
             
             if is_finished:
                 if scraper_has_synced:
-                    # The scraper finished syncing. Drop from Firebase immediately.
                     continue 
                 else:
-                    # The scraper hasn't synced yet. Keep pushing the final memory to Firebase.
                     if fix_id in old_live_data:
-                        # Grab the memory, but FORCE the status to update to FT/AET/PEN
                         live_game_obj = old_live_data[fix_id]
                         live_game_obj['fixture']['status'] = latest_data['fixture']['status']
                         live_game_obj['goals'] = latest_data['goals']
@@ -143,32 +141,32 @@ def main():
                     continue 
 
             if not is_playing and not is_finished:
+                # --- SMART SLEEP TRACKER ---
+                # Find the closest upcoming game timestamp in the future
+                game_ts = base_game.get('fixture', {}).get('timestamp', 0)
+                if game_ts > now_ts:
+                    if next_upcoming_ts is None or game_ts < next_upcoming_ts:
+                        next_upcoming_ts = game_ts
                 continue 
 
             active_games_found += 1
             if is_playing: has_live_games = True
 
-            # --- THE SMART HALFTIME PAUSE (FIXED) ---
+            # --- THE SMART HALFTIME PAUSE ---
             if status == 'HT':
-                # Check if we actually have a fully populated game in memory
                 if fix_id in old_live_data and 'events' in old_live_data[fix_id]:
                     print(f"☕ Halftime: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']}. Pausing API pulls.")
                     
-                    # Grab the ENTIRE working object from memory so nothing is dropped
                     live_game_obj = old_live_data[fix_id]
-                    
-                    # Update only the live clock and goals
                     live_game_obj['fixture']['status'] = latest_data['fixture']['status']
                     live_game_obj['goals'] = latest_data['goals']
                     
                     day_live_data[fix_id] = live_game_obj
                     all_new_live_data[fix_id] = live_game_obj
-                    continue # Safe to skip API calls
+                    continue 
                 else:
-                    # We have no memory of the 1st half. We CANNOT skip. 
                     print(f"⚠️ Halftime but no memory found. Doing a full pull to build the HT baseline.")
-                    pass # Falls through to do the API pulls below
-            # ----------------------------------------
+                    pass 
             
             print(f"⚽ Processing Live Match: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']} ({status})")
             
@@ -206,7 +204,7 @@ def main():
 
 
             # =========================================================
-            # THE "STATS DESERT" OPTIMIZATION (Saves ~140 API calls per hour per dead game)
+            # THE "STATS DESERT" OPTIMIZATION
             # =========================================================
             elapsed = latest_data['fixture']['status'].get('elapsed') or 0
             no_deep_stats = False
@@ -214,7 +212,6 @@ def main():
             if fix_id in old_live_data:
                 no_deep_stats = old_live_data[fix_id].get("no_deep_stats", False)
                 
-            # If 10 minutes have passed and we still have no lineups AND no team stats, flag it as a desert.
             if not no_deep_stats and elapsed > 10:
                 has_lineups = bool(live_game_obj.get("homeLineup"))
                 has_team_stats = bool(old_live_data.get(fix_id, {}).get("team_stats", {}).get("home"))
@@ -223,7 +220,6 @@ def main():
                     print(f"📉 Stats Desert: {latest_data['teams']['home']['name']} has no deep data after 10 mins. Disabling heavy API pulls.")
                     no_deep_stats = True
                     
-            # Save the flag so we remember next loop
             live_game_obj["no_deep_stats"] = no_deep_stats
 
             if not no_deep_stats:
@@ -289,7 +285,7 @@ def main():
                                 in_is_sub = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("substitutes", []))
                                 out_is_starter = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("startXI", []))
                                 
-                                # API Error Correction (Swapped at kickoff)
+                                # API Error Correction
                                 in_is_starter = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("startXI", []))
                                 out_is_sub_err = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("substitutes", []))
                                 if in_is_starter and out_is_sub_err:
@@ -333,7 +329,6 @@ def main():
                             p_id = str(sub["player"]["id"])
                             if p_id in live_player_map: sub["player"]["live_stats"] = live_player_map[p_id]
             else:
-                # If we skipped pulling deep stats, just carry over the empty structure to prevent UI crashes
                 if fix_id in old_live_data and "team_stats" in old_live_data[fix_id]:
                     live_game_obj["team_stats"] = old_live_data[fix_id]["team_stats"]
 
@@ -363,22 +358,41 @@ def main():
             try: db.reference('futbol_live_games').delete()
             except: pass
 
-    return has_live_games
+    # =========================================================
+    # SLEEP CALCULATION LOGIC
+    # =========================================================
+    if has_live_games:
+        return 20  # Fast poll 
+
+    if next_upcoming_ts:
+        seconds_until_start = next_upcoming_ts - now_ts
+        target_sleep = seconds_until_start - 120 # Wake up exactly 2 minutes before kickoff
+        
+        if target_sleep > 3600:
+            return 3600  # Cap sleep at 1 hour max so it stays responsive to schedule changes
+        elif target_sleep > 60:
+            return target_sleep
+        else:
+            return 60 # Don't sleep for less than 1 minute
+            
+    return 3600  # No games left on the schedule, check again in an hour
 
 
 if __name__ == "__main__":
     print("⚽ Starting Futbol Live Real-Time Engine...")
     while True:
         try:
-            needs_fast_poll = main()
+            sleep_seconds = main()
             
-            # Since API efficiency is not a primary concern (75k limit), we can poll very fast.
-            if needs_fast_poll:
+            if sleep_seconds == 20:
                 print("⏱️ Fast poll active. Waiting 20 seconds...\n")
-                time.sleep(20)
+            elif sleep_seconds >= 3600:
+                print("💤 No upcoming games soon. Resting for 1 hour...\n")
             else:
-                print("⏳ No live games. Resting for 2 minutes...\n")
-                time.sleep(120)
+                mins = int(sleep_seconds // 60)
+                print(f"⏳ Next game approaches. Sleeping for {mins} minutes...\n")
+                
+            time.sleep(sleep_seconds)
                 
         except KeyboardInterrupt:
             print("\n🛑 Live Engine manually stopped. Exiting.")
