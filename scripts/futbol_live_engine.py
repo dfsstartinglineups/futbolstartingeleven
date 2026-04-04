@@ -173,10 +173,19 @@ def main():
                     continue 
 
             if not is_playing and not is_finished:
+                # Ignore permanently cancelled/postponed games so we don't get stuck awake
+                if status in ['PST', 'CANC', 'ABD', 'AWD', 'WO']:
+                    continue
+                    
                 game_ts = base_game.get('fixture', {}).get('timestamp', 0)
                 if game_ts > now_ts:
                     if next_upcoming_ts is None or game_ts < next_upcoming_ts:
                         next_upcoming_ts = game_ts
+                else:
+                    # THE FIX: Timestamp is in the past, but the game isn't finished and isn't 'playing' yet.
+                    # This means kickoff is delayed or the API is slow to flip to '1H'. STAY AWAKE!
+                    print(f"👀 {latest_data['teams']['home']['name']} is past its kickoff time but not live yet. Staying awake.")
+                    has_live_games = True
                 continue 
 
             active_games_found += 1
@@ -238,7 +247,6 @@ def main():
             if fix_id in old_live_data:
                 no_deep_stats = old_live_data[fix_id].get("no_deep_stats", False)
             
-            # If we are 25 minutes in and the scraper STILL hasn't given us a Starting XI, the game is a true desert.
             if not no_deep_stats and elapsed > 25:
                 has_home_xi = bool(live_game_obj.get("homeLineup", {}).get("startXI"))
                 if not has_home_xi:
@@ -297,7 +305,6 @@ def main():
                                     "rating": p_stats.get("games", {}).get("rating") or "N/A"
                                 }
 
-                    # FULLY RESTORED: Inject Substitutions dynamically
                     for ev in parsed_events:
                         if ev["type"] == "subst":
                             player_in_id = str(ev["player_id"])
@@ -309,7 +316,6 @@ def main():
                                 in_is_sub = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("substitutes", []))
                                 out_is_starter = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("startXI", []))
                                 
-                                # API Error Correction
                                 in_is_starter = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("startXI", []))
                                 out_is_sub_err = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("substitutes", []))
                                 if in_is_starter and out_is_sub_err:
@@ -340,7 +346,6 @@ def main():
                                                 break
                                     except StopIteration: pass
 
-                    # Attach Live Stats
                     for side in ["homeLineup", "awayLineup"]:
                         lineup = live_game_obj[side]
                         for slot in lineup.get("startXI", []):
@@ -381,12 +386,16 @@ def main():
 
     # 4. SLEEP CALCULATION
     if has_live_games:
+        print("⚡ Active/Imminent games detected. Fast-polling.")
         return 30 
 
     if next_upcoming_ts:
         target_sleep = (next_upcoming_ts - now_ts) - 120 
-        return max(60, min(target_sleep, 3600))
+        calculated_sleep = max(60, min(target_sleep, 3600))
+        print(f"⏰ Next game approaches. Calculated sleep: {int(calculated_sleep)}s")
+        return calculated_sleep
             
+    print("📭 No live games, no delayed games, and no future games found. Sleeping for 1 hour.")
     return 3600 
 
 
@@ -396,9 +405,9 @@ if __name__ == "__main__":
         try:
             sleep_seconds = main()
             if sleep_seconds == 30:
-                print("⏱️ Fast poll active (20s)...\n")
+                print("⏱️ Fast poll active (30s)...\n")
             else:
-                print(f"⏳ Next game approaches. Sleeping {int(sleep_seconds // 60)} minutes...\n")
+                print(f"⏳ Sleeping {int(sleep_seconds // 60)} minutes...\n")
             time.sleep(sleep_seconds)
         except KeyboardInterrupt:
             break
