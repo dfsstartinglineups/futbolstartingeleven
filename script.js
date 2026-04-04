@@ -4,10 +4,10 @@
 const firebaseConfig = {
     databaseURL: "https://nbastartingfive-8b420-default-rtdb.firebaseio.com/"
 };
-if (!firebase.apps.length) {
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
-const db = firebase.database();
+const db = typeof firebase !== 'undefined' ? firebase.database() : null;
 
 // ==========================================
 // CONFIGURATION
@@ -159,6 +159,8 @@ const LEAGUE_MAP_ESPN = {
 // ==========================================
 // NEW: PURE FIREBASE ARRAY REPAIR
 // ==========================================
+// This function ONLY exists to fix Firebase's habit of turning arrays into objects.
+// It trusts the data completely and does NOT attempt to merge with JSON.
 function repairFirebaseArrays(match) {
     if (!match) return match;
 
@@ -440,6 +442,10 @@ window.openPlayerModal = function(el) {
     modal.show();
 };
 
+
+// ==========================================
+// NEW: SPLIT HTML BUILDERS (Time & Event decoupled)
+// ==========================================
 function getTimeBadgeHtml(data) {
     const status = data.fixture.status.short;
     const dateObj = new Date(data.fixture.date);
@@ -461,6 +467,7 @@ function getTimeBadgeHtml(data) {
     if (isDelayed) {
         badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
     } else if (isStuck) {
+        // NEW: Render a subtle yellow "DEL" badge if the API feed hasn't woken up yet
         badge = `<span class="badge bg-warning text-dark shadow-sm border px-2 py-1" style="font-size: 0.70rem;" title="Delayed or awaiting kickoff">DEL</span>`;
     } else if (!isPreGame && !isFinished && !data.isFallback) {
         let displayMin = data.fixture.status.elapsed;
@@ -788,16 +795,11 @@ function getOddsHtml(data) {
 }
 
 function getInjuriesHtml(data) {
-    // Safely extract the arrays. If Firebase deleted them, default to empty arrays []
     const homeInjuries = (data.injuries && Array.isArray(data.injuries.home)) ? data.injuries.home : [];
     const awayInjuries = (data.injuries && Array.isArray(data.injuries.away)) ? data.injuries.away : [];
     
-    // If both arrays are empty, hide the injury banner completely
-    if (homeInjuries.length === 0 && awayInjuries.length === 0) {
-        return '';
-    }
+    if (homeInjuries.length === 0 && awayInjuries.length === 0) return '';
     
-    // If we made it here, there ARE injuries to display! Safely map them.
     const cleanHomeInj = homeInjuries.map(n => shortenPlayerName(n));
     const cleanAwayInj = awayInjuries.map(n => shortenPlayerName(n));
     
@@ -822,8 +824,6 @@ function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
     return { league: params.get('league') || 'top', date: params.get('date') || DEFAULT_DATE };
 }
-
-
 
 function renderLeagueMenu(activeLeague, currentDate) {
     const desktopMenu = document.getElementById('league-menu-desktop');
@@ -1004,9 +1004,6 @@ function triggerCardHighlight(targetCard, type) {
     }, 4000); 
 }
 
-// ==========================================
-// NEW: DUAL-VIEW TOGGLE LOGIC
-// ==========================================
 window.toggleSingleCard = function(fixId) {
     const ribbon = document.getElementById(`ribbon-${fixId}`);
     const full = document.getElementById(`full-${fixId}`);
@@ -1030,13 +1027,11 @@ window.switchLineupTab = function(fixId, tabName) {
     const clickedActiveTab = (tabName === 'xi' && xiTab.classList.contains('active')) || 
                              (tabName === 'stats' && statsTab.classList.contains('active'));
 
-    // If clicking the already active tab, toggle the collapse state
     if (clickedActiveTab) {
         isCurrentlyExpanded ? bsCollapse.hide() : bsCollapse.show();
         return;
     }
 
-    // Otherwise, switch views and ensure the section is expanded
     if (tabName === 'xi') {
         xiTab.classList.add('active');
         statsTab.classList.remove('active');
@@ -1060,22 +1055,20 @@ function handleHashNavigation() {
             let fixId = null;
             let isGoalEvent = false;
 
-            // 1. Determine intent from the hash prefix
             if (hash.startsWith('#lineup-')) {
                 fixId = hash.replace('#lineup-', '');
             } else if (hash.startsWith('#card-')) {
-                fixId = hash.replace('#card-', ''); // Legacy fallback for old tweets!
+                fixId = hash.replace('#card-', ''); 
             } else if (hash.startsWith('#goal-')) {
                 fixId = hash.replace('#goal-', '');
                 isGoalEvent = true;
             } else {
-                return; // Not a hash we care about
+                return; 
             }
 
             const targetCard = document.getElementById(`card-${fixId}`);
 
             if (targetCard) {
-                // Step 1: Force the entire board into Compact Scoreboard mode
                 globalScoreboardMode = true;
                 const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
                 if (toggleScoreboardBtn) toggleScoreboardBtn.innerHTML = '🔼 EXPAND ALL CARDS';
@@ -1086,7 +1079,6 @@ function handleHashNavigation() {
                 document.querySelectorAll('.ribbon-view').forEach(el => el.classList.remove('d-none'));
                 document.querySelectorAll('.full-view').forEach(el => el.classList.add('d-none'));
 
-                // Step 2: If it's a Lineup OR Legacy Card Tweet, expand ONLY the target card
                 if (!isGoalEvent) {
                     const targetRibbon = document.getElementById(`ribbon-${fixId}`);
                     const targetFull = document.getElementById(`full-${fixId}`);
@@ -1095,16 +1087,13 @@ function handleHashNavigation() {
                         targetFull.classList.remove('d-none');
                     }
 
-                    // Ensure the lineup container for the target card is open
                     const targetLineup = document.getElementById(`lineup-collapse-${fixId}`);
                     if (targetLineup) {
                         targetLineup.classList.add('show');
                     }
                 }
-                // (If it IS a goal event, it skips Step 2 and leaves the card collapsed as a ribbon)
 
-                // Step 3: Scroll and Highlight
-                const headerOffset = 120; // Gives 120px of breathing room under the navbar
+                const headerOffset = 120; 
                 const elementPosition = targetCard.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
                 
@@ -1120,33 +1109,23 @@ function handleHashNavigation() {
     }
 }
 
-let isFirstLoad = true; // Track if it's the initial page load
+let isFirstLoad = true; 
 
 async function init() {
     const params = getUrlParams();
-    
     renderLeagueMenu(params.league, params.date);
     
     const container = document.getElementById('games-container');
     const datePicker = document.getElementById('date-picker');
-    
     if (datePicker) datePicker.value = params.date;
 
     container.innerHTML = `<div class="col-12 text-center mt-5 pt-5"><div class="spinner-border text-success" role="status"></div><p class="mt-3 text-muted fw-bold">Loading Pitch Data...</p></div>`;
     
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
-    // ALWAYS LOAD THE BASELINE FIRST
     ALL_GAMES_DATA = await fetchMatchesData(params);
-    
-    // Safety check: if fetch failed entirely, just set it to an empty array
-    if (!ALL_GAMES_DATA) {
-        ALL_GAMES_DATA = [];
-    }
+    if (!ALL_GAMES_DATA) ALL_GAMES_DATA = [];
 
-    // ==========================================
-    // 1. THE REAL-TIME PATH (Today's Games)
-    // ==========================================
     if (params.date === todayStr) {
         console.log("📡 Connecting to Firebase Realtime Stream...");
         const liveRef = db.ref('futbol_live_games');
@@ -1157,14 +1136,12 @@ async function init() {
             if (incomingData) {
                 let liveGamesArray = Object.values(incomingData);
                 
-                // --- THE FIX: FILTER THE FIREBASE FIREHOSE ---
                 if (params.league !== 'top') {
                     const targetId = SUPPORTED_LEAGUES[params.league].id;
                     liveGamesArray = liveGamesArray.filter(g => g.league.id === targetId);
                 }
 
                 if (isFirstLoad) {
-                    // First load: Repair the arrays and merge into master
                     liveGamesArray.forEach(liveGame => {
                         let repairedGame = repairFirebaseArrays(liveGame);
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === repairedGame.fixture.id);
@@ -1179,7 +1156,6 @@ async function init() {
                     handleHashNavigation(); 
                     isFirstLoad = false;
                 } else {
-                    // Subsequent loads: Pass ONLY the filtered live games to the surgical updater
                     syncLiveDOM(liveGamesArray);
                 }
             } else {
@@ -1190,30 +1166,21 @@ async function init() {
                 }
             }
         });
-        
     } else {
-        // ==========================================
-        // 2. THE STATIC PATH (Past/Future Games)
-        // ==========================================
         console.log(`Rendering static archive for ${params.date}...`);
         renderGames();
         handleHashNavigation();
     }
 }
 
-// ==========================================
-// SURGICAL DOM UPDATER (Prevents flashing)
-// ==========================================
 function syncLiveDOM(liveGamesArray) {
     liveGamesArray.forEach(rawMatch => {
         let match = repairFirebaseArrays(rawMatch);
         const fixId = match.fixture.id;
         
-        // 1. Find the old version of this specific match in our master array
         const oldMatchIndex = ALL_GAMES_DATA.findIndex(m => m.fixture.id === fixId);
         let oldMatch = null;
 
-        // 2. Pure Overwrite (just like the old script!)
         if (oldMatchIndex !== -1) {
             oldMatch = ALL_GAMES_DATA[oldMatchIndex];
             ALL_GAMES_DATA[oldMatchIndex] = match; 
@@ -1221,7 +1188,6 @@ function syncLiveDOM(liveGamesArray) {
             ALL_GAMES_DATA.push(match);
         }
         
-        // 3. Grab all the HTML elements for this match
         const timeEl = document.getElementById(`time-${fixId}`);
         const scoreEl = document.getElementById(`score-${fixId}`);
         const eventsEl = document.getElementById(`events-${fixId}`);
@@ -1230,7 +1196,6 @@ function syncLiveDOM(liveGamesArray) {
         
         if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
             
-            // DYNAMIC WIDTH TRANSITION
             if (oldMatch && !oldMatch.team_stats && match.team_stats) {
                 const hCol = scoreEl.previousElementSibling;
                 const aCol = scoreEl.nextElementSibling;
@@ -1246,7 +1211,6 @@ function syncLiveDOM(liveGamesArray) {
                 }
             }
 
-            // FULL VIEW UPDATES
             const newTimeHtml = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
             const newCenterHtml = getCenterColumnHtml(match).trim();
             const newEventsHtml = getEventsHtml(match).trim();
@@ -1281,19 +1245,16 @@ function syncLiveDOM(liveGamesArray) {
             }
         }
         
-        // RIBBON VIEW UPDATE
         const ribbonEl = document.getElementById(`ribbon-${fixId}`);
         if (ribbonEl) {
             const newRibbonHtml = getRibbonHtml(match).trim();
             if (ribbonEl.innerHTML.trim() !== newRibbonHtml) ribbonEl.innerHTML = newRibbonHtml;
         }
         
-        // EVENT HIGHLIGHTS & IN-PLACE GRID UPDATES
         if (oldMatch) {
             const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
             const newEvLen = match.events ? match.events.length : 0;
             
-            // Trigger Flash Highlights
             if (newEvLen > oldEvLen) {
                 const latestEvent = match.events[newEvLen - 1]; 
                 const cardEl = document.getElementById(`card-${fixId}`);
@@ -1309,7 +1270,6 @@ function syncLiveDOM(liveGamesArray) {
                 }
             }
 
-            // IN-PLACE GRID UPDATES (Lineups & Stats)
             const viewXiEl = document.getElementById(`view-xi-${fixId}`);
             if (viewXiEl) {
                 const newXiHtml = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLineupList(match.homeLineup, match)}</div><div class="col-6">${buildLineupList(match.awayLineup, match)}</div></div>`;
@@ -1326,7 +1286,6 @@ function syncLiveDOM(liveGamesArray) {
                 if (viewStatsEl.innerHTML.trim() !== newStatsHtml.trim()) viewStatsEl.innerHTML = newStatsHtml;
             }
 
-            // SMART REVEAL & TAB TRANSITIONS
             const wasPreGame = ['NS', 'TBD'].includes(oldMatch.fixture.status.short);
             const isNowLive = !['NS', 'TBD'].includes(match.fixture.status.short);
             const isFinished = ['FT', 'AET', 'PEN'].includes(match.fixture.status.short);
@@ -1662,9 +1621,6 @@ function createGameCard(data) {
     return gameCard;
 }
 
-// ==========================================
-// EVENT LISTENERS
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     init();
     
@@ -1688,7 +1644,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleAllBtn = document.getElementById('toggle-all-lineups');
     if (toggleAllBtn) {
         toggleAllBtn.innerHTML = globalLineupsExpanded ? '🔼 COLLAPSE ALL LINEUPS' : '🔽 EXPAND ALL LINEUPS';
-        if (globalScoreboardMode) toggleAllBtn.classList.add('d-none'); // Hide if starting in compact mode
+        if (globalScoreboardMode) toggleAllBtn.classList.add('d-none'); 
         
         toggleAllBtn.addEventListener('click', () => {
             globalLineupsExpanded = !globalLineupsExpanded;
@@ -1721,7 +1677,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (globalScoreboardMode) {
                 allRibbons.forEach(el => el.classList.remove('d-none'));
                 allFulls.forEach(el => el.classList.add('d-none'));
-                if (toggleAllBtn) toggleAllBtn.classList.add('d-none');
+                if (toggleAllBtn) toggleAllBtn.classList.add('d-none'); 
             } else {
                 allRibbons.forEach(el => el.classList.add('d-none'));
                 allFulls.forEach(el => el.classList.remove('d-none'));
