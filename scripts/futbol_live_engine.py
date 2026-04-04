@@ -395,7 +395,7 @@ if __name__ == "__main__":
     while True:
         try:
             sleep_seconds = main()
-            if sleep_seconds == 20:
+            if sleep_seconds == 30:
                 print("⏱️ Fast poll active (20s)...\n")
             else:
                 print(f"⏳ Next game approaches. Sleeping {int(sleep_seconds // 60)} minutes...\n")
