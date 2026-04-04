@@ -3,6 +3,7 @@ import json
 import requests
 import zoneinfo
 import time
+import re
 from datetime import datetime, timedelta
 
 # --- FIREBASE IMPORTS ---
@@ -55,6 +56,25 @@ def fetch_api(endpoint):
     except Exception as e:
         print(f"⚠️ API Fetch Failed ({endpoint}): {e}")
         return None
+
+def sanitize_keys(obj):
+    """
+    Recursively scrubs Firebase-illegal characters (.$#[]/) from dictionary keys.
+    This guarantees Firebase will never reject the payload.
+    """
+    if isinstance(obj, dict):
+        new_dict = {}
+        for k, v in obj.items():
+            # Force to string, default to "empty_key" if somehow blank
+            safe_key = str(k) if str(k) else "empty_key"
+            # Replace illegal Firebase characters with an underscore
+            safe_key = re.sub(r'[.$#\[\]/]', '_', safe_key)
+            new_dict[safe_key] = sanitize_keys(v)
+        return new_dict
+    elif isinstance(obj, list):
+        return [sanitize_keys(item) for item in obj]
+    else:
+        return obj
 
 # ==========================================================
 # --- CORE ENGINE LOGIC ---
@@ -142,30 +162,25 @@ def main():
             continue
 
         # =========================================================
-        # THE FIX: JSON-FIRST ALARM CLOCK
-        # Let the local schedule dictate if we sleep or stay awake!
+        # THE ALARM CLOCK
         # =========================================================
         for base_game in daily_games:
             g_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
             g_synced = base_game.get('post_game_sync', False)
             g_ts = base_game.get('fixture', {}).get('timestamp', 0)
             
-            # Ignore games that are totally done or permanently canceled
             if (g_status in ['FT', 'AET', 'PEN'] and g_synced) or g_status in ['PST', 'CANC', 'ABD', 'AWD', 'WO']:
                 continue
                 
             if g_ts <= now_ts:
-                # The kickoff time is right now or in the past. We MUST stay awake.
                 if not has_live_games: 
                     print(f"👀 Local JSON: Games should be live right now (e.g., {base_game['teams']['home']['name']}). Forcing engine awake.")
                 has_live_games = True
             else:
-                # Game is in the future. Track it.
                 if next_upcoming_ts is None or g_ts < next_upcoming_ts:
                     next_upcoming_ts = g_ts
         # =========================================================
 
-        # Now we make the API call. Even if this fails, `has_live_games` is safely set.
         fixtures_data = fetch_api(f"fixtures?date={current_date_str}&timezone=America/New_York")
         if not fixtures_data or not fixtures_data.get("response"):
             continue
@@ -384,12 +399,17 @@ def main():
             with open(live_file_path, 'w') as f:
                 json.dump(day_live_data, f, indent=2)
 
-    # 3. PUSH TO FIREBASE
+    # =========================================================
+    # 3. SECURE PUSH TO FIREBASE
+    # =========================================================
     if active_games_found > 0:
         if firebase_admin._apps:
             try:
+                # 🛡️ Run the data through the sanitizer to strip illegal Firebase characters
+                safe_payload = sanitize_keys(all_new_live_data)
+                
                 ref = db.reference('futbol_live_games')
-                ref.set(all_new_live_data)
+                ref.set(safe_payload)
                 print(f"🚀 Pushed {active_games_found} active futbol games to Firebase!")
             except Exception as e:
                 print(f"⚠️ Failed to push: {e}")
