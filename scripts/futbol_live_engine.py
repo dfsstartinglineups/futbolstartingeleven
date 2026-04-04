@@ -203,53 +203,53 @@ def main():
 
 
             # =========================================================
-            # THE "STATS DESERT" OPTIMIZATION (Simplified: Stats Only)
+            # THE "STATS DESERT" OPTIMIZATION (The True Fix)
             # =========================================================
             elapsed = latest_data['fixture']['status'].get('elapsed') or 0
-            no_deep_stats = False
             
+            # Check if we ALREADY declared this game a desert in a previous loop
+            no_deep_stats = False
             if fix_id in old_live_data:
                 no_deep_stats = old_live_data[fix_id].get("no_deep_stats", False)
                 
-            if not no_deep_stats and elapsed > 10:
-                # Check if we have received ANY team stats by this point
-                has_team_stats = False
-                if fix_id in old_live_data and old_live_data[fix_id].get("team_stats", {}).get("home"):
-                    has_team_stats = True
-                
-                if not has_team_stats:
-                    print(f"📉 Stats Desert: {latest_data['teams']['home']['name']} lacks deep stats after 10 mins. Limiting to events only.")
-                    no_deep_stats = True
-                    
             live_game_obj["no_deep_stats"] = no_deep_stats
 
             if not no_deep_stats:
-                # B. FETCH TEAM STATS (Possession, Shots)
+                # B. FETCH TEAM STATS 
                 stats_data = fetch_api(f"fixtures/statistics?fixture={fix_id}")
-                if stats_data and stats_data.get("response"):
-                    team_stats = {"home": {}, "away": {}}
-                    for t_stat in stats_data["response"]:
-                        side = "home" if t_stat["team"]["id"] == latest_data["teams"]["home"]["id"] else "away"
-                        parsed_t_stats = {
-                            "possession": 50, "total_shots": 0, "shots_on_target": 0,
-                            "corners": 0, "fouls": 0, "yellow_cards": 0, "red_cards": 0
-                        }
-                        for s in t_stat["statistics"]:
-                            val = s["value"]
-                            if val is None: continue
-                            stype = s["type"]
-                            if stype == "Ball Possession": parsed_t_stats["possession"] = int(str(val).replace('%', ''))
-                            elif stype == "Total Shots": parsed_t_stats["total_shots"] = int(val)
-                            elif stype == "Shots on Goal": parsed_t_stats["shots_on_target"] = int(val)
-                            elif stype == "Corner Kicks": parsed_t_stats["corners"] = int(val)
-                            elif stype == "Fouls": parsed_t_stats["fouls"] = int(val)
-                            elif stype == "Yellow Cards": parsed_t_stats["yellow_cards"] = int(val)
-                            elif stype == "Red Cards": parsed_t_stats["red_cards"] = int(val)
-                        team_stats[side] = parsed_t_stats
-                    live_game_obj["team_stats"] = team_stats
+                
+                # THE BULLETPROOF CHECK: We ask the API directly. 
+                # If the API literally gives us an empty array [] after 10 mins, it's a dead game.
+                if stats_data and isinstance(stats_data.get("response"), list):
+                    if len(stats_data["response"]) == 0 and elapsed > 10:
+                        print(f"📉 Stats Desert: API returned 0 stats for {latest_data['teams']['home']['name']}. Disabling heavy pulls.")
+                        no_deep_stats = True
+                        live_game_obj["no_deep_stats"] = True
+                    elif len(stats_data["response"]) > 0:
+                        # We have valid stats, process them!
+                        team_stats = {"home": {}, "away": {}}
+                        for t_stat in stats_data["response"]:
+                            side = "home" if t_stat["team"]["id"] == latest_data["teams"]["home"]["id"] else "away"
+                            parsed_t_stats = {
+                                "possession": 50, "total_shots": 0, "shots_on_target": 0,
+                                "corners": 0, "fouls": 0, "yellow_cards": 0, "red_cards": 0
+                            }
+                            for s in t_stat["statistics"]:
+                                val = s["value"]
+                                if val is None: continue
+                                stype = s["type"]
+                                if stype == "Ball Possession": parsed_t_stats["possession"] = int(str(val).replace('%', ''))
+                                elif stype == "Total Shots": parsed_t_stats["total_shots"] = int(val)
+                                elif stype == "Shots on Goal": parsed_t_stats["shots_on_target"] = int(val)
+                                elif stype == "Corner Kicks": parsed_t_stats["corners"] = int(val)
+                                elif stype == "Fouls": parsed_t_stats["fouls"] = int(val)
+                                elif stype == "Yellow Cards": parsed_t_stats["yellow_cards"] = int(val)
+                                elif stype == "Red Cards": parsed_t_stats["red_cards"] = int(val)
+                            team_stats[side] = parsed_t_stats
+                        live_game_obj["team_stats"] = team_stats
 
-                # C. FETCH PLAYER STATS & APPLY SUBSTITUTIONS
-                if live_game_obj.get("homeLineup") and live_game_obj.get("awayLineup"):
+                # C. FETCH PLAYER STATS (Only if it survived the check above)
+                if not no_deep_stats and live_game_obj.get("homeLineup") and live_game_obj.get("awayLineup"):
                     live_players_data = fetch_api(f"fixtures/players?fixture={fix_id}")
                     live_player_map = {}
                     
@@ -330,6 +330,7 @@ def main():
                             p_id = str(sub["player"]["id"])
                             if p_id in live_player_map: sub["player"]["live_stats"] = live_player_map[p_id]
             else:
+                # Ensure the UI doesn't crash by carrying over whatever empty/old structure we had
                 if fix_id in old_live_data and "team_stats" in old_live_data[fix_id]:
                     live_game_obj["team_stats"] = old_live_data[fix_id]["team_stats"]
 
