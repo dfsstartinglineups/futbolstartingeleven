@@ -90,58 +90,12 @@ const SUPPORTED_LEAGUES = {};
 Object.values(LEAGUE_GROUPS).flat().forEach(l => SUPPORTED_LEAGUES[l.key] = l);
 
 const LEAGUE_ABBREV = {
-    // --- Top Euro Leagues ---
-    39: "EPL",       // Premier League
-    40: "CHAMP",     // English Championship
-    140: "LIGA",     // La Liga (or LFP)
-    135: "SER A",    // Serie A (or SA)
-    78: "BUND",      // Bundesliga (or BUN)
-    61: "L1",        // Ligue 1
-    88: "ERED",      // Eredivisie
-    94: "PRIM",      // Primeira Liga (Portugal)
-    
-    // --- Continental & World Cups ---
-    2: "UCL",        // UEFA Champions League
-    3: "UEL",        // UEFA Europa League
-    848: "UECL",     // UEFA Conference League
-    13: "LIB",       // Copa Libertadores
-    11: "SUD",       // Copa Sudamericana
-    16: "CCC",       // CONCACAF Champions Cup
-    528: "LCUP",     // Leagues Cup
-    1: "WC",         // World Cup
-    4: "EURO",       // UEFA Euro
-    9: "COPA",       // Copa America
-    5: "UNL",        // UEFA Nations League
-    531: "CNL",      // CONCACAF Nations League
-    10: "INTL",      // International Friendlies
-
-    // --- Americas ---
-    253: "MLS",      // Major League Soccer
-    262: "LMX",      // Liga MX
-    71: "BSA",       // Brasileiro Série A (Standard data feed code)
-    128: "LPF",      // Liga Profesional de Fútbol (Argentina)
-    239: "FPC",      // Fútbol Profesional Colombiano (Primera A)
-    
-    // --- Domestic Cups ---
-    45: "FA",        // FA Cup
-    48: "EFL",       // EFL Cup / Carabao
-    143: "CDR",      // Copa del Rey
-    137: "COPPA",    // Coppa Italia
-    81: "DFB",       // DFB-Pokal
-
-    // --- Global Leagues ---
-    307: "SPL",      // Saudi Pro League
-    98: "J1",        // J1 League
-    203: "TSL",      // Turkish Süper Lig
-    144: "JPL",      // Jupiler Pro League (Belgium)
-    179: "SPFL",     // Scottish Professional Football League
-    119: "SUP",      // Superliga (Denmark)
-    188: "ALM",      // A-League Men (Australia)
-    292: "K1",       // K League 1
-
-    // --- Women's Leagues ---
-    44: "WSL",       // Women's Super League
-    254: "NWSL"      // National Women's Soccer League
+    39: "EPL", 40: "CHAMP", 140: "LIGA", 135: "SER A", 78: "BUND", 61: "L1", 88: "ERED", 94: "PRIM",
+    2: "UCL", 3: "UEL", 848: "UECL", 13: "LIB", 11: "SUD", 16: "CCC", 528: "LCUP", 1: "WC", 4: "EURO", 9: "COPA", 5: "UNL", 531: "CNL", 10: "INTL",
+    253: "MLS", 262: "LMX", 71: "BSA", 128: "LPF", 239: "FPC",
+    45: "FA", 48: "EFL", 143: "CDR", 137: "COPPA", 81: "DFB",
+    307: "SPL", 98: "J1", 203: "TSL", 144: "JPL", 179: "SPFL", 119: "SUP", 188: "ALM", 292: "K1",
+    44: "WSL", 254: "NWSL"
 };
 
 const LEAGUE_MAP_ESPN = {
@@ -157,24 +111,20 @@ const LEAGUE_MAP_ESPN = {
 };
 
 // ==========================================
-// NEW: PURE FIREBASE ARRAY REPAIR
+// PURE FIREBASE ARRAY REPAIR
 // ==========================================
-// This function ONLY exists to fix Firebase's habit of turning arrays into objects.
-// It trusts the data completely and does NOT attempt to merge with JSON.
+// This stops Firebase from crashing the UI by converting all nested objects back into standard arrays.
 function repairFirebaseArrays(match) {
     if (!match) return match;
 
     ['homeLineup', 'awayLineup'].forEach(side => {
         if (match[side]) {
-            // Repair Starting XI
             if (match[side].startXI && !Array.isArray(match[side].startXI)) {
                 match[side].startXI = Object.values(match[side].startXI);
             }
-            // Repair Substitutes
             if (match[side].substitutes && !Array.isArray(match[side].substitutes)) {
                 match[side].substitutes = Object.values(match[side].substitutes);
             }
-            // Repair Sub History nested inside Starting XI
             if (match[side].startXI) {
                 match[side].startXI.forEach(slot => {
                     if (slot.sub_history && !Array.isArray(slot.sub_history)) {
@@ -185,10 +135,7 @@ function repairFirebaseArrays(match) {
         }
     });
 
-    // Repair Events and Injuries arrays
-    if (match.events && !Array.isArray(match.events)) {
-        match.events = Object.values(match.events);
-    }
+    if (match.events && !Array.isArray(match.events)) match.events = Object.values(match.events);
     if (match.injuries) {
         if (match.injuries.home && !Array.isArray(match.injuries.home)) match.injuries.home = Object.values(match.injuries.home);
         if (match.injuries.away && !Array.isArray(match.injuries.away)) match.injuries.away = Object.values(match.injuries.away);
@@ -243,14 +190,10 @@ window.checkOverflows = function() {
 
         if (hasOverflow) {
             indicator.classList.remove('d-none');
-            targets.forEach(t => {
-                t.style.textOverflow = 'clip';
-            });
+            targets.forEach(t => t.style.textOverflow = 'clip');
         } else {
             indicator.classList.add('d-none');
-            targets.forEach(t => {
-                t.style.textOverflow = '';
-            });
+            targets.forEach(t => t.style.textOverflow = '');
         }
     });
 };
@@ -264,20 +207,16 @@ function shortenPlayerName(fullName) {
     return `${initial} ${lastName}`;
 }
 
-// Calculates if text should be black or white based on background hex color
 function getContrastColor(hexColor) {
     if (!hexColor) return '#ffffff';
-    // Strip the # if it exists
     hexColor = hexColor.replace('#', '');
     const r = parseInt(hexColor.substr(0, 2), 16);
     const g = parseInt(hexColor.substr(2, 2), 16);
     const b = parseInt(hexColor.substr(4, 2), 16);
-    // YIQ equation from W3C
     const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
     return (yiq >= 128) ? '#000000' : '#ffffff';
 }
 
-// Calculates the visual difference between two hex colors
 function colorDistance(hex1, hex2) {
     if (!hex1 || !hex2) return 100;
     const getRgb = (hex) => {
@@ -293,7 +232,7 @@ function getLeagueKey(leagueId) {
     for (const [key, leagueObj] of Object.entries(SUPPORTED_LEAGUES)) {
         if (leagueObj.id === leagueId) return key;
     }
-    return 'top'; // Fallback
+    return 'top'; 
 }
 
 window.openPlayerModal = function(el) {
@@ -442,15 +381,10 @@ window.openPlayerModal = function(el) {
     modal.show();
 };
 
-
-// ==========================================
-// NEW: SPLIT HTML BUILDERS (Time & Event decoupled)
-// ==========================================
 function getTimeBadgeHtml(data) {
     const status = data.fixture.status.short;
     const dateObj = new Date(data.fixture.date);
     
-    // Make the time string much more compact (e.g., "Sun 9:00AM")
     const timeString = dateObj.toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'}).replace(' ', '');
     const matchTime = `${dateObj.toLocaleDateString([], {weekday: 'short'})} ${timeString}`;
 
@@ -458,7 +392,6 @@ function getTimeBadgeHtml(data) {
     const isPreGame = ['NS', 'TBD'].includes(status);
     const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
 
-    // Check if it's past kickoff, but the API still says "Not Started"
     const minsSinceKickoff = (new Date() - dateObj) / (1000 * 60);
     const isStuck = isPreGame && (minsSinceKickoff > 5);
 
@@ -467,7 +400,6 @@ function getTimeBadgeHtml(data) {
     if (isDelayed) {
         badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
     } else if (isStuck) {
-        // NEW: Render a subtle yellow "DEL" badge if the API feed hasn't woken up yet
         badge = `<span class="badge bg-warning text-dark shadow-sm border px-2 py-1" style="font-size: 0.70rem;" title="Delayed or awaiting kickoff">DEL</span>`;
     } else if (!isPreGame && !isFinished && !data.isFallback) {
         let displayMin = data.fixture.status.elapsed;
@@ -508,7 +440,6 @@ function getLatestEventHtml(data, isRibbon = false) {
         const currentMinute = data.fixture.status.elapsed || 0;
         const eventMinute = parseInt(lastEv.time) || 0;
         
-        // Ribbon always shows the last event. Full View only shows if within 5 mins.
         if (!isRibbon && isFinished) return '';
         if (!isRibbon && (currentMinute - eventMinute > 5)) return '';
 
@@ -521,7 +452,6 @@ function getLatestEventHtml(data, isRibbon = false) {
             let pIn = (lastEv.player_out && lastEv.player_out !== "null") ? shortenPlayerName(lastEv.player_out) : 'Unknown';
             
             if (isRibbon) {
-                // Subs: Logo on Line 1. 🟢 and 🔴 flush left.
                 return `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3; overflow: hidden; height: 100%;">
                             <div class="text-truncate" style="margin-bottom: 2px;">🔄 <img src="${teamLogo}" alt="${teamName}" style="width: 12px; height: 12px; object-fit: contain; margin-bottom: 2px; margin-left: 2px; margin-right: 2px;"> ${lastEv.time}'</div>
                             <div class="text-truncate" style="margin-bottom: 1px;">🟢 <span class="text-success">${pIn}</span></div>
@@ -543,7 +473,6 @@ function getLatestEventHtml(data, isRibbon = false) {
             const textColor = lastEv.type === 'Goal' ? 'text-success' : (icon === '🟨' ? 'text-warning' : 'text-danger');
             
             if (isRibbon) {
-                // Goals/Cards: Logo/Time on Line 1, Emoji/Name on Line 2 (Matches Subs!)
                 let assistHtml = '';
                 if (lastEv.type === 'Goal' && lastEv.assist && lastEv.assist !== "null") {
                     assistHtml = `<div class="text-muted text-truncate" style="margin-top: 1px;">👟 ${shortenPlayerName(lastEv.assist)}</div>`;
@@ -555,7 +484,6 @@ function getLatestEventHtml(data, isRibbon = false) {
                             ${assistHtml}
                         </div>`;
              } else {
-                // NEW: Check for an assist and stack it cleanly if it exists
                 if (lastEv.type === 'Goal' && lastEv.assist && lastEv.assist !== "null") {
                     let assistHtml = `<span class="text-truncate text-muted fw-normal" style="max-width: 160px; font-size: 0.60rem; padding-left: 20px;">👟 ${shortenPlayerName(lastEv.assist)}</span>`;
                     
@@ -565,7 +493,6 @@ function getLatestEventHtml(data, isRibbon = false) {
                             </div>`;
                 }
 
-                // Default fallback for single-line events (Cards, Unassisted Goals)
                 return `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.70rem; max-width: 150px; display: inline-block; vertical-align: middle;">
                             ${icon} ${lastEv.time}' <img src="${teamLogo}" alt="${teamName}" style="width: 14px; height: 14px; object-fit: contain; margin-bottom: 2px; margin-right: 2px;"> ${playerName}
                         </span>`;
@@ -1143,7 +1070,7 @@ async function init() {
 
                 if (isFirstLoad) {
                     liveGamesArray.forEach(liveGame => {
-                        let repairedGame = repairFirebaseArrays(liveGame);
+                        let repairedGame = deepCloneAndRepair(liveGame);
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === repairedGame.fixture.id);
                         if (index !== -1) {
                             ALL_GAMES_DATA[index] = repairedGame;
@@ -1175,7 +1102,7 @@ async function init() {
 
 function syncLiveDOM(liveGamesArray) {
     liveGamesArray.forEach(rawMatch => {
-        let match = repairFirebaseArrays(rawMatch);
+        let match = deepCloneAndRepair(rawMatch);
         const fixId = match.fixture.id;
         
         const oldMatchIndex = ALL_GAMES_DATA.findIndex(m => m.fixture.id === fixId);
