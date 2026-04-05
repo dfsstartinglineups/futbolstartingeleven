@@ -4,6 +4,7 @@ import requests
 import zoneinfo
 import time
 import re
+import copy
 from datetime import datetime, timedelta
 
 # --- FIREBASE IMPORTS ---
@@ -224,6 +225,9 @@ def main():
                     if fix_id in old_live_data:
                         mem_game = old_live_data[fix_id]
                         
+                        # NEW: What status does the memory think the game is in?
+                        mem_status = mem_game.get('fixture', {}).get('status', {}).get('short', '')
+                        
                         # Audit 1: Are events attached?
                         has_events = "events" in mem_game
                         
@@ -239,7 +243,8 @@ def main():
                         except:
                             pass
                             
-                        if has_events and has_team_stats and has_player_stats:
+                        # THE MASTER CHECK: Only pass if all stats exist AND the memory knows it's FT
+                        if has_events and has_team_stats and has_player_stats and mem_status in ['FT', 'AET', 'PEN']:
                             memory_is_complete = True
 
                     if memory_is_complete:
@@ -272,14 +277,21 @@ def main():
             
             print(f"⚽ Processing Live Match: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']} ({status})")
             
-            live_game_obj = dict(base_game) 
+            # 🛡️ THE FIX: Start with Firebase memory so we NEVER wipe out stats during an API hiccup
+            if fix_id in old_live_data and "homeLineup" in old_live_data[fix_id]:
+                live_game_obj = copy.deepcopy(old_live_data[fix_id])
+            else:
+                live_game_obj = copy.deepcopy(base_game)
+                
             live_game_obj['fixture']['status'] = latest_data['fixture']['status']
             live_game_obj['goals'] = latest_data['goals']
 
             # A. FETCH EVENTS
             events_data = fetch_api(f"fixtures/events?fixture={fix_id}")
             parsed_events = []
-            if events_data and events_data.get("response"):
+            
+            # 🛡️ ONLY overwrite events if the API actually gave us a populated list!
+            if events_data and isinstance(events_data.get("response"), list) and len(events_data["response"]) > 0:
                 for ev in events_data["response"]:
                     if ev["type"] in ["Goal", "Card", "subst"]:
                         if ev["type"] == "Goal" and ev["detail"] == "Missed Penalty": continue
