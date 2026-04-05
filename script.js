@@ -1162,22 +1162,30 @@ async function init() {
                 // --- 4. SMART MERGE ---
                 let needsFullRender = isFirstLoad;
 
+                // 1. Check for orphans WITHOUT overwriting existing memory early
                 liveGamesArray.forEach(liveGame => {
                     const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
-                    if (index !== -1) {
-                        ALL_GAMES_DATA[index] = liveGame; // Update existing
-                    } else {
-                        // Orphan game detected! Inject it at the top of the array
-                        ALL_GAMES_DATA.unshift(liveGame); 
-                        needsFullRender = true; // Force redraw so the new card appears
+                    if (index === -1) {
+                        needsFullRender = true; // Orphan found, we must draw a new card
                     }
                 });
                 
+                // 2. Route the data correctly
                 if (needsFullRender) {
+                    // Update master array and do a hard reset of the UI (First load or new game added)
+                    liveGamesArray.forEach(liveGame => {
+                        const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
+                        if (index !== -1) {
+                            ALL_GAMES_DATA[index] = liveGame; // Update existing
+                        } else {
+                            ALL_GAMES_DATA.unshift(liveGame); // Inject orphan at the top
+                        }
+                    });
                     renderGames();
                     handleHashNavigation(); 
                     isFirstLoad = false;
                 } else {
+                    // Normal update: Let syncLiveDOM handle the memory merging so highlights work!
                     syncLiveDOM(liveGamesArray);
                 }
             } else {
