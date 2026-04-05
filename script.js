@@ -1114,16 +1114,21 @@ async function init() {
 
     container.innerHTML = `<div class="col-12 text-center mt-5 pt-5"><div class="spinner-border text-success" role="status"></div><p class="mt-3 text-muted fw-bold">Loading Pitch Data...</p></div>`;
     
+    // --- 1. CALCULATE TODAY AND YESTERDAY (EST) ---
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
     // ALWAYS LOAD THE BASELINE FIRST
     ALL_GAMES_DATA = await fetchMatchesData(params);
     if (!ALL_GAMES_DATA) ALL_GAMES_DATA = [];
 
     // ==========================================
-    // 1. THE REAL-TIME PATH (Today's Games)
+    // 1. THE REAL-TIME PATH (Today OR Yesterday)
     // ==========================================
-    if (params.date === todayStr) {
+    // --- 2. KEEP LISTENER ALIVE FOR 48 HOURS ---
+    if (params.date === todayStr || params.date === yesterdayStr) {
         console.log("📡 Connecting to Firebase Realtime Stream...");
         const liveRef = db.ref('futbol_live_games');
         
@@ -1133,8 +1138,20 @@ async function init() {
             if (incomingData) {
                 let liveGamesArray = Object.values(incomingData);
                 
-                // --- THE FIX: FILTER THE FIREBASE FIREHOSE ---
-                // If we are looking at a specific league, throw away any Firebase updates for other leagues!
+                // --- 3. CROSS-DAY ORPHAN RESCUE FILTER ---
+                if (params.date === todayStr) {
+                    // Viewing Today: Show today's games + active games from yesterday
+                    liveGamesArray = liveGamesArray.filter(g => {
+                        const gDate = g.fixture.date.split('T')[0];
+                        const isActiveYesterday = (gDate === yesterdayStr && !['FT', 'AET', 'PEN'].includes(g.fixture.status.short));
+                        return gDate === todayStr || isActiveYesterday;
+                    });
+                } else if (params.date === yesterdayStr) {
+                    // Viewing Yesterday: Strictly show yesterday's games
+                    liveGamesArray = liveGamesArray.filter(g => g.fixture.date.split('T')[0] === yesterdayStr);
+                }
+
+                // Apply League Filter
                 if (params.league !== 'top') {
                     const targetId = SUPPORTED_LEAGUES[params.league].id;
                     liveGamesArray = liveGamesArray.filter(g => g.league.id === targetId);
@@ -1142,19 +1159,25 @@ async function init() {
 
                 console.log("⚡ Firebase Update Received!", liveGamesArray.length, "relevant games active.");
 
-                if (isFirstLoad) {
-                    // First load: Merge the filtered live games into our full daily schedule
-                    liveGamesArray.forEach(liveGame => {
-                        const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
-                        if (index !== -1) ALL_GAMES_DATA[index] = liveGame; // Update existing
-                        else ALL_GAMES_DATA.push(liveGame); // Add if missing
-                    });
-                    
+                // --- 4. SMART MERGE ---
+                let needsFullRender = isFirstLoad;
+
+                liveGamesArray.forEach(liveGame => {
+                    const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
+                    if (index !== -1) {
+                        ALL_GAMES_DATA[index] = liveGame; // Update existing
+                    } else {
+                        // Orphan game detected! Inject it at the top of the array
+                        ALL_GAMES_DATA.unshift(liveGame); 
+                        needsFullRender = true; // Force redraw so the new card appears
+                    }
+                });
+                
+                if (needsFullRender) {
                     renderGames();
                     handleHashNavigation(); 
                     isFirstLoad = false;
                 } else {
-                    // Subsequent loads: Pass ONLY the filtered live games to the surgical updater
                     syncLiveDOM(liveGamesArray);
                 }
             } else {
