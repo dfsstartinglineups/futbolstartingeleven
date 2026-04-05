@@ -297,8 +297,8 @@ def main():
                             # API ERROR CORRECTION
                             if in_is_starter and out_is_sub:
                                 try:
-                                    starter_idx = next(i for i, s in enumerate(lineup["startXI"]) if str(s["player"]["id"]) == player_in_id)
-                                    sub_idx = next(i for i, s in enumerate(lineup["substitutes"]) if str(s["player"]["id"]) == player_out_id)
+                                    starter_idx = next(i for i, s in enumerate(lineup["startXI"]) if str(s.get("player", {}).get("id")) == player_in_id)
+                                    sub_idx = next(i for i, s in enumerate(lineup["substitutes"]) if str(s.get("player", {}).get("id")) == player_out_id)
                                     
                                     temp = lineup["startXI"][starter_idx]
                                     lineup["startXI"][starter_idx] = lineup["substitutes"][sub_idx]
@@ -310,7 +310,7 @@ def main():
                             # NORMAL SUBSTITUTION
                             if in_is_sub and out_is_starter:
                                 try:
-                                    incoming_sub = next(s for s in lineup["substitutes"] if str(s["player"]["id"]) == player_in_id)
+                                    incoming_sub = next(s for s in lineup["substitutes"] if str(s.get("player", {}).get("id")) == player_in_id)
                                     
                                     for slot in lineup["startXI"]:
                                         if str(slot.get("player", {}).get("id")) == player_out_id:
