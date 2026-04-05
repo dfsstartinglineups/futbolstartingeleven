@@ -58,25 +58,21 @@ def fetch_api(endpoint):
 def inspect_and_sanitize(obj, current_path="root"):
     """
     Recursively walks the JSON tree. If it finds an illegal Firebase key, 
-    it prints the EXACT path to the console so you can see the culprit, 
-    and then safely fixes it.
+    it fixes it and logs the path.
     """
     if isinstance(obj, dict):
         new_dict = {}
         for k, v in obj.items():
             k_str = str(k).strip()
             safe_key = k_str
-            
             if not k_str:
                 safe_key = "empty_key"
             
             illegal_match = re.search(r'[.$#\[\]/]', safe_key)
             if illegal_match:
                 safe_key = re.sub(r'[.$#\[\]/]', '_', safe_key)
-                
             new_dict[safe_key] = inspect_and_sanitize(v, f"{current_path} -> {safe_key}")
         return new_dict
-        
     elif isinstance(obj, list):
         return [inspect_and_sanitize(item, f"{current_path}[{i}]") for i, item in enumerate(obj)]
     else:
@@ -104,8 +100,6 @@ def main():
         d_str = d.strftime("%Y-%m-%d")
         base_path = os.path.join(DATA_DIR, f"games_{d_str}.json")
         
-        # NOTE: We use the local file path ONLY for checking if we can retire 
-        # completed days to save Github/API calls on completely dead days.
         if not os.path.exists(base_path):
             dates_to_process.append(d)
             continue
@@ -140,9 +134,6 @@ def main():
     next_upcoming_ts = None  
     missing_schedule = False
 
-    # =========================================================
-    # THE MASTER UPGRADE: FIREBASE AS THE MEMORY BANK
-    # =========================================================
     old_live_data = {}
     if firebase_admin._apps:
         try:
@@ -155,23 +146,18 @@ def main():
 
     for target_date in dates_to_process:
         current_date_str = target_date.strftime("%Y-%m-%d")
-        
-        # --- FETCH SCHEDULE DIRECTLY FROM GITHUB ---
         github_raw_url = f"https://raw.githubusercontent.com/dfsstartinglineups/futbolstartingeleven/refs/heads/main/data/games_{current_date_str}.json"
         
         try:
             headers = {'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
             response = requests.get(github_raw_url, headers=headers, timeout=10)
-            
             if response.status_code == 404:
                 missing_schedule = True
                 continue
-                
             response.raise_for_status()
             daily_games = response.json()
-            
         except Exception as e:
-            print(f"⚠️ Failed to fetch fresh schedule from GitHub for {current_date_str}: {e}")
+            print(f"⚠️ Failed to fetch schedule from GitHub: {e}")
             missing_schedule = True
             continue
             
@@ -179,162 +165,132 @@ def main():
             missing_schedule = True
             continue
 
-        for base_game in daily_games:
-            g_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
-            g_synced = base_game.get('post_game_sync', False)
-            g_ts = base_game.get('fixture', {}).get('timestamp', 0)
-            
-            # THE BOUNCER: Drop games that are officially dead or fully synced
-            if (g_status in ['FT', 'AET', 'PEN'] and g_synced) or g_status in ['PST', 'CANC', 'ABD', 'AWD', 'WO']:
-                continue
-                
-            if g_ts <= now_ts:
-                if not has_live_games: 
-                    print(f"👀 Local JSON: Games should be live right now (e.g., {base_game['teams']['home']['name']}). Forcing engine awake.")
-                has_live_games = True
-            else:
-                if next_upcoming_ts is None or g_ts < next_upcoming_ts:
-                    next_upcoming_ts = g_ts
-
         fixtures_data = fetch_api(f"fixtures?date={current_date_str}&timezone=America/New_York")
         if not fixtures_data or not fixtures_data.get("response"):
             continue
             
-        live_master_map = {str(g['fixture']['id']): g for g in fixtures_data["response"]}
+        # 🛡️ Crash Protection: Ensure every response item has the expected structure
+        live_master_map = {}
+        for g in fixtures_data["response"]:
+            f_id = g.get('fixture', {}).get('id')
+            if f_id:
+                live_master_map[str(f_id)] = g
 
         for base_game in daily_games:
-            fix_id = str(base_game['fixture']['id'])
-            
-            if fix_id not in live_master_map: continue
+            fix_id = str(base_game.get('fixture', {}).get('id', ''))
+            if not fix_id or fix_id not in live_master_map:
+                continue
             
             latest_data = live_master_map[fix_id]
-            status = latest_data['fixture']['status']['short']
+            status = latest_data.get('fixture', {}).get('status', {}).get('short', '')
             
             is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
             is_finished = status in ['FT', 'AET', 'PEN']
             
-            base_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
-            scraper_has_synced = (base_status in ['FT', 'AET', 'PEN']) or base_game.get('post_game_sync', False)
+            scraper_has_synced = base_game.get('post_game_sync', False)
             
             if is_finished:
                 if scraper_has_synced:
                     continue 
                 else:
-                    # 🛡️ THE QUALITY CONTROL AUDIT 🛡️
+                    # 🛡️ THE QUALITY CONTROL AUDIT
                     memory_is_complete = False
                     if fix_id in old_live_data:
                         mem_game = old_live_data[fix_id]
-                        
-                        # NEW: What status does the memory think the game is in?
                         mem_status = mem_game.get('fixture', {}).get('status', {}).get('short', '')
-                        
-                        # Audit 1: Are events attached?
                         has_events = "events" in mem_game
-                        
-                        # Audit 2: Are team stats attached?
                         has_team_stats = "team_stats" in mem_game and "home" in mem_game["team_stats"]
                         
-                        # Audit 3: Are player stats attached?
                         has_player_stats = False
-                        try:
-                            home_start = mem_game.get("homeLineup", {}).get("startXI", [])
-                            if home_start and len(home_start) > 0 and "live_stats" in home_start[0].get("player", {}):
+                        home_start = mem_game.get("homeLineup", {}).get("startXI", [])
+                        if home_start and len(home_start) > 0:
+                            if "live_stats" in home_start[0].get("player", {}):
                                 has_player_stats = True
-                        except:
-                            pass
                             
-                        # THE MASTER CHECK: Only pass if all stats exist AND the memory knows it's FT
                         if has_events and has_team_stats and has_player_stats and mem_status in ['FT', 'AET', 'PEN']:
                             memory_is_complete = True
 
                     if memory_is_complete:
-                        # ✅ Audit Passed! Safe to use Firebase memory and skip API.
                         live_game_obj = old_live_data[fix_id]
                         live_game_obj['fixture']['status'] = latest_data['fixture']['status']
-                        live_game_obj['goals'] = latest_data['goals']
-                        
+                        live_game_obj['goals'] = latest_data.get('goals', {"home": 0, "away": 0})
                         all_new_live_data[fix_id] = live_game_obj
                         active_games_found += 1 
                         continue 
                     else:
-                        # ❌ Audit Failed! Let it fall through to fetch the final API stats.
-                        print(f"🕵️ [{fix_id}] FT Memory Audit Failed. Fetching final deep stats from API...")
+                        print(f"🕵️ [{fix_id}] FT Stats incomplete. Fetching from API...")
 
             if not is_playing and not is_finished:
+                # Still check for imminent kickoffs
+                g_ts = base_game.get('fixture', {}).get('timestamp', 0)
+                if g_ts > 0 and g_ts <= now_ts:
+                    has_live_games = True
+                elif g_ts > 0:
+                    if next_upcoming_ts is None or g_ts < next_upcoming_ts:
+                        next_upcoming_ts = g_ts
                 continue 
 
             active_games_found += 1
+            has_live_games = True
 
-            if status == 'HT':
-                if fix_id in old_live_data and 'events' in old_live_data[fix_id]:
-                    print(f"☕ Halftime: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']}. Pausing API pulls.")
-                    live_game_obj = old_live_data[fix_id]
-                    live_game_obj['fixture']['status'] = latest_data['fixture']['status']
-                    live_game_obj['goals'] = latest_data['goals']
-                    
-                    all_new_live_data[fix_id] = live_game_obj
-                    continue 
+            if status == 'HT' and fix_id in old_live_data and 'events' in old_live_data[fix_id]:
+                live_game_obj = old_live_data[fix_id]
+                live_game_obj['fixture']['status'] = latest_data['fixture']['status']
+                live_game_obj['goals'] = latest_data.get('goals', {"home": 0, "away": 0})
+                all_new_live_data[fix_id] = live_game_obj
+                continue 
             
             print(f"⚽ Processing Live Match: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']} ({status})")
             
-            # 🛡️ THE FIX: Start with Firebase memory so we NEVER wipe out stats during an API hiccup
+            # Use memory clone to protect deep stats
             if fix_id in old_live_data and "homeLineup" in old_live_data[fix_id]:
                 live_game_obj = copy.deepcopy(old_live_data[fix_id])
             else:
                 live_game_obj = copy.deepcopy(base_game)
                 
-            live_game_obj['fixture']['status'] = latest_data['fixture']['status']
-            live_game_obj['goals'] = latest_data['goals']
+            live_game_obj['fixture']['status'] = latest_data.get('fixture', {}).get('status')
+            live_game_obj['goals'] = latest_data.get('goals')
 
             # A. FETCH EVENTS
             events_data = fetch_api(f"fixtures/events?fixture={fix_id}")
-            parsed_events = []
-            
-            # 🛡️ ONLY overwrite events if the API actually gave us a populated list!
             if events_data and isinstance(events_data.get("response"), list) and len(events_data["response"]) > 0:
+                parsed_events = []
                 for ev in events_data["response"]:
-                    if ev["type"] in ["Goal", "Card", "subst"]:
-                        if ev["type"] == "Goal" and ev["detail"] == "Missed Penalty": continue
+                    if ev.get("type") in ["Goal", "Card", "subst"]:
+                        if ev.get("type") == "Goal" and ev.get("detail") == "Missed Penalty": continue
                         
-                        elapsed_time = ev["time"]["elapsed"]
-                        extra_time = ev["time"].get("extra")
-                        display_time = f"{elapsed_time}+{extra_time}" if extra_time else str(elapsed_time)
+                        elapsed = ev.get("time", {}).get("elapsed", 0)
+                        extra = ev.get("time", {}).get("extra")
+                        display_time = f"{elapsed}+{extra}" if extra else str(elapsed)
 
                         event_obj = {
                             "time": display_time,
-                            "team_id": ev["team"]["id"],
-                            "player": ev["player"]["name"] if ev.get("player") else None,
-                            "player_id": ev["player"]["id"] if ev.get("player") else None,
-                            "type": ev["type"],
-                            "detail": ev["detail"],
-                            "assist": ev["assist"]["name"] if ev.get("assist") else None
+                            "team_id": ev.get("team", {}).get("id"),
+                            "player": ev.get("player", {}).get("name"),
+                            "player_id": ev.get("player", {}).get("id"),
+                            "type": ev.get("type"),
+                            "detail": ev.get("detail"),
+                            "assist": ev.get("assist", {}).get("name")
                         }
-                        if ev["type"] == "subst":
-                            event_obj["player_out"] = ev["assist"]["name"] if ev.get("assist") else None
-                            event_obj["player_out_id"] = ev["assist"]["id"] if ev.get("assist") else None
-                            
+                        if ev.get("type") == "subst":
+                            event_obj["player_out"] = ev.get("assist", {}).get("name")
+                            event_obj["player_out_id"] = ev.get("assist", {}).get("id")
                         parsed_events.append(event_obj)
                 live_game_obj["events"] = parsed_events
 
-            # =========================================================
-            # B. STATELESS TEAM STATS FETCH 
-            # =========================================================
+            # B. TEAM STATS
             stats_data = fetch_api(f"fixtures/statistics?fixture={fix_id}")
-            has_deep_stats_this_loop = False
-            
             if stats_data and isinstance(stats_data.get("response"), list) and len(stats_data["response"]) > 0:
-                has_deep_stats_this_loop = True
                 team_stats = {"home": {}, "away": {}}
+                home_id = latest_data.get("teams", {}).get("home", {}).get("id")
                 for t_stat in stats_data["response"]:
-                    side = "home" if t_stat["team"]["id"] == latest_data["teams"]["home"]["id"] else "away"
-                    parsed_t_stats = {
-                        "possession": 50, "total_shots": 0, "shots_on_target": 0,
-                        "corners": 0, "fouls": 0, "yellow_cards": 0, "red_cards": 0
-                    }
-                    for s in t_stat["statistics"]:
-                        val = s["value"]
+                    t_id = t_stat.get("team", {}).get("id")
+                    if not t_id: continue
+                    side = "home" if t_id == home_id else "away"
+                    parsed_t_stats = {"possession": 50, "total_shots": 0, "shots_on_target": 0, "corners": 0, "fouls": 0, "yellow_cards": 0, "red_cards": 0}
+                    for s in t_stat.get("statistics", []):
+                        val, stype = s.get("value"), s.get("type")
                         if val is None: continue
-                        stype = s["type"]
                         if stype == "Ball Possession": parsed_t_stats["possession"] = int(str(val).replace('%', ''))
                         elif stype == "Total Shots": parsed_t_stats["total_shots"] = int(val)
                         elif stype == "Shots on Goal": parsed_t_stats["shots_on_target"] = int(val)
@@ -344,176 +300,73 @@ def main():
                         elif stype == "Red Cards": parsed_t_stats["red_cards"] = int(val)
                     team_stats[side] = parsed_t_stats
                 live_game_obj["team_stats"] = team_stats
-            else:
-                # Early game or API hiccup. Fallback to FIREBASE memory so UI doesn't drop to 0.
-                if fix_id in old_live_data and "team_stats" in old_live_data[fix_id]:
-                    live_game_obj["team_stats"] = old_live_data[fix_id]["team_stats"]
 
-            # =========================================================
-            # C. STATELESS PLAYER STATS & SUBSTITUTIONS
-            # =========================================================
-            # 1. Build a fallback map from FIREBASE memory in case the API or Scraper is delayed
-            old_player_stats = {}
-            if fix_id in old_live_data:
+            # C. PLAYER STATS
+            live_players_data = fetch_api(f"fixtures/players?fixture={fix_id}")
+            if live_players_data and live_players_data.get("response"):
+                live_player_map = {}
+                for tp in live_players_data["response"]:
+                    for p in tp.get("players", []):
+                        p_id = p.get("player", {}).get("id")
+                        if not p_id: continue
+                        p_stats = p.get("statistics", [{}])[0]
+                        live_player_map[str(p_id)] = {
+                            "goals": p_stats.get("goals", {}).get("total") or 0,
+                            "assists": p_stats.get("goals", {}).get("assists") or 0,
+                            "total_shots": p_stats.get("shots", {}).get("total") or 0,
+                            "shots_on_target": p_stats.get("shots", {}).get("on") or 0,
+                            "passes": p_stats.get("passes", {}).get("total") or 0,
+                            "key_passes": p_stats.get("passes", {}).get("key") or 0,
+                            "tackles": p_stats.get("tackles", {}).get("total") or 0,
+                            "interceptions": p_stats.get("tackles", {}).get("interceptions") or 0,
+                            "saves": p_stats.get("goals", {}).get("saves") or 0,
+                            "conceded": p_stats.get("goals", {}).get("conceded") or 0,
+                            "yellow_cards": p_stats.get("cards", {}).get("yellow") or 0,
+                            "red_cards": p_stats.get("cards", {}).get("red") or 0,
+                            "rating": p_stats.get("games", {}).get("rating") or "N/A"
+                        }
+
+                # Attach and Merge Stats
                 for side in ["homeLineup", "awayLineup"]:
-                    lineup_mem = old_live_data[fix_id].get(side, {})
-                    if isinstance(lineup_mem, dict):
-                        for slot in lineup_mem.get("startXI", []):
-                            if "live_stats" in slot.get("player", {}):
-                                old_player_stats[str(slot["player"]["id"])] = slot["player"]["live_stats"]
-                        for sub in lineup_mem.get("substitutes", []):
-                            if "live_stats" in sub.get("player", {}):
-                                old_player_stats[str(sub["player"]["id"])] = sub["player"]["live_stats"]
-
-            # 2. Check if the scraper has populated the JSON with lineups yet
-            home_lu = live_game_obj.get("homeLineup")
-            away_lu = live_game_obj.get("awayLineup")
-            valid_lineups = isinstance(home_lu, dict) and isinstance(away_lu, dict)
-
-            # 3. Only fetch player stats if Team Stats exist AND Lineups exist
-            live_player_map = {}
-            if has_deep_stats_this_loop and valid_lineups:
-                live_players_data = fetch_api(f"fixtures/players?fixture={fix_id}")
-                if live_players_data and live_players_data.get("response"):
-                    for tp in live_players_data["response"]:
-                        for p in tp["players"]:
-                            p_id = str(p["player"]["id"])
-                            p_stats = p["statistics"][0] if len(p["statistics"]) > 0 else {}
-                            live_player_map[p_id] = {
-                                "goals": p_stats.get("goals", {}).get("total") or 0,
-                                "assists": p_stats.get("goals", {}).get("assists") or 0,
-                                "total_shots": p_stats.get("shots", {}).get("total") or 0,
-                                "shots_on_target": p_stats.get("shots", {}).get("on") or 0,
-                                "passes": p_stats.get("passes", {}).get("total") or 0,
-                                "key_passes": p_stats.get("passes", {}).get("key") or 0,
-                                "tackles": p_stats.get("tackles", {}).get("total") or 0,
-                                "interceptions": p_stats.get("tackles", {}).get("interceptions") or 0,
-                                "saves": p_stats.get("goals", {}).get("saves") or 0,
-                                "conceded": p_stats.get("goals", {}).get("conceded") or 0,
-                                "yellow_cards": p_stats.get("cards", {}).get("yellow") or 0,
-                                "red_cards": p_stats.get("cards", {}).get("red") or 0,
-                                "rating": p_stats.get("games", {}).get("rating") or "N/A"
-                            }
-
-            if valid_lineups:
-                # Apply dynamic substitutions
-                for ev in parsed_events:
-                    if ev["type"] == "subst":
-                        player_in_id = str(ev["player_id"])
-                        player_out_id = str(ev["player_out_id"])
-                        
-                        for side in ["homeLineup", "awayLineup"]:
-                            lineup = live_game_obj[side]
-                            
-                            in_is_sub = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("substitutes", []))
-                            out_is_starter = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("startXI", []))
-                            
-                            in_is_starter = any(str(s["player"]["id"]) == player_in_id for s in lineup.get("startXI", []))
-                            out_is_sub_err = any(str(s["player"]["id"]) == player_out_id for s in lineup.get("substitutes", []))
-                            if in_is_starter and out_is_sub_err:
-                                try:
-                                    s_idx = next(i for i, s in enumerate(lineup["startXI"]) if str(s["player"]["id"]) == player_in_id)
-                                    sub_idx = next(i for i, s in enumerate(lineup["substitutes"]) if str(s["player"]["id"]) == player_out_id)
-                                    temp = lineup["startXI"][s_idx]
-                                    lineup["startXI"][s_idx] = lineup["substitutes"][sub_idx]
-                                    lineup["substitutes"][sub_idx] = temp
-                                    in_is_sub, out_is_starter = True, True
-                                except StopIteration: pass
-                                
-                            if in_is_sub and out_is_starter:
-                                try:
-                                    incoming_sub = next(s for s in lineup["substitutes"] if str(s["player"]["id"]) == player_in_id)
-                                    for slot in lineup["startXI"]:
-                                        if str(slot["player"]["id"]) == player_out_id:
-                                            if "sub_history" not in slot:
-                                                slot["sub_history"] = []
-                                            slot["sub_history"].insert(0, slot["player"].copy())
-                                            
-                                            slot["player"] = incoming_sub["player"]
-                                            slot["player"]["isSubbedIn"] = True
-                                            slot["player"]["subMinute"] = ev["time"]
-                                            slot["player"]["pos"] = slot["sub_history"][0].get("pos", "M")
-                                            
-                                            lineup["substitutes"] = [s for s in lineup["substitutes"] if str(s["player"]["id"]) != player_in_id]
-                                            break
-                                except StopIteration: pass
-
-                # Attach Live Stats (prefer new API fetch, fall back to FIREBASE memory)
-                for side in ["homeLineup", "awayLineup"]:
-                    lineup = live_game_obj[side]
+                    lineup = live_game_obj.get(side)
+                    if not lineup: continue
                     for slot in lineup.get("startXI", []):
-                        p_id = str(slot["player"]["id"])
-                        if p_id in live_player_map: 
-                            slot["player"]["live_stats"] = live_player_map[p_id]
-                        elif p_id in old_player_stats:
-                            slot["player"]["live_stats"] = old_player_stats[p_id]
-                            
+                        pid = str(slot.get("player", {}).get("id", ""))
+                        if pid in live_player_map: slot["player"]["live_stats"] = live_player_map[pid]
                         for sub_hist in slot.get("sub_history", []):
-                            h_id = str(sub_hist["id"])
-                            if h_id in live_player_map: 
-                                sub_hist["live_stats"] = live_player_map[h_id]
-                            elif h_id in old_player_stats:
-                                sub_hist["live_stats"] = old_player_stats[h_id]
-                                
+                            hid = str(sub_hist.get("id", ""))
+                            if hid in live_player_map: sub_hist["live_stats"] = live_player_map[hid]
                     for sub in lineup.get("substitutes", []):
-                        p_id = str(sub["player"]["id"])
-                        if p_id in live_player_map: 
-                            sub["player"]["live_stats"] = live_player_map[p_id]
-                        elif p_id in old_player_stats:
-                            sub["player"]["live_stats"] = old_player_stats[p_id]
+                        sid = str(sub.get("player", {}).get("id", ""))
+                        if sid in live_player_map: sub["player"]["live_stats"] = live_player_map[sid]
 
             all_new_live_data[fix_id] = live_game_obj
 
-    # =========================================================
-    # 3. SECURE PUSH TO FIREBASE
-    # =========================================================
     if active_games_found > 0:
         if firebase_admin._apps:
             try:
                 safe_payload = inspect_and_sanitize(all_new_live_data)
-                
-                ref = db.reference('futbol_live_games')
-                ref.set(safe_payload)
+                db.reference('futbol_live_games').set(safe_payload)
                 print(f"🚀 Pushed {active_games_found} active futbol games to Firebase!")
             except Exception as e:
                 print(f"⚠️ Failed to push: {e}")
     else:
-        print("\n💤 No active futbol games right now.")
+        print("\n💤 No active futbol games. Clearing board.")
         if firebase_admin._apps:
             try: db.reference('futbol_live_games').delete()
             except: pass
 
-    # 4. SLEEP CALCULATION
-    if has_live_games:
-        print("⚡ Active/Imminent games detected. Fast-polling.")
-        return 30 
-
-    if next_upcoming_ts:
-        target_sleep = (next_upcoming_ts - now_ts) - 120 
-        calculated_sleep = max(60, min(target_sleep, 3600))
-        print(f"⏰ Next game approaches. Calculated sleep: {int(calculated_sleep)}s")
-        return calculated_sleep
-        
-    if missing_schedule:
-        print("📭 Today's schedule hasn't been built by the scraper yet. Waiting 2 minutes...")
-        return 120
-            
-    print("📭 No live games, no delayed games, and no future games found. Sleeping for 1 hour.")
+    if has_live_games: return 30 
+    if next_upcoming_ts: return max(60, min((next_upcoming_ts - now_ts) - 120, 3600))
+    if missing_schedule: return 120
     return 3600 
-
 
 if __name__ == "__main__":
     print("⚽ Starting Futbol Live Real-Time Engine...")
     while True:
         try:
-            sleep_seconds = main()
-            if sleep_seconds == 30:
-                print("⏱️ Fast poll active (30s)...\n")
-            else:
-                print(f"⏳ Sleeping {int(sleep_seconds // 60)} minutes...\n")
-            time.sleep(sleep_seconds)
-        except KeyboardInterrupt:
-            break
+            sleep_sec = main()
+            time.sleep(sleep_sec)
         except Exception as e:
             print(f"\n❌ Loop crashed: {e}. Restarting in 60s...")
             time.sleep(60)
