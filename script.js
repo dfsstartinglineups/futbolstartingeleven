@@ -814,6 +814,9 @@ function renderLeagueMenu(activeLeague, currentDate) {
 
     // URL Builder: Only append the date parameter if it's NOT today.
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
     const dateParam = currentDate === todayStr ? '' : `&date=${currentDate}`;
     
     LEAGUE_GROUPS["priority"].forEach(league => {
@@ -1123,7 +1126,7 @@ async function init() {
     // ==========================================
     // 1. THE REAL-TIME PATH (Today's Games)
     // ==========================================
-    if (params.date === todayStr) {
+    if (params.date === todayStr || params.date === yesterdayStr) {
         console.log("📡 Connecting to Firebase Realtime Stream...");
         const liveRef = db.ref('futbol_live_games');
         
@@ -1133,12 +1136,24 @@ async function init() {
             if (incomingData) {
                 let liveGamesArray = Object.values(incomingData);
                 
-                // --- THE FIX: FILTER THE FIREBASE FIREHOSE ---
-                // If we are looking at a specific league, throw away any Firebase updates for other leagues!
+                // --- NEW CROSS-DAY FILTER ---
+                if (params.date === todayStr) {
+                    // On Today's page: show Today's games + any ACTIVE games from Yesterday
+                    liveGamesArray = liveGamesArray.filter(g => {
+                        const gDate = g.fixture.date.split('T')[0];
+                        const isActiveYesterday = (gDate === yesterdayStr && !['FT', 'AET', 'PEN'].includes(g.fixture.status.short));
+                        return gDate === todayStr || isActiveYesterday;
+                    });
+                } else {
+                    // On Yesterday's page: strictly show Yesterday's games
+                    liveGamesArray = liveGamesArray.filter(g => g.fixture.date.split('T')[0] === yesterdayStr);
+                }
+
                 if (params.league !== 'top') {
                     const targetId = SUPPORTED_LEAGUES[params.league].id;
                     liveGamesArray = liveGamesArray.filter(g => g.league.id === targetId);
                 }
+                // --- END NEW FILTER ---
 
                 console.log("⚡ Firebase Update Received!", liveGamesArray.length, "relevant games active.");
 
