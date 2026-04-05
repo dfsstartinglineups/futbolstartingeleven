@@ -35,9 +35,6 @@ else:
 # ==========================================================
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(SCRIPT_DIR, '..', 'data')
-LIVE_DIR = os.path.join(DATA_DIR, 'LIVE')
-
-os.makedirs(LIVE_DIR, exist_ok=True)
 
 API_HOST = "https://v3.football.api-sports.io"
 API_KEY = os.environ.get("FOOTBALL_API_KEY")
@@ -104,10 +101,10 @@ def main():
     
     for d in potential_dates:
         d_str = d.strftime("%Y-%m-%d")
-        # NOTE: We use the local file path ONLY for checking if we can retire 
-        # completed days to save API calls.
         base_path = os.path.join(DATA_DIR, f"games_{d_str}.json")
         
+        # NOTE: We use the local file path ONLY for checking if we can retire 
+        # completed days to save Github/API calls on completely dead days.
         if not os.path.exists(base_path):
             dates_to_process.append(d)
             continue
@@ -142,30 +139,30 @@ def main():
     next_upcoming_ts = None  
     missing_schedule = False
 
+    # =========================================================
+    # THE MASTER UPGRADE: FIREBASE AS THE MEMORY BANK
+    # =========================================================
     old_live_data = {}
-    for d in dates_to_process:
-        date_str = d.strftime("%Y-%m-%d")
-        live_file_path = os.path.join(LIVE_DIR, f"futbol_live_{date_str}.json")
-        if os.path.exists(live_file_path):
-            try:
-                with open(live_file_path, 'r') as f:
-                    old_live_data.update(json.load(f))
-            except: pass
+    if firebase_admin._apps:
+        try:
+            print("🗄️ Fetching current state from Firebase to use as memory...")
+            fb_state = db.reference('futbol_live_games').get()
+            if fb_state and isinstance(fb_state, dict):
+                old_live_data = fb_state
+        except Exception as e:
+            print(f"⚠️ Failed to fetch memory from Firebase: {e}")
 
     for target_date in dates_to_process:
         current_date_str = target_date.strftime("%Y-%m-%d")
-        live_file_path = os.path.join(LIVE_DIR, f"futbol_live_{current_date_str}.json")
         
-        # --- NEW: FETCH DIRECTLY FROM GITHUB ---
+        # --- FETCH SCHEDULE DIRECTLY FROM GITHUB ---
         github_raw_url = f"https://raw.githubusercontent.com/dfsstartinglineups/futbolstartingeleven/refs/heads/main/data/games_{current_date_str}.json"
         
         try:
-            # We add a dummy header to bypass heavy GitHub caching
             headers = {'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
             response = requests.get(github_raw_url, headers=headers, timeout=10)
             
             if response.status_code == 404:
-                # Normal behavior if tomorrow's file isn't created yet
                 missing_schedule = True
                 continue
                 
@@ -180,13 +177,13 @@ def main():
         if not daily_games:
             missing_schedule = True
             continue
-        # ---------------------------------------
 
         for base_game in daily_games:
             g_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
             g_synced = base_game.get('post_game_sync', False)
             g_ts = base_game.get('fixture', {}).get('timestamp', 0)
             
+            # THE BOUNCER: Drop games that are officially dead or fully synced
             if (g_status in ['FT', 'AET', 'PEN'] and g_synced) or g_status in ['PST', 'CANC', 'ABD', 'AWD', 'WO']:
                 continue
                 
@@ -203,7 +200,6 @@ def main():
             continue
             
         live_master_map = {str(g['fixture']['id']): g for g in fixtures_data["response"]}
-        day_live_data = {}
 
         for base_game in daily_games:
             fix_id = str(base_game['fixture']['id'])
@@ -223,15 +219,41 @@ def main():
                 if scraper_has_synced:
                     continue 
                 else:
+                    # 🛡️ THE QUALITY CONTROL AUDIT 🛡️
+                    memory_is_complete = False
                     if fix_id in old_live_data:
+                        mem_game = old_live_data[fix_id]
+                        
+                        # Audit 1: Are events attached?
+                        has_events = "events" in mem_game
+                        
+                        # Audit 2: Are team stats attached?
+                        has_team_stats = "team_stats" in mem_game and "home" in mem_game["team_stats"]
+                        
+                        # Audit 3: Are player stats attached?
+                        has_player_stats = False
+                        try:
+                            home_start = mem_game.get("homeLineup", {}).get("startXI", [])
+                            if home_start and len(home_start) > 0 and "live_stats" in home_start[0].get("player", {}):
+                                has_player_stats = True
+                        except:
+                            pass
+                            
+                        if has_events and has_team_stats and has_player_stats:
+                            memory_is_complete = True
+
+                    if memory_is_complete:
+                        # ✅ Audit Passed! Safe to use Firebase memory and skip API.
                         live_game_obj = old_live_data[fix_id]
                         live_game_obj['fixture']['status'] = latest_data['fixture']['status']
                         live_game_obj['goals'] = latest_data['goals']
                         
-                        day_live_data[fix_id] = live_game_obj
                         all_new_live_data[fix_id] = live_game_obj
                         active_games_found += 1 
-                    continue 
+                        continue 
+                    else:
+                        # ❌ Audit Failed! Let it fall through to fetch the final API stats.
+                        print(f"🕵️ [{fix_id}] FT Memory Audit Failed. Fetching final deep stats from API...")
 
             if not is_playing and not is_finished:
                 continue 
@@ -244,7 +266,7 @@ def main():
                     live_game_obj = old_live_data[fix_id]
                     live_game_obj['fixture']['status'] = latest_data['fixture']['status']
                     live_game_obj['goals'] = latest_data['goals']
-                    day_live_data[fix_id] = live_game_obj
+                    
                     all_new_live_data[fix_id] = live_game_obj
                     continue 
             
@@ -282,7 +304,6 @@ def main():
                         parsed_events.append(event_obj)
                 live_game_obj["events"] = parsed_events
 
-
             # =========================================================
             # B. STATELESS TEAM STATS FETCH 
             # =========================================================
@@ -312,15 +333,14 @@ def main():
                     team_stats[side] = parsed_t_stats
                 live_game_obj["team_stats"] = team_stats
             else:
-                # Early game or API hiccup. Fallback to memory so UI doesn't drop to 0.
+                # Early game or API hiccup. Fallback to FIREBASE memory so UI doesn't drop to 0.
                 if fix_id in old_live_data and "team_stats" in old_live_data[fix_id]:
                     live_game_obj["team_stats"] = old_live_data[fix_id]["team_stats"]
-
 
             # =========================================================
             # C. STATELESS PLAYER STATS & SUBSTITUTIONS
             # =========================================================
-            # 1. Build a fallback map from memory in case the API or Scraper is delayed
+            # 1. Build a fallback map from FIREBASE memory in case the API or Scraper is delayed
             old_player_stats = {}
             if fix_id in old_live_data:
                 for side in ["homeLineup", "awayLineup"]:
@@ -406,7 +426,7 @@ def main():
                                             break
                                 except StopIteration: pass
 
-                # Attach Live Stats (prefer new API fetch, fall back to memory)
+                # Attach Live Stats (prefer new API fetch, fall back to FIREBASE memory)
                 for side in ["homeLineup", "awayLineup"]:
                     lineup = live_game_obj[side]
                     for slot in lineup.get("startXI", []):
@@ -430,12 +450,7 @@ def main():
                         elif p_id in old_player_stats:
                             sub["player"]["live_stats"] = old_player_stats[p_id]
 
-            day_live_data[fix_id] = live_game_obj
             all_new_live_data[fix_id] = live_game_obj
-            
-        if day_live_data:
-            with open(live_file_path, 'w') as f:
-                json.dump(day_live_data, f, indent=2)
 
     # =========================================================
     # 3. SECURE PUSH TO FIREBASE
