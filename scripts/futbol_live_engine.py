@@ -234,11 +234,11 @@ def main():
             has_live_games = True
 
             if status == 'HT' and fix_id in old_live_data and 'events' in old_live_data[fix_id]:
-                live_game_obj = old_live_data[fix_id]
+                live_game_obj = copy.deepcopy(old_live_data[fix_id]) # <--- ADDED DEEPCOPY
                 live_game_obj['fixture']['status'] = latest_data['fixture']['status']
                 live_game_obj['goals'] = latest_data.get('goals', {"home": 0, "away": 0})
                 all_new_live_data[fix_id] = live_game_obj
-                continue 
+                continue
             
             print(f"⚽ Processing Live Match: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']} ({status})")
             
