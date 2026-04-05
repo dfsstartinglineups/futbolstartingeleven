@@ -342,6 +342,9 @@ def main():
 
             all_new_live_data[fix_id] = live_game_obj
 
+    # =========================================================
+    # 3. SECURE PUSH TO FIREBASE (NO DELETIONS)
+    # =========================================================
     if active_games_found > 0:
         if firebase_admin._apps:
             try:
@@ -351,11 +354,9 @@ def main():
             except Exception as e:
                 print(f"⚠️ Failed to push: {e}")
     else:
-        print("\n💤 No active futbol games. Clearing board.")
-        if firebase_admin._apps:
-            try: db.reference('futbol_live_games').delete()
-            except: pass
+        print("\n💤 No active futbol games. Firebase memory will carry over until next kickoff.")
 
+    # 4. SLEEP CALCULATION
     if has_live_games: return 30 
     if next_upcoming_ts: return max(60, min((next_upcoming_ts - now_ts) - 120, 3600))
     if missing_schedule: return 120
