@@ -394,14 +394,32 @@ def main():
             all_new_live_data[fix_id] = live_game_obj
 
     # =========================================================
-    # 3. SECURE PUSH TO FIREBASE (NO DELETIONS)
+    # 3. SECURE PUSH TO FIREBASE (DELTA UPDATES ONLY)
     # =========================================================
     if active_games_found > 0:
         if firebase_admin._apps:
             try:
-                safe_payload = inspect_and_sanitize(all_new_live_data)
-                db.reference('futbol_live_games').set(safe_payload)
-                print(f"🚀 Pushed {active_games_found} active futbol games to Firebase!")
+                delta_payload = {}
+                
+                # 1. Check for updated or new games
+                for fix_id, game_data in all_new_live_data.items():
+                    # Python automatically does a deep comparison of the dictionaries here!
+                    if fix_id not in old_live_data or old_live_data[fix_id] != game_data:
+                        delta_payload[fix_id] = game_data
+                
+                # 2. Check for games that just finished and need to be removed from the live board
+                for fix_id in old_live_data:
+                    if fix_id not in all_new_live_data:
+                        delta_payload[fix_id] = None  # Sending None to .update() safely deletes the node
+                        
+                # 3. Only trigger a push if there are actual changes
+                if delta_payload:
+                    safe_delta = inspect_and_sanitize(delta_payload)
+                    db.reference('futbol_live_games').update(safe_delta)
+                    print(f"🚀 Pushed deltas for {len(delta_payload)} games to Firebase!")
+                else:
+                    print("💤 No stats changed this cycle. Skipping Firebase push to save bandwidth.")
+                    
             except Exception as e:
                 print(f"⚠️ Failed to push: {e}")
     else:
