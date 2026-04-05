@@ -277,6 +277,57 @@ def main():
                             event_obj["player_out_id"] = ev.get("assist", {}).get("id")
                         parsed_events.append(event_obj)
                 live_game_obj["events"] = parsed_events
+                # =========================================================
+                # 🔄 PROCESS SUBSTITUTIONS (Transplanted from Scraper)
+                # =========================================================
+                for ev in parsed_events:
+                    if ev.get("type") == "subst":
+                        player_in_id = str(ev.get("player_id", ""))
+                        player_out_id = str(ev.get("player_out_id", ""))
+                        
+                        for side in ["homeLineup", "awayLineup"]:
+                            lineup = live_game_obj.get(side)
+                            if not lineup: continue
+                            
+                            in_is_sub = any(str(s.get("player", {}).get("id")) == player_in_id for s in lineup.get("substitutes", []))
+                            out_is_sub = any(str(s.get("player", {}).get("id")) == player_out_id for s in lineup.get("substitutes", []))
+                            in_is_starter = any(str(s.get("player", {}).get("id")) == player_in_id for s in lineup.get("startXI", []))
+                            out_is_starter = any(str(s.get("player", {}).get("id")) == player_out_id for s in lineup.get("startXI", []))
+                            
+                            # API ERROR CORRECTION
+                            if in_is_starter and out_is_sub:
+                                try:
+                                    starter_idx = next(i for i, s in enumerate(lineup["startXI"]) if str(s["player"]["id"]) == player_in_id)
+                                    sub_idx = next(i for i, s in enumerate(lineup["substitutes"]) if str(s["player"]["id"]) == player_out_id)
+                                    
+                                    temp = lineup["startXI"][starter_idx]
+                                    lineup["startXI"][starter_idx] = lineup["substitutes"][sub_idx]
+                                    lineup["substitutes"][sub_idx] = temp
+                                    
+                                    in_is_sub, out_is_starter = True, True
+                                except StopIteration: pass
+                                    
+                            # NORMAL SUBSTITUTION
+                            if in_is_sub and out_is_starter:
+                                try:
+                                    incoming_sub = next(s for s in lineup["substitutes"] if str(s["player"]["id"]) == player_in_id)
+                                    
+                                    for slot in lineup["startXI"]:
+                                        if str(slot.get("player", {}).get("id")) == player_out_id:
+                                            if "sub_history" not in slot:
+                                                slot["sub_history"] = []
+                                                
+                                            slot["sub_history"].insert(0, slot["player"].copy())
+                                            
+                                            slot["player"] = incoming_sub["player"]
+                                            slot["player"]["isSubbedIn"] = True
+                                            slot["player"]["subMinute"] = ev["time"]
+                                            slot["player"]["pos"] = slot["sub_history"][0].get("pos", "M")
+                                            
+                                            # Remove incoming sub from bench
+                                            lineup["substitutes"] = [s for s in lineup["substitutes"] if str(s.get("player", {}).get("id")) != player_in_id]
+                                            break
+                                except StopIteration: pass
 
             # B. TEAM STATS
             stats_data = fetch_api(f"fixtures/statistics?fixture={fix_id}")
