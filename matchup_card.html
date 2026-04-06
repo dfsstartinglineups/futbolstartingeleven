@@ -162,8 +162,8 @@
         }
 
         .player-photo-container {
-            width: 55px;
-            height: 55px;
+            width: 60px; /* Bumped size slightly */
+            height: 60px;
             border-radius: 50%;
             border: 3px solid var(--node-color);
             background-color: #2b3035;
@@ -379,9 +379,9 @@
             const homeRows = groupIntoRows(match.homeLineup.startXI);
             const awayRows = groupIntoRows(match.awayLineup.startXI);
 
-            // Adjusted mapping to perfectly fit both teams without overlapping
-            const homeYPositions = [90, 76, 62, 51]; 
-            const awayYPositions = [10, 24, 38, 49];   
+            // Spaced out the Y-Coordinates so the midfield has more breathing room
+            const homeYPositions = [90, 75, 60, 48]; 
+            const awayYPositions = [8, 22, 36, 44];   
 
             function drawTeam(rows, yPositions, teamColor) {
                 rows.forEach((rowPlayers, rowIndex) => {
@@ -423,8 +423,9 @@
                 });
             }
 
-            drawTeam(homeRows, homeYPositions, homeColor);
+            // CRITICAL: Draw Away first, Home second so Home overlaps properly in foreground
             drawTeam(awayRows, awayYPositions, awayColor);
+            drawTeam(homeRows, homeYPositions, homeColor);
         }
 
         function takeScreenshot() {
