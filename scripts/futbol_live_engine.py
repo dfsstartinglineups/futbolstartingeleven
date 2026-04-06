@@ -81,10 +81,10 @@ def inspect_and_sanitize(obj, current_path="root"):
 # ==========================================================
 # --- CORE ENGINE LOGIC ---
 # ==========================================================
-def main():
+def main(local_memory):
     if not API_KEY:
         print("❌ Missing FOOTBALL_API_KEY. Exiting.")
-        return 3600 
+        return 3600, local_memory 
 
     ny_tz = zoneinfo.ZoneInfo("America/New_York")
     now_est = datetime.now(ny_tz)
@@ -132,7 +132,7 @@ def main():
 
     if not dates_to_process:
         print("💤 All scheduled dates are finished and synced. No API calls needed.")
-        return 600 
+        return 600, local_memory
 
     all_new_live_data = {}
     active_games_found = 0
@@ -140,15 +140,23 @@ def main():
     next_upcoming_ts = None  
     missing_schedule = False
 
+    # =========================================================
+    # 🧠 THE LOCAL MEMORY GATEKEEPER
+    # =========================================================
     old_live_data = {}
-    if firebase_admin._apps:
-        try:
-            print("🗄️ Fetching current state from Firebase to use as memory...")
-            fb_state = db.reference('futbol_live_games').get()
-            if fb_state and isinstance(fb_state, dict):
-                old_live_data = fb_state
-        except Exception as e:
-            print(f"⚠️ Failed to fetch memory from Firebase: {e}")
+    if local_memory is None:
+        if firebase_admin._apps:
+            try:
+                print("🗄️ COLD START: Fetching current state from Firebase to initialize memory...")
+                fb_state = db.reference('futbol_live_games').get()
+                if fb_state and isinstance(fb_state, dict):
+                    old_live_data = fb_state
+            except Exception as e:
+                print(f"⚠️ Failed to fetch memory from Firebase: {e}")
+    else:
+        old_live_data = local_memory
+        # Optional: Uncomment the print below if you want to see the local memory engaging in logs
+        # print(f"🧠 Using fast local memory (Tracking {len(old_live_data)} games)...")
 
     for target_date in dates_to_process:
         current_date_str = target_date.strftime("%Y-%m-%d")
@@ -248,7 +256,7 @@ def main():
             has_live_games = True
 
             if status == 'HT' and fix_id in old_live_data and 'events' in old_live_data[fix_id]:
-                live_game_obj = copy.deepcopy(old_live_data[fix_id]) # <--- ADDED DEEPCOPY
+                live_game_obj = copy.deepcopy(old_live_data[fix_id]) 
                 live_game_obj['fixture']['status'] = latest_data['fixture']['status']
                 live_game_obj['goals'] = latest_data.get('goals', {"home": 0, "away": 0})
                 all_new_live_data[fix_id] = live_game_obj
@@ -291,9 +299,8 @@ def main():
                             event_obj["player_out_id"] = ev.get("assist", {}).get("id")
                         parsed_events.append(event_obj)
                 live_game_obj["events"] = parsed_events
-                # =========================================================
-                # 🔄 PROCESS SUBSTITUTIONS (Transplanted from Scraper)
-                # =========================================================
+                
+                # 🔄 PROCESS SUBSTITUTIONS
                 for ev in parsed_events:
                     if ev.get("type") == "subst":
                         player_in_id = str(ev.get("player_id", ""))
@@ -417,14 +424,13 @@ def main():
                 
                 # 1. Check for updated or new games
                 for fix_id, game_data in all_new_live_data.items():
-                    # Python automatically does a deep comparison of the dictionaries here!
                     if fix_id not in old_live_data or old_live_data[fix_id] != game_data:
                         delta_payload[fix_id] = game_data
                 
                 # 2. Check for games that just finished and need to be removed from the live board
                 for fix_id in old_live_data:
                     if fix_id not in all_new_live_data:
-                        delta_payload[fix_id] = None  # Sending None to .update() safely deletes the node
+                        delta_payload[fix_id] = None  # Safely deletes the node
                         
                 # 3. Only trigger a push if there are actual changes
                 if delta_payload:
@@ -432,34 +438,42 @@ def main():
                     db.reference('futbol_live_games').update(safe_delta)
                     print(f"🚀 Pushed deltas for {len(delta_payload)} games to Firebase!")
                 else:
-                    print("💤 No stats changed this cycle. Skipping Firebase push to save bandwidth.")
+                    pass # Silent skip to save console spam during local memory loops
                     
             except Exception as e:
                 print(f"⚠️ Failed to push: {e}")
     else:
-        print("\n💤 No active futbol games. Firebase memory will carry over until next kickoff.")
+        print("\n💤 No active futbol games. Memory will carry over until next kickoff.")
 
-    # 4. SLEEP CALCULATION
+    # 4. SLEEP CALCULATION & LOCAL MEMORY RETURN
     if has_live_games: 
         print("⏱️ Sleeping 30s (Waiting for kickoff or active game updates)...")
-        return 30 
+        return 30, all_new_live_data 
     if next_upcoming_ts: 
         sleep_time = max(60, min((next_upcoming_ts - now_ts) - 120, 3600))
         print(f"⏱️ Sleeping {int(sleep_time)}s (Waiting for next scheduled kickoff)...")
-        return sleep_time
+        return sleep_time, all_new_live_data
     if missing_schedule: 
         print("⏱️ Sleeping 120s (Waiting for today's JSON schedule to be published)...")
-        return 120
+        return 120, all_new_live_data
         
     print("⏱️ Sleeping 3600s (Default sleep - No active schedules found)...")
-    return 3600 
+    return 3600, all_new_live_data 
 
 if __name__ == "__main__":
     print("⚽ Starting Futbol Live Real-Time Engine...")
+    
+    # Initialize the memory object strictly OUTSIDE the core processing loop
+    persisted_memory = None
+    
     while True:
         try:
-            sleep_sec = main()
+            # The memory gets passed in, updated, and passed back out
+            sleep_sec, persisted_memory = main(persisted_memory)
             time.sleep(sleep_sec)
         except Exception as e:
             print(f"\n❌ Loop crashed: {e}. Restarting in 60s...")
+            # If the script crashes, we wipe the memory so it is forced to 
+            # re-sync with Firebase upon booting back up!
+            persisted_memory = None 
             time.sleep(60)
