@@ -146,22 +146,23 @@
         .six-yard-top { width: 140px; height: 35px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); }
         .penalty-arc-top { width: 100px; height: 50px; top: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-top: none; border-radius: 0 0 50px 50px; position: absolute; border-top-color: transparent;}
 
-        /* --- Player Nodes (Flat 2D - Scaled Down for 10-Row Formations) --- */
+        /* --- Player Nodes (Tightly Scaled to Prevent Overlap) --- */
         .player-node {
             position: absolute;
-            width: 80px;
+            width: 70px;
             display: flex;
             flex-direction: column;
             align-items: center;
             transform: translate(-50%, -50%);
             transition: all 0.5s ease;
+            z-index: 10; /* Ensures names sit above the pitch lines cleanly */
         }
 
         .player-photo-container {
-            width: 40px;  /* SCALED DOWN FROM 50px */
-            height: 40px; /* SCALED DOWN FROM 50px */
+            width: 38px;  
+            height: 38px; 
             border-radius: 50%;
-            border: 3px solid var(--node-color);
+            border: 2px solid var(--node-color);
             background-color: #2b3035;
             box-shadow: 0 4px 8px rgba(0,0,0,0.6);
             z-index: 2;
@@ -178,7 +179,7 @@
         .player-number {
             position: absolute;
             top: -2px;
-            right: 12px;
+            right: 8px;
             background-color: #111;
             color: white;
             border: 1px solid var(--node-color);
@@ -194,11 +195,11 @@
         }
 
         .player-nameplate {
-            margin-top: -4px;
+            margin-top: -6px; /* Tucks the nameplate tighter under the chin */
             background: rgba(0, 0, 0, 0.85);
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 2px 6px;
-            border-radius: 8px;
+            padding: 2px 5px;
+            border-radius: 6px;
             font-size: 9px;
             font-weight: 800;
             text-transform: uppercase;
@@ -263,7 +264,6 @@
     <script>
         let allMatches = [];
 
-        // Mocks include a 3-4-2-1 to prove the new parsing engine works perfectly
         const MOCK_MATCHES = [
             {
                 fixture: { id: 1001 },
@@ -272,7 +272,7 @@
                     away: { name: "Wolfsburg", logo: "https://media.api-sports.io/football/teams/161.png" }
                 },
                 homeLineup: {
-                    formation: "3-4-2-1", // Complex formation test
+                    formation: "3-4-2-1",
                     team: { colors: { player: { primary: "e32221" } } },
                     startXI: [
                         { player: { name: "Hradecky", pos: "G", number: 1, photo: "https://media.api-sports.io/football/players/250.png" } },
@@ -346,15 +346,10 @@
             return Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2));
         }
 
-        // --- THE NEW STRICT FORMATION PARSER ---
         function sliceArrayByFormation(formationStr, startXI) {
-            // formationStr: "3-4-2-1" -> parts: [3, 4, 2, 1]
             const parts = formationStr.split('-').map(Number);
             const rows = [];
-            
-            // Goalkeeper is ALWAYS row 0
             rows.push([startXI[0]]);
-            
             let currentIndex = 1;
             for (let i = 0; i < parts.length; i++) {
                 const count = parts[i];
@@ -362,6 +357,40 @@
                 currentIndex += count;
             }
             return rows;
+        }
+
+        // --- STRICT TACTICAL GRID MAPPING ---
+        function getYPositions(numRows, isHome) {
+            // Enforces a strict deadzone between 44% and 56% so teams NEVER overlap
+            if (isHome) {
+                if (numRows === 4) return [95, 82, 69, 56];
+                if (numRows === 5) return [96, 86, 76, 66, 56];
+                if (numRows === 6) return [96, 88, 80, 72, 64, 56];
+                return [...Array(numRows)].map((_, i) => 96 - (i * (40 / (numRows - 1)))); // Fallback
+            } else {
+                if (numRows === 4) return [5, 18, 31, 44];
+                if (numRows === 5) return [4, 14, 24, 34, 44];
+                if (numRows === 6) return [4, 12, 20, 28, 36, 44];
+                return [...Array(numRows)].map((_, i) => 4 + (i * (40 / (numRows - 1)))); // Fallback
+            }
+        }
+
+        function getXPositions(numPlayers) {
+            // Intentionally spaced to look like a real tactical board
+            if (numPlayers === 1) return [50];
+            if (numPlayers === 2) return [38, 62]; // Tightened inside-forwards/AMs
+            if (numPlayers === 3) return [25, 50, 75];
+            if (numPlayers === 4) return [18, 39, 61, 82];
+            if (numPlayers === 5) return [12, 31, 50, 69, 88];
+            if (numPlayers === 6) return [10, 26, 42, 58, 74, 90];
+            
+            // Fallback for > 6 (Extremely rare)
+            let positions = [];
+            let step = 80 / (numPlayers - 1);
+            for(let i=0; i<numPlayers; i++) {
+                positions.push(10 + (step * i));
+            }
+            return positions;
         }
 
         function renderMatch(fixtureId) {
@@ -388,31 +417,18 @@
 
             function drawTeam(rows, isHome, teamColor) {
                 const numRows = rows.length;
+                const yPositions = getYPositions(numRows, isHome);
                 
                 rows.forEach((rowPlayers, rowIndex) => {
                     if (!rowPlayers || rowPlayers.length === 0) return;
                     
-                    // MAXIMIZED Y-Spacing Logic
-                    // Home occupies 96% to 54% | Away occupies 4% to 46%
-                    let yPos;
-                    if (isHome) {
-                        yPos = 96 - (rowIndex * (42 / (numRows - 1 || 1)));
-                    } else {
-                        yPos = 4 + (rowIndex * (42 / (numRows - 1 || 1)));
-                    }
-
+                    const yPos = yPositions[rowIndex];
                     const numPlayers = rowPlayers.length;
+                    const xPositions = getXPositions(numPlayers);
 
                     rowPlayers.forEach((slot, colIndex) => {
                         const p = slot.player;
-                        
-                        // X-Spacing Logic
-                        let xPos = 50; 
-                        if (numPlayers > 1) {
-                            const spread = 70; // Keep them inside the touchlines
-                            const step = spread / (numPlayers - 1);
-                            xPos = 15 + (step * colIndex);
-                        }
+                        const xPos = xPositions[colIndex];
 
                         const nameParts = p.name.split(' ');
                         let displayName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : p.name;
