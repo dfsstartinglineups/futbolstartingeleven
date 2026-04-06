@@ -115,7 +115,13 @@ def main():
         for g in check_games:
             status = g.get('fixture', {}).get('status', {}).get('short', '')
             synced = g.get('post_game_sync', False)
-            if status not in ['FT', 'AET', 'PEN'] or not synced:
+            
+            # If it's a finished game, it MUST be synced. 
+            if status in ['FT', 'AET', 'PEN'] and not synced:
+                all_done = False
+                break
+            # If it's not finished and not a dead status, it's still pending.
+            elif status not in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']:
                 all_done = False
                 break
         
@@ -185,7 +191,7 @@ def main():
             status = latest_data.get('fixture', {}).get('status', {}).get('short', '')
             
             is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
-            is_finished = status in ['FT', 'AET', 'PEN']
+            is_finished = status in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']
             
             scraper_has_synced = base_game.get('post_game_sync', False)
             
