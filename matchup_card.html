@@ -281,16 +281,37 @@
 
         async function loadData() {
             try {
-                const res = await fetch('data/games_2026-04-06.json'); 
+                // 1. Look for a date in the URL (e.g., ?date=2026-04-06)
+                const urlParams = new URLSearchParams(window.location.search);
+                let targetDate = urlParams.get('date');
+                
+                // 2. Fallback to today's date if none is provided
+                if (!targetDate) {
+                    const today = new Date();
+                    targetDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+                }
+
+                // 3. Fetch the dynamic file!
+                const res = await fetch(`data/games_${targetDate}.json`); 
                 if (res.ok) {
                     const data = await res.json();
                     allMatches = data.filter(m => m.homeLineup && m.homeLineup.startXI && m.awayLineup && m.awayLineup.startXI);
                 } else throw new Error("File not found");
             } catch (e) {
-                console.log("Failed to load data.");
+                console.log(`Failed to load data for ${targetDate}.`);
             }
             populateDropdown();
-            if (allMatches.length > 0) renderMatch(allMatches[0].fixture.id);
+            
+            // 4. Look for a fixture in the URL to auto-select it (e.g., &fixture=12345)
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetFixture = urlParams.get('fixture');
+            
+            if (targetFixture && allMatches.find(m => m.fixture.id == targetFixture)) {
+                document.getElementById('match-selector').value = targetFixture;
+                renderMatch(parseInt(targetFixture));
+            } else if (allMatches.length > 0) {
+                renderMatch(allMatches[0].fixture.id);
+            }
         }
 
         function populateDropdown() {
