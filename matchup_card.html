@@ -132,19 +132,31 @@
             border-radius: 4px;
         }
 
+        /* Field Shading */
+        .pitch-shade {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            pointer-events: none;
+            z-index: 1; /* Sits below the pitch lines */
+        }
+        .top-shade { top: 0; border-radius: 4px 4px 0 0; }
+        .bottom-shade { bottom: 0; border-radius: 0 0 4px 4px; }
+
         /* Field Lines */
-        .pitch-line { position: absolute; border: 2px solid rgba(255,255,255,0.4); }
+        .pitch-line { position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2; }
         .center-circle { width: 140px; height: 140px; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .center-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .halfway-line { width: 100%; height: 2px; top: 50%; border-left: none; border-right: none; background: rgba(255,255,255,0.4); border: none; }
+        .center-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; }
+        .halfway-line { width: 100%; height: 2px; top: 50%; border-left: none; border-right: none; background: rgba(255,255,255,0.4); border: none; z-index: 2; }
         
         .penalty-box-bottom { width: 300px; height: 90px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; }
-        .six-yard-bottom { width: 140px; height: 35px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); }
-        .penalty-arc-bottom { width: 100px; height: 50px; bottom: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-bottom: none; border-radius: 50px 50px 0 0; position: absolute; border-bottom-color: transparent;}
+        .six-yard-bottom { width: 140px; height: 35px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2;}
+        .penalty-arc-bottom { width: 100px; height: 50px; bottom: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-bottom: none; border-radius: 50px 50px 0 0; position: absolute; border-bottom-color: transparent; z-index: 2;}
         
         .penalty-box-top { width: 300px; height: 90px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; }
-        .six-yard-top { width: 140px; height: 35px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); }
-        .penalty-arc-top { width: 100px; height: 50px; top: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-top: none; border-radius: 0 0 50px 50px; position: absolute; border-top-color: transparent;}
+        .six-yard-top { width: 140px; height: 35px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2;}
+        .penalty-arc-top { width: 100px; height: 50px; top: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-top: none; border-radius: 0 0 50px 50px; position: absolute; border-top-color: transparent; z-index: 2;}
 
         /* --- Player Nodes --- */
         .player-node {
@@ -242,6 +254,9 @@
 
         <div id="scene">
             <div id="pitch">
+                <div id="away-shade" class="pitch-shade top-shade"></div>
+                <div id="home-shade" class="pitch-shade bottom-shade"></div>
+
                 <div class="pitch-line center-circle"></div>
                 <div class="center-dot"></div>
                 <div class="halfway-line"></div>
@@ -267,41 +282,41 @@
             {
                 fixture: { id: 1001 },
                 teams: {
-                    home: { name: "Bayer Leverkusen", logo: "https://media.api-sports.io/football/teams/168.png" },
-                    away: { name: "Wolfsburg", logo: "https://media.api-sports.io/football/teams/161.png" }
+                    home: { name: "Liverpool", logo: "https://media.api-sports.io/football/teams/40.png" },
+                    away: { name: "Man City", logo: "https://media.api-sports.io/football/teams/50.png" }
                 },
                 homeLineup: {
-                    formation: "3-4-2-1",
-                    team: { colors: { player: { primary: "e32221" } } },
+                    formation: "4-3-3",
+                    team: { colors: { player: { primary: "d00027" } } },
                     startXI: [
-                        { player: { name: "Hradecky", pos: "G", number: 1, photo: "https://media.api-sports.io/football/players/250.png" } },
-                        { player: { name: "Tapsoba", pos: "D", number: 12, photo: "https://media.api-sports.io/football/players/251.png" } },
-                        { player: { name: "Tah", pos: "D", number: 4, photo: "https://media.api-sports.io/football/players/252.png" } },
-                        { player: { name: "Kossounou", pos: "D", number: 3, photo: "https://media.api-sports.io/football/players/253.png" } },
-                        { player: { name: "Frimpong", pos: "M", number: 30, photo: "https://media.api-sports.io/football/players/254.png" } },
-                        { player: { name: "Xhaka", pos: "M", number: 34, photo: "https://media.api-sports.io/football/players/255.png" } },
-                        { player: { name: "Andrich", pos: "M", number: 8, photo: "https://media.api-sports.io/football/players/256.png" } },
-                        { player: { name: "Grimaldo", pos: "M", number: 20, photo: "https://media.api-sports.io/football/players/257.png" } },
-                        { player: { name: "Hofmann", pos: "F", number: 7, photo: "https://media.api-sports.io/football/players/258.png" } },
-                        { player: { name: "Wirtz", pos: "F", number: 10, photo: "https://media.api-sports.io/football/players/259.png" } },
-                        { player: { name: "Boniface", pos: "F", number: 22, photo: "https://media.api-sports.io/football/players/260.png" } }
+                        { player: { name: "Alisson", pos: "G", number: 1, photo: null } },
+                        { player: { name: "Alexander-Arnold", pos: "D", number: 66, photo: null } },
+                        { player: { name: "Konate", pos: "D", number: 5, photo: null } },
+                        { player: { name: "van Dijk", pos: "D", number: 4, photo: null } },
+                        { player: { name: "Robertson", pos: "D", number: 26, photo: null } },
+                        { player: { name: "Szoboszlai", pos: "M", number: 8, photo: null } },
+                        { player: { name: "Mac Allister", pos: "M", number: 10, photo: null } },
+                        { player: { name: "Gravenberch", pos: "M", number: 38, photo: null } },
+                        { player: { name: "Salah", pos: "F", number: 11, photo: null } },
+                        { player: { name: "Nunez", pos: "F", number: 9, photo: null } },
+                        { player: { name: "Diaz", pos: "F", number: 7, photo: null } }
                     ]
                 },
                 awayLineup: {
                     formation: "4-2-3-1",
-                    team: { colors: { player: { primary: "65b32e" } } },
+                    team: { colors: { player: { primary: "6caddf" } } },
                     startXI: [
-                        { player: { name: "Casteels", pos: "G", number: 1, photo: null } },
-                        { player: { name: "Maehle", pos: "D", number: 21, photo: null } },
-                        { player: { name: "Lacroix", pos: "D", number: 4, photo: null } },
-                        { player: { name: "Jenz", pos: "D", number: 25, photo: null } },
-                        { player: { name: "Baku", pos: "D", number: 20, photo: null } },
-                        { player: { name: "Arnold", pos: "M", number: 20, photo: null } },
-                        { player: { name: "Svanberg", pos: "M", number: 19, photo: null } },
-                        { player: { name: "Majer", pos: "M", number: 19, photo: null } },
-                        { player: { name: "Gerhardt", pos: "M", number: 27, photo: null } },
-                        { player: { name: "Paredes", pos: "M", number: 40, photo: null } },
-                        { player: { name: "Wind", pos: "F", number: 23, photo: null } }
+                        { player: { name: "Ederson", pos: "G", number: 31, photo: null } },
+                        { player: { name: "Walker", pos: "D", number: 2, photo: null } },
+                        { player: { name: "Dias", pos: "D", number: 3, photo: null } },
+                        { player: { name: "Akanji", pos: "D", number: 25, photo: null } },
+                        { player: { name: "Gvardiol", pos: "D", number: 24, photo: null } },
+                        { player: { name: "Rodri", pos: "M", number: 16, photo: null } },
+                        { player: { name: "Kovacic", pos: "M", number: 8, photo: null } },
+                        { player: { name: "Silva", pos: "M", number: 20, photo: null } },
+                        { player: { name: "De Bruyne", pos: "M", number: 17, photo: null } },
+                        { player: { name: "Foden", pos: "M", number: 47, photo: null } },
+                        { player: { name: "Haaland", pos: "F", number: 9, photo: null } }
                     ]
                 }
             }
@@ -334,6 +349,7 @@
             select.addEventListener('change', (e) => { renderMatch(parseInt(e.target.value)); });
         }
 
+        // --- Color Utilities ---
         function calculateColorDistance(hex1, hex2) {
             if (!hex1 || !hex2) return 100;
             const getRgb = (hex) => {
@@ -343,6 +359,15 @@
             };
             const c1 = getRgb(hex1), c2 = getRgb(hex2);
             return Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2));
+        }
+
+        function hexToRgba(hex, alpha) {
+            let h = hex.replace('#', '');
+            if (h.length === 3) h = h.split('').map(x => x + x).join('');
+            const r = parseInt(h.substr(0, 2), 16);
+            const g = parseInt(h.substr(2, 2), 16);
+            const b = parseInt(h.substr(4, 2), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
         function sliceArrayByFormation(formationStr, startXI) {
@@ -358,17 +383,9 @@
             return rows;
         }
 
-        // =========================================================
-        // 🚨 FIX 1: THE 85-PIXEL DEADZONE (Y-AXIS)
-        // =========================================================
         function getYPositions(numRows, isHome) {
-            // Home starts deep (95%) and stops strictly at 58%
-            const homeStart = 95;
-            const homeEnd = 58;
-            
-            // Away starts deep (5%) and stops strictly at 42%
-            const awayStart = 5;
-            const awayEnd = 42;
+            const homeStart = 95, homeEnd = 58;
+            const awayStart = 5, awayEnd = 42;
 
             if (isHome) {
                 const step = (homeStart - homeEnd) / Math.max(1, numRows - 1);
@@ -379,11 +396,7 @@
             }
         }
 
-        // =========================================================
-        // 🚨 FIX 2: THE PERFECT GAP ALGORITHM (X-AXIS)
-        // =========================================================
         function getXPositions(numPlayers) {
-            // Hardcoded arrays to mathematically guarantee interlocking gaps
             if (numPlayers === 1) return [50];
             if (numPlayers === 2) return [35, 65]; 
             if (numPlayers === 3) return [20, 50, 80];
@@ -391,7 +404,6 @@
             if (numPlayers === 5) return [10, 30, 50, 70, 90];
             if (numPlayers === 6) return [8, 24.8, 41.6, 58.4, 75.2, 92];
             
-            // Dynamic Fallback
             let positions = [];
             let step = 80 / (numPlayers - 1);
             for(let i=0; i<numPlayers; i++) {
@@ -416,6 +428,10 @@
             let awayColor = match.awayLineup.team?.colors?.player?.primary ? `#${match.awayLineup.team.colors.player.primary}` : '#dddddd';
             if (calculateColorDistance(homeColor, awayColor) < 60) awayColor = '#343a40'; 
 
+            // Apply Pitch Shading (Fading to transparent at the halfway line)
+            document.getElementById('home-shade').style.background = `linear-gradient(to top, ${hexToRgba(homeColor, 0.25)} 0%, transparent 100%)`;
+            document.getElementById('away-shade').style.background = `linear-gradient(to bottom, ${hexToRgba(awayColor, 0.25)} 0%, transparent 100%)`;
+
             const container = document.getElementById('players-container');
             container.innerHTML = '';
 
@@ -433,7 +449,6 @@
                     const numPlayers = rowPlayers.length;
                     const xPositions = getXPositions(numPlayers); 
                     
-                    // Z-Index Sorting
                     const baseZIndex = isHome ? (100 - rowIndex) : (10 + rowIndex);
 
                     rowPlayers.forEach((slot, colIndex) => {
