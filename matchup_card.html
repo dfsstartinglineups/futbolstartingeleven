@@ -47,11 +47,11 @@
         button:hover { background: #444; }
 
         /* =========================================
-           THE EXPORTABLE CANVAS (1200x900) - TALLER FOR TWITTER
+           THE EXPORTABLE CANVAS (1200x900)
            ========================================= */
         #capture-area {
             width: 1200px;
-            height: 900px; /* INCREASED HEIGHT */
+            height: 900px;
             background: radial-gradient(circle at center, #1a2235 0%, #080a0f 100%);
             position: relative;
             overflow: hidden;
@@ -61,10 +61,10 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
-        /* --- Header --- */
+        /* --- Header (Shrunk down to reclaim space) --- */
         #header {
             width: 100%;
-            padding: 20px 40px;
+            padding: 10px 30px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -76,55 +76,55 @@
         .team-block {
             display: flex;
             align-items: center;
-            gap: 15px;
-            width: 40%;
+            gap: 12px;
+            width: 42%;
         }
         .team-block.home { justify-content: flex-end; }
         .team-block.away { justify-content: flex-start; }
 
-        .team-logo { width: 75px; height: 75px; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
+        .team-logo { width: 50px; height: 50px; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
         
         .team-info-text { display: flex; flex-direction: column; }
         .team-block.home .team-info-text { align-items: flex-end; }
         .team-block.away .team-info-text { align-items: flex-start; }
 
-        .team-name { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; line-height: 1; }
-        .formation { font-size: 18px; font-weight: bold; color: #adb5bd; margin-top: 5px; }
+        .team-name { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; line-height: 1; }
+        .formation { font-size: 14px; font-weight: bold; color: #adb5bd; margin-top: 2px; }
 
         .vs-badge {
-            width: 15%;
+            width: 10%;
             text-align: center;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 900;
             color: #fff;
             background: rgba(255,255,255,0.1);
-            padding: 8px 0;
-            border-radius: 30px;
+            padding: 4px 0;
+            border-radius: 20px;
             letter-spacing: 2px;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* --- 2D Flat Pitch --- */
+        /* --- 2D Flat Pitch (Expanded to fill reclaimed space) --- */
         #scene {
             width: 100%;
-            height: 750px; /* INCREASED HEIGHT */
+            height: 810px; /* Reclaimed vertical space */
             position: absolute;
-            bottom: 20px;
+            bottom: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         #pitch {
-            width: 850px;
-            height: 730px; /* INCREASED HEIGHT */
+            width: 1050px; /* Reclaimed horizontal space */
+            height: 790px; /* Reclaimed vertical space */
             background: repeating-linear-gradient(
                 0deg,
                 #1e4d2b,
-                #1e4d2b 50px,
-                #1a4224 50px,
-                #1a4224 100px
+                #1e4d2b 55px,
+                #1a4224 55px,
+                #1a4224 110px
             );
             position: relative;
             border: 3px solid rgba(255,255,255,0.5);
@@ -144,24 +144,24 @@
         .top-shade { top: 0; border-radius: 4px 4px 0 0; }
         .bottom-shade { bottom: 0; border-radius: 0 0 4px 4px; }
 
-        /* Field Lines */
+        /* Field Lines (Scaled up proportionally) */
         .pitch-line { position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2; }
-        .center-circle { width: 160px; height: 160px; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .center-circle { width: 180px; height: 180px; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
         .center-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; }
         .halfway-line { width: 100%; height: 2px; top: 50%; border-left: none; border-right: none; background: rgba(255,255,255,0.4); border: none; z-index: 2; }
         
-        .penalty-box-bottom { width: 340px; height: 120px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; }
-        .six-yard-bottom { width: 160px; height: 45px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2;}
-        .penalty-arc-bottom { width: 120px; height: 60px; bottom: 120px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-bottom: none; border-radius: 60px 60px 0 0; position: absolute; border-bottom-color: transparent; z-index: 2;}
+        .penalty-box-bottom { width: 380px; height: 130px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; }
+        .six-yard-bottom { width: 180px; height: 50px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2;}
+        .penalty-arc-bottom { width: 140px; height: 70px; bottom: 130px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-bottom: none; border-radius: 70px 70px 0 0; position: absolute; border-bottom-color: transparent; z-index: 2;}
         
-        .penalty-box-top { width: 340px; height: 120px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; }
-        .six-yard-top { width: 160px; height: 45px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2;}
-        .penalty-arc-top { width: 120px; height: 60px; top: 120px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-top: none; border-radius: 0 0 60px 60px; position: absolute; border-top-color: transparent; z-index: 2;}
+        .penalty-box-top { width: 380px; height: 130px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; }
+        .six-yard-top { width: 180px; height: 50px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2;}
+        .penalty-arc-top { width: 140px; height: 70px; top: 130px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-top: none; border-radius: 0 0 70px 70px; position: absolute; border-top-color: transparent; z-index: 2;}
 
-        /* --- Player Nodes --- */
+        /* --- Player Nodes (Scaled up for better visibility) --- */
         .player-node {
             position: absolute;
-            width: 70px;
+            width: 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -170,10 +170,10 @@
         }
 
         .player-photo-container {
-            width: 44px;  /* Bumped slightly since we have more space */
-            height: 44px; 
+            width: 56px;  /* Bumped significantly */
+            height: 56px; 
             border-radius: 50%;
-            border: 2px solid var(--node-color);
+            border: 3px solid var(--node-color); /* Thicker border */
             background-color: #2b3035;
             box-shadow: 0 4px 8px rgba(0,0,0,0.6);
             z-index: 2;
@@ -185,33 +185,33 @@
         }
 
         .player-photo { width: 100%; height: 100%; object-fit: cover; }
-        .fallback-initials { font-size: 18px; font-weight: bold; color: #adb5bd; }
+        .fallback-initials { font-size: 20px; font-weight: bold; color: #adb5bd; }
 
         .player-number {
             position: absolute;
             top: -2px;
-            right: 8px;
+            right: 4px;
             background-color: #111;
             color: white;
             border: 1px solid var(--node-color);
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: bold;
             z-index: 3;
         }
 
         .player-nameplate {
-            margin-top: -6px; 
+            margin-top: -8px; 
             background: rgba(0, 0, 0, 0.85);
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 3px 6px;
+            padding: 3px 8px;
             border-radius: 6px;
-            font-size: 10px;
+            font-size: 11px; /* Slightly larger text */
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -279,12 +279,52 @@
         let allMatches = [];
 
         const MOCK_MATCHES = [
-            // (Mock matches removed for brevity; it uses the live fetch)
+            {
+                fixture: { id: 1001 },
+                teams: {
+                    home: { name: "Liverpool", logo: "https://media.api-sports.io/football/teams/40.png" },
+                    away: { name: "Man City", logo: "https://media.api-sports.io/football/teams/50.png" }
+                },
+                homeLineup: {
+                    formation: "4-3-3",
+                    team: { colors: { player: { primary: "d00027" } } },
+                    startXI: [
+                        { player: { name: "Alisson", pos: "G", number: 1, photo: null } },
+                        { player: { name: "Alexander-Arnold", pos: "D", number: 66, photo: null } },
+                        { player: { name: "Konate", pos: "D", number: 5, photo: null } },
+                        { player: { name: "van Dijk", pos: "D", number: 4, photo: null } },
+                        { player: { name: "Robertson", pos: "D", number: 26, photo: null } },
+                        { player: { name: "Szoboszlai", pos: "M", number: 8, photo: null } },
+                        { player: { name: "Mac Allister", pos: "M", number: 10, photo: null } },
+                        { player: { name: "Gravenberch", pos: "M", number: 38, photo: null } },
+                        { player: { name: "Salah", pos: "F", number: 11, photo: null } },
+                        { player: { name: "Nunez", pos: "F", number: 9, photo: null } },
+                        { player: { name: "Diaz", pos: "F", number: 7, photo: null } }
+                    ]
+                },
+                awayLineup: {
+                    formation: "4-2-3-1",
+                    team: { colors: { player: { primary: "6caddf" } } },
+                    startXI: [
+                        { player: { name: "Ederson", pos: "G", number: 31, photo: null } },
+                        { player: { name: "Walker", pos: "D", number: 2, photo: null } },
+                        { player: { name: "Dias", pos: "D", number: 3, photo: null } },
+                        { player: { name: "Akanji", pos: "D", number: 25, photo: null } },
+                        { player: { name: "Gvardiol", pos: "D", number: 24, photo: null } },
+                        { player: { name: "Rodri", pos: "M", number: 16, photo: null } },
+                        { player: { name: "Kovacic", pos: "M", number: 8, photo: null } },
+                        { player: { name: "Silva", pos: "M", number: 20, photo: null } },
+                        { player: { name: "De Bruyne", pos: "M", number: 17, photo: null } },
+                        { player: { name: "Foden", pos: "M", number: 47, photo: null } },
+                        { player: { name: "Haaland", pos: "F", number: 9, photo: null } }
+                    ]
+                }
+            }
         ];
 
         async function loadData() {
             try {
-                // FETCHING THE NEW DATE 4/6/2026
+                // FETCHING THE DATA
                 const res = await fetch('data/games_2026-04-06.json'); 
                 if (res.ok) {
                     const data = await res.json();
