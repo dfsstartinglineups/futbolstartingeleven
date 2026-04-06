@@ -119,7 +119,6 @@
         #pitch {
             width: 850px;
             height: 540px;
-            /* Beautiful top-down mow lines */
             background: repeating-linear-gradient(
                 0deg,
                 #1e4d2b,
@@ -147,7 +146,7 @@
         .six-yard-top { width: 140px; height: 35px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); }
         .penalty-arc-top { width: 100px; height: 50px; top: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-top: none; border-radius: 0 0 50px 50px; position: absolute; border-top-color: transparent;}
 
-        /* --- Player Nodes (Flat 2D) --- */
+        /* --- Player Nodes (Flat 2D - Scaled Down for 10-Row Formations) --- */
         .player-node {
             position: absolute;
             width: 80px;
@@ -159,8 +158,8 @@
         }
 
         .player-photo-container {
-            width: 50px; 
-            height: 50px;
+            width: 40px;  /* SCALED DOWN FROM 50px */
+            height: 40px; /* SCALED DOWN FROM 50px */
             border-radius: 50%;
             border: 3px solid var(--node-color);
             background-color: #2b3035;
@@ -174,33 +173,33 @@
         }
 
         .player-photo { width: 100%; height: 100%; object-fit: cover; }
-        .fallback-initials { font-size: 18px; font-weight: bold; color: #adb5bd; }
+        .fallback-initials { font-size: 16px; font-weight: bold; color: #adb5bd; }
 
         .player-number {
             position: absolute;
-            top: -4px;
-            right: 8px;
+            top: -2px;
+            right: 12px;
             background-color: #111;
             color: white;
             border: 1px solid var(--node-color);
-            width: 18px;
-            height: 18px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 9px;
+            font-size: 8px;
             font-weight: bold;
             z-index: 3;
         }
 
         .player-nameplate {
-            margin-top: -6px;
+            margin-top: -4px;
             background: rgba(0, 0, 0, 0.85);
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 9px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -353,7 +352,7 @@
             const parts = formationStr.split('-').map(Number);
             const rows = [];
             
-            // Goalkeeper is ALWAYS row 0 (the first player in the array)
+            // Goalkeeper is ALWAYS row 0
             rows.push([startXI[0]]);
             
             let currentIndex = 1;
@@ -384,23 +383,22 @@
             const container = document.getElementById('players-container');
             container.innerHTML = '';
 
-            // Use the new mathematically strict slicing method
             const homeRows = sliceArrayByFormation(match.homeLineup.formation, match.homeLineup.startXI);
             const awayRows = sliceArrayByFormation(match.awayLineup.formation, match.awayLineup.startXI);
 
             function drawTeam(rows, isHome, teamColor) {
-                const numRows = rows.length; // Will be 4 for 4-3-3, 5 for 3-4-2-1, etc.
+                const numRows = rows.length;
                 
                 rows.forEach((rowPlayers, rowIndex) => {
                     if (!rowPlayers || rowPlayers.length === 0) return;
                     
-                    // Dynamic Y-Spacing Logic
-                    // Home occupies 92% to 54% | Away occupies 8% to 46%
+                    // MAXIMIZED Y-Spacing Logic
+                    // Home occupies 96% to 54% | Away occupies 4% to 46%
                     let yPos;
                     if (isHome) {
-                        yPos = 92 - (rowIndex * (38 / (numRows - 1 || 1)));
+                        yPos = 96 - (rowIndex * (42 / (numRows - 1 || 1)));
                     } else {
-                        yPos = 8 + (rowIndex * (38 / (numRows - 1 || 1)));
+                        yPos = 4 + (rowIndex * (42 / (numRows - 1 || 1)));
                     }
 
                     const numPlayers = rowPlayers.length;
