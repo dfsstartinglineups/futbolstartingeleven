@@ -359,43 +359,43 @@
         }
 
         // =========================================================
-        // 🚨 FIX 1: MAXIMIZED Y-AXIS SPREAD
+        // 🚨 FIX 1: THE 85-PIXEL DEADZONE (Y-AXIS)
         // =========================================================
         function getYPositions(numRows, isHome) {
-            // Push limits to maximum pitch boundaries
+            // Home starts deep (95%) and stops strictly at 58%
+            const homeStart = 95;
+            const homeEnd = 58;
+            
+            // Away starts deep (5%) and stops strictly at 42%
+            const awayStart = 5;
+            const awayEnd = 42;
+
             if (isHome) {
-                if (numRows === 4) return [95, 80, 65, 52];
-                if (numRows === 5) return [96, 85, 74, 63, 52];
-                if (numRows === 6) return [96, 87, 78, 69, 60, 52];
-                return [...Array(numRows)].map((_, i) => 96 - (i * (44 / (numRows - 1)))); 
+                const step = (homeStart - homeEnd) / Math.max(1, numRows - 1);
+                return Array.from({length: numRows}, (_, i) => homeStart - (step * i));
             } else {
-                if (numRows === 4) return [5, 20, 35, 48];
-                if (numRows === 5) return [4, 15, 26, 37, 48];
-                if (numRows === 6) return [4, 13, 22, 31, 40, 48];
-                return [...Array(numRows)].map((_, i) => 4 + (i * (44 / (numRows - 1)))); 
+                const step = (awayEnd - awayStart) / Math.max(1, numRows - 1);
+                return Array.from({length: numRows}, (_, i) => awayStart + (step * i));
             }
         }
 
         // =========================================================
-        // 🚨 FIX 2: UNLOCKED WINGS (X-AXIS SPREAD)
+        // 🚨 FIX 2: THE PERFECT GAP ALGORITHM (X-AXIS)
         // =========================================================
-        function getXPositions(numPlayers, rowIndex) {
-            const isTight = (rowIndex % 2 !== 0); // Slight stagger to prevent strict vertical lines
-
+        function getXPositions(numPlayers) {
+            // Hardcoded arrays to mathematically guarantee interlocking gaps
             if (numPlayers === 1) return [50];
-            if (numPlayers === 2) return isTight ? [38, 62] : [32, 68];
-            if (numPlayers === 3) return isTight ? [25, 50, 75] : [18, 50, 82];
-            if (numPlayers === 4) return isTight ? [20, 40, 60, 80] : [12, 37, 63, 88]; // Utilizes the full wings!
-            if (numPlayers === 5) return isTight ? [15, 32.5, 50, 67.5, 85] : [8, 28, 50, 72, 92];
-            if (numPlayers === 6) return isTight ? [12, 27, 42, 58, 73, 88] : [6, 23, 40, 50, 77, 94]; 
+            if (numPlayers === 2) return [35, 65]; 
+            if (numPlayers === 3) return [20, 50, 80];
+            if (numPlayers === 4) return [15, 38.33, 61.66, 85];
+            if (numPlayers === 5) return [10, 30, 50, 70, 90];
+            if (numPlayers === 6) return [8, 24.8, 41.6, 58.4, 75.2, 92];
             
             // Dynamic Fallback
             let positions = [];
-            let spread = isTight ? 70 : 86;
-            let start = (100 - spread) / 2;
-            let step = spread / (numPlayers - 1);
+            let step = 80 / (numPlayers - 1);
             for(let i=0; i<numPlayers; i++) {
-                positions.push(start + (step * i));
+                positions.push(10 + (step * i));
             }
             return positions;
         }
@@ -431,9 +431,9 @@
                     
                     const yPos = yPositions[rowIndex];
                     const numPlayers = rowPlayers.length;
-                    const xPositions = getXPositions(numPlayers, rowIndex); 
+                    const xPositions = getXPositions(numPlayers); 
                     
-                    // Z-Index Sorting to ensure defenders overlap midfielders cleanly if close
+                    // Z-Index Sorting
                     const baseZIndex = isHome ? (100 - rowIndex) : (10 + rowIndex);
 
                     rowPlayers.forEach((slot, colIndex) => {
