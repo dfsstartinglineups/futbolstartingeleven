@@ -155,7 +155,6 @@
             align-items: center;
             transform: translate(-50%, -50%);
             transition: all 0.5s ease;
-            z-index: 10; 
         }
 
         .player-photo-container {
@@ -360,44 +359,41 @@
         }
 
         // =========================================================
-        // 🚨 FIX 1: THE STRICT MIDFIELD DEADZONE
+        // 🚨 FIX 1: MAXIMIZED Y-AXIS SPREAD
         // =========================================================
         function getYPositions(numRows, isHome) {
-            // Home strictly lives between 96% and 60%
-            const homeStart = 96;
-            const homeEnd = 60;
-            
-            // Away strictly lives between 4% and 40%
-            const awayStart = 4;
-            const awayEnd = 40;
-
+            // Push limits to maximum pitch boundaries
             if (isHome) {
-                const step = (homeStart - homeEnd) / (numRows - 1 || 1);
-                return [...Array(numRows)].map((_, i) => homeStart - (step * i));
+                if (numRows === 4) return [95, 80, 65, 52];
+                if (numRows === 5) return [96, 85, 74, 63, 52];
+                if (numRows === 6) return [96, 87, 78, 69, 60, 52];
+                return [...Array(numRows)].map((_, i) => 96 - (i * (44 / (numRows - 1)))); 
             } else {
-                const step = (awayEnd - awayStart) / (numRows - 1 || 1);
-                return [...Array(numRows)].map((_, i) => awayStart + (step * i));
+                if (numRows === 4) return [5, 20, 35, 48];
+                if (numRows === 5) return [4, 15, 26, 37, 48];
+                if (numRows === 6) return [4, 13, 22, 31, 40, 48];
+                return [...Array(numRows)].map((_, i) => 4 + (i * (44 / (numRows - 1)))); 
             }
         }
 
         // =========================================================
-        // 🚨 FIX 2: THE HONEYCOMB X-AXIS STAGGER
+        // 🚨 FIX 2: UNLOCKED WINGS (X-AXIS SPREAD)
         // =========================================================
         function getXPositions(numPlayers, rowIndex) {
-            // Alternates rows between "Wide" and "Tight" to prevent vertical collisions
-            const isTight = (rowIndex % 2 !== 0);
+            const isTight = (rowIndex % 2 !== 0); // Slight stagger to prevent strict vertical lines
 
             if (numPlayers === 1) return [50];
-            if (numPlayers === 2) return isTight ? [40, 60] : [30, 70];
-            if (numPlayers === 3) return isTight ? [28, 50, 72] : [18, 50, 82];
-            if (numPlayers === 4) return isTight ? [25, 42, 58, 75] : [12, 37, 63, 88];
-            if (numPlayers === 5) return isTight ? [20, 35, 50, 65, 80] : [10, 30, 50, 70, 90];
-            if (numPlayers === 6) return isTight ? [18, 31, 44, 56, 69, 82] : [10, 26, 42, 58, 74, 90];
+            if (numPlayers === 2) return isTight ? [38, 62] : [32, 68];
+            if (numPlayers === 3) return isTight ? [25, 50, 75] : [18, 50, 82];
+            if (numPlayers === 4) return isTight ? [20, 40, 60, 80] : [12, 37, 63, 88]; // Utilizes the full wings!
+            if (numPlayers === 5) return isTight ? [15, 32.5, 50, 67.5, 85] : [8, 28, 50, 72, 92];
+            if (numPlayers === 6) return isTight ? [12, 27, 42, 58, 73, 88] : [6, 23, 40, 50, 77, 94]; 
             
-            // Fallback just in case
+            // Dynamic Fallback
             let positions = [];
-            let step = (isTight ? 60 : 80) / (numPlayers - 1);
-            let start = (isTight ? 20 : 10);
+            let spread = isTight ? 70 : 86;
+            let start = (100 - spread) / 2;
+            let step = spread / (numPlayers - 1);
             for(let i=0; i<numPlayers; i++) {
                 positions.push(start + (step * i));
             }
@@ -428,14 +424,17 @@
 
             function drawTeam(rows, isHome, teamColor) {
                 const numRows = rows.length;
-                const yPositions = getYPositions(numRows, isHome); // Guaranteed deadzone
+                const yPositions = getYPositions(numRows, isHome); 
                 
                 rows.forEach((rowPlayers, rowIndex) => {
                     if (!rowPlayers || rowPlayers.length === 0) return;
                     
                     const yPos = yPositions[rowIndex];
                     const numPlayers = rowPlayers.length;
-                    const xPositions = getXPositions(numPlayers, rowIndex); // Guaranteed honeycomb stagger
+                    const xPositions = getXPositions(numPlayers, rowIndex); 
+                    
+                    // Z-Index Sorting to ensure defenders overlap midfielders cleanly if close
+                    const baseZIndex = isHome ? (100 - rowIndex) : (10 + rowIndex);
 
                     rowPlayers.forEach((slot, colIndex) => {
                         const p = slot.player;
@@ -451,7 +450,7 @@
                         }
 
                         const nodeHtml = `
-                            <div class="player-node" style="left: ${xPos}%; top: ${yPos}%; --node-color: ${teamColor};">
+                            <div class="player-node" style="left: ${xPos}%; top: ${yPos}%; z-index: ${baseZIndex}; --node-color: ${teamColor};">
                                 <div class="player-number">${p.number || ''}</div>
                                 <div class="player-photo-container">
                                     ${photoHtml}
