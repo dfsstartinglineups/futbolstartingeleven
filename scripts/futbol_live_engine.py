@@ -227,9 +227,17 @@ def main():
                         print(f"🕵️ [{fix_id}] FT Stats incomplete. Fetching from API...")
 
             if not is_playing and not is_finished:
-                # Still check for imminent kickoffs
+                # 🛡️ THE GHOST KICKOFF FIX
                 g_ts = base_game.get('fixture', {}).get('timestamp', 0)
+                
+                # Ignore fake midnight timestamps for TBD games
+                if status in ['TBD', 'AWD', 'WO']:
+                    continue
+                    
                 if g_ts > 0 and g_ts <= now_ts:
+                    # If it's been > 4 hours past kickoff and still "Not Started", the API is stuck. Let it go.
+                    if (now_ts - g_ts) > 14400:
+                        continue
                     has_live_games = True
                 elif g_ts > 0:
                     if next_upcoming_ts is None or g_ts < next_upcoming_ts:
@@ -432,9 +440,18 @@ def main():
         print("\n💤 No active futbol games. Firebase memory will carry over until next kickoff.")
 
     # 4. SLEEP CALCULATION
-    if has_live_games: return 30 
-    if next_upcoming_ts: return max(60, min((next_upcoming_ts - now_ts) - 120, 3600))
-    if missing_schedule: return 120
+    if has_live_games: 
+        print("⏱️ Sleeping 30s (Waiting for kickoff or active game updates)...")
+        return 30 
+    if next_upcoming_ts: 
+        sleep_time = max(60, min((next_upcoming_ts - now_ts) - 120, 3600))
+        print(f"⏱️ Sleeping {int(sleep_time)}s (Waiting for next scheduled kickoff)...")
+        return sleep_time
+    if missing_schedule: 
+        print("⏱️ Sleeping 120s (Waiting for today's JSON schedule to be published)...")
+        return 120
+        
+    print("⏱️ Sleeping 3600s (Default sleep - No active schedules found)...")
     return 3600 
 
 if __name__ == "__main__":
