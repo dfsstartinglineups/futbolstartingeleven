@@ -160,7 +160,7 @@
         /* --- Player Nodes --- */
         .player-node {
             position: absolute;
-            width: 110px; /* Slightly wider to handle larger names */
+            width: 110px; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -188,29 +188,29 @@
 
         .player-number {
             position: absolute;
-            top: -6px; /* Adjusted for larger circle */
-            right: 0px; /* Moved slightly out */
+            top: -8px; /* Adjusted for even larger circle */
+            right: -4px; /* Moved slightly out */
             background-color: #111;
             color: white;
             border: 2px solid var(--node-color);
-            width: 28px; /* INCREASED from 22px */
-            height: 28px; /* INCREASED from 22px */
+            width: 34px; /* INCREASED from 28px */
+            height: 34px; /* INCREASED from 28px */
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 15px; /* INCREASED from 12px */
+            font-size: 18px; /* INCREASED from 15px */
             font-weight: bold;
             z-index: 3;
         }
 
         .player-nameplate {
-            margin-top: -12px; /* Pulls nameplate up slightly over the photo */
+            margin-top: -12px; 
             background: rgba(0, 0, 0, 0.9);
             border: 1px solid rgba(255,255,255,0.3);
-            padding: 5px 12px; /* Added more padding for readability */
+            padding: 5px 12px; 
             border-radius: 8px;
-            font-size: 16px; /* INCREASED from 13px */
+            font-size: 16px; 
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -305,18 +305,6 @@
             select.addEventListener('change', (e) => { renderMatch(parseInt(e.target.value)); });
         }
 
-        // --- Color Utilities ---
-        function calculateColorDistance(hex1, hex2) {
-            if (!hex1 || !hex2) return 100;
-            const getRgb = (hex) => {
-                let h = hex.replace('#', '');
-                if (h.length === 3) h = h.split('').map(x => x + x).join('');
-                return { r: parseInt(h.substr(0, 2), 16), g: parseInt(h.substr(2, 2), 16), b: parseInt(h.substr(4, 2), 16) };
-            };
-            const c1 = getRgb(hex1), c2 = getRgb(hex2);
-            return Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2));
-        }
-
         function sliceArrayByFormation(formationStr, startXI) {
             const parts = formationStr.split('-').map(Number);
             const rows = [];
@@ -379,7 +367,6 @@
 
             let homeColor = match.homeLineup.team?.colors?.player?.primary ? `#${match.homeLineup.team.colors.player.primary}` : '#ffffff';
             let awayColor = match.awayLineup.team?.colors?.player?.primary ? `#${match.awayLineup.team.colors.player.primary}` : '#dddddd';
-            if (calculateColorDistance(homeColor, awayColor) < 60) awayColor = '#343a40'; 
 
             const container = document.getElementById('players-container');
             container.innerHTML = '';
