@@ -146,7 +146,7 @@
         .six-yard-top { width: 140px; height: 35px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); }
         .penalty-arc-top { width: 100px; height: 50px; top: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-top: none; border-radius: 0 0 50px 50px; position: absolute; border-top-color: transparent;}
 
-        /* --- Player Nodes (Tightly Scaled to Prevent Overlap) --- */
+        /* --- Player Nodes --- */
         .player-node {
             position: absolute;
             width: 70px;
@@ -155,7 +155,7 @@
             align-items: center;
             transform: translate(-50%, -50%);
             transition: all 0.5s ease;
-            z-index: 10; /* Ensures names sit above the pitch lines cleanly */
+            z-index: 10; 
         }
 
         .player-photo-container {
@@ -195,7 +195,7 @@
         }
 
         .player-nameplate {
-            margin-top: -6px; /* Tucks the nameplate tighter under the chin */
+            margin-top: -6px; 
             background: rgba(0, 0, 0, 0.85);
             border: 1px solid rgba(255,255,255,0.2);
             padding: 2px 5px;
@@ -359,36 +359,47 @@
             return rows;
         }
 
-        // --- STRICT TACTICAL GRID MAPPING ---
+        // =========================================================
+        // 🚨 FIX 1: THE STRICT MIDFIELD DEADZONE
+        // =========================================================
         function getYPositions(numRows, isHome) {
-            // Enforces a strict deadzone between 44% and 56% so teams NEVER overlap
+            // Home strictly lives between 96% and 60%
+            const homeStart = 96;
+            const homeEnd = 60;
+            
+            // Away strictly lives between 4% and 40%
+            const awayStart = 4;
+            const awayEnd = 40;
+
             if (isHome) {
-                if (numRows === 4) return [95, 82, 69, 56];
-                if (numRows === 5) return [96, 86, 76, 66, 56];
-                if (numRows === 6) return [96, 88, 80, 72, 64, 56];
-                return [...Array(numRows)].map((_, i) => 96 - (i * (40 / (numRows - 1)))); // Fallback
+                const step = (homeStart - homeEnd) / (numRows - 1 || 1);
+                return [...Array(numRows)].map((_, i) => homeStart - (step * i));
             } else {
-                if (numRows === 4) return [5, 18, 31, 44];
-                if (numRows === 5) return [4, 14, 24, 34, 44];
-                if (numRows === 6) return [4, 12, 20, 28, 36, 44];
-                return [...Array(numRows)].map((_, i) => 4 + (i * (40 / (numRows - 1)))); // Fallback
+                const step = (awayEnd - awayStart) / (numRows - 1 || 1);
+                return [...Array(numRows)].map((_, i) => awayStart + (step * i));
             }
         }
 
-        function getXPositions(numPlayers) {
-            // Intentionally spaced to look like a real tactical board
+        // =========================================================
+        // 🚨 FIX 2: THE HONEYCOMB X-AXIS STAGGER
+        // =========================================================
+        function getXPositions(numPlayers, rowIndex) {
+            // Alternates rows between "Wide" and "Tight" to prevent vertical collisions
+            const isTight = (rowIndex % 2 !== 0);
+
             if (numPlayers === 1) return [50];
-            if (numPlayers === 2) return [38, 62]; // Tightened inside-forwards/AMs
-            if (numPlayers === 3) return [25, 50, 75];
-            if (numPlayers === 4) return [18, 39, 61, 82];
-            if (numPlayers === 5) return [12, 31, 50, 69, 88];
-            if (numPlayers === 6) return [10, 26, 42, 58, 74, 90];
+            if (numPlayers === 2) return isTight ? [40, 60] : [30, 70];
+            if (numPlayers === 3) return isTight ? [28, 50, 72] : [18, 50, 82];
+            if (numPlayers === 4) return isTight ? [25, 42, 58, 75] : [12, 37, 63, 88];
+            if (numPlayers === 5) return isTight ? [20, 35, 50, 65, 80] : [10, 30, 50, 70, 90];
+            if (numPlayers === 6) return isTight ? [18, 31, 44, 56, 69, 82] : [10, 26, 42, 58, 74, 90];
             
-            // Fallback for > 6 (Extremely rare)
+            // Fallback just in case
             let positions = [];
-            let step = 80 / (numPlayers - 1);
+            let step = (isTight ? 60 : 80) / (numPlayers - 1);
+            let start = (isTight ? 20 : 10);
             for(let i=0; i<numPlayers; i++) {
-                positions.push(10 + (step * i));
+                positions.push(start + (step * i));
             }
             return positions;
         }
@@ -417,14 +428,14 @@
 
             function drawTeam(rows, isHome, teamColor) {
                 const numRows = rows.length;
-                const yPositions = getYPositions(numRows, isHome);
+                const yPositions = getYPositions(numRows, isHome); // Guaranteed deadzone
                 
                 rows.forEach((rowPlayers, rowIndex) => {
                     if (!rowPlayers || rowPlayers.length === 0) return;
                     
                     const yPos = yPositions[rowIndex];
                     const numPlayers = rowPlayers.length;
-                    const xPositions = getXPositions(numPlayers);
+                    const xPositions = getXPositions(numPlayers, rowIndex); // Guaranteed honeycomb stagger
 
                     rowPlayers.forEach((slot, colIndex) => {
                         const p = slot.player;
