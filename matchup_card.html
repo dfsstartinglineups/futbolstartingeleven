@@ -41,6 +41,7 @@
             background: #333;
             color: white;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
 
         button:hover { background: #444; }
@@ -162,7 +163,7 @@
         }
 
         .player-photo-container {
-            width: 60px; /* Bumped size slightly */
+            width: 60px;
             height: 60px;
             border-radius: 50%;
             border: 3px solid var(--node-color);
@@ -220,6 +221,7 @@
         <label fw-bold>Select Match:</label>
         <select id="match-selector"></select>
         <button onclick="takeScreenshot()">Simulate Screenshot</button>
+        <button id="copy-btn" onclick="copyTweetText()">📋 Copy Tweet Text</button>
     </div>
 
     <div id="capture-area">
@@ -303,6 +305,47 @@
                         { player: { name: "Raphinha", pos: "F", number: 11, photo: "https://media.api-sports.io/football/players/29.png" } }
                     ]
                 }
+            },
+            {
+                fixture: { id: 1002 },
+                teams: {
+                    home: { name: "Arsenal", logo: "https://media.api-sports.io/football/teams/42.png" },
+                    away: { name: "Man City", logo: "https://media.api-sports.io/football/teams/50.png" }
+                },
+                homeLineup: {
+                    formation: "4-3-3",
+                    team: { colors: { player: { primary: "ef0107" } } },
+                    startXI: [
+                        { player: { name: "Raya", pos: "G", number: 22, photo: "https://media.api-sports.io/football/players/1.png" } },
+                        { player: { name: "White", pos: "D", number: 4, photo: "https://media.api-sports.io/football/players/2.png" } },
+                        { player: { name: "Saliba", pos: "D", number: 2, photo: "https://media.api-sports.io/football/players/3.png" } },
+                        { player: { name: "Gabriel", pos: "D", number: 6, photo: "https://media.api-sports.io/football/players/4.png" } },
+                        { player: { name: "Kiwior", pos: "D", number: 15, photo: "https://media.api-sports.io/football/players/5.png" } },
+                        { player: { name: "Odegaard", pos: "M", number: 8, photo: "https://media.api-sports.io/football/players/6.png" } },
+                        { player: { name: "Rice", pos: "M", number: 41, photo: "https://media.api-sports.io/football/players/7.png" } },
+                        { player: { name: "Jorginho", pos: "M", number: 20, photo: "https://media.api-sports.io/football/players/8.png" } },
+                        { player: { name: "Saka", pos: "F", number: 7, photo: "https://media.api-sports.io/football/players/9.png" } },
+                        { player: { name: "Havertz", pos: "F", number: 29, photo: "https://media.api-sports.io/football/players/10.png" } },
+                        { player: { name: "Martinelli", pos: "F", number: 11, photo: "https://media.api-sports.io/football/players/11.png" } }
+                    ]
+                },
+                awayLineup: {
+                    formation: "4-1-4-1",
+                    team: { colors: { player: { primary: "6caddf" } } },
+                    startXI: [
+                        { player: { name: "Ederson", pos: "G", number: 31, photo: "https://media.api-sports.io/football/players/12.png" } },
+                        { player: { name: "Walker", pos: "D", number: 2, photo: "https://media.api-sports.io/football/players/13.png" } },
+                        { player: { name: "Dias", pos: "D", number: 3, photo: "https://media.api-sports.io/football/players/14.png" } },
+                        { player: { name: "Akanji", pos: "D", number: 25, photo: "https://media.api-sports.io/football/players/15.png" } },
+                        { player: { name: "Ake", pos: "D", number: 6, photo: "https://media.api-sports.io/football/players/16.png" } },
+                        { player: { name: "Rodri", pos: "M", number: 16, photo: "https://media.api-sports.io/football/players/17.png" } },
+                        { player: { name: "Silva", pos: "M", number: 20, photo: "https://media.api-sports.io/football/players/18.png" } },
+                        { player: { name: "De Bruyne", pos: "M", number: 17, photo: "https://media.api-sports.io/football/players/19.png" } },
+                        { player: { name: "Foden", pos: "M", number: 47, photo: "https://media.api-sports.io/football/players/20.png" } },
+                        { player: { name: "Haaland", pos: "F", number: 9, photo: "https://media.api-sports.io/football/players/21.png" } },
+                        { player: { name: "Grealish", pos: "M", number: 10, photo: "https://media.api-sports.io/football/players/22.png" } }
+                    ]
+                }
             }
         ];
 
@@ -379,9 +422,9 @@
             const homeRows = groupIntoRows(match.homeLineup.startXI);
             const awayRows = groupIntoRows(match.awayLineup.startXI);
 
-            // Spaced out the Y-Coordinates so the midfield has more breathing room
-            const homeYPositions = [90, 75, 60, 48]; 
-            const awayYPositions = [8, 22, 36, 44];   
+            // Adjusted mapping to perfectly fit both teams without overlapping
+            const homeYPositions = [90, 76, 62, 51]; 
+            const awayYPositions = [10, 24, 38, 49];   
 
             function drawTeam(rows, yPositions, teamColor) {
                 rows.forEach((rowPlayers, rowIndex) => {
@@ -423,16 +466,52 @@
                 });
             }
 
-            // CRITICAL: Draw Away first, Home second so Home overlaps properly in foreground
             drawTeam(awayRows, awayYPositions, awayColor);
             drawTeam(homeRows, homeYPositions, homeColor);
         }
 
+        // ==========================================
+        // 3. TOOLS (Screenshot & Copy Tweet)
+        // ==========================================
         function takeScreenshot() {
             const capture = document.getElementById('capture-area');
             capture.style.opacity = '0.5';
             setTimeout(() => { capture.style.opacity = '1'; }, 100);
             alert("This simulates the flash! Your Python bot will use Playwright to screenshot this exact #capture-area div.");
+        }
+
+        function copyTweetText() {
+            const select = document.getElementById('match-selector');
+            const fixtureId = parseInt(select.value);
+            const match = allMatches.find(m => m.fixture.id === fixtureId);
+            
+            if (!match) return;
+
+            const homeName = match.teams.home.name;
+            const awayName = match.teams.away.name;
+            
+            // Clean up names for hashtags (remove spaces and special characters)
+            const homeHashtag = "#" + homeName.replace(/[^a-zA-Z0-9]/g, '');
+            const awayHashtag = "#" + awayName.replace(/[^a-zA-Z0-9]/g, '');
+
+            const tweetText = `🚨 Official Starting XI 🚨\n\n⚽ ${homeName} vs ${awayName}\n\n${homeHashtag} ${awayHashtag}`;
+
+            navigator.clipboard.writeText(tweetText).then(() => {
+                const btn = document.getElementById('copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = "✅ Copied!";
+                btn.style.backgroundColor = "#198754";
+                btn.style.borderColor = "#198754";
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = "#333";
+                    btn.style.borderColor = "#444";
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert("Failed to copy to clipboard.");
+            });
         }
 
         loadData();
