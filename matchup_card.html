@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Dual Matchup Generator</title>
+    <title>2D Tactical Matchup Generator</title>
     <style>
         :root {
-            --bg-color: #080a0f;
+            --bg-color: #0b0e14;
         }
 
         body {
@@ -64,13 +64,13 @@
         /* --- Header --- */
         #header {
             width: 100%;
-            padding: 20px 40px;
+            padding: 15px 40px;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 10;
             box-sizing: border-box;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
         }
 
         .team-block {
@@ -82,93 +82,89 @@
         .team-block.home { justify-content: flex-end; }
         .team-block.away { justify-content: flex-start; }
 
-        .team-logo { width: 70px; height: 70px; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
+        .team-logo { width: 65px; height: 65px; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
         
         .team-info-text { display: flex; flex-direction: column; }
         .team-block.home .team-info-text { align-items: flex-end; }
         .team-block.away .team-info-text { align-items: flex-start; }
 
-        .team-name { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; line-height: 1; }
-        .formation { font-size: 18px; font-weight: bold; color: #adb5bd; margin-top: 5px; }
+        .team-name { font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; line-height: 1; }
+        .formation { font-size: 16px; font-weight: bold; color: #adb5bd; margin-top: 5px; }
 
         .vs-badge {
-            width: 20%;
+            width: 15%;
             text-align: center;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 900;
             color: #fff;
             background: rgba(255,255,255,0.1);
-            padding: 10px 0;
+            padding: 8px 0;
             border-radius: 30px;
             letter-spacing: 2px;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* --- 3D Scene --- */
+        /* --- 2D Flat Pitch --- */
         #scene {
-            perspective: 1200px;
-            perspective-origin: 50% 10%; /* Camera looks down slightly from the top */
             width: 100%;
-            height: 550px;
+            height: 560px;
             position: absolute;
-            bottom: 0px;
+            bottom: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         #pitch {
-            width: 800px;
-            height: 750px;
-            background: linear-gradient(0deg, #0d2614 0%, #1a4224 50%, #0d2614 100%);
-            transform: rotateX(55deg) translateY(-20px); /* 3D Tilt */
-            transform-style: preserve-3d; /* CRITICAL: Allows players to stand up */
+            width: 850px;
+            height: 540px;
+            /* Beautiful top-down mow lines */
+            background: repeating-linear-gradient(
+                0deg,
+                #1e4d2b,
+                #1e4d2b 45px,
+                #1a4224 45px,
+                #1a4224 90px
+            );
             position: relative;
-            border: 3px solid rgba(255,255,255,0.3);
-            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            border: 3px solid rgba(255,255,255,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border-radius: 4px;
         }
 
         /* Field Lines */
-        .pitch-line { position: absolute; border: 3px solid rgba(255,255,255,0.15); }
-        .center-circle { width: 180px; height: 180px; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .halfway-line { width: 100%; height: 3px; top: 50%; border-left: none; border-right: none; background: rgba(255,255,255,0.15); border: none; }
-        .penalty-box-bottom { width: 350px; height: 140px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; }
-        .penalty-box-top { width: 350px; height: 140px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; }
+        .pitch-line { position: absolute; border: 2px solid rgba(255,255,255,0.4); }
+        .center-circle { width: 140px; height: 140px; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .center-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .halfway-line { width: 100%; height: 2px; top: 50%; border-left: none; border-right: none; background: rgba(255,255,255,0.4); border: none; }
+        
+        .penalty-box-bottom { width: 300px; height: 90px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; }
+        .six-yard-bottom { width: 140px; height: 35px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); }
+        .penalty-arc-bottom { width: 100px; height: 50px; bottom: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-bottom: none; border-radius: 50px 50px 0 0; position: absolute; border-bottom-color: transparent;}
+        
+        .penalty-box-top { width: 300px; height: 90px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; }
+        .six-yard-top { width: 140px; height: 35px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); }
+        .penalty-arc-top { width: 100px; height: 50px; top: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-top: none; border-radius: 0 0 50px 50px; position: absolute; border-top-color: transparent;}
 
-        /* --- Player Nodes --- */
+        /* --- Player Nodes (Flat 2D) --- */
         .player-node {
             position: absolute;
-            width: 90px;
+            width: 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* BILLBOARDING: Counter-rotate exactly against the pitch tilt */
-            transform: translate(-50%, -50%) rotateX(-55deg);
-            transform-style: preserve-3d;
+            transform: translate(-50%, -50%);
             transition: all 0.5s ease;
         }
 
-        .player-shadow {
-            position: absolute;
-            bottom: 5px;
-            width: 60px;
-            height: 15px;
-            background: rgba(0,0,0,0.8);
-            border-radius: 50%;
-            filter: blur(5px);
-            z-index: 1;
-            /* Shadow stays flat on the pitch */
-            transform: rotateX(55deg);
-        }
-
         .player-photo-container {
-            width: 60px;
-            height: 60px;
+            width: 50px; 
+            height: 50px;
             border-radius: 50%;
             border: 3px solid var(--node-color);
             background-color: #2b3035;
-            box-shadow: 0 0 15px var(--node-color), inset 0 0 10px rgba(0,0,0,0.8);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
             z-index: 2;
             overflow: hidden;
             display: flex;
@@ -178,39 +174,39 @@
         }
 
         .player-photo { width: 100%; height: 100%; object-fit: cover; }
-        .fallback-initials { font-size: 20px; font-weight: bold; color: #adb5bd; }
+        .fallback-initials { font-size: 18px; font-weight: bold; color: #adb5bd; }
 
         .player-number {
             position: absolute;
-            top: -5px;
-            right: -5px;
+            top: -4px;
+            right: 8px;
             background-color: #111;
             color: white;
             border: 1px solid var(--node-color);
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
             z-index: 3;
         }
 
         .player-nameplate {
-            margin-top: -8px;
-            background: rgba(0, 0, 0, 0.9);
+            margin-top: -6px;
+            background: rgba(0, 0, 0, 0.85);
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 3px 10px;
+            padding: 3px 8px;
             border-radius: 10px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             z-index: 3;
             white-space: nowrap;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
     </style>
@@ -248,9 +244,16 @@
         <div id="scene">
             <div id="pitch">
                 <div class="pitch-line center-circle"></div>
+                <div class="center-dot"></div>
                 <div class="halfway-line"></div>
+                
                 <div class="pitch-line penalty-box-bottom"></div>
+                <div class="six-yard-bottom"></div>
+                <div class="penalty-arc-bottom"></div>
+
                 <div class="pitch-line penalty-box-top"></div>
+                <div class="six-yard-top"></div>
+                <div class="penalty-arc-top"></div>
                 
                 <div id="players-container">
                     </div>
@@ -259,91 +262,48 @@
     </div>
 
     <script>
-        // ==========================================
-        // 1. DATA HANDLING (Mocks simulate script.js payload)
-        // ==========================================
         let allMatches = [];
 
+        // Mocks include a 3-4-2-1 to prove the new parsing engine works perfectly
         const MOCK_MATCHES = [
             {
                 fixture: { id: 1001 },
                 teams: {
-                    home: { name: "Real Madrid", logo: "https://media.api-sports.io/football/teams/541.png" },
-                    away: { name: "Barcelona", logo: "https://media.api-sports.io/football/teams/529.png" }
+                    home: { name: "Bayer Leverkusen", logo: "https://media.api-sports.io/football/teams/168.png" },
+                    away: { name: "Wolfsburg", logo: "https://media.api-sports.io/football/teams/161.png" }
                 },
                 homeLineup: {
-                    formation: "4-3-3",
-                    team: { colors: { player: { primary: "ffffff" } } },
+                    formation: "3-4-2-1", // Complex formation test
+                    team: { colors: { player: { primary: "e32221" } } },
                     startXI: [
-                        { player: { name: "Courtois", pos: "G", number: 1, photo: "https://media.api-sports.io/football/players/738.png" } },
-                        { player: { name: "Carvajal", pos: "D", number: 2, photo: "https://media.api-sports.io/football/players/733.png" } },
-                        { player: { name: "Militao", pos: "D", number: 3, photo: "https://media.api-sports.io/football/players/734.png" } },
-                        { player: { name: "Rudiger", pos: "D", number: 22, photo: "https://media.api-sports.io/football/players/22.png" } },
-                        { player: { name: "Mendy", pos: "D", number: 23, photo: "https://media.api-sports.io/football/players/736.png" } },
-                        { player: { name: "Valverde", pos: "M", number: 15, photo: "https://media.api-sports.io/football/players/740.png" } },
-                        { player: { name: "Tchouameni", pos: "M", number: 18, photo: "https://media.api-sports.io/football/players/22934.png" } },
-                        { player: { name: "Bellingham", pos: "M", number: 5, photo: "https://media.api-sports.io/football/players/13.png" } },
-                        { player: { name: "Rodrygo", pos: "F", number: 11, photo: "https://media.api-sports.io/football/players/743.png" } },
-                        { player: { name: "Mbappe", pos: "F", number: 9, photo: "https://media.api-sports.io/football/players/278.png" } },
-                        { player: { name: "Vinicius Jr", pos: "F", number: 7, photo: "https://media.api-sports.io/football/players/744.png" } }
+                        { player: { name: "Hradecky", pos: "G", number: 1, photo: "https://media.api-sports.io/football/players/250.png" } },
+                        { player: { name: "Tapsoba", pos: "D", number: 12, photo: "https://media.api-sports.io/football/players/251.png" } },
+                        { player: { name: "Tah", pos: "D", number: 4, photo: "https://media.api-sports.io/football/players/252.png" } },
+                        { player: { name: "Kossounou", pos: "D", number: 3, photo: "https://media.api-sports.io/football/players/253.png" } },
+                        { player: { name: "Frimpong", pos: "M", number: 30, photo: "https://media.api-sports.io/football/players/254.png" } },
+                        { player: { name: "Xhaka", pos: "M", number: 34, photo: "https://media.api-sports.io/football/players/255.png" } },
+                        { player: { name: "Andrich", pos: "M", number: 8, photo: "https://media.api-sports.io/football/players/256.png" } },
+                        { player: { name: "Grimaldo", pos: "M", number: 20, photo: "https://media.api-sports.io/football/players/257.png" } },
+                        { player: { name: "Hofmann", pos: "F", number: 7, photo: "https://media.api-sports.io/football/players/258.png" } },
+                        { player: { name: "Wirtz", pos: "F", number: 10, photo: "https://media.api-sports.io/football/players/259.png" } },
+                        { player: { name: "Boniface", pos: "F", number: 22, photo: "https://media.api-sports.io/football/players/260.png" } }
                     ]
                 },
                 awayLineup: {
-                    formation: "4-3-3",
-                    team: { colors: { player: { primary: "a50044" } } },
+                    formation: "4-2-3-1",
+                    team: { colors: { player: { primary: "65b32e" } } },
                     startXI: [
-                        { player: { name: "ter Stegen", pos: "G", number: 1, photo: "https://media.api-sports.io/football/players/136.png" } },
-                        { player: { name: "Kounde", pos: "D", number: 23, photo: "https://media.api-sports.io/football/players/22.png" } },
-                        { player: { name: "Araujo", pos: "D", number: 4, photo: "https://media.api-sports.io/football/players/23.png" } },
-                        { player: { name: "Cubarsi", pos: "D", number: 33, photo: "https://media.api-sports.io/football/players/24.png" } },
-                        { player: { name: "Cancelo", pos: "D", number: 2, photo: "https://media.api-sports.io/football/players/25.png" } },
-                        { player: { name: "Pedri", pos: "M", number: 8, photo: "https://media.api-sports.io/football/players/26.png" } },
-                        { player: { name: "de Jong", pos: "M", number: 21, photo: "https://media.api-sports.io/football/players/27.png" } },
-                        { player: { name: "Gundogan", pos: "M", number: 22, photo: "https://media.api-sports.io/football/players/28.png" } },
-                        { player: { name: "Yamal", pos: "F", number: 27, photo: "https://media.api-sports.io/football/players/31.png" } },
-                        { player: { name: "Lewandowski", pos: "F", number: 9, photo: "https://media.api-sports.io/football/players/30.png" } },
-                        { player: { name: "Raphinha", pos: "F", number: 11, photo: "https://media.api-sports.io/football/players/29.png" } }
-                    ]
-                }
-            },
-            {
-                fixture: { id: 1002 },
-                teams: {
-                    home: { name: "Arsenal", logo: "https://media.api-sports.io/football/teams/42.png" },
-                    away: { name: "Man City", logo: "https://media.api-sports.io/football/teams/50.png" }
-                },
-                homeLineup: {
-                    formation: "4-3-3",
-                    team: { colors: { player: { primary: "ef0107" } } },
-                    startXI: [
-                        { player: { name: "Raya", pos: "G", number: 22, photo: "https://media.api-sports.io/football/players/1.png" } },
-                        { player: { name: "White", pos: "D", number: 4, photo: "https://media.api-sports.io/football/players/2.png" } },
-                        { player: { name: "Saliba", pos: "D", number: 2, photo: "https://media.api-sports.io/football/players/3.png" } },
-                        { player: { name: "Gabriel", pos: "D", number: 6, photo: "https://media.api-sports.io/football/players/4.png" } },
-                        { player: { name: "Kiwior", pos: "D", number: 15, photo: "https://media.api-sports.io/football/players/5.png" } },
-                        { player: { name: "Odegaard", pos: "M", number: 8, photo: "https://media.api-sports.io/football/players/6.png" } },
-                        { player: { name: "Rice", pos: "M", number: 41, photo: "https://media.api-sports.io/football/players/7.png" } },
-                        { player: { name: "Jorginho", pos: "M", number: 20, photo: "https://media.api-sports.io/football/players/8.png" } },
-                        { player: { name: "Saka", pos: "F", number: 7, photo: "https://media.api-sports.io/football/players/9.png" } },
-                        { player: { name: "Havertz", pos: "F", number: 29, photo: "https://media.api-sports.io/football/players/10.png" } },
-                        { player: { name: "Martinelli", pos: "F", number: 11, photo: "https://media.api-sports.io/football/players/11.png" } }
-                    ]
-                },
-                awayLineup: {
-                    formation: "4-1-4-1",
-                    team: { colors: { player: { primary: "6caddf" } } },
-                    startXI: [
-                        { player: { name: "Ederson", pos: "G", number: 31, photo: "https://media.api-sports.io/football/players/12.png" } },
-                        { player: { name: "Walker", pos: "D", number: 2, photo: "https://media.api-sports.io/football/players/13.png" } },
-                        { player: { name: "Dias", pos: "D", number: 3, photo: "https://media.api-sports.io/football/players/14.png" } },
-                        { player: { name: "Akanji", pos: "D", number: 25, photo: "https://media.api-sports.io/football/players/15.png" } },
-                        { player: { name: "Ake", pos: "D", number: 6, photo: "https://media.api-sports.io/football/players/16.png" } },
-                        { player: { name: "Rodri", pos: "M", number: 16, photo: "https://media.api-sports.io/football/players/17.png" } },
-                        { player: { name: "Silva", pos: "M", number: 20, photo: "https://media.api-sports.io/football/players/18.png" } },
-                        { player: { name: "De Bruyne", pos: "M", number: 17, photo: "https://media.api-sports.io/football/players/19.png" } },
-                        { player: { name: "Foden", pos: "M", number: 47, photo: "https://media.api-sports.io/football/players/20.png" } },
-                        { player: { name: "Haaland", pos: "F", number: 9, photo: "https://media.api-sports.io/football/players/21.png" } },
-                        { player: { name: "Grealish", pos: "M", number: 10, photo: "https://media.api-sports.io/football/players/22.png" } }
+                        { player: { name: "Casteels", pos: "G", number: 1, photo: null } },
+                        { player: { name: "Maehle", pos: "D", number: 21, photo: null } },
+                        { player: { name: "Lacroix", pos: "D", number: 4, photo: null } },
+                        { player: { name: "Jenz", pos: "D", number: 25, photo: null } },
+                        { player: { name: "Baku", pos: "D", number: 20, photo: null } },
+                        { player: { name: "Arnold", pos: "M", number: 20, photo: null } },
+                        { player: { name: "Svanberg", pos: "M", number: 19, photo: null } },
+                        { player: { name: "Majer", pos: "M", number: 19, photo: null } },
+                        { player: { name: "Gerhardt", pos: "M", number: 27, photo: null } },
+                        { player: { name: "Paredes", pos: "M", number: 40, photo: null } },
+                        { player: { name: "Wind", pos: "F", number: 23, photo: null } }
                     ]
                 }
             }
@@ -351,7 +311,6 @@
 
         async function loadData() {
             try {
-                // Fetch local JSON from your backend structure
                 const res = await fetch('data/games_2026-04-04.json'); 
                 if (res.ok) {
                     const data = await res.json();
@@ -365,9 +324,6 @@
             if (allMatches.length > 0) renderMatch(allMatches[0].fixture.id);
         }
 
-        // ==========================================
-        // 2. THE ENGINE
-        // ==========================================
         function populateDropdown() {
             const select = document.getElementById('match-selector');
             select.innerHTML = '';
@@ -391,11 +347,28 @@
             return Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2));
         }
 
+        // --- THE NEW STRICT FORMATION PARSER ---
+        function sliceArrayByFormation(formationStr, startXI) {
+            // formationStr: "3-4-2-1" -> parts: [3, 4, 2, 1]
+            const parts = formationStr.split('-').map(Number);
+            const rows = [];
+            
+            // Goalkeeper is ALWAYS row 0 (the first player in the array)
+            rows.push([startXI[0]]);
+            
+            let currentIndex = 1;
+            for (let i = 0; i < parts.length; i++) {
+                const count = parts[i];
+                rows.push(startXI.slice(currentIndex, currentIndex + count));
+                currentIndex += count;
+            }
+            return rows;
+        }
+
         function renderMatch(fixtureId) {
             const match = allMatches.find(m => m.fixture.id === fixtureId);
             if (!match) return;
 
-            // 1. Update Header
             document.getElementById('home-name').textContent = match.teams.home.name;
             document.getElementById('home-logo').src = match.teams.home.logo;
             document.getElementById('home-formation').textContent = match.homeLineup.formation;
@@ -404,42 +377,43 @@
             document.getElementById('away-logo').src = match.teams.away.logo;
             document.getElementById('away-formation').textContent = match.awayLineup.formation;
 
-            // 2. Calculate Contrast-Safe Colors
             let homeColor = match.homeLineup.team?.colors?.player?.primary ? `#${match.homeLineup.team.colors.player.primary}` : '#ffffff';
             let awayColor = match.awayLineup.team?.colors?.player?.primary ? `#${match.awayLineup.team.colors.player.primary}` : '#dddddd';
             if (calculateColorDistance(homeColor, awayColor) < 60) awayColor = '#343a40'; 
 
-            // 3. Draw Players
             const container = document.getElementById('players-container');
             container.innerHTML = '';
 
-            function groupIntoRows(startXI) {
-                const grouped = { 'G': [], 'D': [], 'M': [], 'F': [] };
-                startXI.forEach(slot => { grouped[slot.player.pos || 'M'].push(slot); });
-                return [grouped['G'], grouped['D'], grouped['M'], grouped['F']];
-            }
+            // Use the new mathematically strict slicing method
+            const homeRows = sliceArrayByFormation(match.homeLineup.formation, match.homeLineup.startXI);
+            const awayRows = sliceArrayByFormation(match.awayLineup.formation, match.awayLineup.startXI);
 
-            const homeRows = groupIntoRows(match.homeLineup.startXI);
-            const awayRows = groupIntoRows(match.awayLineup.startXI);
-
-            // Adjusted mapping to perfectly fit both teams without overlapping
-            const homeYPositions = [90, 76, 62, 51]; 
-            const awayYPositions = [10, 24, 38, 49];   
-
-            function drawTeam(rows, yPositions, teamColor) {
+            function drawTeam(rows, isHome, teamColor) {
+                const numRows = rows.length; // Will be 4 for 4-3-3, 5 for 3-4-2-1, etc.
+                
                 rows.forEach((rowPlayers, rowIndex) => {
                     if (!rowPlayers || rowPlayers.length === 0) return;
-                    const yPos = yPositions[rowIndex];
+                    
+                    // Dynamic Y-Spacing Logic
+                    // Home occupies 92% to 54% | Away occupies 8% to 46%
+                    let yPos;
+                    if (isHome) {
+                        yPos = 92 - (rowIndex * (38 / (numRows - 1 || 1)));
+                    } else {
+                        yPos = 8 + (rowIndex * (38 / (numRows - 1 || 1)));
+                    }
+
                     const numPlayers = rowPlayers.length;
 
                     rowPlayers.forEach((slot, colIndex) => {
                         const p = slot.player;
                         
+                        // X-Spacing Logic
                         let xPos = 50; 
                         if (numPlayers > 1) {
-                            const spread = 75; 
+                            const spread = 70; // Keep them inside the touchlines
                             const step = spread / (numPlayers - 1);
-                            xPos = 12.5 + (step * colIndex);
+                            xPos = 15 + (step * colIndex);
                         }
 
                         const nameParts = p.name.split(' ');
@@ -453,7 +427,6 @@
 
                         const nodeHtml = `
                             <div class="player-node" style="left: ${xPos}%; top: ${yPos}%; --node-color: ${teamColor};">
-                                <div class="player-shadow"></div>
                                 <div class="player-number">${p.number || ''}</div>
                                 <div class="player-photo-container">
                                     ${photoHtml}
@@ -466,31 +439,24 @@
                 });
             }
 
-            drawTeam(awayRows, awayYPositions, awayColor);
-            drawTeam(homeRows, homeYPositions, homeColor);
+            drawTeam(awayRows, false, awayColor);
+            drawTeam(homeRows, true, homeColor);
         }
 
-        // ==========================================
-        // 3. TOOLS (Screenshot & Copy Tweet)
-        // ==========================================
         function takeScreenshot() {
             const capture = document.getElementById('capture-area');
             capture.style.opacity = '0.5';
             setTimeout(() => { capture.style.opacity = '1'; }, 100);
-            alert("This simulates the flash! Your Python bot will use Playwright to screenshot this exact #capture-area div.");
+            alert("Ready! Your Python bot will capture this clean 2D layout.");
         }
 
         function copyTweetText() {
             const select = document.getElementById('match-selector');
-            const fixtureId = parseInt(select.value);
-            const match = allMatches.find(m => m.fixture.id === fixtureId);
-            
+            const match = allMatches.find(m => m.fixture.id === parseInt(select.value));
             if (!match) return;
 
             const homeName = match.teams.home.name;
             const awayName = match.teams.away.name;
-            
-            // Clean up names for hashtags (remove spaces and special characters)
             const homeHashtag = "#" + homeName.replace(/[^a-zA-Z0-9]/g, '');
             const awayHashtag = "#" + awayName.replace(/[^a-zA-Z0-9]/g, '');
 
@@ -498,19 +464,14 @@
 
             navigator.clipboard.writeText(tweetText).then(() => {
                 const btn = document.getElementById('copy-btn');
-                const originalText = btn.textContent;
                 btn.textContent = "✅ Copied!";
                 btn.style.backgroundColor = "#198754";
                 btn.style.borderColor = "#198754";
-                
                 setTimeout(() => {
-                    btn.textContent = originalText;
+                    btn.textContent = "📋 Copy Tweet Text";
                     btn.style.backgroundColor = "#333";
                     btn.style.borderColor = "#444";
                 }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-                alert("Failed to copy to clipboard.");
             });
         }
 
