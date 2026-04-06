@@ -47,11 +47,11 @@
         button:hover { background: #444; }
 
         /* =========================================
-           THE EXPORTABLE CANVAS (1200x675)
+           THE EXPORTABLE CANVAS (1200x900) - TALLER FOR TWITTER
            ========================================= */
         #capture-area {
             width: 1200px;
-            height: 675px;
+            height: 900px; /* INCREASED HEIGHT */
             background: radial-gradient(circle at center, #1a2235 0%, #080a0f 100%);
             position: relative;
             overflow: hidden;
@@ -64,7 +64,7 @@
         /* --- Header --- */
         #header {
             width: 100%;
-            padding: 15px 40px;
+            padding: 20px 40px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -82,19 +82,19 @@
         .team-block.home { justify-content: flex-end; }
         .team-block.away { justify-content: flex-start; }
 
-        .team-logo { width: 65px; height: 65px; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
+        .team-logo { width: 75px; height: 75px; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
         
         .team-info-text { display: flex; flex-direction: column; }
         .team-block.home .team-info-text { align-items: flex-end; }
         .team-block.away .team-info-text { align-items: flex-start; }
 
-        .team-name { font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; line-height: 1; }
-        .formation { font-size: 16px; font-weight: bold; color: #adb5bd; margin-top: 5px; }
+        .team-name { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0; line-height: 1; }
+        .formation { font-size: 18px; font-weight: bold; color: #adb5bd; margin-top: 5px; }
 
         .vs-badge {
             width: 15%;
             text-align: center;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 900;
             color: #fff;
             background: rgba(255,255,255,0.1);
@@ -108,9 +108,9 @@
         /* --- 2D Flat Pitch --- */
         #scene {
             width: 100%;
-            height: 560px;
+            height: 750px; /* INCREASED HEIGHT */
             position: absolute;
-            bottom: 10px;
+            bottom: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -118,13 +118,13 @@
 
         #pitch {
             width: 850px;
-            height: 540px;
+            height: 730px; /* INCREASED HEIGHT */
             background: repeating-linear-gradient(
                 0deg,
                 #1e4d2b,
-                #1e4d2b 45px,
-                #1a4224 45px,
-                #1a4224 90px
+                #1e4d2b 50px,
+                #1a4224 50px,
+                #1a4224 100px
             );
             position: relative;
             border: 3px solid rgba(255,255,255,0.5);
@@ -139,24 +139,24 @@
             width: 100%;
             height: 50%;
             pointer-events: none;
-            z-index: 1; /* Sits below the pitch lines */
+            z-index: 1; 
         }
         .top-shade { top: 0; border-radius: 4px 4px 0 0; }
         .bottom-shade { bottom: 0; border-radius: 0 0 4px 4px; }
 
         /* Field Lines */
         .pitch-line { position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2; }
-        .center-circle { width: 140px; height: 140px; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .center-circle { width: 160px; height: 160px; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
         .center-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; }
         .halfway-line { width: 100%; height: 2px; top: 50%; border-left: none; border-right: none; background: rgba(255,255,255,0.4); border: none; z-index: 2; }
         
-        .penalty-box-bottom { width: 300px; height: 90px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; }
-        .six-yard-bottom { width: 140px; height: 35px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2;}
-        .penalty-arc-bottom { width: 100px; height: 50px; bottom: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-bottom: none; border-radius: 50px 50px 0 0; position: absolute; border-bottom-color: transparent; z-index: 2;}
+        .penalty-box-bottom { width: 340px; height: 120px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; }
+        .six-yard-bottom { width: 160px; height: 45px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2;}
+        .penalty-arc-bottom { width: 120px; height: 60px; bottom: 120px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-bottom: none; border-radius: 60px 60px 0 0; position: absolute; border-bottom-color: transparent; z-index: 2;}
         
-        .penalty-box-top { width: 300px; height: 90px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; }
-        .six-yard-top { width: 140px; height: 35px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2;}
-        .penalty-arc-top { width: 100px; height: 50px; top: 90px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-top: none; border-radius: 0 0 50px 50px; position: absolute; border-top-color: transparent; z-index: 2;}
+        .penalty-box-top { width: 340px; height: 120px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; }
+        .six-yard-top { width: 160px; height: 45px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 2px solid rgba(255,255,255,0.4); z-index: 2;}
+        .penalty-arc-top { width: 120px; height: 60px; top: 120px; left: 50%; transform: translateX(-50%); border: 2px solid rgba(255,255,255,0.4); border-top: none; border-radius: 0 0 60px 60px; position: absolute; border-top-color: transparent; z-index: 2;}
 
         /* --- Player Nodes --- */
         .player-node {
@@ -170,8 +170,8 @@
         }
 
         .player-photo-container {
-            width: 38px;  
-            height: 38px; 
+            width: 44px;  /* Bumped slightly since we have more space */
+            height: 44px; 
             border-radius: 50%;
             border: 2px solid var(--node-color);
             background-color: #2b3035;
@@ -185,7 +185,7 @@
         }
 
         .player-photo { width: 100%; height: 100%; object-fit: cover; }
-        .fallback-initials { font-size: 16px; font-weight: bold; color: #adb5bd; }
+        .fallback-initials { font-size: 18px; font-weight: bold; color: #adb5bd; }
 
         .player-number {
             position: absolute;
@@ -194,13 +194,13 @@
             background-color: #111;
             color: white;
             border: 1px solid var(--node-color);
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 8px;
+            font-size: 9px;
             font-weight: bold;
             z-index: 3;
         }
@@ -209,9 +209,9 @@
             margin-top: -6px; 
             background: rgba(0, 0, 0, 0.85);
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 2px 5px;
+            padding: 3px 6px;
             border-radius: 6px;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -279,52 +279,13 @@
         let allMatches = [];
 
         const MOCK_MATCHES = [
-            {
-                fixture: { id: 1001 },
-                teams: {
-                    home: { name: "Liverpool", logo: "https://media.api-sports.io/football/teams/40.png" },
-                    away: { name: "Man City", logo: "https://media.api-sports.io/football/teams/50.png" }
-                },
-                homeLineup: {
-                    formation: "4-3-3",
-                    team: { colors: { player: { primary: "d00027" } } },
-                    startXI: [
-                        { player: { name: "Alisson", pos: "G", number: 1, photo: null } },
-                        { player: { name: "Alexander-Arnold", pos: "D", number: 66, photo: null } },
-                        { player: { name: "Konate", pos: "D", number: 5, photo: null } },
-                        { player: { name: "van Dijk", pos: "D", number: 4, photo: null } },
-                        { player: { name: "Robertson", pos: "D", number: 26, photo: null } },
-                        { player: { name: "Szoboszlai", pos: "M", number: 8, photo: null } },
-                        { player: { name: "Mac Allister", pos: "M", number: 10, photo: null } },
-                        { player: { name: "Gravenberch", pos: "M", number: 38, photo: null } },
-                        { player: { name: "Salah", pos: "F", number: 11, photo: null } },
-                        { player: { name: "Nunez", pos: "F", number: 9, photo: null } },
-                        { player: { name: "Diaz", pos: "F", number: 7, photo: null } }
-                    ]
-                },
-                awayLineup: {
-                    formation: "4-2-3-1",
-                    team: { colors: { player: { primary: "6caddf" } } },
-                    startXI: [
-                        { player: { name: "Ederson", pos: "G", number: 31, photo: null } },
-                        { player: { name: "Walker", pos: "D", number: 2, photo: null } },
-                        { player: { name: "Dias", pos: "D", number: 3, photo: null } },
-                        { player: { name: "Akanji", pos: "D", number: 25, photo: null } },
-                        { player: { name: "Gvardiol", pos: "D", number: 24, photo: null } },
-                        { player: { name: "Rodri", pos: "M", number: 16, photo: null } },
-                        { player: { name: "Kovacic", pos: "M", number: 8, photo: null } },
-                        { player: { name: "Silva", pos: "M", number: 20, photo: null } },
-                        { player: { name: "De Bruyne", pos: "M", number: 17, photo: null } },
-                        { player: { name: "Foden", pos: "M", number: 47, photo: null } },
-                        { player: { name: "Haaland", pos: "F", number: 9, photo: null } }
-                    ]
-                }
-            }
+            // (Mock matches removed for brevity; it uses the live fetch)
         ];
 
         async function loadData() {
             try {
-                const res = await fetch('data/games_2026-04-04.json'); 
+                // FETCHING THE NEW DATE 4/6/2026
+                const res = await fetch('data/games_2026-04-06.json'); 
                 if (res.ok) {
                     const data = await res.json();
                     allMatches = data.filter(m => m.homeLineup && m.homeLineup.startXI && m.awayLineup && m.awayLineup.startXI);
@@ -428,7 +389,6 @@
             let awayColor = match.awayLineup.team?.colors?.player?.primary ? `#${match.awayLineup.team.colors.player.primary}` : '#dddddd';
             if (calculateColorDistance(homeColor, awayColor) < 60) awayColor = '#343a40'; 
 
-            // Apply Pitch Shading (Fading to transparent at the halfway line)
             document.getElementById('home-shade').style.background = `linear-gradient(to top, ${hexToRgba(homeColor, 0.25)} 0%, transparent 100%)`;
             document.getElementById('away-shade').style.background = `linear-gradient(to bottom, ${hexToRgba(awayColor, 0.25)} 0%, transparent 100%)`;
 
@@ -486,7 +446,7 @@
             const capture = document.getElementById('capture-area');
             capture.style.opacity = '0.5';
             setTimeout(() => { capture.style.opacity = '1'; }, 100);
-            alert("Ready! Your Python bot will capture this clean 2D layout.");
+            alert("Ready! Your Python bot will capture this clean 1200x900 layout.");
         }
 
         function copyTweetText() {
