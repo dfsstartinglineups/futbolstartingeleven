@@ -406,9 +406,13 @@
                     const numPlayers = rowPlayers.length;
                     const xPositions = getXPositions(numPlayers); 
                     
+                    // ✨ THE FIX: Reverse the array ONLY if it is the bottom (home) team
+                    const playersToDraw = isHome ? [...rowPlayers].reverse() : rowPlayers;
+
                     const baseZIndex = isHome ? (100 - rowIndex) : (10 + rowIndex);
 
-                    rowPlayers.forEach((slot, colIndex) => {
+                    // Use 'playersToDraw' instead of 'rowPlayers' here!
+                    playersToDraw.forEach((slot, colIndex) => {
                         const p = slot.player;
                         const xPos = xPositions[colIndex];
 
