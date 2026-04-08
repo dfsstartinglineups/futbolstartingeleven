@@ -133,16 +133,6 @@
             border-radius: 4px;
         }
 
-        /* Defensive Corner Crests */
-        .corner-crest {
-            position: absolute;
-            width: 72px; 
-            height: 72px;
-            object-fit: contain;
-            opacity: 0.5; /* INCREASED from 0.3 for better visibility */
-            z-index: 1;
-        }
-
         /* Field Lines */
         .pitch-line { position: absolute; border: 3px solid rgba(255,255,255,0.5); z-index: 2; }
         .center-circle { width: 220px; height: 220px; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
@@ -156,6 +146,28 @@
         .penalty-box-top { width: 440px; height: 160px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; }
         .six-yard-top { width: 220px; height: 60px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 3px solid rgba(255,255,255,0.5); z-index: 2;}
         .penalty-arc-top { width: 160px; height: 90px; top: 160px; left: 50%; transform: translateX(-50%); border: 3px solid rgba(255,255,255,0.5); border-top: none; border-radius: 0 0 90px 90px; position: absolute; border-top-color: transparent; z-index: 2;}
+
+        /* --- New Central Watermarks --- */
+        .watermark {
+            position: absolute;
+            width: 600px; /* Takes up most of the width of the field */
+            height: 600px; /* Takes up most of the half-field height */
+            object-fit: contain;
+            opacity: 0.04; /* Very faint ghost-like opacity */
+            transform: translate(-50%, -50%); /* Centers the image on its coordinates */
+            z-index: 1; /* Sits underneath the lines and players */
+            pointer-events: none; /* Make unclickable */
+        }
+
+        #home-watermark {
+            top: 75%; /* Center of the bottom half */
+            left: 50%;
+        }
+
+        #away-watermark {
+            top: 25%; /* Center of the top half */
+            left: 50%;
+        }
 
         /* --- Player Nodes --- */
         .player-node {
@@ -175,7 +187,7 @@
             border: 4px solid var(--node-color); 
             background-color: #2b3035;
             box-shadow: 0 6px 12px rgba(0,0,0,0.7);
-            z-index: 2;
+            z-index: 3; /* Elevated over watermarks and lines */
             overflow: hidden;
             display: flex;
             justify-content: center;
@@ -201,7 +213,7 @@
             align-items: center;
             font-size: 18px; 
             font-weight: bold;
-            z-index: 3;
+            z-index: 4;
         }
 
         .player-nameplate {
@@ -214,33 +226,10 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            z-index: 3;
+            z-index: 4;
             white-space: nowrap;
             box-shadow: 0 3px 6px rgba(0,0,0,0.6);
         }
-
-        /* --- New Central Watermarks --- */
-        .watermark {
-            position: absolute;
-            width: 300px; /* ADJUST LARGE SIZE HERE */
-            height: 300px; /* Square-ish watermark */
-            object-fit: contain;
-            opacity: 0.08; /* Low opacity, subtle ghost-like effect */
-            transform: translate(-50%, -50%); /* Center on position */
-            z-index: 1; /* Underneath everything, players are higher */
-            pointer-events: none; /* Make unclickable */
-        }
-
-        #home-watermark {
-            top: 75%; /* Center of bottom half */
-            left: 50%;
-        }
-
-        #away-watermark {
-            top: 25%; /* Center of top half */
-            left: 50%;
-        }
-
     </style>
 </head>
 <body>
@@ -275,6 +264,9 @@
 
         <div id="scene">
             <div id="pitch">
+                <img id="away-watermark" class="watermark" src="" alt="">
+                <img id="home-watermark" class="watermark" src="" alt="">
+
                 <div class="pitch-line center-circle"></div>
                 <div class="center-dot"></div>
                 <div class="halfway-line"></div>
@@ -286,9 +278,6 @@
                 <div class="pitch-line penalty-box-top"></div>
                 <div class="six-yard-top"></div>
                 <div class="penalty-arc-top"></div>
-                
-                <img id="away-watermark" class="watermark" src="" alt="">
-                <img id="home-watermark" class="watermark" src="" alt="">
                 
                 <div id="players-container">
                     </div>
