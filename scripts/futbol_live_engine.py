@@ -139,6 +139,7 @@ def main(local_memory):
     has_live_games = False
     next_upcoming_ts = None  
     missing_schedule = False
+    api_failure = False # 👈 NEW FLAG
 
     # =========================================================
     # 🧠 THE LOCAL MEMORY GATEKEEPER
@@ -181,6 +182,7 @@ def main(local_memory):
 
         fixtures_data = fetch_api(f"fixtures?date={current_date_str}&timezone=America/New_York")
         if not fixtures_data or not fixtures_data.get("response"):
+            api_failure = True # 👈 TRIP THE FLAG
             continue
             
         # 🛡️ Crash Protection: Ensure every response item has the expected structure
@@ -449,6 +451,11 @@ def main(local_memory):
     if has_live_games: 
         print("⏱️ Sleeping 30s (Waiting for kickoff or active game updates)...")
         return 30, all_new_live_data 
+
+    # 👈 NEW CHECK: If the API failed, try again in 60 seconds!
+    if api_failure:
+        print("⚠️ API fetch failed. Sleeping 60s and retrying...")
+        return 60, all_new_live_data
     if next_upcoming_ts: 
         sleep_time = max(60, min((next_upcoming_ts - now_ts) - 120, 3600))
         print(f"⏱️ Sleeping {int(sleep_time)}s (Waiting for next scheduled kickoff)...")
