@@ -147,32 +147,33 @@
         .six-yard-top { width: 220px; height: 60px; top: 0; left: 50%; transform: translateX(-50%); border-top: none; position: absolute; border: 3px solid rgba(255,255,255,0.5); z-index: 2;}
         .penalty-arc-top { width: 160px; height: 90px; top: 160px; left: 50%; transform: translateX(-50%); border: 3px solid rgba(255,255,255,0.5); border-top: none; border-radius: 0 0 90px 90px; position: absolute; border-top-color: transparent; z-index: 2;}
 
-        /* --- New Central Watermarks --- */
+        /* --- Central Watermarks --- */
         .watermark {
             position: absolute;
-            width: 600px; /* Takes up most of the width of the field */
-            height: 600px; /* Takes up most of the half-field height */
+            width: 600px; 
+            height: 600px; 
             object-fit: contain;
-            opacity: 0.5; /* INCREASED to 50% opacity */
-            transform: translate(-50%, -50%); /* Centers the image on its coordinates */
-            z-index: 1; /* Sits underneath the lines and players */
-            pointer-events: none; /* Make unclickable */
+            opacity: 0.5; 
+            transform: translate(-50%, -50%); 
+            z-index: 1; 
+            pointer-events: none; 
         }
 
         #home-watermark {
-            top: 75%; /* Center of the bottom half */
+            top: 75%; 
             left: 50%;
         }
 
         #away-watermark {
-            top: 25%; /* Center of the top half */
+            top: 25%; 
             left: 50%;
         }
 
         /* --- Player Nodes --- */
         .player-node {
             position: absolute;
-            width: 110px; 
+            /* INCREASED: Giving the container more width to hold longer names */
+            width: 140px; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -180,14 +181,15 @@
             transition: all 0.5s ease;
         }
 
+        /* INCREASED SIZE: 72px -> 90px */
         .player-photo-container {
-            width: 72px;  
-            height: 72px; 
+            width: 90px;  
+            height: 90px; 
             border-radius: 50%;
             border: 4px solid var(--node-color); 
             background-color: #2b3035;
             box-shadow: 0 6px 12px rgba(0,0,0,0.7);
-            z-index: 3; /* Elevated over watermarks and lines */
+            z-index: 3; 
             overflow: hidden;
             display: flex;
             justify-content: center;
@@ -196,33 +198,36 @@
         }
 
         .player-photo { width: 100%; height: 100%; object-fit: cover; }
-        .fallback-initials { font-size: 26px; font-weight: bold; color: #adb5bd; }
+        .fallback-initials { font-size: 32px; font-weight: bold; color: #adb5bd; }
 
+        /* INCREASED SIZE: 34px -> 38px */
         .player-number {
             position: absolute;
-            top: -8px; 
-            right: -4px; 
+            top: -5px; 
+            right: 0px; 
             background-color: #111;
             color: white;
             border: 2px solid var(--node-color);
-            width: 34px; 
-            height: 34px; 
+            width: 38px; 
+            height: 38px; 
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 18px; 
+            font-size: 20px; 
             font-weight: bold;
             z-index: 4;
         }
 
         .player-nameplate {
-            margin-top: -12px; 
+            /* Adjusted margin to overlap the larger circle correctly */
+            margin-top: -14px; 
             background: rgba(0, 0, 0, 0.9);
             border: 1px solid rgba(255,255,255,0.3);
             padding: 5px 12px; 
             border-radius: 8px;
-            font-size: 16px; 
+            /* REDUCED slightly to fit full names cleanly */
+            font-size: 14px; 
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -385,7 +390,6 @@
             document.getElementById('away-logo').src = match.teams.away.logo;
             document.getElementById('away-formation').textContent = match.awayLineup.formation;
 
-            // Set central watermarks
             document.getElementById('home-watermark').src = match.teams.home.logo;
             document.getElementById('away-watermark').src = match.teams.away.logo;
 
@@ -417,9 +421,15 @@
                         const p = slot.player;
                         const xPos = xPositions[colIndex];
 
-                        const nameParts = p.name.split(' ');
-                        let displayName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : p.name;
-                        if (displayName.length > 12) displayName = displayName.substring(0, 10) + '.';
+                        // ========================================================
+                        // FULL NAME LOGIC
+                        // ========================================================
+                        let displayName = p.name;
+                        
+                        // Generous truncation to keep long names from breaking the graphic
+                        if (displayName.length > 18) {
+                            displayName = displayName.substring(0, 16) + '...';
+                        }
 
                         let photoHtml = `<div class="fallback-initials">${p.name.charAt(0).toUpperCase()}</div>`;
                         if (p.photo && p.photo.includes("http")) {
