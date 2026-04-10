@@ -279,7 +279,22 @@ def main(local_memory):
             else:
                 live_game_obj = copy.deepcopy(base_game)
                 
-            live_game_obj['fixture']['status'] = latest_data.get('fixture', {}).get('status')
+            # 🛑 THE FIX: FIREBASE "UNDEFINED" CRASH PROTECTION
+            raw_status = latest_data.get('fixture', {}).get('status', {})
+            
+            # If API-Football drops the elapsed time, assign a logical fallback based on the half
+            if raw_status.get('elapsed') is None:
+                short_s = raw_status.get('short', '')
+                if short_s in ['1H', 'HT']:
+                    raw_status['elapsed'] = 45
+                elif short_s in ['2H', 'FT', 'AET', 'PEN']:
+                    raw_status['elapsed'] = 90
+                elif short_s == 'ET':
+                    raw_status['elapsed'] = 120
+                else:
+                    raw_status['elapsed'] = 0 # Absolute fallback so it never hits Firebase as None
+                    
+            live_game_obj['fixture']['status'] = raw_status
             live_game_obj['goals'] = latest_data.get('goals')
 
             # A. FETCH EVENTS
