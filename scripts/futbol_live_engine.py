@@ -139,7 +139,8 @@ def main(local_memory):
     has_live_games = False
     next_upcoming_ts = None  
     missing_schedule = False
-    api_failure = False # 👈 NEW FLAG
+    api_failure = False 
+    suspicious_pending_game = False # 👈 NEW: Tracks API ghosts and TBDs
 
     # =========================================================
     # 🧠 THE LOCAL MEMORY GATEKEEPER
@@ -194,13 +195,19 @@ def main(local_memory):
 
         for base_game in daily_games:
             fix_id = str(base_game.get('fixture', {}).get('id', ''))
+            
+            # 🛡️ Catch games mysteriously missing from the API feed
             if not fix_id or fix_id not in live_master_map:
+                base_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
+                if base_status not in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']:
+                    suspicious_pending_game = True 
                 continue
             
             latest_data = live_master_map[fix_id]
             status = latest_data.get('fixture', {}).get('status', {}).get('short', '')
             
-            is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT']
+            # 🛡️ Added 'LIVE' to the active array
+            is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT', 'LIVE']
             is_finished = status in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']
             
             scraper_has_synced = base_game.get('post_game_sync', False)
@@ -237,11 +244,11 @@ def main(local_memory):
                         print(f"🕵️ [{fix_id}] FT Stats incomplete. Fetching from API...")
 
             if not is_playing and not is_finished:
-                # 🛡️ THE GHOST KICKOFF FIX
                 g_ts = base_game.get('fixture', {}).get('timestamp', 0)
                 
-                # Ignore fake midnight timestamps for TBD games
-                if status in ['TBD', 'AWD', 'WO']:
+                # 🛡️ Catch games stuck in TBD or missing timestamps
+                if status in ['TBD', 'AWD', 'WO'] or g_ts == 0:
+                    suspicious_pending_game = True
                     continue
                     
                 if g_ts > 0 and g_ts <= now_ts:
@@ -452,20 +459,31 @@ def main(local_memory):
         print("⏱️ Sleeping 30s (Waiting for kickoff or active game updates)...")
         return 30, all_new_live_data 
 
-    # 👈 NEW CHECK: If the API failed, try again in 60 seconds!
     if api_failure:
         print("⚠️ API fetch failed. Sleeping 60s and retrying...")
-        return 60, all_new_live_data
+        return 60, all_new_live_data 
+        
+    # 🛡️ THE NEW SAFETY NET: Cap the sleep at 5 minutes if games are trapped in API limbo
+    if suspicious_pending_game:
+        if next_upcoming_ts:
+            sleep_time = max(60, min((next_upcoming_ts - now_ts) - 120, 300))
+            print(f"⏱️ Sleeping {int(sleep_time)}s (Monitoring delayed games & waiting for kickoff)...")
+            return sleep_time, all_new_live_data
+        else:
+            print("⏱️ Sleeping 300s (Monitoring delayed, TBD, or missing games)...")
+            return 300, all_new_live_data
+            
     if next_upcoming_ts: 
         sleep_time = max(60, min((next_upcoming_ts - now_ts) - 120, 3600))
         print(f"⏱️ Sleeping {int(sleep_time)}s (Waiting for next scheduled kickoff)...")
         return sleep_time, all_new_live_data
+
     if missing_schedule: 
         print("⏱️ Sleeping 120s (Waiting for today's JSON schedule to be published)...")
         return 120, all_new_live_data
         
-    print("⏱️ Sleeping 3600s (Default sleep - No active schedules found)...")
-    return 3600, all_new_live_data 
+    print("⏱️ Sleeping 3600s (Default sleep - All scheduled games finished)...")
+    return 3600, all_new_live_data
 
 if __name__ == "__main__":
     print("⚽ Starting Futbol Live Real-Time Engine...")
