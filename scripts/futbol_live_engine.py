@@ -471,33 +471,33 @@ def main(local_memory):
 
     # 4. SLEEP CALCULATION & LOCAL MEMORY RETURN
     if has_live_games: 
-        print("⏱️ Sleeping 30s (Waiting for kickoff or active game updates)...")
+        print("🎯 Target cycle: 30s (Active game updates)...")
         return 30, all_new_live_data 
 
     if api_failure:
-        print("⚠️ API fetch failed. Sleeping 60s and retrying...")
+        print("⚠️ API fetch failed. Target cycle: 60s (Retrying)...")
         return 60, all_new_live_data 
         
     # 🛡️ THE NEW SAFETY NET: Cap the sleep at 5 minutes if games are trapped in API limbo
     if suspicious_pending_game:
         if next_upcoming_ts:
             sleep_time = max(60, min((next_upcoming_ts - now_ts) - 120, 300))
-            print(f"⏱️ Sleeping {int(sleep_time)}s (Monitoring delayed games & waiting for kickoff)...")
+            print(f"🎯 Target cycle: {int(sleep_time)}s (Monitoring delayed games)...")
             return sleep_time, all_new_live_data
         else:
-            print("⏱️ Sleeping 300s (Monitoring delayed, TBD, or missing games)...")
+            print("🎯 Target cycle: 300s (Monitoring delayed, TBD, or missing games)...")
             return 300, all_new_live_data
             
     if next_upcoming_ts: 
         sleep_time = max(60, min((next_upcoming_ts - now_ts) - 120, 3600))
-        print(f"⏱️ Sleeping {int(sleep_time)}s (Waiting for next scheduled kickoff)...")
+        print(f"🎯 Target cycle: {int(sleep_time)}s (Waiting for next scheduled kickoff)...")
         return sleep_time, all_new_live_data
 
     if missing_schedule: 
-        print("⏱️ Sleeping 120s (Waiting for today's JSON schedule to be published)...")
+        print("🎯 Target cycle: 120s (Waiting for today's JSON schedule to be published)...")
         return 120, all_new_live_data
         
-    print("⏱️ Sleeping 3600s (Default sleep - All scheduled games finished)...")
+    print("🎯 Target cycle: 3600s (Default sleep - All scheduled games finished)...")
     return 3600, all_new_live_data
 
 if __name__ == "__main__":
@@ -508,9 +508,24 @@ if __name__ == "__main__":
     
     while True:
         try:
+            # ⏱️ START THE CLOCK
+            loop_start_time = time.time()
+            
             # The memory gets passed in, updated, and passed back out
-            sleep_sec, persisted_memory = main(persisted_memory)
-            time.sleep(sleep_sec)
+            target_sleep_sec, persisted_memory = main(persisted_memory)
+            
+            # ⏱️ STOP THE CLOCK
+            loop_elapsed = time.time() - loop_start_time
+            
+            # Calculate how much time is left in our target cycle
+            actual_sleep = max(0.0, target_sleep_sec - loop_elapsed)
+            
+            if actual_sleep > 0:
+                print(f"⏳ Loop took {loop_elapsed:.1f}s. Sleeping remaining {actual_sleep:.1f}s to hit target...")
+                time.sleep(actual_sleep)
+            else:
+                print(f"⚡ Loop took {loop_elapsed:.1f}s! (Exceeded {target_sleep_sec}s target). Restarting IMMEDIATELY!")
+                
         except Exception as e:
             print(f"\n❌ Loop crashed: {e}. Restarting in 60s...")
             # If the script crashes, we wipe the memory so it is forced to 
