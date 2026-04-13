@@ -219,8 +219,11 @@ def fetch_first_leg_score(league_id, season, home_id, away_id):
             match["league"]["season"] == season and 
             match["fixture"]["status"]["short"] in ['FT', 'AET', 'PEN']):
             
+            # --- SAFETY PATCH: Protect against 'null' rounds crashing the bot ---
+            round_info = str(match["league"].get("round", ""))
+            
             # Verify it was the 1st leg
-            if "1st Leg" in match["league"]["round"]:
+            if "1st Leg" in round_info:
                 past_home_id = str(match["teams"]["home"]["id"])
                 past_away_id = str(match["teams"]["away"]["id"])
                 past_home_goals = match["goals"]["home"] or 0
