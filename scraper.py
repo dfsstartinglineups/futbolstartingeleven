@@ -199,6 +199,42 @@ def fetch_all_players(team_id, season):
         page += 1
     return all_players
 
+def fetch_first_leg_score(league_id, season, home_id, away_id):
+    """
+    Queries the H2H endpoint to find the 1st leg score between two teams.
+    Returns a dictionary mapping Team IDs to their 1st leg goals.
+    """
+    h2h_endpoint = f"fixtures/headtohead?h2h={home_id}-{away_id}"
+    data = fetch_data(h2h_endpoint)
+    
+    if not data or not data.get("response"): 
+        return None
+
+    # Sort matches by date descending (newest first)
+    matches = sorted(data["response"], key=lambda x: x["fixture"]["timestamp"], reverse=True)
+
+    for match in matches:
+        # Look for a finished match in the EXACT same league and season
+        if (match["league"]["id"] == league_id and 
+            match["league"]["season"] == season and 
+            match["fixture"]["status"]["short"] in ['FT', 'AET', 'PEN']):
+            
+            # Verify it was the 1st leg
+            if "1st Leg" in match["league"]["round"]:
+                past_home_id = str(match["teams"]["home"]["id"])
+                past_away_id = str(match["teams"]["away"]["id"])
+                past_home_goals = match["goals"]["home"] or 0
+                past_away_goals = match["goals"]["away"] or 0
+                
+                print(f"      -> 1st Leg Found! {past_home_id}:{past_home_goals} | {past_away_id}:{past_away_goals}")
+                
+                return {
+                    past_home_id: past_home_goals,
+                    past_away_id: past_away_goals
+                }
+                
+    return None
+
 def inject_player_stats(lineups, season):
     global MASTER_PLAYER_DICT
     dict_updated = False
@@ -400,6 +436,13 @@ def build_daily_games(date_str):
         home_data = MASTER_TEAM_DICT.get(f"{home_id}_{league_id_str}", {})
         away_data = MASTER_TEAM_DICT.get(f"{away_id}_{league_id_str}", {})
         
+        # --- NEW: AGGREGATE SCORE DETECTOR ---
+        first_leg_goals = None
+        round_info = str(game.get('league', {}).get('round', ''))
+        if "2nd Leg" in round_info:
+            print(f"      -> 2nd Leg Detected for {home_name} vs {away_name}. Fetching 1st Leg...")
+            first_leg_goals = fetch_first_leg_score(game['league']['id'], game['league']['season'], home_id, away_id)
+        
         formatted_games.append({
             "fixture": game['fixture'], "league": game['league'],
             "teams": {
@@ -409,7 +452,8 @@ def build_daily_games(date_str):
             "goals": game['goals'], "homeLineup": None, "awayLineup": None, "lineup_checks": 0,  
             "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
             "last_odds_check": None, "injuries": {"home": [], "away": [], "checks": 0},
-            "events": [], "match_ended_at": None, "post_game_sync": False
+            "events": [], "match_ended_at": None, "post_game_sync": False,
+            "first_leg_goals": first_leg_goals # Safely holds the 1st leg dict (or None)
         })
     return formatted_games
 
@@ -478,6 +522,15 @@ def process_date(target_date, force_master_sync=False):
                         home_data = MASTER_TEAM_DICT.get(f"{home_id}_{league_id_str}") or MASTER_TEAM_DICT.get(home_id, {})
                         away_data = MASTER_TEAM_DICT.get(f"{away_id}_{league_id_str}") or MASTER_TEAM_DICT.get(away_id, {})
                         
+                        # --- NEW: AGGREGATE SCORE DETECTOR (Late Additions) ---
+                        first_leg_goals = None
+                        round_info = str(game.get('league', {}).get('round', ''))
+                        if "2nd Leg" in round_info:
+                            h_name = game['teams']['home']['name']
+                            a_name = game['teams']['away']['name']
+                            print(f"      -> Late 2nd Leg Detected for {h_name} vs {a_name}. Fetching 1st Leg...")
+                            first_leg_goals = fetch_first_leg_score(game['league']['id'], game['league']['season'], home_id, away_id)
+                        
                         daily_games.append({
                             "fixture": game['fixture'], "league": game['league'],
                             "teams": {
@@ -487,7 +540,8 @@ def process_date(target_date, force_master_sync=False):
                             "goals": game['goals'], "homeLineup": None, "awayLineup": None, "lineup_checks": 0,  
                             "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
                             "last_odds_check": None, "injuries": {"home": [], "away": [], "checks": 0},
-                            "events": [], "match_ended_at": None, "post_game_sync": False
+                            "events": [], "match_ended_at": None, "post_game_sync": False,
+                            "first_leg_goals": first_leg_goals # Safely holds the 1st leg dict (or None)
                         })
                     updated = True
         else:
