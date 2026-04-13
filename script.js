@@ -557,6 +557,27 @@ function getRibbonHtml(data) {
     const params = getUrlParams();
     const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
 
+    // --- NEW AGGREGATE LOGIC (Ribbon View) ---
+    let hAggDisplay = '';
+    let aAggDisplay = '';
+    let nameMaxWidth = '88%'; // Default width
+
+    if (data.first_leg_goals) {
+        // Safe check for goals. If pregame, treat as 0.
+        const currentHomeGoals = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.home ?? 0) : 0;
+        const currentAwayGoals = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals.away ?? 0) : 0;
+
+        const hAgg = currentHomeGoals + (data.first_leg_goals[home.id] ?? 0);
+        const aAgg = currentAwayGoals + (data.first_leg_goals[away.id] ?? 0);
+        
+        // Muted parenthesis display sitting on the far right
+        hAggDisplay = `<span class="text-muted ms-1" style="font-size: 0.65rem; font-weight: 500;">(${hAgg})</span>`;
+        aAggDisplay = `<span class="text-muted ms-1" style="font-size: 0.65rem; font-weight: 500;">(${aAgg})</span>`;
+        
+        nameMaxWidth = '70%'; // Shrink the name container to prevent wrapping
+    }
+    // ------------------------------------------
+
     return `
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
         <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1">
@@ -567,12 +588,16 @@ function getRibbonHtml(data) {
         </div>
         <div class="col-5 px-2">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}</span>
-                <span class="fw-bold text-dark" style="font-size: 0.85rem;">${homeScore}</span>
+                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: ${nameMaxWidth};"><img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}</span>
+                <div class="text-end" style="min-width: fit-content; white-space: nowrap;">
+                    <span class="fw-bold text-dark" style="font-size: 0.85rem;">${homeScore}</span>${hAggDisplay}
+                </div>
             </div>
             <div class="d-flex justify-content-between align-items-center">
-                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}</span>
-                <span class="fw-bold text-dark" style="font-size: 0.85rem;">${awayScore}</span>
+                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: ${nameMaxWidth};"><img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}</span>
+                <div class="text-end" style="min-width: fit-content; white-space: nowrap;">
+                    <span class="fw-bold text-dark" style="font-size: 0.85rem;">${awayScore}</span>${aAggDisplay}
+                </div>
             </div>
         </div>
         <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">
@@ -589,9 +614,26 @@ function getCenterColumnHtml(data) {
     const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
     const showScore = !isPreGame && !isDelayed && !data.isFallback;
 
+    // --- NEW AGGREGATE LOGIC (Full View) ---
+    let aggDisplay = '';
+    if (data.first_leg_goals) {
+        const currentHomeGoals = showScore ? (data.goals.home ?? 0) : 0;
+        const currentAwayGoals = showScore ? (data.goals.away ?? 0) : 0;
+        const hAgg = currentHomeGoals + (data.first_leg_goals[data.teams.home.id] ?? 0);
+        const aAgg = currentAwayGoals + (data.first_leg_goals[data.teams.away.id] ?? 0);
+        
+        // Adds a sleek, muted (Agg: X-X) block directly under the main score
+        aggDisplay = `<div class="text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px; margin-top: -2px;">(Agg: ${hAgg}-${aAgg})</div>`;
+    }
+    // ---------------------------------------
+
     if (!showScore || !data.team_stats) {
         const scoreText = showScore ? `${data.goals.home} - ${data.goals.away}` : `vs`;
-        return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${scoreText}</div>`;
+        return `
+            <div class="d-flex flex-column align-items-center justify-content-center w-100">
+                <div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${scoreText}</div>
+                ${aggDisplay}
+            </div>`;
     }
 
     const tStats = data.team_stats;
@@ -645,7 +687,10 @@ function getCenterColumnHtml(data) {
     const cardsAway = `🟨 ${tStats.away.yellow_cards} 🟥 ${tStats.away.red_cards}`;
 
     return `
-        <div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals.home} - ${data.goals.away}</div>
+        <div class="d-flex flex-column align-items-center justify-content-center w-100 mb-1">
+            <div class="fw-bold text-dark mx-2" style="font-size: 1.1rem; line-height: 1;">${data.goals.home} - ${data.goals.away}</div>
+            ${aggDisplay}
+        </div>
         ${buildBar("Possession", tStats.home.possession, tStats.away.possession, true)}
         ${buildBar("Total Shots", tStats.home.total_shots, tStats.away.total_shots, false)}
         ${buildBar("Shots on Target", tStats.home.shots_on_target, tStats.away.shots_on_target, false)}
