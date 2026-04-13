@@ -787,10 +787,18 @@ def process_date(target_date, force_master_sync=False):
                 
                 lineups_data = fetch_lineups(fixture_id)
                 if lineups_data and lineups_data.get("response") and len(lineups_data["response"]) >= 2:
-                    print(f"[{fixture_id}] Lineup found at T-{int(time_to_kickoff_minutes)} mins!")
-                    season = game['league']['season']
-                    enriched = inject_player_stats(lineups_data["response"], season)
-                    game['homeLineup'], game['awayLineup'] = enriched[0], enriched[1]
+                    
+                    # --- SAFETY LOCK: Prevent API glitches from wiping lineups ---
+                    h_start = lineups_data["response"][0].get("startXI", [])
+                    a_start = lineups_data["response"][1].get("startXI", [])
+                    
+                    if len(h_start) > 0 and len(a_start) > 0:
+                        print(f"[{fixture_id}] Lineup found at T-{int(time_to_kickoff_minutes)} mins!")
+                        season = game['league']['season']
+                        enriched = inject_player_stats(lineups_data["response"], season)
+                        game['homeLineup'], game['awayLineup'] = enriched[0], enriched[1]
+                    else:
+                        print(f"[{fixture_id}] API returned empty startXI arrays. Ignoring glitch to protect memory.")
                 
                 # Mark late refreshes as complete
                 if time_to_kickoff_minutes <= 15: game["refreshed_15m"] = True
