@@ -1221,6 +1221,15 @@ async function init() {
                     liveGamesArray.forEach(liveGame => {
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
                         if (index !== -1) {
+                            // --- DEEP MERGE PROTECTION (Protects Lineups & Aggregate Data) ---
+                            const old = ALL_GAMES_DATA[index];
+                            liveGame.homeLineup = liveGame.homeLineup || old.homeLineup;
+                            liveGame.awayLineup = liveGame.awayLineup || old.awayLineup;
+                            liveGame.team_stats = liveGame.team_stats || old.team_stats;
+                            liveGame.odds = liveGame.odds || old.odds;
+                            liveGame.injuries = liveGame.injuries || old.injuries;
+                            liveGame.first_leg_goals = liveGame.first_leg_goals || old.first_leg_goals;
+                            // -----------------------------------------------------------------
                             ALL_GAMES_DATA[index] = liveGame; // Update existing
                         } else {
                             ALL_GAMES_DATA.unshift(liveGame); // Inject orphan at the top
@@ -1266,6 +1275,16 @@ function syncLiveDOM(liveGamesArray) {
         // 2. Safely merge the new data into the master array
         if (oldMatchIndex !== -1) {
             oldMatch = ALL_GAMES_DATA[oldMatchIndex];
+            
+            // --- DEEP MERGE PROTECTION (Protects Lineups & Aggregate Data) ---
+            match.homeLineup = match.homeLineup || oldMatch.homeLineup;
+            match.awayLineup = match.awayLineup || oldMatch.awayLineup;
+            match.team_stats = match.team_stats || oldMatch.team_stats;
+            match.odds = match.odds || oldMatch.odds;
+            match.injuries = match.injuries || oldMatch.injuries;
+            match.first_leg_goals = match.first_leg_goals || oldMatch.first_leg_goals;
+            // -----------------------------------------------------------------
+            
             ALL_GAMES_DATA[oldMatchIndex] = match; 
         } else {
             ALL_GAMES_DATA.push(match);
