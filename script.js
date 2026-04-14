@@ -1228,16 +1228,27 @@ async function init() {
                             // --- 1. CORE STATS & EVENTS ---
                             jsonMatch.goals = liveGame.goals || jsonMatch.goals;
                             jsonMatch.fixture.status = liveGame.fixture.status || jsonMatch.fixture.status;
-                            if (liveGame.events && liveGame.events.length > 0) jsonMatch.events = liveGame.events;
-                            if (liveGame.team_stats && liveGame.team_stats.home) jsonMatch.team_stats = liveGame.team_stats;
+                            
+                            // Only update events if Firebase actually has data
+                            if (liveGame.events && liveGame.events.length > 0) {
+                                jsonMatch.events = liveGame.events;
+                            }
+                            
+                            if (liveGame.team_stats && liveGame.team_stats.home) {
+                                jsonMatch.team_stats = liveGame.team_stats;
+                            }
 
-                            // --- 2. SURGICAL PLAYER UPDATE (Deltas) ---
+                            // --- 2. ID-BASED PLAYER UPDATE (Deltas) ---
                             ['homeLineup', 'awayLineup'].forEach(side => {
                                 if (liveGame[side] && Array.isArray(liveGame[side].startXI) && jsonMatch[side]) {
                                     liveGame[side].startXI.forEach(fbSlot => {
-                                        const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
-                                        if (memSlot && fbSlot.player.live_stats) {
-                                            memSlot.player.live_stats = { ...memSlot.player.live_stats, ...fbSlot.player.live_stats };
+                                        if (fbSlot.player && fbSlot.player.id) {
+                                            // Find the EXACT player in memory by their ID
+                                            const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
+                                            if (memSlot && fbSlot.player.live_stats) {
+                                                // Layer Firebase deltas on top of existing stats
+                                                memSlot.player.live_stats = { ...memSlot.player.live_stats, ...fbSlot.player.live_stats };
+                                            }
                                         }
                                     });
                                 }
@@ -1255,7 +1266,6 @@ async function init() {
                     renderGames();
                     handleHashNavigation(); 
                     isFirstLoad = false;
-                
                 } else {
                     syncLiveDOM(liveGamesArray);
                 }
@@ -1289,24 +1299,35 @@ function syncLiveDOM(liveGamesArray) {
         if (oldMatchIndex !== -1) {
             const jsonMatch = ALL_GAMES_DATA[oldMatchIndex];
             
-            // --- NON-DESTRUCTIVE SYNC ---
+            // --- 1. CORE MATCH SYNC ---
             jsonMatch.goals = match.goals || jsonMatch.goals;
             jsonMatch.fixture.status = match.fixture.status || jsonMatch.fixture.status;
-            if (match.events && match.events.length > 0) jsonMatch.events = match.events;
-            if (match.team_stats && match.team_stats.home) jsonMatch.team_stats = match.team_stats;
+            
+            if (match.events && match.events.length > 0) {
+                jsonMatch.events = match.events;
+            }
+            
+            if (match.team_stats && match.team_stats.home) {
+                jsonMatch.team_stats = match.team_stats;
+            }
 
+            // --- 2. ID-BASED PLAYER SYNC ---
             ['homeLineup', 'awayLineup'].forEach(side => {
                 if (match[side] && Array.isArray(match[side].startXI) && jsonMatch[side]) {
                     match[side].startXI.forEach(fbSlot => {
-                        const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
-                        if (memSlot && fbSlot.player.live_stats) {
-                            memSlot.player.live_stats = { ...memSlot.player.live_stats, ...fbSlot.player.live_stats };
+                        if (fbSlot.player && fbSlot.player.id) {
+                            const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
+                            if (memSlot && fbSlot.player.live_stats) {
+                                memSlot.player.live_stats = { ...memSlot.player.live_stats, ...fbSlot.player.live_stats };
+                            }
                         }
                     });
                 }
             });
 
-            match = jsonMatch; // Ensure the rest of the function uses the merged rich data
+            // Crucial: Use the updated memory object for DOM rendering
+            ALL_GAMES_DATA[oldMatchIndex] = jsonMatch;
+            const updatedMatch = jsonMatch;
         } else {
             ALL_GAMES_DATA.push(match);
         }
