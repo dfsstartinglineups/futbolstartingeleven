@@ -10,7 +10,7 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 
 // ==========================================
-// CONFIGURATION & SAFE MERGE LOGIC
+// CONFIGURATION
 // ==========================================
 const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 let ALL_GAMES_DATA = []; 
@@ -23,29 +23,6 @@ let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState 
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
 
-/// --- THE TRUE FIX: Trust the Python Scraper, Shield the Glitches ---
-function mergeFirebaseIntoJSON(jsonMatch, fbMatch) {
-    if (!jsonMatch) return fbMatch;
-
-    // 1. Take everything Firebase sends (this handles all live stats automatically!)
-    let merged = JSON.parse(JSON.stringify(fbMatch));
-
-    // 2. THE FT SHIELD: If Firebase drops the lineup arrays, restore them from your JSON memory
-    if (!merged.homeLineup || !merged.homeLineup.startXI || merged.homeLineup.startXI.length === 0) {
-        merged.homeLineup = jsonMatch.homeLineup;
-    }
-    if (!merged.awayLineup || !merged.awayLineup.startXI || merged.awayLineup.startXI.length === 0) {
-        merged.awayLineup = jsonMatch.awayLineup;
-    }
-
-    // 3. Static Data Protections
-    merged.first_leg_goals = fbMatch.first_leg_goals || jsonMatch.first_leg_goals;
-    if (!merged.injuries || !merged.injuries.home) {
-        merged.injuries = jsonMatch.injuries;
-    }
-
-    return merged;
-}
 const LEAGUE_GROUPS = {
     "priority": [
         { key: "top", id: "top", name: "Top Matches" },
@@ -1056,63 +1033,6 @@ function handleHashNavigation() {
     }
 }
 
-function mergeFirebaseIntoJSON(jsonMatch, fbMatch) {
-    if (!jsonMatch) return fbMatch;
-
-    if (fbMatch.goals) jsonMatch.goals = fbMatch.goals;
-    if (fbMatch.fixture && fbMatch.fixture.status) jsonMatch.fixture.status = fbMatch.fixture.status;
-    if (fbMatch.events && fbMatch.events.length > 0) jsonMatch.events = fbMatch.events;
-    if (fbMatch.team_stats && fbMatch.team_stats.home) jsonMatch.team_stats = fbMatch.team_stats;
-
-    ['homeLineup', 'awayLineup'].forEach(side => {
-        if (fbMatch[side] && jsonMatch[side]) {
-            
-            const updateArrayStats = (fbArray) => {
-                if (!fbArray || !Array.isArray(fbArray)) return;
-                fbArray.forEach(fbSlot => {
-                    if (!fbSlot.player || !fbSlot.player.id || !fbSlot.player.live_stats) return;
-                    const pid = fbSlot.player.id;
-                    const newStats = fbSlot.player.live_stats;
-
-                    if (jsonMatch[side].startXI && Array.isArray(jsonMatch[side].startXI)) {
-                        let starter = jsonMatch[side].startXI.find(s => s.player && s.player.id === pid);
-                        if (starter) {
-                            starter.player.live_stats = newStats;
-                            return;
-                        }
-                        jsonMatch[side].startXI.forEach(slot => {
-                            if (slot.sub_history && Array.isArray(slot.sub_history)) {
-                                let subOut = slot.sub_history.find(p => p && p.id === pid);
-                                if (subOut) {
-                                    subOut.live_stats = newStats;
-                                }
-                            }
-                        });
-                    }
-
-                    if (jsonMatch[side].substitutes && Array.isArray(jsonMatch[side].substitutes)) {
-                        let bench = jsonMatch[side].substitutes.find(s => s.player && s.player.id === pid);
-                        if (bench) {
-                            bench.player.live_stats = newStats;
-                        }
-                    }
-                });
-            };
-
-            updateArrayStats(fbMatch[side].startXI);
-            updateArrayStats(fbMatch[side].substitutes);
-        }
-    });
-
-    jsonMatch.first_leg_goals = fbMatch.first_leg_goals || jsonMatch.first_leg_goals;
-    if (fbMatch.odds && fbMatch.odds.home !== "TBD") jsonMatch.odds = fbMatch.odds;
-    if (fbMatch.injuries && (fbMatch.injuries.home.length > 0 || fbMatch.injuries.away.length > 0)) {
-        jsonMatch.injuries = fbMatch.injuries;
-    }
-
-    return jsonMatch;
-}
-
 let isFirstLoad = true; 
 
 async function init() {
@@ -1133,6 +1053,7 @@ async function init() {
     ALL_GAMES_DATA = await fetchMatchesData(params);
     if (!ALL_GAMES_DATA) ALL_GAMES_DATA = [];
 
+    // Remove spinner immediately after local JSON is loaded
     if (ALL_GAMES_DATA.length > 0 || params.date !== todayStr) {
         renderGames();
         handleHashNavigation();
@@ -1178,7 +1099,16 @@ async function init() {
                     liveGamesArray.forEach(liveGame => {
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
                         if (index !== -1) {
-                            ALL_GAMES_DATA[index] = mergeFirebaseIntoJSON(ALL_GAMES_DATA[index], liveGame);
+                            let oldMatch = ALL_GAMES_DATA[index];
+                            
+                            // SHIELD: Prevent API Glitch from clearing arrays at Full Time
+                            if (!liveGame.homeLineup || !liveGame.homeLineup.startXI || liveGame.homeLineup.startXI.length === 0) liveGame.homeLineup = oldMatch.homeLineup;
+                            if (!liveGame.awayLineup || !liveGame.awayLineup.startXI || liveGame.awayLineup.startXI.length === 0) liveGame.awayLineup = oldMatch.awayLineup;
+                            if (!liveGame.team_stats) liveGame.team_stats = oldMatch.team_stats;
+                            if (!liveGame.events || liveGame.events.length === 0) liveGame.events = oldMatch.events;
+                            liveGame.first_leg_goals = liveGame.first_leg_goals || oldMatch.first_leg_goals;
+
+                            ALL_GAMES_DATA[index] = liveGame; 
                         } else {
                             ALL_GAMES_DATA.unshift(liveGame); 
                         }
@@ -1215,8 +1145,15 @@ function syncLiveDOM(liveGamesArray) {
 
         if (oldMatchIndex !== -1) {
             oldMatch = ALL_GAMES_DATA[oldMatchIndex];
-            ALL_GAMES_DATA[oldMatchIndex] = mergeFirebaseIntoJSON(oldMatch, match);
-            match = ALL_GAMES_DATA[oldMatchIndex]; 
+            
+            // SHIELD: Prevent API Glitch from clearing arrays at Full Time
+            if (!match.homeLineup || !match.homeLineup.startXI || match.homeLineup.startXI.length === 0) match.homeLineup = oldMatch.homeLineup;
+            if (!match.awayLineup || !match.awayLineup.startXI || match.awayLineup.startXI.length === 0) match.awayLineup = oldMatch.awayLineup;
+            if (!match.team_stats) match.team_stats = oldMatch.team_stats;
+            if (!match.events || match.events.length === 0) match.events = oldMatch.events;
+            match.first_leg_goals = match.first_leg_goals || oldMatch.first_leg_goals;
+
+            ALL_GAMES_DATA[oldMatchIndex] = match; 
         } else {
             ALL_GAMES_DATA.push(match);
         }
@@ -1338,6 +1275,15 @@ function syncLiveDOM(liveGamesArray) {
     });
 
     requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
+}
+
+async function fallbackToStaticJSON(params) {
+    ALL_GAMES_DATA = await fetchMatchesData(params);
+    if (!ALL_GAMES_DATA) {
+        ALL_GAMES_DATA = [];
+    }
+    renderGames();
+    handleHashNavigation();
 }
 
 function renderGames() {
