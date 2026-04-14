@@ -10,7 +10,7 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 
 // ==========================================
-// CONFIGURATION
+// CONFIGURATION & SAFE MERGE LOGIC
 // ==========================================
 const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 let ALL_GAMES_DATA = []; 
@@ -22,6 +22,39 @@ let savedScoreboardState = localStorage.getItem('futbolScoreboardMode');
 let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState === 'true' : true;
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
+
+// --- THE TRUE FIX: Trust the Live Engine, Shield the FT Glitch ---
+function mergeFirebaseIntoJSON(jsonMatch, fbMatch) {
+    if (!jsonMatch) return fbMatch;
+
+    // Deep copy the old match so we can safely update it
+    let merged = JSON.parse(JSON.stringify(jsonMatch));
+
+    // 1. Sync Core Match Data from Firebase
+    if (fbMatch.goals) merged.goals = fbMatch.goals;
+    if (fbMatch.fixture && fbMatch.fixture.status) merged.fixture.status = fbMatch.fixture.status;
+    if (fbMatch.events && fbMatch.events.length > 0) merged.events = fbMatch.events;
+    if (fbMatch.team_stats && fbMatch.team_stats.home) merged.team_stats = fbMatch.team_stats;
+
+    // 2. THE LINEUP FIX: Take the mutated arrays directly from the Python Live Engine.
+    // The Live Engine already processed the subs and mapped the live_stats. We just accept it.
+    // SHIELD: If Firebase sends an empty array (the FT API glitch), we ignore it and keep the 90th-minute memory.
+    if (fbMatch.homeLineup && Array.isArray(fbMatch.homeLineup.startXI) && fbMatch.homeLineup.startXI.length > 0) {
+        merged.homeLineup = fbMatch.homeLineup;
+    }
+    if (fbMatch.awayLineup && Array.isArray(fbMatch.awayLineup.startXI) && fbMatch.awayLineup.startXI.length > 0) {
+        merged.awayLineup = fbMatch.awayLineup;
+    }
+
+    // 3. Static Data Protection & Aggregates
+    merged.first_leg_goals = fbMatch.first_leg_goals || jsonMatch.first_leg_goals;
+    if (fbMatch.odds && fbMatch.odds.home !== "TBD") merged.odds = fbMatch.odds;
+    if (fbMatch.injuries && (fbMatch.injuries.home?.length > 0 || fbMatch.injuries.away?.length > 0)) {
+        merged.injuries = fbMatch.injuries;
+    }
+
+    return merged;
+}
 
 const LEAGUE_GROUPS = {
     "priority": [
