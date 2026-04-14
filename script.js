@@ -1225,40 +1225,28 @@ async function init() {
                         if (index !== -1) {
                             const jsonMatch = ALL_GAMES_DATA[index];
 
-                            // --- 1. CORE STATS & EVENTS ---
+                            // --- 1. SYNC LIVE SCORES & STATUS ---
                             jsonMatch.goals = liveGame.goals || jsonMatch.goals;
                             jsonMatch.fixture.status = liveGame.fixture.status || jsonMatch.fixture.status;
                             
-                            // Only update events if Firebase actually has data
-                            if (liveGame.events && liveGame.events.length > 0) {
-                                jsonMatch.events = liveGame.events;
-                            }
-                            
-                            if (liveGame.team_stats && liveGame.team_stats.home) {
-                                jsonMatch.team_stats = liveGame.team_stats;
-                            }
+                            // --- 2. SYNC EVENTS & TEAM STATS ---
+                            if (liveGame.events && liveGame.events.length > 0) jsonMatch.events = liveGame.events;
+                            if (liveGame.team_stats && liveGame.team_stats.home) jsonMatch.team_stats = liveGame.team_stats;
 
-                            // --- 2. ID-BASED PLAYER UPDATE (Deltas) ---
+                            // --- 3. SURGICAL PLAYER STAT UPDATE (ID-BASED) ---
                             ['homeLineup', 'awayLineup'].forEach(side => {
-                                if (liveGame[side] && Array.isArray(liveGame[side].startXI) && jsonMatch[side]) {
+                                if (liveGame[side]?.startXI && jsonMatch[side]?.startXI) {
                                     liveGame[side].startXI.forEach(fbSlot => {
-                                        if (fbSlot.player && fbSlot.player.id) {
-                                            // Find the EXACT player in memory by their ID
-                                            const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
-                                            if (memSlot && fbSlot.player.live_stats) {
-                                                // Layer Firebase deltas on top of existing stats
-                                                memSlot.player.live_stats = { ...memSlot.player.live_stats, ...fbSlot.player.live_stats };
-                                            }
+                                        const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
+                                        if (memSlot && fbSlot.player.live_stats) {
+                                            memSlot.player.live_stats = fbSlot.player.live_stats;
                                         }
                                     });
                                 }
                             });
 
-                            // --- 3. STATIC DATA PROTECTION ---
-                            jsonMatch.odds = (liveGame.odds && liveGame.odds.home !== "TBD") ? liveGame.odds : jsonMatch.odds;
-                            jsonMatch.injuries = (liveGame.injuries && (liveGame.injuries.home.length > 0 || liveGame.injuries.away.length > 0)) ? liveGame.injuries : jsonMatch.injuries;
-                            jsonMatch.first_leg_goals = liveGame.first_leg_goals || jsonMatch.first_leg_goals;
-
+                            // --- 4. PERSIST THE ENRICHED DATA ---
+                            ALL_GAMES_DATA[index] = jsonMatch; // <--- CRITICAL FIX: Save the rich record
                         } else {
                             ALL_GAMES_DATA.unshift(liveGame); 
                         }
@@ -1292,171 +1280,58 @@ async function init() {
 // SURGICAL DOM UPDATER (Prevents flashing)
 // ==========================================
 function syncLiveDOM(liveGamesArray) {
-    liveGamesArray.forEach(match => {
-        const fixId = match.fixture.id;
-        const oldMatchIndex = ALL_GAMES_DATA.findIndex(m => m.fixture.id === fixId);
+    liveGamesArray.forEach(fbUpdate => {
+        const fixId = fbUpdate.fixture.id;
+        const index = ALL_GAMES_DATA.findIndex(m => m.fixture.id === fixId);
 
-        if (oldMatchIndex !== -1) {
-            const jsonMatch = ALL_GAMES_DATA[oldMatchIndex];
+        if (index !== -1) {
+            const jsonMatch = ALL_GAMES_DATA[index];
             
-            // --- 1. CORE MATCH SYNC ---
-            jsonMatch.goals = match.goals || jsonMatch.goals;
-            jsonMatch.fixture.status = match.fixture.status || jsonMatch.fixture.status;
-            
-            if (match.events && match.events.length > 0) {
-                jsonMatch.events = match.events;
-            }
-            
-            if (match.team_stats && match.team_stats.home) {
-                jsonMatch.team_stats = match.team_stats;
-            }
+            // --- SURGICAL MERGE ---
+            jsonMatch.goals = fbUpdate.goals || jsonMatch.goals;
+            jsonMatch.fixture.status = fbUpdate.fixture.status || jsonMatch.fixture.status;
+            if (fbUpdate.events && fbUpdate.events.length > 0) jsonMatch.events = fbUpdate.events;
+            if (fbUpdate.team_stats && fbUpdate.team_stats.home) jsonMatch.team_stats = fbUpdate.team_stats;
 
-            // --- 2. ID-BASED PLAYER SYNC ---
             ['homeLineup', 'awayLineup'].forEach(side => {
-                if (match[side] && Array.isArray(match[side].startXI) && jsonMatch[side]) {
-                    match[side].startXI.forEach(fbSlot => {
-                        if (fbSlot.player && fbSlot.player.id) {
-                            const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
-                            if (memSlot && fbSlot.player.live_stats) {
-                                memSlot.player.live_stats = { ...memSlot.player.live_stats, ...fbSlot.player.live_stats };
-                            }
+                if (fbUpdate[side]?.startXI && jsonMatch[side]?.startXI) {
+                    fbUpdate[side].startXI.forEach(fbSlot => {
+                        const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
+                        if (memSlot && fbSlot.player.live_stats) {
+                            memSlot.player.live_stats = fbSlot.player.live_stats;
                         }
                     });
                 }
             });
 
-            // Crucial: Use the updated memory object for DOM rendering
-            ALL_GAMES_DATA[oldMatchIndex] = jsonMatch;
-            const updatedMatch = jsonMatch;
-        } else {
-            ALL_GAMES_DATA.push(match);
-        }
-        
-        // 3. Grab all the HTML elements for this match
-        const timeEl = document.getElementById(`time-${fixId}`);
-        const scoreEl = document.getElementById(`score-${fixId}`);
-        const eventsEl = document.getElementById(`events-${fixId}`);
-        const oddsEl = document.getElementById(`odds-${fixId}`);
-        const injuriesEl = document.getElementById(`injuries-${fixId}`);
-        
-        if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
-            
-            // DYNAMIC WIDTH TRANSITION
-            if (oldMatch && !oldMatch.team_stats && match.team_stats) {
-                const hCol = scoreEl.previousElementSibling;
-                const aCol = scoreEl.nextElementSibling;
-                if (hCol && aCol) {
-                    hCol.style.width = '25%'; aCol.style.width = '25%'; scoreEl.style.width = '50%';
-                    const hImg = hCol.querySelector('img'); const aImg = aCol.querySelector('img');
-                    if (hImg) { hImg.style.width = '35px'; hImg.style.height = '35px'; }
-                    if (aImg) { aImg.style.width = '35px'; aImg.style.height = '35px'; }
-                    const hName = hCol.querySelector('.fw-bold.text-truncate');
-                    const aName = aCol.querySelector('.fw-bold.text-truncate');
-                    if (hName) hName.style.fontSize = '0.75rem';
-                    if (aName) aName.style.fontSize = '0.75rem';
-                }
-            }
+            // Update master memory
+            ALL_GAMES_DATA[index] = jsonMatch;
+            const match = jsonMatch; // Reference the rich data for the DOM updates below
 
-            // FULL VIEW UPDATES
-            const newTimeHtml = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
-            const newCenterHtml = getCenterColumnHtml(match).trim();
-            const newEventsHtml = getEventsHtml(match).trim();
-            const newOddsHtml = getOddsHtml(match).trim();
-            const newInjuriesHtml = getInjuriesHtml(match).trim();
+            // --- UI SELECTORS (Update using 'match' which now has names AND live events) ---
+            const timeEl = document.getElementById(`time-${fixId}`);
+            const scoreEl = document.getElementById(`score-${fixId}`);
+            const eventsEl = document.getElementById(`events-${fixId}`);
+            const oddsEl = document.getElementById(`odds-${fixId}`);
             
-            if (timeEl.innerHTML.trim() !== newTimeHtml) timeEl.innerHTML = newTimeHtml;
-            if (scoreEl.innerHTML.trim() !== newCenterHtml) scoreEl.innerHTML = newCenterHtml;
-            
-            const eventsWasExpanded = eventsEl.querySelector('.is-expanded') !== null;
-            if (eventsEl.innerHTML.trim() !== newEventsHtml) {
-                eventsEl.innerHTML = newEventsHtml;
-                if (eventsWasExpanded) {
-                    const toggleSection = eventsEl.querySelector('.border-top');
-                    if (toggleSection) {
-                        toggleSection.classList.add('is-expanded');
-                        toggleSection.querySelectorAll('.event-collapsed').forEach(el => el.classList.add('d-none'));
-                        toggleSection.querySelectorAll('.event-expanded').forEach(el => el.classList.remove('d-none'));
-                    }
-                }
-            }
-            
-            if (oddsEl.innerHTML.trim() !== newOddsHtml) oddsEl.innerHTML = newOddsHtml;
+            if (timeEl) timeEl.innerHTML = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
+            if (scoreEl) scoreEl.innerHTML = getCenterColumnHtml(match).trim();
+            if (eventsEl) eventsEl.innerHTML = getEventsHtml(match).trim();
+            if (oddsEl) oddsEl.innerHTML = getOddsHtml(match).trim();
 
-            const injuriesWasExpanded = injuriesEl.querySelector('.is-expanded') !== null;
-            if (injuriesEl.innerHTML.trim() !== newInjuriesHtml) {
-                injuriesEl.innerHTML = newInjuriesHtml;
-                if (injuriesWasExpanded) {
-                    const toggleSection = injuriesEl.querySelector('.expandable-section');
-                    if (toggleSection) toggleExpand(toggleSection);
-                }
-            }
-        }
-        
-        // RIBBON VIEW UPDATE
-        const ribbonEl = document.getElementById(`ribbon-${fixId}`);
-        if (ribbonEl) {
-            const newRibbonHtml = getRibbonHtml(match).trim();
-            if (ribbonEl.innerHTML.trim() !== newRibbonHtml) ribbonEl.innerHTML = newRibbonHtml;
-        }
-        
-        // EVENT HIGHLIGHTS & IN-PLACE GRID UPDATES
-        if (oldMatch) {
-            const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
-            const newEvLen = match.events ? match.events.length : 0;
-            
-            // Trigger Flash Highlights
-            if (newEvLen > oldEvLen) {
-                const latestEvent = match.events[newEvLen - 1]; 
-                const cardEl = document.getElementById(`card-${fixId}`);
-                if (cardEl && latestEvent) {
-                    if (latestEvent.type === 'Goal') { triggerCardHighlight(cardEl, 'goal'); } 
-                    else if (latestEvent.type === 'Card' && latestEvent.detail) {
-                        if (latestEvent.detail.includes('Second') || latestEvent.detail.includes('Yellow / Red')) {
-                            triggerCardHighlight(cardEl, 'yellow_card');
-                            setTimeout(() => { triggerCardHighlight(cardEl, 'red_card'); }, 4500); 
-                        } else if (latestEvent.detail.includes('Red')) { triggerCardHighlight(cardEl, 'red_card'); } 
-                        else if (latestEvent.detail.includes('Yellow')) { triggerCardHighlight(cardEl, 'yellow_card'); }
-                    } else if (latestEvent.type === 'subst') { triggerCardHighlight(cardEl, 'subst'); }
-                }
-            }
-
-            // IN-PLACE GRID UPDATES (Lineups & Stats)
+            // Refresh the inner grids
             const viewXiEl = document.getElementById(`view-xi-${fixId}`);
-            if (viewXiEl) {
-                const newXiHtml = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLineupList(match.homeLineup, match)}</div><div class="col-6">${buildLineupList(match.awayLineup, match)}</div></div>`;
-                if (viewXiEl.innerHTML.trim() !== newXiHtml.trim()) viewXiEl.innerHTML = newXiHtml;
-            }
+            if (viewXiEl) viewXiEl.innerHTML = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLineupList(match.homeLineup, match)}</div><div class="col-6">${buildLineupList(match.awayLineup, match)}</div></div>`;
 
             const viewStatsEl = document.getElementById(`view-stats-${fixId}`);
             if (viewStatsEl) {
                 let hColor = match.homeLineup?.team?.colors?.player?.primary ? `#${match.homeLineup.team.colors.player.primary}` : '#0d6efd';
                 let aColor = match.awayLineup?.team?.colors?.player?.primary ? `#${match.awayLineup.team.colors.player.primary}` : '#dc3545';
-                if (colorDistance(hColor, aColor) < 60) aColor = '#343a40';
-
-                const newStatsHtml = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLiveStatsGrid(match.homeLineup, hColor)}</div><div class="col-6">${buildLiveStatsGrid(match.awayLineup, aColor)}</div></div>`;
-                if (viewStatsEl.innerHTML.trim() !== newStatsHtml.trim()) viewStatsEl.innerHTML = newStatsHtml;
-            }
-
-            // SMART REVEAL & TAB TRANSITIONS
-            const wasPreGame = ['NS', 'TBD'].includes(oldMatch.fixture.status.short);
-            const isNowLive = !['NS', 'TBD'].includes(match.fixture.status.short);
-            const isFinished = ['FT', 'AET', 'PEN'].includes(match.fixture.status.short);
-
-            const xiTab = document.getElementById(`tab-xi-${fixId}`);
-            const statsTab = document.getElementById(`tab-stats-${fixId}`);
-            
-            if (xiTab) xiTab.textContent = isFinished ? "FINAL XI" : "STARTING XI";
-            if (statsTab) statsTab.textContent = isFinished ? "FINAL STATS" : "LIVE STATS";
-
-            if (match.team_stats && statsTab) {
-                const wasHidden = statsTab.classList.contains('d-none');
-                if (wasHidden) statsTab.classList.remove('d-none');
-                if (wasHidden || (wasPreGame && isNowLive)) switchLineupTab(fixId, 'stats');
+                viewStatsEl.innerHTML = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLiveStatsGrid(match.homeLineup, hColor)}</div><div class="col-6">${buildLiveStatsGrid(match.awayLineup, aColor)}</div></div>`;
             }
         }
     });
-
-    requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
+    requestAnimationFrame(checkOverflows);
 }
 
 // Helper function to load the static file created by your General Manager script
