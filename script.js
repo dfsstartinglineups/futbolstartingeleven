@@ -1169,10 +1169,16 @@ async function init() {
     ALL_GAMES_DATA = await fetchMatchesData(params);
     if (!ALL_GAMES_DATA) ALL_GAMES_DATA = [];
 
+    // --- FIX: REMOVE SPINNER IMMEDIATELY AFTER JSON LOADS ---
+    if (ALL_GAMES_DATA.length > 0 || params.date !== todayStr) {
+        renderGames();
+        handleHashNavigation();
+        // We don't set isFirstLoad = false here yet because Firebase still needs its initial full render
+    }
+
     // ==========================================
     // 1. THE REAL-TIME PATH (Today OR Yesterday)
     // ==========================================
-    // --- 2. KEEP LISTENER ALIVE FOR 48 HOURS ---
     if (params.date === todayStr || params.date === yesterdayStr) {
         console.log("📡 Connecting to Firebase Realtime Stream...");
         const liveRef = db.ref('futbol_live_games');
@@ -1183,16 +1189,14 @@ async function init() {
             if (incomingData) {
                 let liveGamesArray = Object.values(incomingData);
                 
-                // --- 3. CROSS-DAY ORPHAN RESCUE FILTER ---
+                // --- 3. CROSS-DAY ORPHAN RESCUE FILTER (Overnight Catch) ---
                 if (params.date === todayStr) {
-                    // Viewing Today: Show today's games + active games from yesterday
                     liveGamesArray = liveGamesArray.filter(g => {
                         const gDate = g.fixture.date.split('T')[0];
                         const isActiveYesterday = (gDate === yesterdayStr && !['FT', 'AET', 'PEN'].includes(g.fixture.status.short));
                         return gDate === todayStr || isActiveYesterday;
                     });
                 } else if (params.date === yesterdayStr) {
-                    // Viewing Yesterday: Strictly show yesterday's games
                     liveGamesArray = liveGamesArray.filter(g => g.fixture.date.split('T')[0] === yesterdayStr);
                 }
 
@@ -1207,15 +1211,13 @@ async function init() {
                 // --- 4. SMART MERGE ---
                 let needsFullRender = isFirstLoad;
 
-                // 1. Check for orphans WITHOUT overwriting existing memory early
                 liveGamesArray.forEach(liveGame => {
                     const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
                     if (index === -1) {
-                        needsFullRender = true; // Orphan found, we must draw a new card
+                        needsFullRender = true; 
                     }
                 });
                 
-                // 2. Route the data correctly
                 if (needsFullRender) {
                     liveGamesArray.forEach(liveGame => {
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
@@ -1224,19 +1226,17 @@ async function init() {
 
                             // --- SURGICAL PLAYER MERGE (Accepts Firebase Deltas, Protects Bio/Season Info) ---
                             ['homeLineup', 'awayLineup'].forEach(side => {
-                                if (liveGame[side] && liveGame[side].startXI && old[side] && old[side].startXI) {
+                                // FIX: Strengthened Array.isArray check to prevent script crashes
+                                if (liveGame[side] && Array.isArray(liveGame[side].startXI) && old[side] && Array.isArray(old[side].startXI)) {
                                     liveGame[side].startXI.forEach((newSlot, idx) => {
                                         const oldSlot = old[side].startXI[idx];
                                         if (oldSlot && oldSlot.player && newSlot.player) {
-                                            // Keep rich bio from JSON, layer new deltas on top
                                             newSlot.player = { ...oldSlot.player, ...newSlot.player };
-                                            // Explicitly preserve season-long stats from JSON
                                             newSlot.player.season_stats = oldSlot.player.season_stats;
                                         }
                                     });
                                 } else {
-                                    // Fallback: If Firebase lineup is empty or missing startXI, keep the JSON lineups
-                                    liveGame[side] = (liveGame[side] && liveGame[side].startXI) ? liveGame[side] : old[side];
+                                    liveGame[side] = (liveGame[side] && Array.isArray(liveGame[side].startXI)) ? liveGame[side] : old[side];
                                 }
                             });
 
@@ -1255,7 +1255,6 @@ async function init() {
                     handleHashNavigation(); 
                     isFirstLoad = false;
                 } else {
-                    // Normal update: Let syncLiveDOM handle the memory merging so highlights work!
                     syncLiveDOM(liveGamesArray);
                 }
             } else {
