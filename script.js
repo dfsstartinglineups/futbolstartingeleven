@@ -1034,38 +1034,60 @@ function handleHashNavigation() {
 }
 
 
-// --- IRON SHIELD LOGIC ---
 function mergeLiveFirebaseData(jsonMatch, fbMatch) {
     if (!jsonMatch) return fbMatch;
 
-    // Deep copy JSON so we never corrupt the master array
-    let merged = JSON.parse(JSON.stringify(jsonMatch));
+    // 1. Sync Live Scores, Status, Events, Team Stats from Firebase
+    if (fbMatch.goals) jsonMatch.goals = fbMatch.goals;
+    if (fbMatch.fixture && fbMatch.fixture.status) jsonMatch.fixture.status = fbMatch.fixture.status;
+    if (fbMatch.events && fbMatch.events.length > 0) jsonMatch.events = fbMatch.events;
+    if (fbMatch.team_stats && fbMatch.team_stats.home) jsonMatch.team_stats = fbMatch.team_stats;
 
-    // 1. Sync Core Match Data safely
-    if (fbMatch.goals) merged.goals = fbMatch.goals;
-    if (fbMatch.fixture && fbMatch.fixture.status) merged.fixture.status = fbMatch.fixture.status;
-    if (fbMatch.events && fbMatch.events.length > 0) merged.events = fbMatch.events;
-    if (fbMatch.team_stats && fbMatch.team_stats.home) merged.team_stats = fbMatch.team_stats;
-
-    // 2. Sync Lineups ONLY if Firebase actually sent players
+    // 2. INJECT LIVE PLAYER STATS (Keep JSON Lineup Structure Intact)
     ['homeLineup', 'awayLineup'].forEach(side => {
-        const fbLineup = fbMatch[side];
-        // SHIELD: If Firebase has actual players, accept the full lineup
-        if (fbLineup && Array.isArray(fbLineup.startXI) && fbLineup.startXI.length > 0) {
-            merged[side] = fbLineup;
+        if (fbMatch[side] && jsonMatch[side]) {
+            
+            const injectStats = (fbPlayers) => {
+                if (!Array.isArray(fbPlayers)) return;
+                fbPlayers.forEach(fbSlot => {
+                    // Only process if Firebase actually sent live_stats for this player
+                    if (!fbSlot.player || !fbSlot.player.id || !fbSlot.player.live_stats) return;
+                    
+                    const pid = fbSlot.player.id;
+                    const newStats = fbSlot.player.live_stats;
+
+                    // A. Check Active Starters in JSON
+                    let starter = jsonMatch[side].startXI?.find(s => s.player.id === pid);
+                    if (starter) { starter.player.live_stats = newStats; return; }
+
+                    // B. Check Sub History in JSON (Outgoing players)
+                    jsonMatch[side].startXI?.forEach(slot => {
+                        if (slot.sub_history) {
+                            let subOut = slot.sub_history.find(p => p.id === pid);
+                            if (subOut) { subOut.live_stats = newStats; return; }
+                        }
+                    });
+
+                    // C. Check Bench in JSON
+                    let bench = jsonMatch[side].substitutes?.find(s => s.player.id === pid);
+                    if (bench) { bench.player.live_stats = newStats; }
+                });
+            };
+
+            // Pull live_stats from Firebase's skinny arrays and inject them
+            injectStats(fbMatch[side].startXI);
+            injectStats(fbMatch[side].substitutes);
         }
-        // If Firebase sends an empty array, it falls through.
-        // merged[side] remains exactly what it was in the JSON file.
     });
 
-    // 3. Sync Static Data
-    if (fbMatch.odds && fbMatch.odds.home !== "TBD") merged.odds = fbMatch.odds;
+    // 3. Static Data Protection & Aggregates
+    if (fbMatch.odds && fbMatch.odds.home !== "TBD") jsonMatch.odds = fbMatch.odds;
     if (fbMatch.injuries && (fbMatch.injuries.home?.length > 0 || fbMatch.injuries.away?.length > 0)) {
-        merged.injuries = fbMatch.injuries;
+        jsonMatch.injuries = fbMatch.injuries;
     }
-    merged.first_leg_goals = fbMatch.first_leg_goals || jsonMatch.first_leg_goals;
+    jsonMatch.first_leg_goals = fbMatch.first_leg_goals || jsonMatch.first_leg_goals;
 
-    return merged;
+    return jsonMatch;
 }
 
 
