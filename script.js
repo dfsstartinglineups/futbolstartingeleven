@@ -23,67 +23,29 @@ let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState 
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
 
-// CRITICAL FIX: Safe Merge Function (Firebase -> JSON Master)
+/// --- THE TRUE FIX: Trust the Python Scraper, Shield the Glitches ---
 function mergeFirebaseIntoJSON(jsonMatch, fbMatch) {
     if (!jsonMatch) return fbMatch;
 
-    // 1. Sync Live Scores, Status, Events, Team Stats from Firebase
-    if (fbMatch.goals) jsonMatch.goals = fbMatch.goals;
-    if (fbMatch.fixture && fbMatch.fixture.status) jsonMatch.fixture.status = fbMatch.fixture.status;
-    if (fbMatch.events && fbMatch.events.length > 0) jsonMatch.events = fbMatch.events;
-    if (fbMatch.team_stats && fbMatch.team_stats.home) jsonMatch.team_stats = fbMatch.team_stats;
+    // 1. Take everything Firebase sends (this handles all live stats automatically!)
+    let merged = JSON.parse(JSON.stringify(fbMatch));
 
-    // 2. INJECT LIVE PLAYER STATS (Keep JSON Lineup Structure Intact)
-    ['homeLineup', 'awayLineup'].forEach(side => {
-        if (fbMatch[side] && jsonMatch[side]) {
-            const injectStats = (fbPlayers) => {
-                if (!fbPlayers || !Array.isArray(fbPlayers)) return;
-                fbPlayers.forEach(fbSlot => {
-                    if (!fbSlot.player || !fbSlot.player.id || !fbSlot.player.live_stats) return;
-                    
-                    const pid = fbSlot.player.id;
-                    const newStats = fbSlot.player.live_stats;
-
-                    // A. Check Active Starters in JSON
-                    if (jsonMatch[side].startXI && Array.isArray(jsonMatch[side].startXI)) {
-                        let starter = jsonMatch[side].startXI.find(s => s.player && s.player.id === pid);
-                        if (starter) { 
-                            starter.player.live_stats = newStats; 
-                            return; 
-                        }
-                        
-                        // B. Check Sub History in JSON
-                        jsonMatch[side].startXI.forEach(slot => {
-                            if (slot.sub_history && Array.isArray(slot.sub_history)) {
-                                let subOut = slot.sub_history.find(p => p && p.id === pid);
-                                if (subOut) subOut.live_stats = newStats;
-                            }
-                        });
-                    }
-
-                    // C. Check Bench in JSON
-                    if (jsonMatch[side].substitutes && Array.isArray(jsonMatch[side].substitutes)) {
-                        let bench = jsonMatch[side].substitutes.find(s => s.player && s.player.id === pid);
-                        if (bench) bench.player.live_stats = newStats;
-                    }
-                });
-            };
-
-            injectStats(fbMatch[side].startXI);
-            injectStats(fbMatch[side].substitutes);
-        }
-    });
-
-    // 3. Static Data Protection & Aggregates
-    if (fbMatch.odds && fbMatch.odds.home !== "TBD") jsonMatch.odds = fbMatch.odds;
-    if (fbMatch.injuries && fbMatch.injuries.home && fbMatch.injuries.away && (fbMatch.injuries.home.length > 0 || fbMatch.injuries.away.length > 0)) {
-        jsonMatch.injuries = fbMatch.injuries;
+    // 2. THE FT SHIELD: If Firebase drops the lineup arrays, restore them from your JSON memory
+    if (!merged.homeLineup || !merged.homeLineup.startXI || merged.homeLineup.startXI.length === 0) {
+        merged.homeLineup = jsonMatch.homeLineup;
     }
-    jsonMatch.first_leg_goals = fbMatch.first_leg_goals || jsonMatch.first_leg_goals;
+    if (!merged.awayLineup || !merged.awayLineup.startXI || merged.awayLineup.startXI.length === 0) {
+        merged.awayLineup = jsonMatch.awayLineup;
+    }
 
-    return jsonMatch;
+    // 3. Static Data Protections
+    merged.first_leg_goals = fbMatch.first_leg_goals || jsonMatch.first_leg_goals;
+    if (!merged.injuries || !merged.injuries.home) {
+        merged.injuries = jsonMatch.injuries;
+    }
+
+    return merged;
 }
-
 const LEAGUE_GROUPS = {
     "priority": [
         { key: "top", id: "top", name: "Top Matches" },
