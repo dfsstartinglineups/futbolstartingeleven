@@ -1149,59 +1149,6 @@ function handleHashNavigation() {
 
 let isFirstLoad = true; // Track if it's the initial page load
 
-// --- NEW HELPER: Safely Merge Firebase Deltas into JSON Master ---
-function mergeLiveFirebaseData(jsonMatch, fbMatch) {
-    if (!jsonMatch) return fbMatch;
-
-    // 1. Update Core Match Data
-    if (fbMatch.goals) jsonMatch.goals = fbMatch.goals;
-    if (fbMatch.fixture && fbMatch.fixture.status) jsonMatch.fixture.status = fbMatch.fixture.status;
-    if (fbMatch.events && fbMatch.events.length > 0) jsonMatch.events = fbMatch.events;
-    if (fbMatch.team_stats && fbMatch.team_stats.home) jsonMatch.team_stats = fbMatch.team_stats;
-
-    // 2. Safely Update Player Live Stats (Deltas) without destroying Bio/Sub data
-    const updatePlayerStats = (memPlayer, fbPlayer) => {
-        if (!memPlayer || !fbPlayer || !fbPlayer.live_stats) return;
-        memPlayer.live_stats = { ...(memPlayer.live_stats || {}), ...fbPlayer.live_stats };
-    };
-
-    ['homeLineup', 'awayLineup'].forEach(side => {
-        if (fbMatch[side] && jsonMatch[side]) {
-            // Update Starters & Sub History
-            if (fbMatch[side].startXI && jsonMatch[side].startXI) {
-                fbMatch[side].startXI.forEach(fbSlot => {
-                    if (!fbSlot.player || !fbSlot.player.id) return;
-                    
-                    // Check active starters
-                    let memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
-                    if (memSlot) {
-                        updatePlayerStats(memSlot.player, fbSlot.player);
-                    } else {
-                        // Check sub history (outgoing players)
-                        jsonMatch[side].startXI.forEach(slot => {
-                            if (slot.sub_history) {
-                                let subHist = slot.sub_history.find(p => p.id === fbSlot.player.id);
-                                if (subHist) updatePlayerStats(subHist, fbSlot.player);
-                            }
-                        });
-                    }
-                });
-            }
-            
-            // Update Bench
-            if (fbMatch[side].substitutes && jsonMatch[side].substitutes) {
-                fbMatch[side].substitutes.forEach(fbSub => {
-                    if (!fbSub.player || !fbSub.player.id) return;
-                    let memSub = jsonMatch[side].substitutes.find(s => s.player.id === fbSub.player.id);
-                    if (memSub) updatePlayerStats(memSub.player, fbSub.player);
-                });
-            }
-        }
-    });
-
-    return jsonMatch;
-}
-
 async function init() {
     const params = getUrlParams();
     renderLeagueMenu(params.league, params.date);
@@ -1212,22 +1159,25 @@ async function init() {
 
     container.innerHTML = `<div class="col-12 text-center mt-5 pt-5"><div class="spinner-border text-success" role="status"></div><p class="mt-3 text-muted fw-bold">Loading Pitch Data...</p></div>`;
     
+    // --- 1. CALCULATE TODAY AND YESTERDAY (EST) ---
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
     const yesterdayDate = new Date();
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
     const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
-    // 1. ALWAYS LOAD BASELINE JSON FIRST
+    // ALWAYS LOAD THE BASELINE FIRST
     ALL_GAMES_DATA = await fetchMatchesData(params);
     if (!ALL_GAMES_DATA) ALL_GAMES_DATA = [];
 
-    // 2. RENDER IMMEDIATELY SO SPINNER DISAPPEARS
+    // Remove spinner instantly
     if (ALL_GAMES_DATA.length > 0 || params.date !== todayStr) {
         renderGames();
         handleHashNavigation();
     }
 
-    // 3. FIREBASE REAL-TIME PATH
+    // ==========================================
+    // 1. THE REAL-TIME PATH (Today OR Yesterday)
+    // ==========================================
     if (params.date === todayStr || params.date === yesterdayStr) {
         console.log("📡 Connecting to Firebase Realtime Stream...");
         const liveRef = db.ref('futbol_live_games');
@@ -1238,7 +1188,7 @@ async function init() {
             if (incomingData) {
                 let liveGamesArray = Object.values(incomingData);
                 
-                // Cross-Day Orphan Rescue
+                // --- 3. CROSS-DAY ORPHAN RESCUE FILTER ---
                 if (params.date === todayStr) {
                     liveGamesArray = liveGamesArray.filter(g => {
                         const gDate = g.fixture.date.split('T')[0];
@@ -1249,12 +1199,14 @@ async function init() {
                     liveGamesArray = liveGamesArray.filter(g => g.fixture.date.split('T')[0] === yesterdayStr);
                 }
 
-                // Apply League Filter
                 if (params.league !== 'top') {
                     const targetId = SUPPORTED_LEAGUES[params.league].id;
                     liveGamesArray = liveGamesArray.filter(g => g.league.id === targetId);
                 }
 
+                console.log("⚡ Firebase Update Received!", liveGamesArray.length, "relevant games active.");
+
+                // --- 4. DIRECT FIREBASE OVERWRITE (Trust the Python Engine) ---
                 let needsFullRender = isFirstLoad;
 
                 liveGamesArray.forEach(liveGame => {
@@ -1264,11 +1216,14 @@ async function init() {
                 });
                 
                 if (needsFullRender) {
-                    // FIRST LOAD OR NEW GAME: Merge safely
                     liveGamesArray.forEach(liveGame => {
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
                         if (index !== -1) {
-                            ALL_GAMES_DATA[index] = mergeLiveFirebaseData(ALL_GAMES_DATA[index], liveGame);
+                            // The Python engine already formatted everything perfectly. 
+                            // Just protect the aggregate goals.
+                            const old_first_leg = ALL_GAMES_DATA[index].first_leg_goals;
+                            ALL_GAMES_DATA[index] = liveGame; 
+                            ALL_GAMES_DATA[index].first_leg_goals = liveGame.first_leg_goals || old_first_leg;
                         } else {
                             ALL_GAMES_DATA.unshift(liveGame); 
                         }
@@ -1277,10 +1232,10 @@ async function init() {
                     handleHashNavigation(); 
                     isFirstLoad = false;
                 } else {
-                    // LIVE UPDATE: Surgical DOM sync
                     syncLiveDOM(liveGamesArray);
                 }
             } else {
+                console.log("💤 Firebase is empty. Relying on baseline JSON.");
                 if (isFirstLoad) {
                     renderGames();
                     handleHashNavigation();
@@ -1289,7 +1244,7 @@ async function init() {
             }
         });
     } else {
-        // STATIC PATH
+        console.log(`Rendering static archive for ${params.date}...`);
         renderGames();
         handleHashNavigation();
     }
@@ -1299,37 +1254,124 @@ async function init() {
 // SURGICAL DOM UPDATER (Prevents flashing)
 // ==========================================
 function syncLiveDOM(liveGamesArray) {
-    liveGamesArray.forEach(fbUpdate => {
-        const fixId = fbUpdate.fixture.id;
-        const index = ALL_GAMES_DATA.findIndex(m => m.fixture.id === fixId);
+    liveGamesArray.forEach(match => {
+        const fixId = match.fixture.id;
+        const oldMatchIndex = ALL_GAMES_DATA.findIndex(m => m.fixture.id === fixId);
+        let oldMatch = null;
 
-        if (index !== -1) {
-            // Safely merge Firebase deltas into our rich JSON master object
-            ALL_GAMES_DATA[index] = mergeLiveFirebaseData(ALL_GAMES_DATA[index], fbUpdate);
-            const match = ALL_GAMES_DATA[index];
-
-            // --- UI SELECTORS ---
-            const timeEl = document.getElementById(`time-${fixId}`);
-            const scoreEl = document.getElementById(`score-${fixId}`);
-            const eventsEl = document.getElementById(`events-${fixId}`);
+        if (oldMatchIndex !== -1) {
+            oldMatch = ALL_GAMES_DATA[oldMatchIndex];
             
-            if (timeEl) timeEl.innerHTML = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
-            if (scoreEl) scoreEl.innerHTML = getCenterColumnHtml(match).trim();
-            if (eventsEl) eventsEl.innerHTML = getEventsHtml(match).trim();
+            // The Python engine already formatted everything perfectly. 
+            // Just protect the aggregate goals.
+            const old_first_leg = oldMatch.first_leg_goals;
+            ALL_GAMES_DATA[oldMatchIndex] = match; 
+            ALL_GAMES_DATA[oldMatchIndex].first_leg_goals = match.first_leg_goals || old_first_leg;
+        } else {
+            ALL_GAMES_DATA.push(match);
+        }
+        
+        // 3. Grab all the HTML elements for this match
+        const timeEl = document.getElementById(`time-${fixId}`);
+        const scoreEl = document.getElementById(`score-${fixId}`);
+        const eventsEl = document.getElementById(`events-${fixId}`);
+        const oddsEl = document.getElementById(`odds-${fixId}`);
+        const injuriesEl = document.getElementById(`injuries-${fixId}`);
+        
+        if (timeEl && scoreEl && eventsEl && oddsEl && injuriesEl) {
+            
+            if (oldMatch && !oldMatch.team_stats && match.team_stats) {
+                const hCol = scoreEl.previousElementSibling;
+                const aCol = scoreEl.nextElementSibling;
+                if (hCol && aCol) {
+                    hCol.style.width = '25%'; aCol.style.width = '25%'; scoreEl.style.width = '50%';
+                    const hImg = hCol.querySelector('img'); const aImg = aCol.querySelector('img');
+                    if (hImg) { hImg.style.width = '35px'; hImg.style.height = '35px'; }
+                    if (aImg) { aImg.style.width = '35px'; aImg.style.height = '35px'; }
+                    const hName = hCol.querySelector('.fw-bold.text-truncate');
+                    const aName = aCol.querySelector('.fw-bold.text-truncate');
+                    if (hName) hName.style.fontSize = '0.75rem';
+                    if (aName) aName.style.fontSize = '0.75rem';
+                }
+            }
+
+            const newTimeHtml = (getTimeBadgeHtml(match) + ' ' + getLatestEventHtml(match)).trim();
+            const newCenterHtml = getCenterColumnHtml(match).trim();
+            const newEventsHtml = getEventsHtml(match).trim();
+            const newOddsHtml = getOddsHtml(match).trim();
+            const newInjuriesHtml = getInjuriesHtml(match).trim();
+            
+            if (timeEl.innerHTML.trim() !== newTimeHtml) timeEl.innerHTML = newTimeHtml;
+            if (scoreEl.innerHTML.trim() !== newCenterHtml) scoreEl.innerHTML = newCenterHtml;
+            
+            const eventsWasExpanded = eventsEl.querySelector('.is-expanded') !== null;
+            if (eventsEl.innerHTML.trim() !== newEventsHtml) {
+                eventsEl.innerHTML = newEventsHtml;
+                if (eventsWasExpanded) {
+                    const toggleSection = eventsEl.querySelector('.border-top');
+                    if (toggleSection) {
+                        toggleSection.classList.add('is-expanded');
+                        toggleSection.querySelectorAll('.event-collapsed').forEach(el => el.classList.add('d-none'));
+                        toggleSection.querySelectorAll('.event-expanded').forEach(el => el.classList.remove('d-none'));
+                    }
+                }
+            }
+            
+            if (oddsEl.innerHTML.trim() !== newOddsHtml) oddsEl.innerHTML = newOddsHtml;
+
+            const injuriesWasExpanded = injuriesEl.querySelector('.is-expanded') !== null;
+            if (injuriesEl.innerHTML.trim() !== newInjuriesHtml) {
+                injuriesEl.innerHTML = newInjuriesHtml;
+                if (injuriesWasExpanded) {
+                    const toggleSection = injuriesEl.querySelector('.expandable-section');
+                    if (toggleSection) toggleExpand(toggleSection);
+                }
+            }
+        }
+        
+        const ribbonEl = document.getElementById(`ribbon-${fixId}`);
+        if (ribbonEl) {
+            const newRibbonHtml = getRibbonHtml(match).trim();
+            if (ribbonEl.innerHTML.trim() !== newRibbonHtml) ribbonEl.innerHTML = newRibbonHtml;
+        }
+        
+        if (oldMatch) {
+            const oldEvLen = oldMatch.events ? oldMatch.events.length : 0;
+            const newEvLen = match.events ? match.events.length : 0;
+            
+            if (newEvLen > oldEvLen) {
+                const latestEvent = match.events[newEvLen - 1]; 
+                const cardEl = document.getElementById(`card-${fixId}`);
+                if (cardEl && latestEvent) {
+                    if (latestEvent.type === 'Goal') { triggerCardHighlight(cardEl, 'goal'); } 
+                    else if (latestEvent.type === 'Card' && latestEvent.detail) {
+                        if (latestEvent.detail.includes('Second') || latestEvent.detail.includes('Yellow / Red')) {
+                            triggerCardHighlight(cardEl, 'yellow_card');
+                            setTimeout(() => { triggerCardHighlight(cardEl, 'red_card'); }, 4500); 
+                        } else if (latestEvent.detail.includes('Red')) { triggerCardHighlight(cardEl, 'red_card'); } 
+                        else if (latestEvent.detail.includes('Yellow')) { triggerCardHighlight(cardEl, 'yellow_card'); }
+                    } else if (latestEvent.type === 'subst') { triggerCardHighlight(cardEl, 'subst'); }
+                }
+            }
 
             const viewXiEl = document.getElementById(`view-xi-${fixId}`);
-            if (viewXiEl) viewXiEl.innerHTML = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLineupList(match.homeLineup, match)}</div><div class="col-6">${buildLineupList(match.awayLineup, match)}</div></div>`;
+            if (viewXiEl) {
+                const newXiHtml = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLineupList(match.homeLineup, match)}</div><div class="col-6">${buildLineupList(match.awayLineup, match)}</div></div>`;
+                if (viewXiEl.innerHTML.trim() !== newXiHtml.trim()) viewXiEl.innerHTML = newXiHtml;
+            }
 
             const viewStatsEl = document.getElementById(`view-stats-${fixId}`);
             if (viewStatsEl) {
                 let hColor = match.homeLineup?.team?.colors?.player?.primary ? `#${match.homeLineup.team.colors.player.primary}` : '#0d6efd';
                 let aColor = match.awayLineup?.team?.colors?.player?.primary ? `#${match.awayLineup.team.colors.player.primary}` : '#dc3545';
-                viewStatsEl.innerHTML = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLiveStatsGrid(match.homeLineup, hColor)}</div><div class="col-6">${buildLiveStatsGrid(match.awayLineup, aColor)}</div></div>`;
+                if (colorDistance(hColor, aColor) < 60) aColor = '#343a40';
+
+                const newStatsHtml = `<div class="row g-0 bg-white"><div class="col-6 border-end">${buildLiveStatsGrid(match.homeLineup, hColor)}</div><div class="col-6">${buildLiveStatsGrid(match.awayLineup, aColor)}</div></div>`;
+                if (viewStatsEl.innerHTML.trim() !== newStatsHtml.trim()) viewStatsEl.innerHTML = newStatsHtml;
             }
-            
-            // SMART REVEAL & TAB TRANSITIONS
-            const isPreGame = ['NS', 'TBD'].includes(match.fixture.status.short);
-            const isNowLive = !isPreGame;
+
+            const wasPreGame = ['NS', 'TBD'].includes(oldMatch.fixture.status.short);
+            const isNowLive = !['NS', 'TBD'].includes(match.fixture.status.short);
             const isFinished = ['FT', 'AET', 'PEN'].includes(match.fixture.status.short);
 
             const xiTab = document.getElementById(`tab-xi-${fixId}`);
@@ -1341,11 +1383,12 @@ function syncLiveDOM(liveGamesArray) {
             if (match.team_stats && statsTab) {
                 const wasHidden = statsTab.classList.contains('d-none');
                 if (wasHidden) statsTab.classList.remove('d-none');
-                if (wasHidden || isNowLive) switchLineupTab(fixId, 'stats');
+                if (wasHidden || (wasPreGame && isNowLive)) switchLineupTab(fixId, 'stats');
             }
         }
     });
-    requestAnimationFrame(checkOverflows);
+
+    requestAnimationFrame(() => requestAnimationFrame(checkOverflows));
 }
 
 // Helper function to load the static file created by your General Manager script
