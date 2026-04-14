@@ -82,6 +82,27 @@ TOP_LEAGUE_IDS = [
     254  # NWSL (USA)
 ]
 
+# =========================================================
+# AGGREGATE SCORING ROUNDS
+# =========================================================
+AGGREGATE_ROUNDS = {
+    2: ["round of 16", "quarter-finals", "semi-finals"], # UCL
+    3: ["knockout round play-offs", "round of 16", "quarter-finals", "semi-finals"], # UEL
+    848: ["knockout round play-offs", "round of 16", "quarter-finals", "semi-finals"], # UECL
+    13: ["round of 16", "quarter-finals", "semi-finals"], # Libertadores
+    11: ["play-offs", "round of 16", "quarter-finals", "semi-finals"], # Sudamericana
+    16: ["round one", "round of 16", "quarter-finals", "semi-finals"], # CONCACAF Champions Cup
+    48: ["semi-finals"], # EFL Cup
+    143: ["semi-finals"], # Copa del Rey
+    137: ["semi-finals"], # Coppa Italia
+    262: ["quarter-finals", "semi-finals", "final"], # Liga MX Liguilla
+    40: ["semi-finals"], # Championship Playoffs
+    188: ["semi-finals"], # A-League Playoffs
+    239: ["final"], # Colombia Primera A
+    5: ["quarter-finals", "play-outs"], # UEFA Nations League
+    531: ["quarter-finals"] # CONCACAF Nations League
+}
+
 def is_youth_team(home_name, away_name):
     """
     Regex filter to detect Youth National Teams (e.g. U17, U19, U21, U23).
@@ -199,7 +220,7 @@ def fetch_all_players(team_id, season):
         page += 1
     return all_players
 
-def fetch_first_leg_score(league_id, season, home_id, away_id):
+def fetch_first_leg_score(league_id, season, current_round, home_id, away_id, current_timestamp):
     """
     Queries the H2H endpoint to find the 1st leg score between two teams.
     Returns a dictionary mapping Team IDs to their 1st leg goals.
@@ -209,6 +230,34 @@ def fetch_first_leg_score(league_id, season, home_id, away_id):
     
     if not data or not data.get("response"): 
         return None
+
+    matches = sorted(data["response"], key=lambda x: x["fixture"]["timestamp"], reverse=True)
+
+    for match in matches:
+        m_league = match.get("league", {})
+        m_fixture = match.get("fixture", {})
+        
+        # Look for a finished match in the EXACT same league, season, AND round,
+        # that happened BEFORE the current match.
+        if (m_league.get("id") == league_id and 
+            m_league.get("season") == season and 
+            m_league.get("round") == current_round and
+            m_fixture.get("timestamp", 0) < current_timestamp and
+            m_fixture.get("status", {}).get("short") in ['FT', 'AET', 'PEN']):
+            
+            past_home_id = str(match["teams"]["home"]["id"])
+            past_away_id = str(match["teams"]["away"]["id"])
+            past_home_goals = match.get("goals", {}).get("home") or 0
+            past_away_goals = match.get("goals", {}).get("away") or 0
+            
+            print(f"      -> 1st Leg Found! {past_home_id}:{past_home_goals} | {past_away_id}:{past_away_goals}")
+            
+            return {
+                past_home_id: past_home_goals,
+                past_away_id: past_away_goals
+            }
+                
+    return None
 
     # Sort matches by date descending (newest first)
     matches = sorted(data["response"], key=lambda x: x["fixture"]["timestamp"], reverse=True)
@@ -439,12 +488,14 @@ def build_daily_games(date_str):
         home_data = MASTER_TEAM_DICT.get(f"{home_id}_{league_id_str}", {})
         away_data = MASTER_TEAM_DICT.get(f"{away_id}_{league_id_str}", {})
         
-        # --- NEW: AGGREGATE SCORE DETECTOR ---
+        # --- AGGREGATE SCORE DETECTOR ---
         first_leg_goals = None
+        league_id = game['league']['id']
         round_info = str(game.get('league', {}).get('round', ''))
-        if "2nd Leg" in round_info:
-            print(f"      -> 2nd Leg Detected for {home_name} vs {away_name}. Fetching 1st Leg...")
-            first_leg_goals = fetch_first_leg_score(game['league']['id'], game['league']['season'], home_id, away_id)
+        
+        if league_id in AGGREGATE_ROUNDS and any(r.lower() in round_info.lower() for r in AGGREGATE_ROUNDS[league_id]):
+            print(f"      -> Checking for 1st Leg data: {home_name} vs {away_name} ({round_info})...")
+            first_leg_goals = fetch_first_leg_score(league_id, game['league']['season'], round_info, home_id, away_id, game['fixture']['timestamp'])
         
         formatted_games.append({
             "fixture": game['fixture'], "league": game['league'],
@@ -525,14 +576,16 @@ def process_date(target_date, force_master_sync=False):
                         home_data = MASTER_TEAM_DICT.get(f"{home_id}_{league_id_str}") or MASTER_TEAM_DICT.get(home_id, {})
                         away_data = MASTER_TEAM_DICT.get(f"{away_id}_{league_id_str}") or MASTER_TEAM_DICT.get(away_id, {})
                         
-                        # --- NEW: AGGREGATE SCORE DETECTOR (Late Additions) ---
+                        # --- AGGREGATE SCORE DETECTOR (Late Additions) ---
                         first_leg_goals = None
+                        league_id = game['league']['id']
                         round_info = str(game.get('league', {}).get('round', ''))
-                        if "2nd Leg" in round_info:
+                        
+                        if league_id in AGGREGATE_ROUNDS and any(r.lower() in round_info.lower() for r in AGGREGATE_ROUNDS[league_id]):
                             h_name = game['teams']['home']['name']
                             a_name = game['teams']['away']['name']
-                            print(f"      -> Late 2nd Leg Detected for {h_name} vs {a_name}. Fetching 1st Leg...")
-                            first_leg_goals = fetch_first_leg_score(game['league']['id'], game['league']['season'], home_id, away_id)
+                            print(f"      -> Late Checking 1st Leg: {h_name} vs {a_name} ({round_info})...")
+                            first_leg_goals = fetch_first_leg_score(league_id, game['league']['season'], round_info, home_id, away_id, game['fixture']['timestamp'])
                         
                         daily_games.append({
                             "fixture": game['fixture'], "league": game['league'],
