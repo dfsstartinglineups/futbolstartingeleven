@@ -10,7 +10,7 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 
 // ==========================================
-// CONFIGURATION
+// CONFIGURATION & SAFE MERGE LOGIC
 // ==========================================
 const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 let ALL_GAMES_DATA = []; 
@@ -22,6 +22,67 @@ let savedScoreboardState = localStorage.getItem('futbolScoreboardMode');
 let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState === 'true' : true;
 
 const X_SVG_PATH = "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z";
+
+// CRITICAL FIX: Safe Merge Function (Firebase -> JSON Master)
+function mergeFirebaseIntoJSON(jsonMatch, fbMatch) {
+    if (!jsonMatch) return fbMatch;
+
+    // 1. Sync Live Scores, Status, Events, Team Stats from Firebase
+    if (fbMatch.goals) jsonMatch.goals = fbMatch.goals;
+    if (fbMatch.fixture && fbMatch.fixture.status) jsonMatch.fixture.status = fbMatch.fixture.status;
+    if (fbMatch.events && fbMatch.events.length > 0) jsonMatch.events = fbMatch.events;
+    if (fbMatch.team_stats && fbMatch.team_stats.home) jsonMatch.team_stats = fbMatch.team_stats;
+
+    // 2. INJECT LIVE PLAYER STATS (Keep JSON Lineup Structure Intact)
+    ['homeLineup', 'awayLineup'].forEach(side => {
+        if (fbMatch[side] && jsonMatch[side]) {
+            const injectStats = (fbPlayers) => {
+                if (!fbPlayers || !Array.isArray(fbPlayers)) return;
+                fbPlayers.forEach(fbSlot => {
+                    if (!fbSlot.player || !fbSlot.player.id || !fbSlot.player.live_stats) return;
+                    
+                    const pid = fbSlot.player.id;
+                    const newStats = fbSlot.player.live_stats;
+
+                    // A. Check Active Starters in JSON
+                    if (jsonMatch[side].startXI && Array.isArray(jsonMatch[side].startXI)) {
+                        let starter = jsonMatch[side].startXI.find(s => s.player && s.player.id === pid);
+                        if (starter) { 
+                            starter.player.live_stats = newStats; 
+                            return; 
+                        }
+                        
+                        // B. Check Sub History in JSON
+                        jsonMatch[side].startXI.forEach(slot => {
+                            if (slot.sub_history && Array.isArray(slot.sub_history)) {
+                                let subOut = slot.sub_history.find(p => p && p.id === pid);
+                                if (subOut) subOut.live_stats = newStats;
+                            }
+                        });
+                    }
+
+                    // C. Check Bench in JSON
+                    if (jsonMatch[side].substitutes && Array.isArray(jsonMatch[side].substitutes)) {
+                        let bench = jsonMatch[side].substitutes.find(s => s.player && s.player.id === pid);
+                        if (bench) bench.player.live_stats = newStats;
+                    }
+                });
+            };
+
+            injectStats(fbMatch[side].startXI);
+            injectStats(fbMatch[side].substitutes);
+        }
+    });
+
+    // 3. Static Data Protection & Aggregates
+    if (fbMatch.odds && fbMatch.odds.home !== "TBD") jsonMatch.odds = fbMatch.odds;
+    if (fbMatch.injuries && fbMatch.injuries.home && fbMatch.injuries.away && (fbMatch.injuries.home.length > 0 || fbMatch.injuries.away.length > 0)) {
+        jsonMatch.injuries = fbMatch.injuries;
+    }
+    jsonMatch.first_leg_goals = fbMatch.first_leg_goals || jsonMatch.first_leg_goals;
+
+    return jsonMatch;
+}
 
 const LEAGUE_GROUPS = {
     "priority": [
@@ -1033,63 +1094,62 @@ function handleHashNavigation() {
     }
 }
 
-
-function mergeLiveFirebaseData(jsonMatch, fbMatch) {
+function mergeFirebaseIntoJSON(jsonMatch, fbMatch) {
     if (!jsonMatch) return fbMatch;
 
-    // 1. Sync Live Scores, Status, Events, Team Stats from Firebase
     if (fbMatch.goals) jsonMatch.goals = fbMatch.goals;
     if (fbMatch.fixture && fbMatch.fixture.status) jsonMatch.fixture.status = fbMatch.fixture.status;
     if (fbMatch.events && fbMatch.events.length > 0) jsonMatch.events = fbMatch.events;
     if (fbMatch.team_stats && fbMatch.team_stats.home) jsonMatch.team_stats = fbMatch.team_stats;
 
-    // 2. INJECT LIVE PLAYER STATS (Keep JSON Lineup Structure Intact)
     ['homeLineup', 'awayLineup'].forEach(side => {
         if (fbMatch[side] && jsonMatch[side]) {
             
-            const injectStats = (fbPlayers) => {
-                if (!Array.isArray(fbPlayers)) return;
-                fbPlayers.forEach(fbSlot => {
-                    // Only process if Firebase actually sent live_stats for this player
+            const updateArrayStats = (fbArray) => {
+                if (!fbArray || !Array.isArray(fbArray)) return;
+                fbArray.forEach(fbSlot => {
                     if (!fbSlot.player || !fbSlot.player.id || !fbSlot.player.live_stats) return;
-                    
                     const pid = fbSlot.player.id;
                     const newStats = fbSlot.player.live_stats;
 
-                    // A. Check Active Starters in JSON
-                    let starter = jsonMatch[side].startXI?.find(s => s.player.id === pid);
-                    if (starter) { starter.player.live_stats = newStats; return; }
-
-                    // B. Check Sub History in JSON (Outgoing players)
-                    jsonMatch[side].startXI?.forEach(slot => {
-                        if (slot.sub_history) {
-                            let subOut = slot.sub_history.find(p => p.id === pid);
-                            if (subOut) { subOut.live_stats = newStats; return; }
+                    if (jsonMatch[side].startXI && Array.isArray(jsonMatch[side].startXI)) {
+                        let starter = jsonMatch[side].startXI.find(s => s.player && s.player.id === pid);
+                        if (starter) {
+                            starter.player.live_stats = newStats;
+                            return;
                         }
-                    });
+                        jsonMatch[side].startXI.forEach(slot => {
+                            if (slot.sub_history && Array.isArray(slot.sub_history)) {
+                                let subOut = slot.sub_history.find(p => p && p.id === pid);
+                                if (subOut) {
+                                    subOut.live_stats = newStats;
+                                }
+                            }
+                        });
+                    }
 
-                    // C. Check Bench in JSON
-                    let bench = jsonMatch[side].substitutes?.find(s => s.player.id === pid);
-                    if (bench) { bench.player.live_stats = newStats; }
+                    if (jsonMatch[side].substitutes && Array.isArray(jsonMatch[side].substitutes)) {
+                        let bench = jsonMatch[side].substitutes.find(s => s.player && s.player.id === pid);
+                        if (bench) {
+                            bench.player.live_stats = newStats;
+                        }
+                    }
                 });
             };
 
-            // Pull live_stats from Firebase's skinny arrays and inject them
-            injectStats(fbMatch[side].startXI);
-            injectStats(fbMatch[side].substitutes);
+            updateArrayStats(fbMatch[side].startXI);
+            updateArrayStats(fbMatch[side].substitutes);
         }
     });
 
-    // 3. Static Data Protection & Aggregates
+    jsonMatch.first_leg_goals = fbMatch.first_leg_goals || jsonMatch.first_leg_goals;
     if (fbMatch.odds && fbMatch.odds.home !== "TBD") jsonMatch.odds = fbMatch.odds;
-    if (fbMatch.injuries && (fbMatch.injuries.home?.length > 0 || fbMatch.injuries.away?.length > 0)) {
+    if (fbMatch.injuries && (fbMatch.injuries.home.length > 0 || fbMatch.injuries.away.length > 0)) {
         jsonMatch.injuries = fbMatch.injuries;
     }
-    jsonMatch.first_leg_goals = fbMatch.first_leg_goals || jsonMatch.first_leg_goals;
 
     return jsonMatch;
 }
-
 
 let isFirstLoad = true; 
 
@@ -1111,7 +1171,6 @@ async function init() {
     ALL_GAMES_DATA = await fetchMatchesData(params);
     if (!ALL_GAMES_DATA) ALL_GAMES_DATA = [];
 
-    // Remove spinner instantly
     if (ALL_GAMES_DATA.length > 0 || params.date !== todayStr) {
         renderGames();
         handleHashNavigation();
@@ -1147,7 +1206,8 @@ async function init() {
                 let needsFullRender = isFirstLoad;
 
                 liveGamesArray.forEach(liveGame => {
-                    if (ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id) === -1) {
+                    const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
+                    if (index === -1) {
                         needsFullRender = true; 
                     }
                 });
@@ -1156,8 +1216,7 @@ async function init() {
                     liveGamesArray.forEach(liveGame => {
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
                         if (index !== -1) {
-                            // Pass through the Iron Shield
-                            ALL_GAMES_DATA[index] = mergeLiveFirebaseData(ALL_GAMES_DATA[index], liveGame);
+                            ALL_GAMES_DATA[index] = mergeFirebaseIntoJSON(ALL_GAMES_DATA[index], liveGame);
                         } else {
                             ALL_GAMES_DATA.unshift(liveGame); 
                         }
@@ -1194,9 +1253,7 @@ function syncLiveDOM(liveGamesArray) {
 
         if (oldMatchIndex !== -1) {
             oldMatch = ALL_GAMES_DATA[oldMatchIndex];
-            
-            // Pass through the Iron Shield
-            ALL_GAMES_DATA[oldMatchIndex] = mergeLiveFirebaseData(oldMatch, match);
+            ALL_GAMES_DATA[oldMatchIndex] = mergeFirebaseIntoJSON(oldMatch, match);
             match = ALL_GAMES_DATA[oldMatchIndex]; 
         } else {
             ALL_GAMES_DATA.push(match);
@@ -1530,3 +1587,176 @@ function buildLineupList(lineupData, gameData) {
     }).join('');
     return `${formationHeader}<ul class="batting-order w-100 m-0 p-0" style="list-style-type: none;">${listItems}</ul>`;
 }
+
+function createGameCard(data) {
+    const gameCard = document.createElement('div');
+    gameCard.className = 'col-md-6 col-lg-6 col-xl-4 mb-2';
+
+    const home = data.teams.home;
+    const away = data.teams.away;
+    const fixId = data.fixture.id;
+
+    const homeRank = home.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${home.rank}]</span> ` : '';
+    const awayRank = away.rank ? `<span class="text-muted" style="font-size: 0.70rem;">[${away.rank}]</span> ` : '';
+
+    const homeRecord = home.record ? `<div class="text-muted fw-normal" style="font-size: 0.65rem; margin-top: 2px;">(${home.record})</div>` : '';
+    const awayRecord = away.record ? `<div class="text-muted fw-normal" style="font-size: 0.65rem; margin-top: 2px;">(${away.record})</div>` : '';
+    
+    const statusShort = data.fixture.status.short;
+    const isPreGame = ['NS', 'TBD'].includes(statusShort);
+    const isFinished = ['FT', 'AET', 'PEN'].includes(statusShort);
+    const params = getUrlParams();
+    const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
+
+    const xiTabText = isFinished ? "FINAL XI" : "STARTING XI";
+    const statsTabText = isFinished ? "FINAL STATS" : "LIVE STATS";
+
+    const hColor = data.homeLineup?.team?.colors?.player?.primary;
+    const aColor = data.awayLineup?.team?.colors?.player?.primary;
+
+    const fullHtml = `
+        <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+            <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom border-light" style="cursor: pointer;" onclick="toggleSingleCard(${fixId})" title="Click to collapse">
+                <div id="time-${fixId}" style="flex: 0 0 auto;" class="pe-2">${getTimeBadgeHtml(data)} ${getLatestEventHtml(data)}</div>
+                <a href="${leagueHref}" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;" title="View all ${data.league.name} matches" onmouseover="this.classList.remove('text-muted'); this.classList.add('text-success');" onmouseout="this.classList.add('text-muted'); this.classList.remove('text-success');">
+                    ${data.league.name}
+                </a>
+            </div>
+            <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1 w-100">
+                <div class="text-center transition-width" style="width: ${data.team_stats ? '25%' : '41%'}; flex-shrink: 0;"> 
+                    <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1" style="width: ${data.team_stats ? '35px' : '55px'}; height: ${data.team_stats ? '35px' : '55px'}; transition: all 0.3s ease;">
+                    <div class="fw-bold text-dark text-truncate w-100" style="font-size: ${data.team_stats ? '0.75rem' : '0.9rem'}; transition: font-size 0.3s ease;" title="${home.name}">${homeRank}${home.name}</div>
+                    ${homeRecord}
+                </div>
+                
+                <div id="score-${fixId}" class="text-center d-flex flex-column align-items-center justify-content-center transition-width mx-2" style="width: ${data.team_stats ? '50%' : '18%'}; min-width: 0;">
+                    ${getCenterColumnHtml(data)}
+                </div>
+                
+                <div class="text-center transition-width" style="width: ${data.team_stats ? '25%' : '41%'}; flex-shrink: 0;"> 
+                    <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1" style="width: ${data.team_stats ? '35px' : '55px'}; height: ${data.team_stats ? '35px' : '55px'}; transition: all 0.3s ease;">
+                    <div class="fw-bold text-dark text-truncate w-100" style="font-size: ${data.team_stats ? '0.75rem' : '0.9rem'}; transition: font-size 0.3s ease;" title="${away.name}">${awayRank}${away.name}</div>
+                    ${awayRecord}
+                </div>
+            </div>
+            <div id="events-${fixId}" class="w-100">${getEventsHtml(data)}</div>
+        </div>
+        <div id="odds-${fixId}" class="w-100">${getOddsHtml(data)}</div>
+        <div id="injuries-${fixId}" class="w-100">${getInjuriesHtml(data)}</div>
+        
+        <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1" style="background-color: #f8f9fa;">
+            <div class="d-flex gap-4 w-100">
+                <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" 
+                     id="tab-xi-${fixId}" 
+                     onclick="switchLineupTab(${fixId}, 'xi')"
+                     style="flex: 1; text-align: center;">
+                    ${xiTabText}
+                </div>
+                <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" 
+                     id="tab-stats-${fixId}" 
+                     onclick="switchLineupTab(${fixId}, 'stats')"
+                     style="flex: 1; text-align: center;">
+                    ${statsTabText}
+                </div>
+            </div>
+        </div>
+        
+        <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
+            
+            <div id="view-xi-${fixId}" class="${(data.team_stats && !isPreGame) ? 'd-none' : ''}">
+                <div class="row g-0 bg-white">
+                    <div class="col-6 border-end">${buildLineupList(data.homeLineup, data)}</div>
+                    <div class="col-6">${buildLineupList(data.awayLineup, data)}</div>
+                </div>
+            </div>
+            
+            <div id="view-stats-${fixId}" class="${(!data.team_stats || isPreGame) ? 'd-none' : ''}">
+                <div class="row g-0 bg-white">
+                    <div class="col-6 border-end">${buildLiveStatsGrid(data.homeLineup, hColor)}</div>
+                    <div class="col-6">${buildLiveStatsGrid(data.awayLineup, aColor)}</div>
+                </div>
+            </div>
+            
+        </div>
+    `;
+
+    gameCard.innerHTML = `
+        <div class="lineup-card shadow-sm position-relative overflow-hidden" style="margin-bottom: 8px; background: #fff;" id="card-${fixId}">
+            <div class="ribbon-view ${globalScoreboardMode ? '' : 'd-none'}" id="ribbon-${fixId}" onclick="toggleSingleCard(${fixId})" title="Click to expand card">
+                ${getRibbonHtml(data)}
+            </div>
+            <div class="full-view ${globalScoreboardMode ? 'd-none' : ''}" id="full-${fixId}">
+                ${fullHtml}
+            </div>
+        </div>`;
+    
+    return gameCard;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    
+    window.addEventListener('resize', () => {
+        clearTimeout(window.resizeTimer);
+        window.resizeTimer = setTimeout(() => {
+            requestAnimationFrame(checkOverflows);
+        }, 150);
+    });
+
+    const datePicker = document.getElementById('date-picker');
+    if (datePicker) {
+        datePicker.addEventListener('change', (e) => {
+            if (e.target.value) { window.location.href = `?league=${getUrlParams().league}&date=${e.target.value}`; }
+        });
+    }
+    
+    const searchInput = document.getElementById('team-search');
+    if (searchInput) searchInput.addEventListener('input', renderGames);
+
+    const toggleAllBtn = document.getElementById('toggle-all-lineups');
+    if (toggleAllBtn) {
+        toggleAllBtn.innerHTML = globalLineupsExpanded ? '🔼 COLLAPSE ALL LINEUPS' : '🔽 EXPAND ALL LINEUPS';
+        if (globalScoreboardMode) toggleAllBtn.classList.add('d-none'); 
+        
+        toggleAllBtn.addEventListener('click', () => {
+            globalLineupsExpanded = !globalLineupsExpanded;
+            localStorage.setItem('futbolLineupsExpanded', globalLineupsExpanded);
+            toggleAllBtn.innerHTML = globalLineupsExpanded ? '🔼 COLLAPSE ALL LINEUPS' : '🔽 EXPAND ALL LINEUPS';
+            
+            const lineupContainers = document.querySelectorAll('.lineup-container');
+            lineupContainers.forEach(container => {
+                if (globalLineupsExpanded) {
+                    container.classList.add('show');
+                } else {
+                    container.classList.remove('show');
+                }
+            });
+        });
+    }
+
+    const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
+    if (toggleScoreboardBtn) {
+        toggleScoreboardBtn.innerHTML = globalScoreboardMode ? '🔼 EXPAND ALL CARDS' : '🔽 COMPACT SCOREBOARD';
+        
+        toggleScoreboardBtn.addEventListener('click', () => {
+            globalScoreboardMode = !globalScoreboardMode;
+            localStorage.setItem('futbolScoreboardMode', globalScoreboardMode);
+            toggleScoreboardBtn.innerHTML = globalScoreboardMode ? '🔼 EXPAND ALL CARDS' : '🔽 COMPACT SCOREBOARD';
+            
+            const allRibbons = document.querySelectorAll('.ribbon-view');
+            const allFulls = document.querySelectorAll('.full-view');
+            
+            if (globalScoreboardMode) {
+                allRibbons.forEach(el => el.classList.remove('d-none'));
+                allFulls.forEach(el => el.classList.add('d-none'));
+                if (toggleAllBtn) toggleAllBtn.classList.add('d-none'); 
+            } else {
+                allRibbons.forEach(el => el.classList.add('d-none'));
+                allFulls.forEach(el => el.classList.remove('d-none'));
+                if (toggleAllBtn) toggleAllBtn.classList.remove('d-none'); 
+            }
+            
+            checkOverflows();
+        });
+    }
+});
