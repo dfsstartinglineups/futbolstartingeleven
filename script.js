@@ -1218,35 +1218,36 @@ async function init() {
                     }
                 });
                 
+                // 2. Route the data correctly
                 if (needsFullRender) {
                     liveGamesArray.forEach(liveGame => {
                         const index = ALL_GAMES_DATA.findIndex(g => g.fixture.id === liveGame.fixture.id);
                         if (index !== -1) {
-                            const old = ALL_GAMES_DATA[index];
+                            const jsonMatch = ALL_GAMES_DATA[index];
 
-                            // --- SURGICAL PLAYER MERGE (Accepts Firebase Deltas, Protects Bio/Season Info) ---
+                            // --- 1. CORE STATS & EVENTS ---
+                            jsonMatch.goals = liveGame.goals || jsonMatch.goals;
+                            jsonMatch.fixture.status = liveGame.fixture.status || jsonMatch.fixture.status;
+                            if (liveGame.events && liveGame.events.length > 0) jsonMatch.events = liveGame.events;
+                            if (liveGame.team_stats && liveGame.team_stats.home) jsonMatch.team_stats = liveGame.team_stats;
+
+                            // --- 2. SURGICAL PLAYER UPDATE (Deltas) ---
                             ['homeLineup', 'awayLineup'].forEach(side => {
-                                // FIX: Strengthened Array.isArray check to prevent script crashes
-                                if (liveGame[side] && Array.isArray(liveGame[side].startXI) && old[side] && Array.isArray(old[side].startXI)) {
-                                    liveGame[side].startXI.forEach((newSlot, idx) => {
-                                        const oldSlot = old[side].startXI[idx];
-                                        if (oldSlot && oldSlot.player && newSlot.player) {
-                                            newSlot.player = { ...oldSlot.player, ...newSlot.player };
-                                            newSlot.player.season_stats = oldSlot.player.season_stats;
+                                if (liveGame[side] && Array.isArray(liveGame[side].startXI) && jsonMatch[side]) {
+                                    liveGame[side].startXI.forEach(fbSlot => {
+                                        const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
+                                        if (memSlot && fbSlot.player.live_stats) {
+                                            memSlot.player.live_stats = { ...memSlot.player.live_stats, ...fbSlot.player.live_stats };
                                         }
                                     });
-                                } else {
-                                    liveGame[side] = (liveGame[side] && Array.isArray(liveGame[side].startXI)) ? liveGame[side] : old[side];
                                 }
                             });
 
-                            // Protect other static data fields
-                            liveGame.team_stats = (liveGame.team_stats && liveGame.team_stats.home) ? liveGame.team_stats : old.team_stats;
-                            liveGame.odds = (liveGame.odds && liveGame.odds.home !== "TBD") ? liveGame.odds : old.odds;
-                            liveGame.injuries = (liveGame.injuries && (liveGame.injuries.home.length > 0 || liveGame.injuries.away.length > 0)) ? liveGame.injuries : old.injuries;
-                            liveGame.first_leg_goals = liveGame.first_leg_goals || old.first_leg_goals;
+                            // --- 3. STATIC DATA PROTECTION ---
+                            jsonMatch.odds = (liveGame.odds && liveGame.odds.home !== "TBD") ? liveGame.odds : jsonMatch.odds;
+                            jsonMatch.injuries = (liveGame.injuries && (liveGame.injuries.home.length > 0 || liveGame.injuries.away.length > 0)) ? liveGame.injuries : jsonMatch.injuries;
+                            jsonMatch.first_leg_goals = liveGame.first_leg_goals || jsonMatch.first_leg_goals;
 
-                            ALL_GAMES_DATA[index] = liveGame; 
                         } else {
                             ALL_GAMES_DATA.unshift(liveGame); 
                         }
@@ -1254,6 +1255,7 @@ async function init() {
                     renderGames();
                     handleHashNavigation(); 
                     isFirstLoad = false;
+                
                 } else {
                     syncLiveDOM(liveGamesArray);
                 }
@@ -1283,33 +1285,28 @@ function syncLiveDOM(liveGamesArray) {
     liveGamesArray.forEach(match => {
         const fixId = match.fixture.id;
         const oldMatchIndex = ALL_GAMES_DATA.findIndex(m => m.fixture.id === fixId);
-        let oldMatch = null;
 
         if (oldMatchIndex !== -1) {
-            oldMatch = ALL_GAMES_DATA[oldMatchIndex];
+            const jsonMatch = ALL_GAMES_DATA[oldMatchIndex];
             
-            // --- SURGICAL PLAYER MERGE (Accepts Firebase Deltas, Protects Bio/Season Info) ---
+            // --- NON-DESTRUCTIVE SYNC ---
+            jsonMatch.goals = match.goals || jsonMatch.goals;
+            jsonMatch.fixture.status = match.fixture.status || jsonMatch.fixture.status;
+            if (match.events && match.events.length > 0) jsonMatch.events = match.events;
+            if (match.team_stats && match.team_stats.home) jsonMatch.team_stats = match.team_stats;
+
             ['homeLineup', 'awayLineup'].forEach(side => {
-                if (match[side] && match[side].startXI && oldMatch[side] && oldMatch[side].startXI) {
-                    match[side].startXI.forEach((newSlot, idx) => {
-                        const oldSlot = oldMatch[side].startXI[idx];
-                        if (oldSlot && oldSlot.player && newSlot.player) {
-                            newSlot.player = { ...oldSlot.player, ...newSlot.player };
-                            newSlot.player.season_stats = oldSlot.player.season_stats;
+                if (match[side] && Array.isArray(match[side].startXI) && jsonMatch[side]) {
+                    match[side].startXI.forEach(fbSlot => {
+                        const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
+                        if (memSlot && fbSlot.player.live_stats) {
+                            memSlot.player.live_stats = { ...memSlot.player.live_stats, ...fbSlot.player.live_stats };
                         }
                     });
-                } else {
-                    match[side] = (match[side] && match[side].startXI) ? match[side] : oldMatch[side];
                 }
             });
 
-            // Protect other static data fields
-            match.team_stats = (match.team_stats && match.team_stats.home) ? match.team_stats : oldMatch.team_stats;
-            match.odds = (match.odds && match.odds.home !== "TBD") ? match.odds : oldMatch.odds;
-            match.injuries = (match.injuries && (match.injuries.home.length > 0 || match.injuries.away.length > 0)) ? match.injuries : oldMatch.injuries;
-            match.first_leg_goals = match.first_leg_goals || oldMatch.first_leg_goals;
-            
-            ALL_GAMES_DATA[oldMatchIndex] = match; 
+            match = jsonMatch; // Ensure the rest of the function uses the merged rich data
         } else {
             ALL_GAMES_DATA.push(match);
         }
