@@ -1225,28 +1225,42 @@ async function init() {
                         if (index !== -1) {
                             const jsonMatch = ALL_GAMES_DATA[index];
 
-                            // --- 1. SYNC LIVE SCORES & STATUS ---
                             jsonMatch.goals = liveGame.goals || jsonMatch.goals;
                             jsonMatch.fixture.status = liveGame.fixture.status || jsonMatch.fixture.status;
-                            
-                            // --- 2. SYNC EVENTS & TEAM STATS ---
                             if (liveGame.events && liveGame.events.length > 0) jsonMatch.events = liveGame.events;
                             if (liveGame.team_stats && liveGame.team_stats.home) jsonMatch.team_stats = liveGame.team_stats;
 
-                            // --- 3. SURGICAL PLAYER STAT UPDATE (ID-BASED) ---
+                            // --- SURGICAL PLAYER UPDATE (Starters, Subs, and Bench) ---
                             ['homeLineup', 'awayLineup'].forEach(side => {
-                                if (liveGame[side]?.startXI && jsonMatch[side]?.startXI) {
+                                if (liveGame[side]?.startXI && jsonMatch[side]) {
                                     liveGame[side].startXI.forEach(fbSlot => {
-                                        const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
+                                        // 1. Check active starters
+                                        let memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
                                         if (memSlot && fbSlot.player.live_stats) {
                                             memSlot.player.live_stats = fbSlot.player.live_stats;
+                                        } else {
+                                            // 2. Check sub history (where the "missing" subs are kept)
+                                            jsonMatch[side].startXI.forEach(slot => {
+                                                if (slot.sub_history) {
+                                                    let subHistPlayer = slot.sub_history.find(p => p.id === fbSlot.player.id);
+                                                    if (subHistPlayer && fbSlot.player.live_stats) {
+                                                        subHistPlayer.live_stats = fbSlot.player.live_stats;
+                                                    }
+                                                }
+                                            });
                                         }
+                                    });
+                                }
+                                // 3. Update substitutes array (for bench players with recorded stats)
+                                if (liveGame[side]?.substitutes && jsonMatch[side]?.substitutes) {
+                                    liveGame[side].substitutes.forEach(fbSub => {
+                                        let memSub = jsonMatch[side].substitutes.find(s => s.player.id === fbSub.player.id);
+                                        if (memSub && fbSub.player.live_stats) memSub.player.live_stats = fbSub.player.live_stats;
                                     });
                                 }
                             });
 
-                            // --- 4. PERSIST THE ENRICHED DATA ---
-                            ALL_GAMES_DATA[index] = jsonMatch; // <--- CRITICAL FIX: Save the rich record
+                            ALL_GAMES_DATA[index] = jsonMatch;
                         } else {
                             ALL_GAMES_DATA.unshift(liveGame); 
                         }
@@ -1287,27 +1301,39 @@ function syncLiveDOM(liveGamesArray) {
         if (index !== -1) {
             const jsonMatch = ALL_GAMES_DATA[index];
             
-            // --- SURGICAL MERGE ---
             jsonMatch.goals = fbUpdate.goals || jsonMatch.goals;
             jsonMatch.fixture.status = fbUpdate.fixture.status || jsonMatch.fixture.status;
             if (fbUpdate.events && fbUpdate.events.length > 0) jsonMatch.events = fbUpdate.events;
             if (fbUpdate.team_stats && fbUpdate.team_stats.home) jsonMatch.team_stats = fbUpdate.team_stats;
 
             ['homeLineup', 'awayLineup'].forEach(side => {
-                if (fbUpdate[side]?.startXI && jsonMatch[side]?.startXI) {
+                if (fbUpdate[side]?.startXI && jsonMatch[side]) {
                     fbUpdate[side].startXI.forEach(fbSlot => {
-                        const memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
+                        let memSlot = jsonMatch[side].startXI.find(s => s.player.id === fbSlot.player.id);
                         if (memSlot && fbSlot.player.live_stats) {
                             memSlot.player.live_stats = fbSlot.player.live_stats;
+                        } else {
+                            jsonMatch[side].startXI.forEach(slot => {
+                                if (slot.sub_history) {
+                                    let subHistPlayer = slot.sub_history.find(p => p.id === fbSlot.player.id);
+                                    if (subHistPlayer && fbSlot.player.live_stats) {
+                                        subHistPlayer.live_stats = fbSlot.player.live_stats;
+                                    }
+                                }
+                            });
                         }
+                    });
+                }
+                if (fbUpdate[side]?.substitutes && jsonMatch[side]?.substitutes) {
+                    fbUpdate[side].substitutes.forEach(fbSub => {
+                        let memSub = jsonMatch[side].substitutes.find(s => s.player.id === fbSub.player.id);
+                        if (memSub && fbSub.player.live_stats) memSub.player.live_stats = fbSub.player.live_stats;
                     });
                 }
             });
 
-            // Update master memory
             ALL_GAMES_DATA[index] = jsonMatch;
-            const match = jsonMatch; // Reference the rich data for the DOM updates below
-
+            const match = jsonMatch;
             // --- UI SELECTORS (Update using 'match' which now has names AND live events) ---
             const timeEl = document.getElementById(`time-${fixId}`);
             const scoreEl = document.getElementById(`score-${fixId}`);
