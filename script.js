@@ -1133,6 +1133,12 @@ async function init() {
                     });
                 }
 
+                // --- THE RESTORED LEAGUE FILTER ---
+                if (params.league !== 'top') {
+                    const targetId = SUPPORTED_LEAGUES[params.league].id;
+                    liveGamesArray = liveGamesArray.filter(g => g.league.id === targetId);
+                }
+
                 console.log("⚡ Firebase Update Received!", liveGamesArray.length, "relevant games active.");
 
                 let needsFullRender = isFirstLoad;
