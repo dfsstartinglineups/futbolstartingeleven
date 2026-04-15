@@ -1079,9 +1079,15 @@ async function init() {
     container.innerHTML = `<div class="col-12 text-center mt-5 pt-5"><div class="spinner-border text-success" role="status"></div><p class="mt-3 text-muted fw-bold">Loading Pitch Data...</p></div>`;
     
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    
     const yesterdayDate = new Date();
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
     const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+
+    // --- NEW: Add Tomorrow to handle late-night crossover viewing ---
+    const tomorrowDate = new Date();
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+    const tomorrowStr = tomorrowDate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
     ALL_GAMES_DATA = await fetchMatchesData(params);
     if (!ALL_GAMES_DATA) ALL_GAMES_DATA = [];
@@ -1092,7 +1098,8 @@ async function init() {
         handleHashNavigation();
     }
 
-    if (params.date === todayStr || params.date === yesterdayStr) {
+    // --- FIX: Allow Firebase to listen on Today, Yesterday, AND Tomorrow ---
+    if (params.date === todayStr || params.date === yesterdayStr || params.date === tomorrowStr) {
         console.log("📡 Connecting to Firebase Realtime Stream...");
         const liveRef = db.ref('futbol_live_games');
         
@@ -1104,17 +1111,23 @@ async function init() {
                 
                 if (params.date === todayStr) {
                     liveGamesArray = liveGamesArray.filter(g => {
-                        const gDate = g.fixture.date.split('T')[0];
-                        const isActiveYesterday = (gDate === yesterdayStr && !['FT', 'AET', 'PEN'].includes(g.fixture.status.short));
-                        return gDate === todayStr || isActiveYesterday;
+                        // FIX: Convert raw UTC to EST before comparing
+                        const gDateEST = new Date(g.fixture.date).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+                        const isActiveYesterday = (gDateEST === yesterdayStr && !['FT', 'AET', 'PEN'].includes(g.fixture.status.short));
+                        return gDateEST === todayStr || isActiveYesterday;
                     });
                 } else if (params.date === yesterdayStr) {
-                    liveGamesArray = liveGamesArray.filter(g => g.fixture.date.split('T')[0] === yesterdayStr);
-                }
-
-                if (params.league !== 'top') {
-                    const targetId = SUPPORTED_LEAGUES[params.league].id;
-                    liveGamesArray = liveGamesArray.filter(g => g.league.id === targetId);
+                    liveGamesArray = liveGamesArray.filter(g => {
+                        // FIX: Convert raw UTC to EST before comparing
+                        const gDateEST = new Date(g.fixture.date).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+                        return gDateEST === yesterdayStr;
+                    });
+                } else if (params.date === tomorrowStr) {
+                    liveGamesArray = liveGamesArray.filter(g => {
+                        // FIX: Convert raw UTC to EST before comparing
+                        const gDateEST = new Date(g.fixture.date).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+                        return gDateEST === tomorrowStr;
+                    });
                 }
 
                 console.log("⚡ Firebase Update Received!", liveGamesArray.length, "relevant games active.");
