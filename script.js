@@ -1114,7 +1114,10 @@ async function init() {
                         // FIX: Convert raw UTC to EST before comparing
                         const gDateEST = new Date(g.fixture.date).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
                         const isActiveYesterday = (gDateEST === yesterdayStr && !['FT', 'AET', 'PEN'].includes(g.fixture.status.short));
-                        return gDateEST === todayStr || isActiveYesterday;
+                        const isCrossoverTomorrow = (gDateEST === tomorrowStr);
+                        
+                        // We must accept Today, active Yesterday games, AND incoming crossover games
+                        return gDateEST === todayStr || isActiveYesterday || isCrossoverTomorrow;
                     });
                 } else if (params.date === yesterdayStr) {
                     liveGamesArray = liveGamesArray.filter(g => {
