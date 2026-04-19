@@ -196,12 +196,20 @@ def main(local_memory):
         for base_game in daily_games:
             fix_id = str(base_game.get('fixture', {}).get('id', ''))
             
-            # 🛡️ Catch games mysteriously missing from the API feed
+            # 🛡️ Catch games mysteriously missing from the API feed (The Vanishing Game Catch)
             if not fix_id or fix_id not in live_master_map:
                 base_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
                 if base_status not in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']:
-                    suspicious_pending_game = True 
-                continue
+                    print(f"👻 [{fix_id}] Missing from live API schedule! Polling directly by ID...")
+                    fallback = fetch_api(f"fixtures?id={fix_id}")
+                    if fallback and fallback.get("response"):
+                        live_master_map[fix_id] = fallback["response"][0]
+                        suspicious_pending_game = True # Keep safety cap active just in case
+                    else:
+                        suspicious_pending_game = True 
+                        continue
+                else:
+                    continue
             
             latest_data = live_master_map[fix_id]
             status = latest_data.get('fixture', {}).get('status', {}).get('short', '')
