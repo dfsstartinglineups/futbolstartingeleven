@@ -50,7 +50,17 @@ def fetch_api(endpoint):
     try:
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        
+        # --- NEW: Catch hidden API-level errors (like Rate Limits) ---
+        api_errors = data.get("errors")
+        if api_errors:
+            if isinstance(api_errors, dict) and len(api_errors) > 0:
+                print(f"   🚨 API ERROR on {endpoint}: {api_errors}")
+            elif isinstance(api_errors, list) and len(api_errors) > 0:
+                print(f"   🚨 API ERROR on {endpoint}: {api_errors}")
+                
+        return data
     except Exception as e:
         print(f"⚠️ API Fetch Failed ({endpoint}): {e}")
         return None
@@ -421,21 +431,26 @@ def main(local_memory):
                     for p in tp.get("players", []):
                         p_id = p.get("player", {}).get("id")
                         if not p_id: continue
-                        p_stats = p.get("statistics", [{}])[0]
+                        
+                        # --- THE FIX: Safe Array Extraction ---
+                        stats_list = p.get("statistics") or []
+                        p_stats = stats_list[0] if len(stats_list) > 0 else {}
+                        
+                        # --- THE FIX: Safe Dictionary Extraction ---
                         live_player_map[str(p_id)] = {
-                            "goals": p_stats.get("goals", {}).get("total") or 0,
-                            "assists": p_stats.get("goals", {}).get("assists") or 0,
-                            "total_shots": p_stats.get("shots", {}).get("total") or 0,
-                            "shots_on_target": p_stats.get("shots", {}).get("on") or 0,
-                            "passes": p_stats.get("passes", {}).get("total") or 0,
-                            "key_passes": p_stats.get("passes", {}).get("key") or 0,
-                            "tackles": p_stats.get("tackles", {}).get("total") or 0,
-                            "interceptions": p_stats.get("tackles", {}).get("interceptions") or 0,
-                            "saves": p_stats.get("goals", {}).get("saves") or 0,
-                            "conceded": p_stats.get("goals", {}).get("conceded") or 0,
-                            "yellow_cards": p_stats.get("cards", {}).get("yellow") or 0,
-                            "red_cards": p_stats.get("cards", {}).get("red") or 0,
-                            "rating": p_stats.get("games", {}).get("rating") or "N/A"
+                            "goals": (p_stats.get("goals") or {}).get("total") or 0,
+                            "assists": (p_stats.get("goals") or {}).get("assists") or 0,
+                            "total_shots": (p_stats.get("shots") or {}).get("total") or 0,
+                            "shots_on_target": (p_stats.get("shots") or {}).get("on") or 0,
+                            "passes": (p_stats.get("passes") or {}).get("total") or 0,
+                            "key_passes": (p_stats.get("passes") or {}).get("key") or 0,
+                            "tackles": (p_stats.get("tackles") or {}).get("total") or 0,
+                            "interceptions": (p_stats.get("tackles") or {}).get("interceptions") or 0,
+                            "saves": (p_stats.get("goals") or {}).get("saves") or 0,
+                            "conceded": (p_stats.get("goals") or {}).get("conceded") or 0,
+                            "yellow_cards": (p_stats.get("cards") or {}).get("yellow") or 0,
+                            "red_cards": (p_stats.get("cards") or {}).get("red") or 0,
+                            "rating": (p_stats.get("games") or {}).get("rating") or "N/A"
                         }
 
                 # Attach and Merge Stats
