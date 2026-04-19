@@ -118,7 +118,18 @@ def fetch_data(endpoint):
     req.add_header("x-apisports-key", API_KEY)
     try:
         with urllib.request.urlopen(req) as response:
-            return json.loads(response.read().decode())
+            data = json.loads(response.read().decode())
+            
+            # --- NEW: Catch hidden API-level errors (like Rate Limits) ---
+            api_errors = data.get("errors")
+            if api_errors:
+                # API-Football errors can be formatted as a dict or a list
+                if isinstance(api_errors, dict) and len(api_errors) > 0:
+                    print(f"   🚨 API ERROR on {endpoint}: {api_errors}")
+                elif isinstance(api_errors, list) and len(api_errors) > 0:
+                    print(f"   🚨 API ERROR on {endpoint}: {api_errors}")
+                    
+            return data
     except Exception as e:
         print(f"Failed to fetch {endpoint}: {e}")
         return None
