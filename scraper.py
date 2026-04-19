@@ -838,20 +838,30 @@ def process_date(target_date, force_master_sync=False):
             if needs_lineup:
                 game["last_lineup_check"] = now.isoformat() # 🔒 Lock it for 5 minutes
                 
+                print(f"[{fixture_id}] Polling API for Lineups (T-{int(time_to_kickoff_minutes)} mins)...")
                 lineups_data = fetch_lineups(fixture_id)
+                
                 if lineups_data and lineups_data.get("response") and len(lineups_data["response"]) >= 2:
                     
-                    # --- SAFETY LOCK: Prevent API glitches from wiping lineups ---
-                    h_start = lineups_data["response"][0].get("startXI", [])
-                    a_start = lineups_data["response"][1].get("startXI", [])
+                    # 1. Safely identify Home and Away (API does not guarantee array order!)
+                    home_id = game["teams"]["home"]["id"]
+                    raw_home = next((l for l in lineups_data["response"] if l.get("team", {}).get("id") == home_id), None)
+                    raw_away = next((l for l in lineups_data["response"] if l.get("team", {}).get("id") != home_id), None)
                     
-                    if len(h_start) > 0 and len(a_start) > 0:
-                        print(f"[{fixture_id}] Lineup found at T-{int(time_to_kickoff_minutes)} mins!")
-                        season = game['league']['season']
-                        enriched = inject_player_stats(lineups_data["response"], season)
-                        game['homeLineup'], game['awayLineup'] = enriched[0], enriched[1]
-                    else:
-                        print(f"[{fixture_id}] API returned empty startXI arrays. Ignoring glitch to protect memory.")
+                    if raw_home and raw_away:
+                        # 2. Use 'or []' to prevent crashes if the API temporarily sends null
+                        h_start = raw_home.get("startXI") or []
+                        a_start = raw_away.get("startXI") or []
+                        
+                        if len(h_start) > 0 and len(a_start) > 0:
+                            print(f"   ✅ Lineup found at T-{int(time_to_kickoff_minutes)} mins!")
+                            season = game['league']['season']
+                            enriched = inject_player_stats([raw_home, raw_away], season)
+                            game['homeLineup'], game['awayLineup'] = enriched[0], enriched[1]
+                        else:
+                            print(f"   ⚠️ API returned empty arrays. Ignoring glitch to protect memory.")
+                else:
+                    print(f"   ⏳ API-Football has not published the official match sheet yet. Retrying in 5 mins.")
                 
                 # Mark late refreshes as complete
                 if time_to_kickoff_minutes <= 15: game["refreshed_15m"] = True
