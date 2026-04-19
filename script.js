@@ -759,8 +759,9 @@ function getInjuriesHtml(data) {
         return '';
     }
     
-    const cleanHomeInj = homeInjuries.map(n => shortenPlayerName(n));
-    const cleanAwayInj = awayInjuries.map(n => shortenPlayerName(n));
+    // --- FIX: Wrap the mapped arrays in [...new Set()] to wipe out duplicates ---
+    const cleanHomeInj = [...new Set(homeInjuries.map(n => shortenPlayerName(n)))];
+    const cleanAwayInj = [...new Set(awayInjuries.map(n => shortenPlayerName(n)))];
     
     const hInj = cleanHomeInj.join(', ') || 'None';
     const aInj = cleanAwayInj.join(', ') || 'None';
