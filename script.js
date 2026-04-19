@@ -389,6 +389,8 @@ function getTimeBadgeHtml(data) {
 
     if (isDelayed) {
         badge = `<span class="badge bg-danger text-white shadow-sm border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
+    } else if (status === 'INT') {
+        badge = `<span class="badge bg-warning text-dark shadow-sm border px-2 py-1" style="font-size: 0.75rem;" title="Match Interrupted">INT</span>`;
     } else if (isStuck) {
         badge = `<span class="badge bg-warning text-dark shadow-sm border px-2 py-1" style="font-size: 0.70rem;" title="Delayed or awaiting kickoff">DEL</span>`;
     } else if (!isPreGame && !isFinished && !data.isFallback) {
