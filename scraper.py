@@ -851,6 +851,9 @@ def process_date(target_date, force_master_sync=False):
                 
                 print(f"[{fixture_id}] Polling API for Lineups (T-{int(time_to_kickoff_minutes)} mins)...")
                 lineups_data = fetch_lineups(fixture_id)
+
+                # --- NEW: Dump the raw payload to the terminal ---
+                print(f"   RAW API PAYLOAD: {lineups_data}")
                 
                 if lineups_data and lineups_data.get("response") and len(lineups_data["response"]) >= 2:
                     
