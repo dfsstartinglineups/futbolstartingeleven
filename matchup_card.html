@@ -200,34 +200,32 @@
         .player-photo { width: 100%; height: 100%; object-fit: cover; }
         .fallback-initials { font-size: 32px; font-weight: bold; color: #adb5bd; }
 
-        /* INCREASED SIZE: 34px -> 38px */
+        /* REDUCED SIZE: 38px -> 28px to prevent row overlap */
         .player-number {
             position: absolute;
-            top: -5px; 
+            top: 0px; /* Lowered from -5px to tuck it further away from the row above */
             right: 0px; 
             background-color: #111;
             color: white;
             border: 2px solid var(--node-color);
-            width: 38px; 
-            height: 38px; 
+            width: 28px; /* SHRUNK from 38px */
+            height: 28px; /* SHRUNK from 38px */
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px; 
+            font-size: 14px; /* SHRUNK from 20px */
             font-weight: bold;
             z-index: 4;
         }
 
         .player-nameplate {
-            /* Adjusted margin to overlap the larger circle correctly */
-            margin-top: -14px; 
+            margin-top: -10px; /* Slightly adjusted to keep it locked to the photo */
             background: rgba(0, 0, 0, 0.9);
             border: 1px solid rgba(255,255,255,0.3);
-            padding: 5px 12px; 
-            border-radius: 8px;
-            /* REDUCED slightly to fit full names cleanly */
-            font-size: 14px; 
+            padding: 2px 6px; /* SHAVED DOWN from 5px 12px for minimal black border */
+            border-radius: 6px; /* Slightly tighter curve to match the smaller padding */
+            font-size: 17px; /* INCREASED from 14px for better readability */
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
