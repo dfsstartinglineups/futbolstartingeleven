@@ -193,6 +193,14 @@ def main(local_memory):
             if f_id:
                 live_master_map[str(f_id)] = g
 
+        # 🛡️ THE CACHE BUSTER: Overwrite stale crossover games with true real-time clocks
+        live_data = fetch_api("fixtures?live=all")
+        if live_data and live_data.get("response"):
+            for g in live_data["response"]:
+                f_id = g.get('fixture', {}).get('id')
+                if f_id:
+                    live_master_map[str(f_id)] = g
+
         for base_game in daily_games:
             fix_id = str(base_game.get('fixture', {}).get('id', ''))
             
