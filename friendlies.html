@@ -37,9 +37,10 @@
     <link rel="canonical" id="canonical-url" href="https://futbolstartingeleven.com/friendlies.html">
 
     <script>
+        const params = new URLSearchParams(window.location.search);
         // Force the URL parameters so script.js knows to load the friendlies
         if (!window.location.search.includes('league=friendlies')) {
-            window.history.replaceState(null, null, "https://futbolstartingeleven.com/?league=friendlies" + window.location.hash);
+            window.history.replaceState(null, null, "https://futbolstartingeleven.com/?league=friendlies&"+params + window.location.hash);
         }
     </script>
 
