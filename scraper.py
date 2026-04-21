@@ -1159,8 +1159,44 @@ def main():
 
     if needs_daily_maintenance:
         print("\n🧹 --- NEW DAY DETECTED: RUNNING DAILY MAINTENANCE (SYNCING NEXT 30 DAYS) --- 🧹")
+
+        # --- NEW: AGGREGATE SCORE SWEEP ---
+        print("   🔍 Sweeping future files for missing 1st leg aggregate scores...")
+        today_str = now_est.strftime("%Y-%m-%d")
+        
+        for filename in os.listdir(DATA_DIR):
+            if filename.startswith("games_") and filename.endswith(".json"):
+                file_date_str = filename.replace("games_", "").replace(".json", "")
+                
+                # Only sweep today and future files to save I/O
+                if file_date_str >= today_str:
+                    filepath = os.path.join(DATA_DIR, filename)
+                    try:
+                        with open(filepath, 'r') as f:
+                            day_games = json.load(f)
+                        
+                        file_updated = False
+                        for g in day_games:
+                            if g.get("first_leg_goals") is None:
+                                league_id = g.get('league', {}).get('id')
+                                round_info = str(g.get('league', {}).get('round', ''))
+                                
+                                if league_id in AGGREGATE_ROUNDS and any(r.lower() in round_info.lower() for r in AGGREGATE_ROUNDS[league_id]):
+                                    h_id, a_id = str(g['teams']['home']['id']), str(g['teams']['away']['id'])
+                                    print(f"      -> Checking missing 1st Leg for: {g['teams']['home']['name']} vs {g['teams']['away']['name']} ({file_date_str})...")
+                                    score = fetch_first_leg_score(league_id, g['league']['season'], round_info, h_id, a_id, g['fixture']['timestamp'])
+                                    
+                                    if score:
+                                        g["first_leg_goals"] = score
+                                        file_updated = True
+                                        
+                        if file_updated:
+                            with open(filepath, 'w') as f:
+                                json.dump(day_games, f, indent=4)
+                    except Exception as e:
+                        print(f"Error checking aggregates in {filename}: {e}")
         # Queue up days 2 through 30 (Today and Tomorrow are already handled)
-        for i in range(2, 31):
+        for i in range(1, 31):
             maintenance_date = now_est + timedelta(days=i)
             if maintenance_date not in dates_to_process:
                 dates_to_process.append(maintenance_date)
