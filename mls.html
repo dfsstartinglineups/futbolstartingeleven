@@ -37,9 +37,10 @@
     <link rel="canonical" id="canonical-url" href="https://futbolstartingeleven.com/mls.html">
 
     <script>
+        const params = new URLSearchParams(window.location.search);
         // Force the URL parameters so script.js knows to load the friendlies
         if (!window.location.search.includes('league=mls')) {
-            window.history.replaceState(null, null, "https://futbolstartingeleven.com/?league=mls" + window.location.hash);
+            window.history.replaceState(null, null, "https://futbolstartingeleven.com/?league=mls&"+params + window.location.hash);
         }
     </script>
 
