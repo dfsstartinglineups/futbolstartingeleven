@@ -37,9 +37,10 @@
     <link rel="canonical" id="canonical-url" href="https://futbolstartingeleven.com/bundesliga.html">
 
     <script>
+        const params = new URLSearchParams(window.location.search);
         // Force the URL parameters so script.js knows to load the friendlies
         if (!window.location.search.includes('league=bundesliga')) {
-            window.history.replaceState(null, null, "https://futbolstartingeleven.com/?league=bundesliga" + window.location.hash);
+            window.history.replaceState(null, null, "https://futbolstartingeleven.com/?league=bundesliga&"+params + window.location.hash);
         }
     </script>
 
