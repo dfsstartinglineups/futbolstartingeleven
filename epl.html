@@ -37,9 +37,10 @@
     <link rel="canonical" id="canonical-url" href="https://futbolstartingeleven.com/epl.html">
 
     <script>
+        const params = new URLSearchParams(window.location.search);
         // Force the URL parameters so script.js knows to load the friendlies
         if (!window.location.search.includes('league=epl')) {
-            window.history.replaceState(null, null, "https://futbolstartingeleven.com/?league=epl" + window.location.hash);
+            window.history.replaceState(null, null, "https://futbolstartingeleven.com/?league=epl&"+params + window.location.hash);
         }
     </script>
 
