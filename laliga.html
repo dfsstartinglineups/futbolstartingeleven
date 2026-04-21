@@ -37,9 +37,10 @@
     <link rel="canonical" id="canonical-url" href="https://futbolstartingeleven.com/laliga.html">
 
     <script>
+        const params = new URLSearchParams(window.location.search);
         // Force the URL parameters so script.js knows to load the friendlies
         if (!window.location.search.includes('league=laliga')) {
-            window.history.replaceState(null, null, "https://futbolstartingeleven.com/?league=laliga" + window.location.hash);
+            window.history.replaceState(null, null, "https://futbolstartingeleven.com/?league=laliga&"+params + window.location.hash);
         }
     </script>
 
