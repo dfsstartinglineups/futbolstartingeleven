@@ -11981,7 +11981,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 7,
+                "elapsed": 9,
                 "extra": null
             }
         },
@@ -14933,7 +14933,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 7,
+                "elapsed": 9,
                 "extra": null
             }
         },
@@ -17189,7 +17189,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 7,
+                "elapsed": 9,
                 "extra": null
             }
         },
@@ -19999,7 +19999,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 8,
+                "elapsed": 9,
                 "extra": null
             }
         },
@@ -22757,7 +22757,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 8,
+                "elapsed": 10,
                 "extra": null
             }
         },
@@ -36347,7 +36347,7 @@
                         "id": 704,
                         "name": "Alfons Amade",
                         "number": 14,
-                        "pos": "M",
+                        "pos": "D",
                         "grid": "3:2",
                         "photo": "https://media.api-sports.io/football/players/704.png",
                         "age": 26,
@@ -36430,8 +36430,19 @@
                                     "rating": "6.47"
                                 }
                             }
+                        },
+                        "isSubbedIn": true,
+                        "subMinute": "81"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 488102,
+                            "name": "John Tod",
+                            "number": 31,
+                            "pos": "D",
+                            "grid": null
                         }
-                    }
+                    ]
                 },
                 {
                     "player": {
@@ -36484,18 +36495,40 @@
                         "id": 44880,
                         "name": "Callumn Morrison",
                         "number": 38,
-                        "pos": "F",
-                        "grid": "4:3"
-                    }
+                        "pos": "M",
+                        "grid": "4:3",
+                        "isSubbedIn": true,
+                        "subMinute": "81"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 321857,
+                            "name": "Josh Cooper",
+                            "number": 33,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
                         "id": 44906,
                         "name": "Chris Kane",
                         "number": 20,
-                        "pos": "F",
-                        "grid": "4:2"
-                    }
+                        "pos": "M",
+                        "grid": "4:2",
+                        "isSubbedIn": true,
+                        "subMinute": "88"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 90504,
+                            "name": "Tashan Oakley-Boothe",
+                            "number": 35,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -36565,28 +36598,10 @@
                 },
                 {
                     "player": {
-                        "id": 488102,
-                        "name": "John Tod",
-                        "number": 31,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 98008,
                         "name": "Kyle Benedictus",
                         "number": 4,
                         "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 321857,
-                        "name": "Josh Cooper",
-                        "number": 33,
-                        "pos": "M",
                         "grid": null
                     }
                 },
@@ -36604,15 +36619,6 @@
                         "id": 390763,
                         "name": "Keith Bray",
                         "number": 22,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 90504,
-                        "name": "Tashan Oakley-Boothe",
-                        "number": 35,
                         "pos": "M",
                         "grid": null
                     }
@@ -36942,13 +36948,132 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "7",
+                "team_id": 1388,
+                "player": "C. Kane",
+                "player_id": 44906,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "A. Tod"
+            },
+            {
+                "time": "63",
+                "team_id": 4249,
+                "player": "R. Flynn",
+                "player_id": 45008,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "66",
+                "team_id": 4249,
+                "player": "R. Dow",
+                "player_id": 539132,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "67",
+                "team_id": 1388,
+                "player": "A. Amade",
+                "player_id": 704,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "71",
+                "team_id": 4249,
+                "player": "T. O'Brien",
+                "player_id": 539131,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "72",
+                "team_id": 4249,
+                "player": "R. Dow",
+                "player_id": 539132,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "S. Robinson",
+                "player_out": "S. Robinson",
+                "player_out_id": 44951
+            },
+            {
+                "time": "79",
+                "team_id": 1388,
+                "player": "R. Fraser",
+                "player_id": 327533,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "81",
+                "team_id": 1388,
+                "player": "C. Morrison",
+                "player_id": 44880,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "J. Cooper",
+                "player_out": "J. Cooper",
+                "player_out_id": 321857
+            },
+            {
+                "time": "81",
+                "team_id": 1388,
+                "player": "A. Amade",
+                "player_id": 704,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "J. Tod",
+                "player_out": "J. Tod",
+                "player_out_id": 488102
+            },
+            {
+                "time": "88",
+                "team_id": 1388,
+                "player": "C. Kane",
+                "player_id": 44906,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "T. Oakley-Boothe",
+                "player_out": "T. Oakley-Boothe",
+                "player_out_id": 90504
+            }
+        ],
         "match_ended_at": "2026-05-05T20:39:34.174241+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-05-05T19:41:36.526837+00:00",
         "final_odds_check": true,
         "refreshed_15m": true,
-        "refreshed_5m": true
+        "refreshed_5m": true,
+        "team_stats": {
+            "home": {
+                "possession": 50,
+                "total_shots": 0,
+                "shots_on_target": 5,
+                "corners": 6,
+                "fouls": 11,
+                "yellow_cards": 2,
+                "red_cards": 0
+            },
+            "away": {
+                "possession": 50,
+                "total_shots": 0,
+                "shots_on_target": 0,
+                "corners": 0,
+                "fouls": 11,
+                "yellow_cards": 3,
+                "red_cards": 0
+            }
+        }
     }
 ]
