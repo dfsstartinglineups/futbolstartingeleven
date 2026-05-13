@@ -52,7 +52,7 @@ def fetch_api(endpoint):
         response.raise_for_status()
         data = response.json()
         
-        # --- NEW: Catch hidden API-level errors (like Rate Limits) ---
+        # --- Catch hidden API-level errors (like Rate Limits) ---
         api_errors = data.get("errors")
         if api_errors:
             if isinstance(api_errors, dict) and len(api_errors) > 0:
@@ -123,7 +123,8 @@ def main(local_memory):
         
         all_done = True
         for g in check_games:
-            status = g.get('fixture', {}).get('status', {}).get('short', '')
+            # Bulletproof status check
+            status = ((g.get('fixture') or {}).get('status') or {}).get('short', '')
             synced = g.get('post_game_sync', False)
             
             # If it's a finished game, it MUST be synced. 
@@ -150,7 +151,7 @@ def main(local_memory):
     next_upcoming_ts = None  
     missing_schedule = False
     api_failure = False 
-    suspicious_pending_game = False # 👈 NEW: Tracks API ghosts and TBDs
+    suspicious_pending_game = False
 
     # =========================================================
     # 🧠 THE LOCAL MEMORY GATEKEEPER
@@ -167,8 +168,6 @@ def main(local_memory):
                 print(f"⚠️ Failed to fetch memory from Firebase: {e}")
     else:
         old_live_data = local_memory
-        # Optional: Uncomment the print below if you want to see the local memory engaging in logs
-        # print(f"🧠 Using fast local memory (Tracking {len(old_live_data)} games)...")
 
     for target_date in dates_to_process:
         current_date_str = target_date.strftime("%Y-%m-%d")
@@ -193,13 +192,13 @@ def main(local_memory):
 
         fixtures_data = fetch_api(f"fixtures?date={current_date_str}&timezone=America/New_York")
         if not fixtures_data or not fixtures_data.get("response"):
-            api_failure = True # 👈 TRIP THE FLAG
+            api_failure = True
             continue
             
         # 🛡️ Crash Protection: Ensure every response item has the expected structure
         live_master_map = {}
         for g in fixtures_data["response"]:
-            f_id = g.get('fixture', {}).get('id')
+            f_id = (g.get('fixture') or {}).get('id')
             if f_id:
                 live_master_map[str(f_id)] = g
 
@@ -207,22 +206,22 @@ def main(local_memory):
         live_data = fetch_api("fixtures?live=all")
         if live_data and live_data.get("response"):
             for g in live_data["response"]:
-                f_id = g.get('fixture', {}).get('id')
+                f_id = (g.get('fixture') or {}).get('id')
                 if f_id:
                     live_master_map[str(f_id)] = g
 
         for base_game in daily_games:
-            fix_id = str(base_game.get('fixture', {}).get('id', ''))
+            fix_id = str((base_game.get('fixture') or {}).get('id', ''))
             
-            # 🛡️ Catch games mysteriously missing from the API feed (The Vanishing Game Catch)
+            # Catch games mysteriously missing from the API feed
             if not fix_id or fix_id not in live_master_map:
-                base_status = base_game.get('fixture', {}).get('status', {}).get('short', '')
+                base_status = ((base_game.get('fixture') or {}).get('status') or {}).get('short', '')
                 if base_status not in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']:
                     print(f"👻 [{fix_id}] Missing from live API schedule! Polling directly by ID...")
                     fallback = fetch_api(f"fixtures?id={fix_id}")
                     if fallback and fallback.get("response"):
                         live_master_map[fix_id] = fallback["response"][0]
-                        suspicious_pending_game = True # Keep safety cap active just in case
+                        suspicious_pending_game = True
                     else:
                         suspicious_pending_game = True 
                         continue
@@ -230,9 +229,9 @@ def main(local_memory):
                     continue
             
             latest_data = live_master_map[fix_id]
-            status = latest_data.get('fixture', {}).get('status', {}).get('short', '')
+            # Bulletproof status extraction
+            status = ((latest_data.get('fixture') or {}).get('status') or {}).get('short', '')
             
-            # 🛡️ Added 'LIVE' to the active array
             is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT', 'LIVE']
             is_finished = status in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']
             
@@ -242,18 +241,18 @@ def main(local_memory):
                 if scraper_has_synced:
                     continue 
                 else:
-                    # 🛡️ THE QUALITY CONTROL AUDIT
                     memory_is_complete = False
                     if fix_id in old_live_data:
                         mem_game = old_live_data[fix_id]
-                        mem_status = mem_game.get('fixture', {}).get('status', {}).get('short', '')
+                        mem_status = ((mem_game.get('fixture') or {}).get('status') or {}).get('short', '')
                         has_events = "events" in mem_game
                         has_team_stats = "team_stats" in mem_game and "home" in mem_game["team_stats"]
                         
                         has_player_stats = False
                         home_start = mem_game.get("homeLineup", {}).get("startXI", [])
                         if home_start and len(home_start) > 0:
-                            if "live_stats" in home_start[0].get("player", {}):
+                            # Bulletproof live_stats check
+                            if "live_stats" in (home_start[0].get("player") or {}):
                                 has_player_stats = True
                             
                         if has_events and has_team_stats and has_player_stats and mem_status in ['FT', 'AET', 'PEN']:
@@ -270,15 +269,13 @@ def main(local_memory):
                         print(f"🕵️ [{fix_id}] FT Stats incomplete. Fetching from API...")
 
             if not is_playing and not is_finished:
-                g_ts = base_game.get('fixture', {}).get('timestamp', 0)
+                g_ts = (base_game.get('fixture') or {}).get('timestamp', 0)
                 
-                # 🛡️ Catch games stuck in TBD or missing timestamps
                 if status in ['TBD', 'AWD', 'WO'] or g_ts == 0:
                     suspicious_pending_game = True
                     continue
                     
                 if g_ts > 0 and g_ts <= now_ts:
-                    # If it's been > 4 hours past kickoff and still "Not Started", the API is stuck. Let it go.
                     if (now_ts - g_ts) > 14400:
                         continue
                     has_live_games = True
@@ -297,18 +294,18 @@ def main(local_memory):
                 all_new_live_data[fix_id] = live_game_obj
                 continue
             
-            print(f"⚽ Processing Live Match: {latest_data['teams']['home']['name']} vs {latest_data['teams']['away']['name']} ({status})")
+            home_name = ((latest_data.get('teams') or {}).get('home') or {}).get('name', 'Home')
+            away_name = ((latest_data.get('teams') or {}).get('away') or {}).get('name', 'Away')
+            print(f"⚽ Processing Live Match: {home_name} vs {away_name} ({status})")
             
-            # Use memory clone to protect deep stats
             if fix_id in old_live_data and "homeLineup" in old_live_data[fix_id]:
                 live_game_obj = copy.deepcopy(old_live_data[fix_id])
             else:
                 live_game_obj = copy.deepcopy(base_game)
                 
-            # 🛑 THE FIX: FIREBASE "UNDEFINED" CRASH PROTECTION
-            raw_status = latest_data.get('fixture', {}).get('status', {})
+            # Bulletproof raw_status extraction
+            raw_status = (latest_data.get('fixture') or {}).get('status') or {}
             
-            # If API-Football drops the elapsed time, assign a logical fallback based on the half
             if raw_status.get('elapsed') is None:
                 short_s = raw_status.get('short', '')
                 if short_s in ['1H', 'HT']:
@@ -318,7 +315,7 @@ def main(local_memory):
                 elif short_s == 'ET':
                     raw_status['elapsed'] = 120
                 else:
-                    raw_status['elapsed'] = 0 # Absolute fallback so it never hits Firebase as None
+                    raw_status['elapsed'] = 0 
                     
             live_game_obj['fixture']['status'] = raw_status
             live_game_obj['goals'] = latest_data.get('goals')
@@ -331,22 +328,23 @@ def main(local_memory):
                     if ev.get("type") in ["Goal", "Card", "subst"]:
                         if ev.get("type") == "Goal" and ev.get("detail") == "Missed Penalty": continue
                         
-                        elapsed = ev.get("time", {}).get("elapsed", 0)
-                        extra = ev.get("time", {}).get("extra")
+                        # Bulletproof Events Extraction
+                        elapsed = (ev.get("time") or {}).get("elapsed", 0)
+                        extra = (ev.get("time") or {}).get("extra")
                         display_time = f"{elapsed}+{extra}" if extra else str(elapsed)
 
                         event_obj = {
                             "time": display_time,
-                            "team_id": ev.get("team", {}).get("id"),
-                            "player": ev.get("player", {}).get("name"),
-                            "player_id": ev.get("player", {}).get("id"),
+                            "team_id": (ev.get("team") or {}).get("id"),
+                            "player": (ev.get("player") or {}).get("name"),
+                            "player_id": (ev.get("player") or {}).get("id"),
                             "type": ev.get("type"),
                             "detail": ev.get("detail"),
-                            "assist": ev.get("assist", {}).get("name")
+                            "assist": (ev.get("assist") or {}).get("name")
                         }
                         if ev.get("type") == "subst":
-                            event_obj["player_out"] = ev.get("assist", {}).get("name")
-                            event_obj["player_out_id"] = ev.get("assist", {}).get("id")
+                            event_obj["player_out"] = (ev.get("assist") or {}).get("name")
+                            event_obj["player_out_id"] = (ev.get("assist") or {}).get("id")
                         parsed_events.append(event_obj)
                 live_game_obj["events"] = parsed_events
                 
@@ -360,16 +358,16 @@ def main(local_memory):
                             lineup = live_game_obj.get(side)
                             if not lineup: continue
                             
-                            in_is_sub = any(str(s.get("player", {}).get("id")) == player_in_id for s in lineup.get("substitutes", []))
-                            out_is_sub = any(str(s.get("player", {}).get("id")) == player_out_id for s in lineup.get("substitutes", []))
-                            in_is_starter = any(str(s.get("player", {}).get("id")) == player_in_id for s in lineup.get("startXI", []))
-                            out_is_starter = any(str(s.get("player", {}).get("id")) == player_out_id for s in lineup.get("startXI", []))
+                            # Bulletproof Substitute Matchers
+                            in_is_sub = any(str((s.get("player") or {}).get("id")) == player_in_id for s in lineup.get("substitutes", []))
+                            out_is_sub = any(str((s.get("player") or {}).get("id")) == player_out_id for s in lineup.get("substitutes", []))
+                            in_is_starter = any(str((s.get("player") or {}).get("id")) == player_in_id for s in lineup.get("startXI", []))
+                            out_is_starter = any(str((s.get("player") or {}).get("id")) == player_out_id for s in lineup.get("startXI", []))
                             
-                            # API ERROR CORRECTION
                             if in_is_starter and out_is_sub:
                                 try:
-                                    starter_idx = next(i for i, s in enumerate(lineup["startXI"]) if str(s.get("player", {}).get("id")) == player_in_id)
-                                    sub_idx = next(i for i, s in enumerate(lineup["substitutes"]) if str(s.get("player", {}).get("id")) == player_out_id)
+                                    starter_idx = next(i for i, s in enumerate(lineup["startXI"]) if str((s.get("player") or {}).get("id")) == player_in_id)
+                                    sub_idx = next(i for i, s in enumerate(lineup["substitutes"]) if str((s.get("player") or {}).get("id")) == player_out_id)
                                     
                                     temp = lineup["startXI"][starter_idx]
                                     lineup["startXI"][starter_idx] = lineup["substitutes"][sub_idx]
@@ -378,13 +376,12 @@ def main(local_memory):
                                     in_is_sub, out_is_starter = True, True
                                 except StopIteration: pass
                                     
-                            # NORMAL SUBSTITUTION
                             if in_is_sub and out_is_starter:
                                 try:
-                                    incoming_sub = next(s for s in lineup["substitutes"] if str(s.get("player", {}).get("id")) == player_in_id)
+                                    incoming_sub = next(s for s in lineup["substitutes"] if str((s.get("player") or {}).get("id")) == player_in_id)
                                     
                                     for slot in lineup["startXI"]:
-                                        if str(slot.get("player", {}).get("id")) == player_out_id:
+                                        if str((slot.get("player") or {}).get("id")) == player_out_id:
                                             if "sub_history" not in slot:
                                                 slot["sub_history"] = []
                                                 
@@ -395,8 +392,7 @@ def main(local_memory):
                                             slot["player"]["subMinute"] = ev["time"]
                                             slot["player"]["pos"] = slot["sub_history"][0].get("pos", "M")
                                             
-                                            # Remove incoming sub from bench
-                                            lineup["substitutes"] = [s for s in lineup["substitutes"] if str(s.get("player", {}).get("id")) != player_in_id]
+                                            lineup["substitutes"] = [s for s in lineup["substitutes"] if str((s.get("player") or {}).get("id")) != player_in_id]
                                             break
                                 except StopIteration: pass
 
@@ -404,9 +400,12 @@ def main(local_memory):
             stats_data = fetch_api(f"fixtures/statistics?fixture={fix_id}")
             if stats_data and isinstance(stats_data.get("response"), list) and len(stats_data["response"]) > 0:
                 team_stats = {"home": {}, "away": {}}
-                home_id = latest_data.get("teams", {}).get("home", {}).get("id")
+                
+                # Bulletproof Team ID
+                home_id = ((latest_data.get("teams") or {}).get("home") or {}).get("id")
+                
                 for t_stat in stats_data["response"]:
-                    t_id = t_stat.get("team", {}).get("id")
+                    t_id = (t_stat.get("team") or {}).get("id")
                     if not t_id: continue
                     side = "home" if t_id == home_id else "away"
                     parsed_t_stats = {"possession": 50, "total_shots": 0, "shots_on_target": 0, "corners": 0, "fouls": 0, "yellow_cards": 0, "red_cards": 0}
@@ -429,14 +428,12 @@ def main(local_memory):
                 live_player_map = {}
                 for tp in live_players_data["response"]:
                     for p in tp.get("players", []):
-                        p_id = p.get("player", {}).get("id")
+                        p_id = (p.get("player") or {}).get("id")
                         if not p_id: continue
                         
-                        # --- THE FIX: Safe Array Extraction ---
                         stats_list = p.get("statistics") or []
                         p_stats = stats_list[0] if len(stats_list) > 0 else {}
                         
-                        # --- THE FIX: Safe Dictionary Extraction ---
                         live_player_map[str(p_id)] = {
                             "goals": (p_stats.get("goals") or {}).get("total") or 0,
                             "assists": (p_stats.get("goals") or {}).get("assists") or 0,
@@ -453,18 +450,18 @@ def main(local_memory):
                             "rating": (p_stats.get("games") or {}).get("rating") or "N/A"
                         }
 
-                # Attach and Merge Stats
+                # Attach and Merge Stats Safely
                 for side in ["homeLineup", "awayLineup"]:
                     lineup = live_game_obj.get(side)
                     if not lineup: continue
                     for slot in lineup.get("startXI", []):
-                        pid = str(slot.get("player", {}).get("id", ""))
+                        pid = str((slot.get("player") or {}).get("id", ""))
                         if pid in live_player_map: slot["player"]["live_stats"] = live_player_map[pid]
                         for sub_hist in slot.get("sub_history", []):
                             hid = str(sub_hist.get("id", ""))
                             if hid in live_player_map: sub_hist["live_stats"] = live_player_map[hid]
                     for sub in lineup.get("substitutes", []):
-                        sid = str(sub.get("player", {}).get("id", ""))
+                        sid = str((sub.get("player") or {}).get("id", ""))
                         if sid in live_player_map: sub["player"]["live_stats"] = live_player_map[sid]
 
             all_new_live_data[fix_id] = live_game_obj
@@ -476,24 +473,19 @@ def main(local_memory):
         if firebase_admin._apps:
             try:
                 delta_payload = {}
-                
-                # 1. Check for updated or new games
                 for fix_id, game_data in all_new_live_data.items():
                     if fix_id not in old_live_data or old_live_data[fix_id] != game_data:
                         delta_payload[fix_id] = game_data
-                
-                # 2. Check for games that just finished and need to be removed from the live board
                 for fix_id in old_live_data:
                     if fix_id not in all_new_live_data:
-                        delta_payload[fix_id] = None  # Safely deletes the node
+                        delta_payload[fix_id] = None  
                         
-                # 3. Only trigger a push if there are actual changes
                 if delta_payload:
                     safe_delta = inspect_and_sanitize(delta_payload)
                     db.reference('futbol_live_games').update(safe_delta)
                     print(f"🚀 Pushed deltas for {len(delta_payload)} games to Firebase!")
                 else:
-                    pass # Silent skip to save console spam during local memory loops
+                    pass 
                     
             except Exception as e:
                 print(f"⚠️ Failed to push: {e}")
@@ -509,7 +501,6 @@ def main(local_memory):
         print("⚠️ API fetch failed. Target cycle: 60s (Retrying)...")
         return 60, all_new_live_data 
         
-    # 🛡️ THE NEW SAFETY NET: Cap the sleep at 5 minutes if games are trapped in API limbo
     if suspicious_pending_game:
         if next_upcoming_ts:
             sleep_time = max(60, min((next_upcoming_ts - now_ts) - 120, 300))
@@ -533,22 +524,13 @@ def main(local_memory):
 
 if __name__ == "__main__":
     print("⚽ Starting Futbol Live Real-Time Engine...")
-    
-    # Initialize the memory object strictly OUTSIDE the core processing loop
     persisted_memory = None
     
     while True:
         try:
-            # ⏱️ START THE CLOCK
             loop_start_time = time.time()
-            
-            # The memory gets passed in, updated, and passed back out
             target_sleep_sec, persisted_memory = main(persisted_memory)
-            
-            # ⏱️ STOP THE CLOCK
             loop_elapsed = time.time() - loop_start_time
-            
-            # Calculate how much time is left in our target cycle
             actual_sleep = max(0.0, target_sleep_sec - loop_elapsed)
             
             if actual_sleep > 0:
@@ -559,7 +541,5 @@ if __name__ == "__main__":
                 
         except Exception as e:
             print(f"\n❌ Loop crashed: {e}. Restarting in 60s...")
-            # If the script crashes, we wipe the memory so it is forced to 
-            # re-sync with Firebase upon booting back up!
             persisted_memory = None 
             time.sleep(60)
