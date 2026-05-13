@@ -123,15 +123,12 @@ def main(local_memory):
         
         all_done = True
         for g in check_games:
-            # Bulletproof status check
             status = ((g.get('fixture') or {}).get('status') or {}).get('short', '')
             synced = g.get('post_game_sync', False)
             
-            # If it's a finished game, it MUST be synced. 
             if status in ['FT', 'AET', 'PEN'] and not synced:
                 all_done = False
                 break
-            # If it's not finished and not a dead status, it's still pending.
             elif status not in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']:
                 all_done = False
                 break
@@ -195,14 +192,12 @@ def main(local_memory):
             api_failure = True
             continue
             
-        # 🛡️ Crash Protection: Ensure every response item has the expected structure
         live_master_map = {}
         for g in fixtures_data["response"]:
             f_id = (g.get('fixture') or {}).get('id')
             if f_id:
                 live_master_map[str(f_id)] = g
 
-        # 🛡️ THE CACHE BUSTER: Overwrite stale crossover games with true real-time clocks
         live_data = fetch_api("fixtures?live=all")
         if live_data and live_data.get("response"):
             for g in live_data["response"]:
@@ -213,7 +208,6 @@ def main(local_memory):
         for base_game in daily_games:
             fix_id = str((base_game.get('fixture') or {}).get('id', ''))
             
-            # Catch games mysteriously missing from the API feed
             if not fix_id or fix_id not in live_master_map:
                 base_status = ((base_game.get('fixture') or {}).get('status') or {}).get('short', '')
                 if base_status not in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']:
@@ -229,7 +223,6 @@ def main(local_memory):
                     continue
             
             latest_data = live_master_map[fix_id]
-            # Bulletproof status extraction
             status = ((latest_data.get('fixture') or {}).get('status') or {}).get('short', '')
             
             is_playing = status in ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'SUSP', 'INT', 'LIVE']
@@ -249,10 +242,14 @@ def main(local_memory):
                         has_team_stats = "team_stats" in mem_game and "home" in mem_game["team_stats"]
                         
                         has_player_stats = False
-                        home_start = mem_game.get("homeLineup", {}).get("startXI", [])
+                        
+                        # BULLETPROOF: Protects against Explicit Nulls in homeLineup
+                        home_lineup = mem_game.get("homeLineup") or {}
+                        home_start = home_lineup.get("startXI") or []
+                        
                         if home_start and len(home_start) > 0:
-                            # Bulletproof live_stats check
-                            if "live_stats" in (home_start[0].get("player") or {}):
+                            player_data = home_start[0].get("player") or {}
+                            if "live_stats" in player_data:
                                 has_player_stats = True
                             
                         if has_events and has_team_stats and has_player_stats and mem_status in ['FT', 'AET', 'PEN']:
@@ -260,7 +257,9 @@ def main(local_memory):
 
                     if memory_is_complete:
                         live_game_obj = old_live_data[fix_id]
-                        live_game_obj['fixture']['status'] = latest_data['fixture']['status']
+                        if not live_game_obj.get('fixture'):
+                            live_game_obj['fixture'] = {}
+                        live_game_obj['fixture']['status'] = latest_data.get('fixture', {}).get('status', {})
                         live_game_obj['goals'] = latest_data.get('goals', {"home": 0, "away": 0})
                         all_new_live_data[fix_id] = live_game_obj
                         active_games_found += 1 
@@ -288,8 +287,10 @@ def main(local_memory):
             has_live_games = True
 
             if status == 'HT' and fix_id in old_live_data and 'events' in old_live_data[fix_id]:
-                live_game_obj = copy.deepcopy(old_live_data[fix_id]) 
-                live_game_obj['fixture']['status'] = latest_data['fixture']['status']
+                live_game_obj = copy.deepcopy(old_live_data[fix_id])
+                if not live_game_obj.get('fixture'):
+                    live_game_obj['fixture'] = {}
+                live_game_obj['fixture']['status'] = latest_data.get('fixture', {}).get('status', {})
                 live_game_obj['goals'] = latest_data.get('goals', {"home": 0, "away": 0})
                 all_new_live_data[fix_id] = live_game_obj
                 continue
@@ -303,7 +304,6 @@ def main(local_memory):
             else:
                 live_game_obj = copy.deepcopy(base_game)
                 
-            # Bulletproof raw_status extraction
             raw_status = (latest_data.get('fixture') or {}).get('status') or {}
             
             if raw_status.get('elapsed') is None:
@@ -317,6 +317,8 @@ def main(local_memory):
                 else:
                     raw_status['elapsed'] = 0 
                     
+            if not live_game_obj.get('fixture'):
+                live_game_obj['fixture'] = {}
             live_game_obj['fixture']['status'] = raw_status
             live_game_obj['goals'] = latest_data.get('goals')
 
@@ -324,11 +326,11 @@ def main(local_memory):
             events_data = fetch_api(f"fixtures/events?fixture={fix_id}")
             if events_data and isinstance(events_data.get("response"), list) and len(events_data["response"]) > 0:
                 parsed_events = []
-                for ev in events_data["response"]:
+                for ev in (events_data.get("response") or []):
+                    if not ev: continue
                     if ev.get("type") in ["Goal", "Card", "subst"]:
                         if ev.get("type") == "Goal" and ev.get("detail") == "Missed Penalty": continue
                         
-                        # Bulletproof Events Extraction
                         elapsed = (ev.get("time") or {}).get("elapsed", 0)
                         extra = (ev.get("time") or {}).get("extra")
                         display_time = f"{elapsed}+{extra}" if extra else str(elapsed)
@@ -358,11 +360,10 @@ def main(local_memory):
                             lineup = live_game_obj.get(side)
                             if not lineup: continue
                             
-                            # Bulletproof Substitute Matchers
-                            in_is_sub = any(str((s.get("player") or {}).get("id")) == player_in_id for s in lineup.get("substitutes", []))
-                            out_is_sub = any(str((s.get("player") or {}).get("id")) == player_out_id for s in lineup.get("substitutes", []))
-                            in_is_starter = any(str((s.get("player") or {}).get("id")) == player_in_id for s in lineup.get("startXI", []))
-                            out_is_starter = any(str((s.get("player") or {}).get("id")) == player_out_id for s in lineup.get("startXI", []))
+                            in_is_sub = any(str((s.get("player") or {}).get("id")) == player_in_id for s in (lineup.get("substitutes") or []))
+                            out_is_sub = any(str((s.get("player") or {}).get("id")) == player_out_id for s in (lineup.get("substitutes") or []))
+                            in_is_starter = any(str((s.get("player") or {}).get("id")) == player_in_id for s in (lineup.get("startXI") or []))
+                            out_is_starter = any(str((s.get("player") or {}).get("id")) == player_out_id for s in (lineup.get("startXI") or []))
                             
                             if in_is_starter and out_is_sub:
                                 try:
@@ -380,17 +381,18 @@ def main(local_memory):
                                 try:
                                     incoming_sub = next(s for s in lineup["substitutes"] if str((s.get("player") or {}).get("id")) == player_in_id)
                                     
-                                    for slot in lineup["startXI"]:
+                                    for slot in (lineup.get("startXI") or []):
+                                        if not slot: continue
                                         if str((slot.get("player") or {}).get("id")) == player_out_id:
                                             if "sub_history" not in slot:
                                                 slot["sub_history"] = []
                                                 
-                                            slot["sub_history"].insert(0, slot["player"].copy())
+                                            slot["sub_history"].insert(0, slot.get("player", {}).copy())
                                             
-                                            slot["player"] = incoming_sub["player"]
+                                            slot["player"] = incoming_sub.get("player", {})
                                             slot["player"]["isSubbedIn"] = True
-                                            slot["player"]["subMinute"] = ev["time"]
-                                            slot["player"]["pos"] = slot["sub_history"][0].get("pos", "M")
+                                            slot["player"]["subMinute"] = ev.get("time")
+                                            slot["player"]["pos"] = (slot["sub_history"][0] or {}).get("pos", "M")
                                             
                                             lineup["substitutes"] = [s for s in lineup["substitutes"] if str((s.get("player") or {}).get("id")) != player_in_id]
                                             break
@@ -401,15 +403,16 @@ def main(local_memory):
             if stats_data and isinstance(stats_data.get("response"), list) and len(stats_data["response"]) > 0:
                 team_stats = {"home": {}, "away": {}}
                 
-                # Bulletproof Team ID
                 home_id = ((latest_data.get("teams") or {}).get("home") or {}).get("id")
                 
-                for t_stat in stats_data["response"]:
+                for t_stat in (stats_data.get("response") or []):
+                    if not t_stat: continue
                     t_id = (t_stat.get("team") or {}).get("id")
                     if not t_id: continue
                     side = "home" if t_id == home_id else "away"
                     parsed_t_stats = {"possession": 50, "total_shots": 0, "shots_on_target": 0, "corners": 0, "fouls": 0, "yellow_cards": 0, "red_cards": 0}
-                    for s in t_stat.get("statistics", []):
+                    for s in (t_stat.get("statistics") or []):
+                        if not s: continue
                         val, stype = s.get("value"), s.get("type")
                         if val is None: continue
                         if stype == "Ball Possession": parsed_t_stats["possession"] = int(str(val).replace('%', ''))
@@ -426,8 +429,10 @@ def main(local_memory):
             live_players_data = fetch_api(f"fixtures/players?fixture={fix_id}")
             if live_players_data and live_players_data.get("response"):
                 live_player_map = {}
-                for tp in live_players_data["response"]:
-                    for p in tp.get("players", []):
+                for tp in (live_players_data.get("response") or []):
+                    if not tp: continue
+                    for p in (tp.get("players") or []):
+                        if not p: continue
                         p_id = (p.get("player") or {}).get("id")
                         if not p_id: continue
                         
@@ -435,32 +440,34 @@ def main(local_memory):
                         p_stats = stats_list[0] if len(stats_list) > 0 else {}
                         
                         live_player_map[str(p_id)] = {
-                            "goals": (p_stats.get("goals") or {}).get("total") or 0,
-                            "assists": (p_stats.get("goals") or {}).get("assists") or 0,
-                            "total_shots": (p_stats.get("shots") or {}).get("total") or 0,
-                            "shots_on_target": (p_stats.get("shots") or {}).get("on") or 0,
-                            "passes": (p_stats.get("passes") or {}).get("total") or 0,
-                            "key_passes": (p_stats.get("passes") or {}).get("key") or 0,
-                            "tackles": (p_stats.get("tackles") or {}).get("total") or 0,
-                            "interceptions": (p_stats.get("tackles") or {}).get("interceptions") or 0,
-                            "saves": (p_stats.get("goals") or {}).get("saves") or 0,
-                            "conceded": (p_stats.get("goals") or {}).get("conceded") or 0,
-                            "yellow_cards": (p_stats.get("cards") or {}).get("yellow") or 0,
-                            "red_cards": (p_stats.get("cards") or {}).get("red") or 0,
-                            "rating": (p_stats.get("games") or {}).get("rating") or "N/A"
+                            "goals": ((p_stats.get("goals") or {}).get("total") or 0),
+                            "assists": ((p_stats.get("goals") or {}).get("assists") or 0),
+                            "total_shots": ((p_stats.get("shots") or {}).get("total") or 0),
+                            "shots_on_target": ((p_stats.get("shots") or {}).get("on") or 0),
+                            "passes": ((p_stats.get("passes") or {}).get("total") or 0),
+                            "key_passes": ((p_stats.get("passes") or {}).get("key") or 0),
+                            "tackles": ((p_stats.get("tackles") or {}).get("total") or 0),
+                            "interceptions": ((p_stats.get("tackles") or {}).get("interceptions") or 0),
+                            "saves": ((p_stats.get("goals") or {}).get("saves") or 0),
+                            "conceded": ((p_stats.get("goals") or {}).get("conceded") or 0),
+                            "yellow_cards": ((p_stats.get("cards") or {}).get("yellow") or 0),
+                            "red_cards": ((p_stats.get("cards") or {}).get("red") or 0),
+                            "rating": ((p_stats.get("games") or {}).get("rating") or "N/A")
                         }
 
-                # Attach and Merge Stats Safely
                 for side in ["homeLineup", "awayLineup"]:
                     lineup = live_game_obj.get(side)
                     if not lineup: continue
-                    for slot in lineup.get("startXI", []):
+                    for slot in (lineup.get("startXI") or []):
+                        if not slot: continue
                         pid = str((slot.get("player") or {}).get("id", ""))
                         if pid in live_player_map: slot["player"]["live_stats"] = live_player_map[pid]
-                        for sub_hist in slot.get("sub_history", []):
+                        for sub_hist in (slot.get("sub_history") or []):
+                            if not sub_hist: continue
                             hid = str(sub_hist.get("id", ""))
                             if hid in live_player_map: sub_hist["live_stats"] = live_player_map[hid]
-                    for sub in lineup.get("substitutes", []):
+                    for sub in (lineup.get("substitutes") or []):
+                        if not sub: continue
                         sid = str((sub.get("player") or {}).get("id", ""))
                         if sid in live_player_map: sub["player"]["live_stats"] = live_player_map[sid]
 
