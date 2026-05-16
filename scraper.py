@@ -78,7 +78,6 @@ TOP_LEAGUE_IDS = [
     10,  # International Friendlies
 
     # --- WOMEN'S LEAGUES ---
-    44,  # Women's Super League / WSL (England)
     254  # NWSL (USA)
 ]
 
