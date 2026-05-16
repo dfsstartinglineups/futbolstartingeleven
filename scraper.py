@@ -13,7 +13,6 @@ DATA_DIR = "data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
 TEAM_DICT_PATH = os.path.join(DATA_DIR, "master_teams.json")
-PLAYER_DICT_PATH = os.path.join(DATA_DIR, "master_players.json")
 
 # Load persistent dictionaries
 def load_json(path):
@@ -22,8 +21,6 @@ def load_json(path):
     return {}
 
 MASTER_TEAM_DICT = load_json(TEAM_DICT_PATH)
-MASTER_PLAYER_DICT = load_json(PLAYER_DICT_PATH)
-
 # =========================================================
 # API-FOOTBALL LEAGUE ID MAPPING (41 LEAGUES)
 # =========================================================
@@ -297,27 +294,24 @@ def fetch_first_leg_score(league_id, season, current_round, home_id, away_id, cu
                 
     return None
 
-def inject_player_stats(lineups, season):
-    global MASTER_PLAYER_DICT
-    dict_updated = False
+def inject_player_stats(lineups, home_roster, away_roster):
+    """Stateless JIT Injection: Calculates season stats from raw API roster arrays."""
     
+    # 1. Build a temporary dictionary in memory for lightning-fast lookups
+    temp_player_dict = {}
+    for p in home_roster + away_roster:
+        p_id = str(p.get("player", {}).get("id"))
+        if p_id and p_id != "None":
+            temp_player_dict[p_id] = p
+            
     for team_lineup in lineups:
         for section in ["startXI", "substitutes"]:
             for slot in team_lineup.get(section, []):
                 player_info = slot.get("player", {})
                 p_id = str(player_info.get("id"))
                 
-                # --- NEW: JUST-IN-TIME FETCHING ---
-                if p_id != "None" and p_id not in MASTER_PLAYER_DICT:
-                    print(f"   [Missing Player] Fetching deep stats for ID: {p_id}...")
-                    p_data = fetch_data(f"players?id={p_id}&season={season}")
-                    if p_data and p_data.get("response"):
-                        MASTER_PLAYER_DICT[p_id] = p_data["response"][0]
-                        dict_updated = True
-                # ----------------------------------
-                
-                if p_id in MASTER_PLAYER_DICT:
-                    cached_data = MASTER_PLAYER_DICT[p_id]
+                if p_id in temp_player_dict:
+                    cached_data = temp_player_dict[p_id]
                     player_bio = cached_data.get("player", {})
                     stats_list = cached_data.get("statistics", [])
                     
@@ -400,11 +394,6 @@ def inject_player_stats(lineups, season):
                         "competitions": competitions
                     }
                     
-    # Save the master dictionary back to the file if we caught any new players!
-    if dict_updated:
-        with open(PLAYER_DICT_PATH, "w") as f:
-            json.dump(MASTER_PLAYER_DICT, f, indent=4)
-            
     return lineups
 
 def update_future_files_for_league(league_id, start_date_str):
@@ -869,7 +858,13 @@ def process_date(target_date, force_master_sync=False):
                         if len(h_start) > 0 and len(a_start) > 0:
                             print(f"   ✅ Lineup found at T-{int(time_to_kickoff_minutes)} mins!")
                             season = game['league']['season']
-                            enriched = inject_player_stats([raw_home, raw_away], season)
+                            
+                            # --- JIT ROSTER FETCH ---
+                            print(f"   📥 Fetching JIT Season Rosters for {game['teams']['home']['name']} and {game['teams']['away']['name']}...")
+                            home_roster_data = fetch_all_players(home_id, season)
+                            away_roster_data = fetch_all_players(game["teams"]["away"]["id"], season)
+                            
+                            enriched = inject_player_stats([raw_home, raw_away], home_roster_data, away_roster_data)
                             game['homeLineup'], game['awayLineup'] = enriched[0], enriched[1]
                         else:
                             print(f"   ⚠️ API returned empty arrays. Ignoring glitch to protect memory.")
@@ -1083,37 +1078,7 @@ def process_date(target_date, force_master_sync=False):
                         except Exception as e:
                             pass 
                     
-                    # E. Fetch Final Season Player Data (SAFE MERGE)
-                    try:
-                        for t_id in [game['teams']['home']['id'], game['teams']['away']['id']]:
-                            for p in fetch_all_players(t_id, game['league']['season']): 
-                                p_id = str(p["player"]["id"])
-                                
-                                if p_id in MASTER_PLAYER_DICT:
-                                    existing_stats = MASTER_PLAYER_DICT[p_id].get("statistics", [])
-                                    new_stats = p.get("statistics", [])
-                                    
-                                    for n_stat in new_stats:
-                                        n_team = n_stat.get("team", {}).get("id")
-                                        n_league = n_stat.get("league", {}).get("id")
-                                        n_season = n_stat.get("league", {}).get("season")
-                                        
-                                        is_duplicate = any(
-                                            e_stat.get("team", {}).get("id") == n_team and
-                                            e_stat.get("league", {}).get("id") == n_league and
-                                            e_stat.get("league", {}).get("season") == n_season
-                                            for e_stat in existing_stats
-                                        )
-                                        if not is_duplicate:
-                                            existing_stats.append(n_stat)
-                                            
-                                    MASTER_PLAYER_DICT[p_id]["statistics"] = existing_stats
-                                else:
-                                    MASTER_PLAYER_DICT[p_id] = p
-                        
-                        with open(PLAYER_DICT_PATH, "w") as f: json.dump(MASTER_PLAYER_DICT, f, indent=4)
-                    except Exception as e:
-                        print(f"[{fixture_id}] Post-game player sync error: {e}")
+                    
 
                     # F. MARK AS COMPLETE SO WE DON'T GET STUCK IN A LOOP
                     game["post_game_sync"] = True
