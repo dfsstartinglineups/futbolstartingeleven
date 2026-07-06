@@ -59,14 +59,20 @@
                 "id": 27,
                 "name": "Portugal",
                 "logo": "https://media.api-sports.io/football/teams/27.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "a81d30",
+                        "number": "bfeae2",
+                        "border": "a81d30"
+                    },
+                    "goalkeeper": {
+                        "primary": "a2e6d0",
+                        "number": "151212",
+                        "border": "a2e6d0"
+                    }
+                }
             },
             "formation": "4-2-3-1",
-            "coach": {
-                "id": 48,
-                "name": "Roberto Mart\u00ednez",
-                "photo": "https://media.api-sports.io/football/coachs/48.png"
-            },
             "startXI": [
                 {
                     "player": {
@@ -500,7 +506,7 @@
                         "id": 1864,
                         "name": "Pedro Neto",
                         "number": 18,
-                        "pos": "F",
+                        "pos": "M",
                         "grid": "4:3",
                         "photo": "https://media.api-sports.io/football/players/1864.png",
                         "age": 25,
@@ -622,7 +628,7 @@
                         "id": 583,
                         "name": "Jo\u00e3o F\u00e9lix",
                         "number": 11,
-                        "pos": "F",
+                        "pos": "M",
                         "grid": "4:1",
                         "photo": "https://media.api-sports.io/football/players/583.png",
                         "age": 26,
@@ -743,67 +749,6 @@
             "substitutes": [
                 {
                     "player": {
-                        "id": 130,
-                        "name": "N\u00e9lson Semedo",
-                        "number": 2,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/130.png",
-                        "age": 32,
-                        "nationality": "Portugal",
-                        "season_stats": {
-                            "total": {
-                                "games": 5,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 2,
-                                "pass_acc": 88,
-                                "tackles": 2,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.74"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 86,
-                                    "tackles": 2,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.75"
-                                },
-                                "World Cup": {
-                                    "games": 3,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 90,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "6.73"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 1590,
                         "name": "Jos\u00e9 S\u00e1",
                         "number": 12,
@@ -843,67 +788,6 @@
                                     "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "6.50"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 41585,
-                        "name": "Gon\u00e7alo Ramos",
-                        "number": 9,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/41585.png",
-                        "age": 24,
-                        "nationality": "Portugal",
-                        "season_stats": {
-                            "total": {
-                                "games": 5,
-                                "goals": 1,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 0,
-                                "pass_acc": 87,
-                                "tackles": 1,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.80"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 3,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 83,
-                                    "tackles": 1,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.50"
-                                },
-                                "World Cup": {
-                                    "games": 2,
-                                    "goals": 1,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 0,
-                                    "pass_acc": 92,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.10"
                                 }
                             }
                         }
@@ -957,361 +841,10 @@
                 },
                 {
                     "player": {
-                        "id": 2676,
-                        "name": "R\u00faben Neves",
-                        "number": 21,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/2676.png",
-                        "age": 28,
-                        "nationality": "Portugal",
-                        "season_stats": {
-                            "total": {
-                                "games": 6,
-                                "goals": 0,
-                                "assists": 1,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 2,
-                                "pass_acc": 90,
-                                "tackles": 3,
-                                "interceptions": 2,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.84"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 1,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 2,
-                                    "pass_acc": 92,
-                                    "tackles": 3,
-                                    "interceptions": 2,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.03"
-                                },
-                                "World Cup": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 86,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.65"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 190485,
-                        "name": "Sam\u00fa Costa",
-                        "number": 24,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/190485.png",
-                        "age": 25,
-                        "nationality": "Portugal",
-                        "season_stats": {
-                            "total": {
-                                "games": 5,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 3,
-                                "key_passes": 0,
-                                "pass_acc": 91,
-                                "tackles": 8,
-                                "interceptions": 3,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.10"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 3,
-                                    "key_passes": 0,
-                                    "pass_acc": 91,
-                                    "tackles": 7,
-                                    "interceptions": 3,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "7.20"
-                                },
-                                "World Cup": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 91,
-                                    "tackles": 1,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.00"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 925,
-                        "name": "Gon\u00e7alo Guedes",
-                        "number": 19,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/925.png",
-                        "age": 29,
-                        "nationality": "Portugal",
-                        "season_stats": {
-                            "total": {
-                                "games": 2,
-                                "goals": 1,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 1,
-                                "pass_acc": 88,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.10"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 2,
-                                    "goals": 1,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 1,
-                                    "pass_acc": 88,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.10"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 636,
-                        "name": "Bernardo Silva",
-                        "number": 10,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/636.png",
-                        "age": 31,
-                        "nationality": "Portugal",
-                        "season_stats": {
-                            "total": {
-                                "games": 5,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 1,
-                                "pass_acc": 93,
-                                "tackles": 1,
-                                "interceptions": 2,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.69"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 96,
-                                    "tackles": 0,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.90"
-                                },
-                                "World Cup": {
-                                    "games": 3,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 91,
-                                    "tackles": 1,
-                                    "interceptions": 1,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "6.47"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 161939,
-                        "name": "Tom\u00e1s Ara\u00fajo",
-                        "number": 4,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/161939.png",
-                        "age": 23,
-                        "nationality": "Portugal",
-                        "season_stats": {
-                            "total": {
-                                "games": 5,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 2,
-                                "pass_acc": 92,
-                                "tackles": 2,
-                                "interceptions": 3,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.90"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 92,
-                                    "tackles": 2,
-                                    "interceptions": 2,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.90"
-                                },
-                                "World Cup": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 94,
-                                    "tackles": 0,
-                                    "interceptions": 1,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "6.90"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 41112,
-                        "name": "Trinc\u00e3o",
-                        "number": 16,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/41112.png",
-                        "age": 26,
-                        "nationality": "Portugal",
-                        "season_stats": {
-                            "total": {
-                                "games": 4,
-                                "goals": 1,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 0,
-                                "pass_acc": 85,
-                                "tackles": 2,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.54"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 3,
-                                    "goals": 1,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 0,
-                                    "pass_acc": 87,
-                                    "tackles": 1,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.87"
-                                },
-                                "World Cup": {
-                                    "games": 1,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 80,
-                                    "tackles": 1,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.20"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 41621,
                         "name": "Matheus Nunes",
                         "number": 6,
-                        "pos": "D",
+                        "pos": "M",
                         "grid": null,
                         "photo": "https://media.api-sports.io/football/players/41621.png",
                         "age": 27,
@@ -1362,6 +895,52 @@
                                     "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "N/A"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 265595,
+                        "name": "Gon\u00e7alo In\u00e1cio",
+                        "number": 14,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/265595.png",
+                        "age": 24,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 91,
+                                "tackles": 0,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.53"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 91,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.53"
                                 }
                             }
                         }
@@ -1430,32 +1009,169 @@
                 },
                 {
                     "player": {
-                        "id": 265595,
-                        "name": "Gon\u00e7alo In\u00e1cio",
-                        "number": 14,
+                        "id": 161939,
+                        "name": "Tom\u00e1s Ara\u00fajo",
+                        "number": 4,
                         "pos": "D",
                         "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/265595.png",
-                        "age": 24,
+                        "photo": "https://media.api-sports.io/football/players/161939.png",
+                        "age": 23,
                         "nationality": "Portugal",
                         "season_stats": {
                             "total": {
-                                "games": 3,
+                                "games": 5,
                                 "goals": 0,
                                 "assists": 0,
                                 "saves": 0,
                                 "conceded": 0,
                                 "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 91,
-                                "tackles": 0,
-                                "interceptions": 1,
+                                "key_passes": 2,
+                                "pass_acc": 92,
+                                "tackles": 2,
+                                "interceptions": 3,
                                 "yellow_cards": 0,
                                 "red_cards": 0,
-                                "rating": "6.53"
+                                "rating": "6.90"
                             },
                             "competitions": {
                                 "Friendlies": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 92,
+                                    "tackles": 2,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "World Cup": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 94,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 130,
+                        "name": "N\u00e9lson Semedo",
+                        "number": 2,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/130.png",
+                        "age": 32,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 2,
+                                "pass_acc": 88,
+                                "tackles": 2,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.74"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 86,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.75"
+                                },
+                                "World Cup": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 90,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.73"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 636,
+                        "name": "Bernardo Silva",
+                        "number": 10,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/636.png",
+                        "age": 31,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 1,
+                                "pass_acc": 93,
+                                "tackles": 1,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.69"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 96,
+                                    "tackles": 0,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.90"
+                                },
+                                "World Cup": {
                                     "games": 3,
                                     "goals": 0,
                                     "assists": 0,
@@ -1464,11 +1180,240 @@
                                     "shots_on": 0,
                                     "key_passes": 0,
                                     "pass_acc": 91,
-                                    "tackles": 0,
+                                    "tackles": 1,
                                     "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "6.47"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 925,
+                        "name": "Gon\u00e7alo Guedes",
+                        "number": 19,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/925.png",
+                        "age": 29,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 1,
+                                "pass_acc": 88,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.10"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 1,
+                                    "pass_acc": 88,
+                                    "tackles": 0,
+                                    "interceptions": 0,
                                     "yellow_cards": 0,
                                     "red_cards": 0,
-                                    "rating": "6.53"
+                                    "rating": "7.10"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 41112,
+                        "name": "Francisco Trinc\u00e3o",
+                        "number": 16,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/41112.png",
+                        "age": 26,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 0,
+                                "pass_acc": 85,
+                                "tackles": 2,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.54"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 3,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 87,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.87"
+                                },
+                                "World Cup": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 80,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.20"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 190485,
+                        "name": "Sam\u00fa Costa",
+                        "number": 24,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/190485.png",
+                        "age": 25,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 0,
+                                "pass_acc": 91,
+                                "tackles": 8,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.10"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 3,
+                                    "key_passes": 0,
+                                    "pass_acc": 91,
+                                    "tackles": 7,
+                                    "interceptions": 3,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.20"
+                                },
+                                "World Cup": {
+                                    "games": 1,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 91,
+                                    "tackles": 1,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.00"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 2676,
+                        "name": "R\u00faben Neves",
+                        "number": 21,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/2676.png",
+                        "age": 28,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 2,
+                                "pass_acc": 90,
+                                "tackles": 3,
+                                "interceptions": 2,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.84"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 2,
+                                    "pass_acc": 92,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.03"
+                                },
+                                "World Cup": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 86,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.65"
                                 }
                             }
                         }
@@ -1537,6 +1482,67 @@
                 },
                 {
                     "player": {
+                        "id": 41585,
+                        "name": "Gon\u00e7alo Ramos",
+                        "number": 9,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/41585.png",
+                        "age": 24,
+                        "nationality": "Portugal",
+                        "season_stats": {
+                            "total": {
+                                "games": 5,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 1,
+                                "key_passes": 0,
+                                "pass_acc": 87,
+                                "tackles": 1,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.80"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 83,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.50"
+                                },
+                                "World Cup": {
+                                    "games": 2,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 0,
+                                    "pass_acc": 92,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.10"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
                         "id": 22236,
                         "name": "Rafael Le\u00e3o",
                         "number": 17,
@@ -1596,21 +1602,32 @@
                         }
                     }
                 }
-            ]
+            ],
+            "coach": {
+                "id": 48,
+                "name": "Roberto Martinez",
+                "photo": "https://media.api-sports.io/football/coachs/48.png"
+            }
         },
         "awayLineup": {
             "team": {
                 "id": 9,
                 "name": "Spain",
                 "logo": "https://media.api-sports.io/football/teams/9.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "f94046",
+                        "number": "fddc30",
+                        "border": "f94046"
+                    },
+                    "goalkeeper": {
+                        "primary": "edd542",
+                        "number": "2e3130",
+                        "border": "edd542"
+                    }
+                }
             },
-            "formation": "4-1-2-3",
-            "coach": {
-                "id": 5832,
-                "name": "Luis de la Fuente",
-                "photo": "https://media.api-sports.io/football/coachs/5832.png"
-            },
+            "formation": "4-2-3-1",
             "startXI": [
                 {
                     "player": {
@@ -1737,7 +1754,7 @@
                 {
                     "player": {
                         "id": 396623,
-                        "name": "Pau Cubars\u00ed Paredes",
+                        "name": "Pau Cubars\u00ed",
                         "number": 22,
                         "pos": "D",
                         "grid": "2:3",
@@ -1919,6 +1936,67 @@
                 },
                 {
                     "player": {
+                        "id": 133609,
+                        "name": "Pedri",
+                        "number": 20,
+                        "pos": "M",
+                        "grid": "3:2",
+                        "photo": "https://media.api-sports.io/football/players/133609.png",
+                        "age": 23,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 7,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 3,
+                                "key_passes": 9,
+                                "pass_acc": 91,
+                                "tackles": 9,
+                                "interceptions": 8,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.37"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 2,
+                                    "pass_acc": 96,
+                                    "tackles": 1,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.10"
+                                },
+                                "World Cup": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 1,
+                                    "key_passes": 7,
+                                    "pass_acc": 87,
+                                    "tackles": 8,
+                                    "interceptions": 7,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.63"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
                         "id": 44,
                         "name": "Rodri",
                         "number": 16,
@@ -1973,6 +2051,67 @@
                                     "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "7.78"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 386828,
+                        "name": "Lamine Yamal",
+                        "number": 19,
+                        "pos": "M",
+                        "grid": "4:3",
+                        "photo": "https://media.api-sports.io/football/players/386828.png",
+                        "age": 18,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 1,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 6,
+                                "key_passes": 5,
+                                "pass_acc": 84,
+                                "tackles": 4,
+                                "interceptions": 3,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.17"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 83,
+                                    "tackles": 2,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.10"
+                                },
+                                "World Cup": {
+                                    "games": 4,
+                                    "goals": 1,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 6,
+                                    "key_passes": 5,
+                                    "pass_acc": 84,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.25"
                                 }
                             }
                         }
@@ -2041,194 +2180,11 @@
                 },
                 {
                     "player": {
-                        "id": 133609,
-                        "name": "Pedri",
-                        "number": 20,
-                        "pos": "M",
-                        "grid": "4:1",
-                        "photo": "https://media.api-sports.io/football/players/133609.png",
-                        "age": 23,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 7,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 3,
-                                "key_passes": 9,
-                                "pass_acc": 91,
-                                "tackles": 9,
-                                "interceptions": 8,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.37"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 3,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 2,
-                                    "key_passes": 2,
-                                    "pass_acc": 96,
-                                    "tackles": 1,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.10"
-                                },
-                                "World Cup": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 7,
-                                    "pass_acc": 87,
-                                    "tackles": 8,
-                                    "interceptions": 7,
-                                    "yellow_cards": 1,
-                                    "red_cards": 0,
-                                    "rating": "7.63"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 386828,
-                        "name": "Lamine Yamal",
-                        "number": 19,
-                        "pos": "F",
-                        "grid": "5:3",
-                        "photo": "https://media.api-sports.io/football/players/386828.png",
-                        "age": 18,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 6,
-                                "goals": 1,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 6,
-                                "key_passes": 5,
-                                "pass_acc": 84,
-                                "tackles": 4,
-                                "interceptions": 3,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.17"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 83,
-                                    "tackles": 2,
-                                    "interceptions": 2,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.10"
-                                },
-                                "World Cup": {
-                                    "games": 4,
-                                    "goals": 1,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 6,
-                                    "key_passes": 5,
-                                    "pass_acc": 84,
-                                    "tackles": 2,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.25"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 47323,
-                        "name": "Mikel Oyarzabal",
-                        "number": 21,
-                        "pos": "F",
-                        "grid": "5:2",
-                        "photo": "https://media.api-sports.io/football/players/47323.png",
-                        "age": 28,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 6,
-                                "goals": 6,
-                                "assists": 1,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 10,
-                                "key_passes": 2,
-                                "pass_acc": 73,
-                                "tackles": 3,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "8.20"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 2,
-                                    "goals": 2,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 2,
-                                    "key_passes": 0,
-                                    "pass_acc": 72,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "8.70"
-                                },
-                                "World Cup": {
-                                    "games": 4,
-                                    "goals": 4,
-                                    "assists": 1,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 8,
-                                    "key_passes": 2,
-                                    "pass_acc": 73,
-                                    "tackles": 3,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.70"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
                         "id": 182219,
-                        "name": "\u00c1lex Baena",
+                        "name": "Alex Baena",
                         "number": 15,
                         "pos": "M",
-                        "grid": "5:1",
+                        "grid": "4:1",
                         "photo": "https://media.api-sports.io/football/players/182219.png",
                         "age": 24,
                         "nationality": "Spain",
@@ -2282,9 +2238,269 @@
                             }
                         }
                     }
+                },
+                {
+                    "player": {
+                        "id": 47323,
+                        "name": "Mikel Oyarzabal",
+                        "number": 21,
+                        "pos": "F",
+                        "grid": "5:1",
+                        "photo": "https://media.api-sports.io/football/players/47323.png",
+                        "age": 28,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 6,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 10,
+                                "key_passes": 2,
+                                "pass_acc": 73,
+                                "tackles": 3,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "8.20"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 2,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 0,
+                                    "pass_acc": 72,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "8.70"
+                                },
+                                "World Cup": {
+                                    "games": 4,
+                                    "goals": 4,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 8,
+                                    "key_passes": 2,
+                                    "pass_acc": 73,
+                                    "tackles": 3,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.70"
+                                }
+                            }
+                        }
+                    }
                 }
             ],
             "substitutes": [
+                {
+                    "player": {
+                        "id": 19465,
+                        "name": "David Raya",
+                        "number": 1,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/19465.png",
+                        "age": 30,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 1,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 90,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.60"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 1,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 90,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.60"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 182718,
+                        "name": "Joan Garc\u00eda",
+                        "number": 13,
+                        "pos": "G",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/182718.png",
+                        "age": 24,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 1,
+                                "conceded": 1,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 100,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.15"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 1,
+                                    "conceded": 1,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 100,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.15"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 619,
+                        "name": "Eric Garc\u00eda",
+                        "number": 4,
+                        "pos": "D",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/619.png",
+                        "age": 24,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 98,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.30"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 98,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.30"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 753,
+                        "name": "Marcos Llorente",
+                        "number": 5,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/753.png",
+                        "age": 30,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 0,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 4,
+                                "pass_acc": 94,
+                                "tackles": 6,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "7.42"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 96,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.30"
+                                },
+                                "World Cup": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 4,
+                                    "pass_acc": 93,
+                                    "tackles": 6,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.55"
+                                }
+                            }
+                        }
+                    }
+                },
                 {
                     "player": {
                         "id": 295793,
@@ -2348,412 +2564,45 @@
                 },
                 {
                     "player": {
-                        "id": 296667,
-                        "name": "Gavi",
-                        "number": 9,
-                        "pos": "M",
+                        "id": 563,
+                        "name": "Alejandro Grimaldo",
+                        "number": 3,
+                        "pos": "D",
                         "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/296667.png",
-                        "age": 21,
+                        "photo": "https://media.api-sports.io/football/players/563.png",
+                        "age": 30,
                         "nationality": "Spain",
                         "season_stats": {
                             "total": {
-                                "games": 4,
+                                "games": 3,
                                 "goals": 0,
                                 "assists": 0,
                                 "saves": 0,
                                 "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 1,
-                                "pass_acc": 87,
-                                "tackles": 5,
+                                "shots_on": 1,
+                                "key_passes": 3,
+                                "pass_acc": 92,
+                                "tackles": 3,
                                 "interceptions": 2,
                                 "yellow_cards": 0,
                                 "red_cards": 0,
-                                "rating": "6.93"
+                                "rating": "7.20"
                             },
                             "competitions": {
                                 "Friendlies": {
-                                    "games": 2,
+                                    "games": 3,
                                     "goals": 0,
                                     "assists": 0,
                                     "saves": 0,
                                     "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 1,
-                                    "pass_acc": 87,
-                                    "tackles": 2,
-                                    "interceptions": 1,
-                                    "yellow_cards": 1,
+                                    "shots_on": 1,
+                                    "key_passes": 3,
+                                    "pass_acc": 92,
+                                    "tackles": 3,
+                                    "interceptions": 2,
+                                    "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "7.20"
-                                },
-                                "World Cup": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 87,
-                                    "tackles": 3,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.65"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 183799,
-                        "name": "Nico Williams",
-                        "number": 17,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/183799.png",
-                        "age": 23,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 3,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 72,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.37"
-                            },
-                            "competitions": {
-                                "World Cup": {
-                                    "games": 3,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 72,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.37"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 182718,
-                        "name": "Joan Garc\u00eda",
-                        "number": 13,
-                        "pos": "G",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/182718.png",
-                        "age": 24,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 2,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 1,
-                                "conceded": 1,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 100,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.15"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 1,
-                                    "conceded": 1,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 100,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.15"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 184226,
-                        "name": "Yeremy Pino",
-                        "number": 11,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/184226.png",
-                        "age": 23,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 6,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 3,
-                                "pass_acc": 85,
-                                "tackles": 3,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.51"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 3,
-                                    "pass_acc": 88,
-                                    "tackles": 3,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.67"
-                                },
-                                "World Cup": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 80,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.35"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 47315,
-                        "name": "Mart\u00edn Zubimendi",
-                        "number": 18,
-                        "pos": "M",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/47315.png",
-                        "age": 26,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 2,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 100,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.70"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 100,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.70"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 619,
-                        "name": "Eric Garc\u00eda",
-                        "number": 4,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/619.png",
-                        "age": 24,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 2,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 98,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.30"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 98,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.30"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 931,
-                        "name": "Ferran Torres",
-                        "number": 7,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/931.png",
-                        "age": 25,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 8,
-                                "goals": 1,
-                                "assists": 1,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 7,
-                                "key_passes": 4,
-                                "pass_acc": 81,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.81"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 4,
-                                    "goals": 1,
-                                    "assists": 1,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 5,
-                                    "key_passes": 4,
-                                    "pass_acc": 85,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.30"
-                                },
-                                "World Cup": {
-                                    "games": 4,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 2,
-                                    "key_passes": 0,
-                                    "pass_acc": 77,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.33"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 47348,
-                        "name": "Borja Iglesias",
-                        "number": 26,
-                        "pos": "F",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/47348.png",
-                        "age": 32,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 3,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 73,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.70"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 3,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 73,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.70"
                                 }
                             }
                         }
@@ -2800,6 +2649,52 @@
                                     "yellow_cards": 0,
                                     "red_cards": 0,
                                     "rating": "7.13"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 47315,
+                        "name": "Mart\u00edn Zubimendi",
+                        "number": 18,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/47315.png",
+                        "age": 26,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 2,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 100,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.70"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 100,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.70"
                                 }
                             }
                         }
@@ -2868,120 +2763,13 @@
                 },
                 {
                     "player": {
-                        "id": 19465,
-                        "name": "David Raya",
-                        "number": 1,
-                        "pos": "G",
+                        "id": 183799,
+                        "name": "Nico Williams",
+                        "number": 17,
+                        "pos": "F",
                         "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/19465.png",
-                        "age": 30,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 2,
-                                "goals": 0,
-                                "assists": 0,
-                                "saves": 1,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 0,
-                                "pass_acc": 90,
-                                "tackles": 0,
-                                "interceptions": 0,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "6.60"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 1,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 90,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "6.60"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 753,
-                        "name": "Marcos Llorente",
-                        "number": 5,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/753.png",
-                        "age": 30,
-                        "nationality": "Spain",
-                        "season_stats": {
-                            "total": {
-                                "games": 4,
-                                "goals": 0,
-                                "assists": 1,
-                                "saves": 0,
-                                "conceded": 0,
-                                "shots_on": 0,
-                                "key_passes": 4,
-                                "pass_acc": 94,
-                                "tackles": 6,
-                                "interceptions": 1,
-                                "yellow_cards": 0,
-                                "red_cards": 0,
-                                "rating": "7.42"
-                            },
-                            "competitions": {
-                                "Friendlies": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 0,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 0,
-                                    "pass_acc": 96,
-                                    "tackles": 0,
-                                    "interceptions": 0,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.30"
-                                },
-                                "World Cup": {
-                                    "games": 2,
-                                    "goals": 0,
-                                    "assists": 1,
-                                    "saves": 0,
-                                    "conceded": 0,
-                                    "shots_on": 0,
-                                    "key_passes": 4,
-                                    "pass_acc": 93,
-                                    "tackles": 6,
-                                    "interceptions": 1,
-                                    "yellow_cards": 0,
-                                    "red_cards": 0,
-                                    "rating": "7.55"
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    "player": {
-                        "id": 563,
-                        "name": "\u00c1lex Grimaldo",
-                        "number": 3,
-                        "pos": "D",
-                        "grid": null,
-                        "photo": "https://media.api-sports.io/football/players/563.png",
-                        "age": 30,
+                        "photo": "https://media.api-sports.io/football/players/183799.png",
+                        "age": 23,
                         "nationality": "Spain",
                         "season_stats": {
                             "total": {
@@ -2990,14 +2778,121 @@
                                 "assists": 0,
                                 "saves": 0,
                                 "conceded": 0,
-                                "shots_on": 1,
-                                "key_passes": 3,
-                                "pass_acc": 92,
-                                "tackles": 3,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 72,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.37"
+                            },
+                            "competitions": {
+                                "World Cup": {
+                                    "games": 3,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 72,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.37"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 296667,
+                        "name": "Pablo Gavi",
+                        "number": 9,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/296667.png",
+                        "age": 21,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 4,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 1,
+                                "pass_acc": 87,
+                                "tackles": 5,
                                 "interceptions": 2,
                                 "yellow_cards": 0,
                                 "red_cards": 0,
-                                "rating": "7.20"
+                                "rating": "6.93"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 1,
+                                    "pass_acc": 87,
+                                    "tackles": 2,
+                                    "interceptions": 1,
+                                    "yellow_cards": 1,
+                                    "red_cards": 0,
+                                    "rating": "7.20"
+                                },
+                                "World Cup": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 87,
+                                    "tackles": 3,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.65"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 47348,
+                        "name": "Borja Iglesias",
+                        "number": 26,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/47348.png",
+                        "age": 32,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 3,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 0,
+                                "pass_acc": 73,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.70"
                             },
                             "competitions": {
                                 "Friendlies": {
@@ -3006,14 +2901,75 @@
                                     "assists": 0,
                                     "saves": 0,
                                     "conceded": 0,
-                                    "shots_on": 1,
-                                    "key_passes": 3,
-                                    "pass_acc": 92,
-                                    "tackles": 3,
-                                    "interceptions": 2,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 73,
+                                    "tackles": 0,
+                                    "interceptions": 0,
                                     "yellow_cards": 0,
                                     "red_cards": 0,
-                                    "rating": "7.20"
+                                    "rating": "6.70"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "player": {
+                        "id": 931,
+                        "name": "Ferran Torres",
+                        "number": 7,
+                        "pos": "F",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/931.png",
+                        "age": 25,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 8,
+                                "goals": 1,
+                                "assists": 1,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 7,
+                                "key_passes": 4,
+                                "pass_acc": 81,
+                                "tackles": 0,
+                                "interceptions": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.81"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 4,
+                                    "goals": 1,
+                                    "assists": 1,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 5,
+                                    "key_passes": 4,
+                                    "pass_acc": 85,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "7.30"
+                                },
+                                "World Cup": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 2,
+                                    "key_passes": 0,
+                                    "pass_acc": 77,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.33"
                                 }
                             }
                         }
@@ -3064,8 +3020,74 @@
                             }
                         }
                     }
+                },
+                {
+                    "player": {
+                        "id": 184226,
+                        "name": "Y\u00e9remy Pino",
+                        "number": 11,
+                        "pos": "M",
+                        "grid": null,
+                        "photo": "https://media.api-sports.io/football/players/184226.png",
+                        "age": 23,
+                        "nationality": "Spain",
+                        "season_stats": {
+                            "total": {
+                                "games": 6,
+                                "goals": 0,
+                                "assists": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "shots_on": 0,
+                                "key_passes": 3,
+                                "pass_acc": 85,
+                                "tackles": 3,
+                                "interceptions": 1,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "rating": "6.51"
+                            },
+                            "competitions": {
+                                "Friendlies": {
+                                    "games": 4,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 3,
+                                    "pass_acc": 88,
+                                    "tackles": 3,
+                                    "interceptions": 1,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.67"
+                                },
+                                "World Cup": {
+                                    "games": 2,
+                                    "goals": 0,
+                                    "assists": 0,
+                                    "saves": 0,
+                                    "conceded": 0,
+                                    "shots_on": 0,
+                                    "key_passes": 0,
+                                    "pass_acc": 80,
+                                    "tackles": 0,
+                                    "interceptions": 0,
+                                    "yellow_cards": 0,
+                                    "red_cards": 0,
+                                    "rating": "6.35"
+                                }
+                            }
+                        }
+                    }
                 }
-            ]
+            ],
+            "coach": {
+                "id": 5832,
+                "name": "Luis de la Fuente",
+                "photo": "https://media.api-sports.io/football/coachs/5832.png"
+            }
         },
         "lineup_checks": 0,
         "odds": {
@@ -3080,14 +3102,15 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "match_ended_at": null,
         "post_game_sync": false,
         "first_leg_goals": null,
-        "last_lineup_check": "2026-07-06T18:06:16.685552+00:00",
-        "final_odds_check": true
+        "last_lineup_check": "2026-07-06T18:46:14.708480+00:00",
+        "final_odds_check": true,
+        "refreshed_15m": true
     },
     {
         "fixture": {
