@@ -12074,9 +12074,20 @@
                         "id": 39225,
                         "name": "Gilli R\u00f3lantsson",
                         "number": 26,
-                        "pos": "D",
-                        "grid": "2:1"
-                    }
+                        "pos": "M",
+                        "grid": "2:1",
+                        "isSubbedIn": true,
+                        "subMinute": "69"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 72945,
+                            "name": "Jonn Johannesen",
+                            "number": 11,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -12184,15 +12195,6 @@
                         "id": 70357,
                         "name": "J\u00e1kup Biskopst\u00f8 Andreasen",
                         "number": 8,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 72945,
-                        "name": "Jonn Johannesen",
-                        "number": 11,
                         "pos": "M",
                         "grid": null
                     }
@@ -12491,9 +12493,150 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "12",
+                "team_id": 701,
+                "player": "O. Ali",
+                "player_id": 533273,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "Jean Carlos"
+            },
+            {
+                "time": "49",
+                "team_id": 701,
+                "player": "P. Klettskard",
+                "player_id": 83055,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "A. Frederiksberg"
+            },
+            {
+                "time": "57",
+                "team_id": 15847,
+                "player": "T. Rodrigues",
+                "player_id": 587649,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "D. Pimentel"
+            },
+            {
+                "time": "62",
+                "team_id": 15847,
+                "player": "R. Eddarraj",
+                "player_id": 544316,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "J. Rodrigues da Cruz",
+                "player_out": "J. Rodrigues da Cruz",
+                "player_out_id": 593466
+            },
+            {
+                "time": "63",
+                "team_id": 15847,
+                "player": "Z. Louriz",
+                "player_id": 544281,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "D. Maneta",
+                "player_out": "D. Maneta",
+                "player_out_id": 545066
+            },
+            {
+                "time": "63",
+                "team_id": 15847,
+                "player": "L. Almada Correia",
+                "player_id": 544173,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "M. Terki",
+                "player_out": "M. Terki",
+                "player_out_id": 8767
+            },
+            {
+                "time": "69",
+                "team_id": 701,
+                "player": "G. Sorensen",
+                "player_id": 39225,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "J. Johannesen",
+                "player_out": "J. Johannesen",
+                "player_out_id": 72945
+            },
+            {
+                "time": "83",
+                "team_id": 15847,
+                "player": "J. Rodrigues da Cruz",
+                "player_id": 593466,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "84",
+                "team_id": 701,
+                "player": "D. Pavlovic",
+                "player_id": 72939,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "S. Kalso",
+                "player_out": "S. Kalso",
+                "player_out_id": 590284
+            },
+            {
+                "time": "85",
+                "team_id": 701,
+                "player": "S. Kalso",
+                "player_id": 590284,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "86",
+                "team_id": 701,
+                "player": "Jean Carlos",
+                "player_id": 48116,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "86",
+                "team_id": 15847,
+                "player": "R. Ferber",
+                "player_id": 8968,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "88",
+                "team_id": 15847,
+                "player": "K. Abi Ramzi",
+                "player_id": 544256,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "L. Correia",
+                "player_out": "L. Correia",
+                "player_out_id": 270628
+            },
+            {
+                "time": "90+5",
+                "team_id": 701,
+                "player": "O. Ali",
+                "player_id": 533273,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "H. Nasstrom",
+                "player_out": "H. Nasstrom",
+                "player_out_id": 226377
+            }
+        ],
         "match_ended_at": "2026-07-07T20:40:35.734012+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-07T18:40:39.201110+00:00",
         "final_odds_check": true,
@@ -13070,7 +13213,7 @@
             "status": {
                 "long": "Extra Time",
                 "short": "ET",
-                "elapsed": 101,
+                "elapsed": 102,
                 "extra": null
             }
         },
