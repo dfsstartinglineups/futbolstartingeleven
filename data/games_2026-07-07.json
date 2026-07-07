@@ -12786,9 +12786,20 @@
                         "id": 28769,
                         "name": "Daniel Hafsteinsson",
                         "number": 11,
-                        "pos": "M",
-                        "grid": "3:1"
-                    }
+                        "pos": "D",
+                        "grid": "3:1",
+                        "isSubbedIn": true,
+                        "subMinute": "68"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 199311,
+                            "name": "Tarik Ibrahimagi\u0107",
+                            "number": 20,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -12805,8 +12816,19 @@
                         "name": "El\u00edas M\u00e1r \u00d3marsson",
                         "number": 28,
                         "pos": "F",
-                        "grid": "4:2"
-                    }
+                        "grid": "4:2",
+                        "isSubbedIn": true,
+                        "subMinute": "44"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 28810,
+                            "name": "Nikolaj Hansen",
+                            "number": 23,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -12857,15 +12879,6 @@
                 },
                 {
                     "player": {
-                        "id": 199311,
-                        "name": "Tarik Ibrahimagi\u0107",
-                        "number": 20,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 28797,
                         "name": "Erlingur Agnarsson",
                         "number": 7,
@@ -12906,15 +12919,6 @@
                         "name": "Armann Ingi Finnbogason",
                         "number": 69,
                         "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 28810,
-                        "name": "Nikolaj Hansen",
-                        "number": 23,
-                        "pos": "F",
                         "grid": null
                     }
                 },
@@ -13032,17 +13036,39 @@
                         "name": "\u017deljko Gavri\u0107",
                         "number": 80,
                         "pos": "M",
-                        "grid": "4:2"
-                    }
+                        "grid": "4:2",
+                        "isSubbedIn": true,
+                        "subMinute": "71"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 28565,
+                            "name": "Szabolcs Sch\u00f6n",
+                            "number": 17,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
                         "id": 62152,
                         "name": "Claudiu Bumba",
                         "number": 10,
-                        "pos": "M",
-                        "grid": "4:1"
-                    }
+                        "pos": "D",
+                        "grid": "4:1",
+                        "isSubbedIn": true,
+                        "subMinute": "90"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 478405,
+                            "name": "Barnab\u00e1s B\u00edr\u00f3",
+                            "number": 20,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -13050,8 +13076,19 @@
                         "name": "Nfansu Njie",
                         "number": 11,
                         "pos": "F",
-                        "grid": "5:1"
-                    }
+                        "grid": "5:1",
+                        "isSubbedIn": true,
+                        "subMinute": "85"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 403899,
+                            "name": "Marcell Husz\u00e1r",
+                            "number": 96,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 }
             ],
             "substitutes": [
@@ -13061,15 +13098,6 @@
                         "name": "Bal\u00e1zs Megyeri",
                         "number": 16,
                         "pos": "G",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 478405,
-                        "name": "Barnab\u00e1s B\u00edr\u00f3",
-                        "number": 20,
-                        "pos": "D",
                         "grid": null
                     }
                 },
@@ -13111,15 +13139,6 @@
                 },
                 {
                     "player": {
-                        "id": 28565,
-                        "name": "Szabolcs Sch\u00f6n",
-                        "number": 17,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 453694,
                         "name": "\u00c1d\u00e1m D\u00e9csy",
                         "number": 47,
@@ -13153,15 +13172,6 @@
                         "pos": "F",
                         "grid": null
                     }
-                },
-                {
-                    "player": {
-                        "id": 403899,
-                        "name": "Marcell Husz\u00e1r",
-                        "number": 96,
-                        "pos": "F",
-                        "grid": null
-                    }
                 }
             ],
             "coach": {
@@ -13185,9 +13195,112 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "44",
+                "team_id": 278,
+                "player": "E. Omarsson",
+                "player_id": 37896,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "N. Hansen",
+                "player_out": "N. Hansen",
+                "player_out_id": 28810
+            },
+            {
+                "time": "68",
+                "team_id": 278,
+                "player": "D. Hafsteinsson",
+                "player_id": 28769,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "T. Ibrahimagic",
+                "player_out": "T. Ibrahimagic",
+                "player_out_id": 199311
+            },
+            {
+                "time": "71",
+                "team_id": 2402,
+                "player": "Z. Gavric",
+                "player_id": 133396,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "S. Schon",
+                "player_out": "S. Schon",
+                "player_out_id": 28565
+            },
+            {
+                "time": "76",
+                "team_id": 278,
+                "player": "O. Ekroth",
+                "player_id": 47662,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "83",
+                "team_id": 278,
+                "player": "A. Thrandarson",
+                "player_id": 57157,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "A. Finnbogason",
+                "player_out": "A. Finnbogason",
+                "player_out_id": 589262
+            },
+            {
+                "time": "85",
+                "team_id": 2402,
+                "player": "N. Njie",
+                "player_id": 416580,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "M. Huszar",
+                "player_out": "M. Huszar",
+                "player_out_id": 403899
+            },
+            {
+                "time": "88",
+                "team_id": 2402,
+                "player": "M. Krpic",
+                "player_id": 375614,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90",
+                "team_id": 2402,
+                "player": "C. Bumba",
+                "player_id": 62152,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "B. Biro",
+                "player_out": "B. Biro",
+                "player_out_id": 478405
+            },
+            {
+                "time": "90+2",
+                "team_id": 278,
+                "player": "N. Hansen",
+                "player_id": 28810,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
+            },
+            {
+                "time": "90+3",
+                "team_id": 2402,
+                "player": "M. Csinger",
+                "player_id": 341983,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            }
+        ],
         "match_ended_at": "2026-07-07T20:58:13.924867+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-07T18:56:16.605843+00:00",
         "final_odds_check": true,
@@ -13213,7 +13326,7 @@
             "status": {
                 "long": "Extra Time",
                 "short": "ET",
-                "elapsed": 112,
+                "elapsed": 114,
                 "extra": null
             }
         },
