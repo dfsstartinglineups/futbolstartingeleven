@@ -2994,9 +2994,20 @@
                         "id": 337604,
                         "name": "Miguel Mota",
                         "number": 22,
-                        "pos": "D",
-                        "grid": "2:3"
-                    }
+                        "pos": "M",
+                        "grid": "2:3",
+                        "isSubbedIn": true,
+                        "subMinute": "81"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 297786,
+                            "name": "Z\u00e9 Flores",
+                            "number": 10,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -3040,8 +3051,19 @@
                         "name": "Dhoraso Moreo Klas",
                         "number": 26,
                         "pos": "M",
-                        "grid": "3:2"
-                    }
+                        "grid": "3:2",
+                        "isSubbedIn": true,
+                        "subMinute": "68"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 280359,
+                            "name": "Vladimir Fratea",
+                            "number": 7,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -3155,27 +3177,9 @@
                 },
                 {
                     "player": {
-                        "id": 297786,
-                        "name": "Z\u00e9 Flores",
-                        "number": 10,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 415630,
                         "name": "Sapata",
                         "number": 11,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 280359,
-                        "name": "Vladimir Fratea",
-                        "number": 7,
                         "pos": "M",
                         "grid": null
                     }
@@ -3257,9 +3261,20 @@
                         "id": 312119,
                         "name": "Vid Koderman",
                         "number": 42,
-                        "pos": "M",
-                        "grid": "3:5"
-                    }
+                        "pos": "D",
+                        "grid": "3:5",
+                        "isSubbedIn": true,
+                        "subMinute": "77"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 162387,
+                            "name": "Hanus S\u00f8rensen",
+                            "number": 80,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -3355,15 +3370,6 @@
                 },
                 {
                     "player": {
-                        "id": 162387,
-                        "name": "Hanus S\u00f8rensen",
-                        "number": 80,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 109717,
                         "name": "Bede Amarachi Osuji",
                         "number": 11,
@@ -3447,14 +3453,139 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "46",
+                "team_id": 4358,
+                "player": "M. Vrbanec",
+                "player_id": 109686,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "48",
+                "team_id": 568,
+                "player": "B. Fomba",
+                "player_id": 200581,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "61",
+                "team_id": 4358,
+                "player": "M. Bajraj",
+                "player_id": 554416,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "B. Osuji",
+                "player_out": "B. Osuji",
+                "player_out_id": 109717
+            },
+            {
+                "time": "68",
+                "team_id": 568,
+                "player": "D. Klas",
+                "player_id": 93084,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "V. Fratea",
+                "player_out": "V. Fratea",
+                "player_out_id": 280359
+            },
+            {
+                "time": "68",
+                "team_id": 568,
+                "player": "L. Jaures-Ulrich",
+                "player_id": 446958,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "Sapata",
+                "player_out": "Sapata",
+                "player_out_id": 415630
+            },
+            {
+                "time": "77",
+                "team_id": 4358,
+                "player": "V. Koderman",
+                "player_id": 312119,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "H. Sorensen",
+                "player_out": "H. Sorensen",
+                "player_out_id": 162387
+            },
+            {
+                "time": "78",
+                "team_id": 4358,
+                "player": "T. Jagic",
+                "player_id": 355212,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "B. Petrisko",
+                "player_out": "B. Petrisko",
+                "player_out_id": 559747
+            },
+            {
+                "time": "81",
+                "team_id": 568,
+                "player": "Mota",
+                "player_id": 337604,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "Ze Flores",
+                "player_out": "Ze Flores",
+                "player_out_id": 297786
+            },
+            {
+                "time": "87",
+                "team_id": 4358,
+                "player": "V. Tezak",
+                "player_id": 641940,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "D. Zajsek",
+                "player_out": "D. Zajsek",
+                "player_out_id": 559712
+            },
+            {
+                "time": "90+2",
+                "team_id": 568,
+                "player": "Ze Flores",
+                "player_id": 297786,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            }
+        ],
         "match_ended_at": "2026-07-09T18:52:14.279811+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-09T16:56:18.497163+00:00",
         "final_odds_check": true,
         "refreshed_15m": true,
-        "refreshed_5m": true
+        "refreshed_5m": true,
+        "team_stats": {
+            "home": {
+                "possession": 50,
+                "total_shots": 0,
+                "shots_on_target": 0,
+                "corners": 0,
+                "fouls": 0,
+                "yellow_cards": 2,
+                "red_cards": 0
+            },
+            "away": {
+                "possession": 50,
+                "total_shots": 0,
+                "shots_on_target": 0,
+                "corners": 0,
+                "fouls": 0,
+                "yellow_cards": 1,
+                "red_cards": 0
+            }
+        }
     },
     {
         "fixture": {
@@ -6100,7 +6231,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 81,
+                "elapsed": 84,
                 "extra": null
             }
         },
@@ -6181,7 +6312,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 76,
+                "elapsed": 78,
                 "extra": null
             }
         },
@@ -6262,7 +6393,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 81,
+                "elapsed": 83,
                 "extra": null
             }
         },
@@ -6343,7 +6474,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 65,
+                "elapsed": 67,
                 "extra": null
             }
         },
@@ -6424,7 +6555,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 65,
+                "elapsed": 67,
                 "extra": null
             }
         },
@@ -6505,7 +6636,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 64,
+                "elapsed": 66,
                 "extra": null
             }
         },
@@ -6538,7 +6669,7 @@
             }
         },
         "goals": {
-            "home": 1,
+            "home": 2,
             "away": 1
         },
         "homeLineup": null,
@@ -6586,7 +6717,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 21,
+                "elapsed": 23,
                 "extra": null
             }
         },
