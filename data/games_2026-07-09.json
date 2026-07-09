@@ -3125,8 +3125,19 @@
                         "name": "Oleksandr Pikhalyonok",
                         "number": 8,
                         "pos": "M",
-                        "grid": "3:3"
-                    }
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "61"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 2172,
+                            "name": "Vitaliy Buyalskiy",
+                            "number": 29,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -3152,8 +3163,19 @@
                         "name": "Nazar Voloshyn",
                         "number": 9,
                         "pos": "M",
-                        "grid": "4:3"
-                    }
+                        "grid": "4:3",
+                        "isSubbedIn": true,
+                        "subMinute": "90+1"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 460435,
+                            "name": "Shola Ogundana",
+                            "number": 16,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -3243,24 +3265,6 @@
                         "id": 63637,
                         "name": "Valentyn Rubchynskyi",
                         "number": 15,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 460435,
-                        "name": "Shola Ogundana",
-                        "number": 16,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 2172,
-                        "name": "Vitaliy Buyalskiy",
-                        "number": 29,
                         "pos": "M",
                         "grid": null
                     }
@@ -3370,8 +3374,19 @@
                         "name": "Mouhamadou Drammeh",
                         "number": 7,
                         "pos": "M",
-                        "grid": "3:1"
-                    }
+                        "grid": "3:1",
+                        "isSubbedIn": true,
+                        "subMinute": "84"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 323569,
+                            "name": "Pedro Pinho",
+                            "number": 18,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -3396,9 +3411,20 @@
                         "id": 179402,
                         "name": "Oucasse Mendy",
                         "number": 29,
-                        "pos": "F",
-                        "grid": "4:1"
-                    }
+                        "pos": "D",
+                        "grid": "4:1",
+                        "isSubbedIn": true,
+                        "subMinute": "65"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 376483,
+                            "name": "Adams Friday",
+                            "number": 12,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -3440,15 +3466,6 @@
                 },
                 {
                     "player": {
-                        "id": 376483,
-                        "name": "Adams Friday",
-                        "number": 12,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 86511,
                         "name": "Florent Poulolo",
                         "number": 22,
@@ -3479,15 +3496,6 @@
                         "id": 43192,
                         "name": "Dan Nistor",
                         "number": 10,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 323569,
-                        "name": "Pedro Pinho",
-                        "number": 18,
                         "pos": "M",
                         "grid": null
                     }
@@ -3541,14 +3549,99 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "61",
+                "team_id": 572,
+                "player": "O. Pikhalyonok",
+                "player_id": 63420,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "V. Buyalskyy",
+                "player_out": "V. Buyalskyy",
+                "player_out_id": 2172
+            },
+            {
+                "time": "65",
+                "team_id": 2599,
+                "player": "O. Mendy",
+                "player_id": 179402,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "A. Friday",
+                "player_out": "A. Friday",
+                "player_out_id": 376483
+            },
+            {
+                "time": "71",
+                "team_id": 2599,
+                "player": "M. Drammeh",
+                "player_id": 86819,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "73",
+                "team_id": 2599,
+                "player": "I. Macalou",
+                "player_id": 179429,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "A. Aliev",
+                "player_out": "A. Aliev",
+                "player_out_id": 553373
+            },
+            {
+                "time": "84",
+                "team_id": 2599,
+                "player": "M. Drammeh",
+                "player_id": 86819,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "P. Pinho",
+                "player_out": "P. Pinho",
+                "player_out_id": 323569
+            },
+            {
+                "time": "90+1",
+                "team_id": 572,
+                "player": "N. Voloshyn",
+                "player_id": 198391,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "S. Ogundana",
+                "player_out": "S. Ogundana",
+                "player_out_id": 460435
+            }
+        ],
         "match_ended_at": "2026-07-09T19:02:15.959505+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-09T16:56:17.921488+00:00",
         "final_odds_check": true,
         "refreshed_15m": true,
-        "refreshed_5m": true
+        "refreshed_5m": true,
+        "team_stats": {
+            "home": {
+                "possession": 50,
+                "total_shots": 0,
+                "shots_on_target": 0,
+                "corners": 0,
+                "fouls": 0,
+                "yellow_cards": 0,
+                "red_cards": 0
+            },
+            "away": {
+                "possession": 50,
+                "total_shots": 0,
+                "shots_on_target": 0,
+                "corners": 0,
+                "fouls": 0,
+                "yellow_cards": 1,
+                "red_cards": 0
+            }
+        }
     },
     {
         "fixture": {
@@ -6877,7 +6970,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 1
+                "extra": 3
             }
         },
         "league": {
@@ -6933,7 +7026,7 @@
         "match_ended_at": null,
         "post_game_sync": false,
         "first_leg_goals": null,
-        "last_lineup_check": "2026-07-09T20:28:15.370689+00:00",
+        "last_lineup_check": "2026-07-09T20:34:12.670720+00:00",
         "final_odds_check": true,
         "refreshed_15m": true,
         "refreshed_5m": true
@@ -6957,7 +7050,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 86,
+                "elapsed": 89,
                 "extra": null
             }
         },
@@ -7014,7 +7107,7 @@
         "match_ended_at": null,
         "post_game_sync": false,
         "first_leg_goals": null,
-        "last_lineup_check": "2026-07-09T20:28:15.566325+00:00",
+        "last_lineup_check": "2026-07-09T20:34:12.819143+00:00",
         "final_odds_check": true,
         "refreshed_15m": true,
         "refreshed_5m": true
@@ -7039,7 +7132,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": null
+                "extra": 3
             }
         },
         "league": {
@@ -7095,7 +7188,7 @@
         "match_ended_at": null,
         "post_game_sync": false,
         "first_leg_goals": null,
-        "last_lineup_check": "2026-07-09T20:28:15.747344+00:00",
+        "last_lineup_check": "2026-07-09T20:34:12.945523+00:00",
         "final_odds_check": true,
         "refreshed_15m": true,
         "refreshed_5m": true
@@ -7119,7 +7212,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 75,
+                "elapsed": 77,
                 "extra": null
             }
         },
@@ -7200,7 +7293,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 75,
+                "elapsed": 77,
                 "extra": null
             }
         },
@@ -7281,7 +7374,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 75,
+                "elapsed": 77,
                 "extra": null
             }
         },
@@ -7362,7 +7455,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 32,
+                "elapsed": 34,
                 "extra": null
             }
         },
