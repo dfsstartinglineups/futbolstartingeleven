@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
-        body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow-x: hidden; }
         
         /* --- MAIN SITE NAVBAR STYLES --- */
         .header-brand { 
@@ -56,10 +56,10 @@
             transform-origin: top left; 
         }
 
-        /* --- Header: Horizontal Layout (Tightened Padding) --- */
+        /* --- Header: Horizontal Layout --- */
         #header {
             width: 100%;
-            padding: 10px 40px 5px 40px; /* Reduced vertical padding */
+            padding: 10px 40px 5px 40px; 
             display: flex;
             flex-direction: row; 
             justify-content: center;
@@ -214,7 +214,6 @@
 </head>
 <body>
 
-    <!-- Tightened mb-2 margin on Navbar -->
     <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-2" style="background-color: #212529; z-index: 1050;">
         <div class="container d-flex justify-content-between align-items-center flex-wrap">
             <div class="header-brand">
@@ -226,9 +225,8 @@
         </div>
     </nav>
 
-    <div class="container mb-4">
+    <div class="container mb-2">
         
-        <!-- Tightened margins on Outer Header -->
         <div class="text-center mb-2 mt-0">
             <h2 class="h5 fw-bold text-dark m-0">Real Madrid Starting Lineup & Tactics</h2>
         </div>
@@ -262,20 +260,28 @@
 
     <script>
         // ==========================================
-        // UPGRADED RESPONSIVE SCALING LOGIC
+        // DYNAMIC EXACT-PIXEL SCALING LOGIC
         // ==========================================
         function resizePitch() {
             const wrapper = document.getElementById('pitch-wrapper');
             const pitch = document.getElementById('capture-area');
             
+            // 1. Get the max available width
             const maxWidth = wrapper.clientWidth;
             
-            // Increased to 88% to take advantage of the tightened top margins
-            const maxHeight = window.innerHeight * 0.88; 
+            // 2. Calculate EXACT available height
+            // We find out exactly how far down the page the wrapper starts
+            const wrapperTopOffset = wrapper.getBoundingClientRect().top;
             
+            // Provide a small 20px buffer at the bottom of the screen so it doesn't touch the taskbar
+            const safeTop = wrapperTopOffset > 0 ? wrapperTopOffset : 100;
+            const maxHeight = window.innerHeight - safeTop - 20; 
+            
+            // 3. Determine the scales
             const scaleWidth = maxWidth / 1080;
             const scaleHeight = maxHeight / 1200; 
             
+            // 4. Use the smallest scale to guarantee it fits both width AND height perfectly
             const finalScale = Math.min(scaleWidth, scaleHeight);
             
             pitch.style.transform = `scale(${finalScale})`;
