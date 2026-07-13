@@ -3,7 +3,7 @@ name: Generate Player Pages
 on:
   workflow_dispatch: # Allows safe manual execution
   schedule:
-    - cron: '30 4 * * *' # Fires daily at 4:30 AM UTC (Just after midnight EST)
+    - cron: '30 8 * * *' # Fires daily at 4:30 AM UTC (Just after midnight EST)
 
 permissions:
   contents: write
