@@ -81,7 +81,6 @@ def generate_player_sitemap(database):
     print(f"✅ sitemap-players.xml saved with {len(database)} player profile links.")
 
 def parse_stats(stats_list, player_rating="N/A"):
-    """Globally parses raw API statistics objects into our standardized layout."""
     enriched = {"total": {}, "competitions": {}}
     if not stats_list: return enriched
     for stat in stats_list:
@@ -171,7 +170,6 @@ def build_gamelog_rows(recent_games):
     return rows
 
 def write_initial_html_file(p_id, p_data):
-    """Creates the HTML file from scratch during the Bootstrap phase."""
     player_folder = os.path.join(PLAYERS_DIR, p_data['slug'])
     os.makedirs(player_folder, exist_ok=True)
     
@@ -390,7 +388,6 @@ def write_initial_html_file(p_id, p_data):
         f.write(html_content)
 
 def update_player_html(player_slug, updates):
-    """Surgically updates the HTML file without rebuilding it from scratch."""
     filepath = os.path.join(PLAYERS_DIR, player_slug, "index.html")
     if not os.path.exists(filepath):
         return
@@ -398,7 +395,6 @@ def update_player_html(player_slug, updates):
     with open(filepath, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # 1. Update Single Values via IDs
     single_value_mappings = {
         "val-age": updates.get("age"),
         "val-position": updates.get("position"),
@@ -417,7 +413,6 @@ def update_player_html(player_slug, updates):
                 html
             )
 
-    # 2. Update Multiline Table Rows via Boundaries
     if updates.get("rows_2026"):
         html = re.sub(
             r'<!-- START 2026 ROWS -->.*?<!-- END 2026 ROWS -->', 
@@ -444,7 +439,6 @@ def bootstrap_universe():
     for league_id in TOP_LEAGUE_IDS:
         print(f"📥 Extracting 2026 and 2025 rosters for League {league_id}...")
         
-        # We will fetch 2026 players, then 2025 players to build the complete dictionary
         season_data = {2026: {}, 2025: {}}
         
         for season in [2026, 2025]:
@@ -460,10 +454,18 @@ def bootstrap_universe():
                     season_data[season][p_id] = item
                 page += 1
 
-        # Build database merging both seasons
         for p_id, item_2026 in season_data[2026].items():
             player = item_2026["player"]
-            if not player.get("name") or p_id in database: continue
+            if p_id in database: continue
+            
+            # Construct the true full name from firstname/lastname
+            first_name = player.get("firstname", "")
+            last_name = player.get("lastname", "")
+            full_name = f"{first_name} {last_name}".strip()
+            
+            if not full_name:
+                full_name = player.get("name", "Unknown")
+            if not full_name or full_name == "Unknown": continue
             
             stats_list_2026 = item_2026.get("statistics", [])
             item_2025 = season_data[2025].get(p_id, {})
@@ -475,8 +477,8 @@ def bootstrap_universe():
             team_name = main_stat.get("team", {}).get("name", "Unknown")
             
             database[p_id] = {
-                "name": player["name"],
-                "slug": get_player_slug(player["name"]),
+                "name": full_name,
+                "slug": get_player_slug(full_name),
                 "team_name": team_name,
                 "position": main_stat.get("games", {}).get("position", "Midfielder"),
                 "photo": player.get("photo", ""),
@@ -524,25 +526,52 @@ def process_nightly_maintenance(database):
                     p_id = str(player_obj.get("id"))
                     live_stats = player_obj.get("live_stats", {})
                     
-                    # 1. Skip if no ID, or if player played 0 minutes (no live stats / N/A rating)
                     if not p_id or p_id == "None" or not live_stats or live_stats.get("rating") == "N/A":
                         continue
                         
-                    # 2. Discover unknown players
+                    # Pre-fetch the API directly if new player OR to update season stats
+                    fresh_api_data = fetch_api(f"players?id={p_id}&season=2026")
+                    
+                    full_name = player_obj.get("name", "Unknown")
+                    player_api_rating = live_stats.get("rating", "N/A")
+                    season_stats_snapshot = {}
+                    
+                    if fresh_api_data and fresh_api_data.get("response"):
+                        p_data_api = fresh_api_data["response"][0]
+                        api_player = p_data_api.get("player", {})
+                        
+                        # Build the true full name
+                        first_name = api_player.get("firstname", "")
+                        last_name = api_player.get("lastname", "")
+                        if first_name or last_name:
+                            full_name = f"{first_name} {last_name}".strip()
+                        elif api_player.get("name"):
+                            full_name = api_player.get("name")
+                            
+                        stats_list_2026 = p_data_api.get("statistics", [])
+                        player_api_rating = api_player.get("rating", live_stats.get("rating", "N/A"))
+                        
+                        season_stats_snapshot = parse_stats(stats_list_2026, player_api_rating)
+                        player_obj["age"] = api_player.get("age", player_obj.get("age"))
+                        player_obj["nationality"] = api_player.get("nationality", player_obj.get("nationality"))
+                        player_obj["photo"] = api_player.get("photo", player_obj.get("photo"))
+                        
                     if p_id not in database:
-                        print(f"      🆕 New Player Discovered: {player_obj.get('name')} (ID: {p_id})")
+                        print(f"      🆕 New Player Discovered: {full_name} (ID: {p_id})")
                         database[p_id] = {
-                            "name": player_obj.get("name"), "slug": get_player_slug(player_obj.get("name")),
+                            "name": full_name, 
+                            "slug": get_player_slug(full_name),
                             "team_name": lineup_data.get("team", {}).get("name", "Unknown"),
-                            "position": player_obj.get("pos", "Midfielder"), "photo": player_obj.get("photo", ""),
-                            "age": player_obj.get("age", "N/A"), "nationality": player_obj.get("nationality", "N/A"),
-                            "stats_2026": {"total": {}, "competitions": {}}, "stats_2025": {"total": {}, "competitions": {}},
+                            "position": player_obj.get("pos", "Midfielder"), 
+                            "photo": player_obj.get("photo", ""),
+                            "age": player_obj.get("age", "N/A"), 
+                            "nationality": player_obj.get("nationality", "N/A"),
+                            "stats_2026": {"total": {}, "competitions": {}}, 
+                            "stats_2025": {"total": {}, "competitions": {}},
                             "recent_games": []
                         }
-                        # We write initial HTML to disk, we'll update it below
                         write_initial_html_file(p_id, database[p_id])
                     
-                    # 3. Prepend to Game Log Queue
                     match_log_entry = {
                         "date": yesterday_str, "opponent_name": opp_name, "is_home": is_home,
                         "result": res_char, "score_line": score_line,
@@ -552,24 +581,6 @@ def process_nightly_maintenance(database):
                     database[p_id]["recent_games"].insert(0, match_log_entry)
                     if len(database[p_id]["recent_games"]) > 10: database[p_id]["recent_games"].pop()
                     
-                    # 4. FETCH FRESH 2026 SEASON STATS DIRECTLY FROM API-FOOTBALL
-                    print(f"      📡 Fetching fresh 2026 season stats for {player_obj.get('name')}...")
-                    fresh_api_data = fetch_api(f"players?id={p_id}&season=2026")
-                    
-                    season_stats_snapshot = {}
-                    player_api_rating = live_stats.get("rating", "N/A")
-                    
-                    if fresh_api_data and fresh_api_data.get("response"):
-                        p_data_api = fresh_api_data["response"][0]
-                        stats_list_2026 = p_data_api.get("statistics", [])
-                        player_api_rating = p_data_api.get("player", {}).get("rating", live_stats.get("rating", "N/A"))
-                        
-                        # Parse the fresh stats object
-                        season_stats_snapshot = parse_stats(stats_list_2026, player_api_rating)
-                        # Optionally update age/position directly from the API response
-                        player_obj["age"] = p_data_api.get("player", {}).get("age", player_obj.get("age"))
-                    
-                    # 5. Prep HTML In-Place Updates
                     updates = {
                         "rows_gamelog": build_gamelog_rows(database[p_id]["recent_games"]),
                         "rating": player_api_rating,
@@ -587,7 +598,6 @@ def process_nightly_maintenance(database):
                             "rows_2026": build_competition_rows(season_stats_snapshot, "2026")
                         })
                         
-                    # Surgically execute the DOM swap on the HTML file
                     update_player_html(database[p_id]["slug"], updates)
 
     with open(DATABASE_PATH, "w", encoding="utf-8") as f:
