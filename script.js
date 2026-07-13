@@ -59,61 +59,61 @@ function mergeFirebaseIntoJSON(jsonMatch, fbMatch) {
 const LEAGUE_GROUPS = {
     "priority": [
         { key: "top", id: "top", name: "Top Matches" },
-        { key: "epl", id: 39, name: "Premier League" },
-        { key: "laliga", id: 140, name: "La Liga" },
-        { key: "seriea", id: 135, name: "Serie A" }
+        { key: "english-premier-league", id: 39, name: "Premier League" },
+        { key: "la-liga", id: 140, name: "La Liga" },
+        { key: "serie-a", id: 135, name: "Serie A" }
     ],
     "Europe": [
-        { key: "epl", id: 39, name: "Premier League" },
-        { key: "championship", id: 40, name: "Championship" },
-        { key: "laliga", id: 140, name: "La Liga" },
-        { key: "seriea", id: 135, name: "Serie A" },
+        { key: "english-premier-league", id: 39, name: "Premier League" },
+        { key: "efl-championship", id: 40, name: "Championship" },
+        { key: "la-liga", id: 140, name: "La Liga" },
+        { key: "serie-a", id: 135, name: "Serie A" },
         { key: "bundesliga", id: 78, name: "Bundesliga" },
-        { key: "ligue1", id: 61, name: "Ligue 1" },
+        { key: "ligue-1", id: 61, name: "Ligue 1" },
         { key: "eredivisie", id: 88, name: "Eredivisie" },
-        { key: "portugal", id: 94, name: "Primeira Liga" },
-        { key: "turkey", id: 203, name: "Süper Lig" },
-        { key: "belgium", id: 144, name: "Pro League" },
-        { key: "scotland", id: 179, name: "Premiership" },
-        { key: "denmark", id: 119, name: "Superliga" }
+        { key: "primeira-liga", id: 94, name: "Primeira Liga" },
+        { key: "super-lig", id: 203, name: "Süper Lig" },
+        { key: "belgian-pro-league", id: 144, name: "Pro League" },
+        { key: "scottish-premiership", id: 179, name: "Premiership" },
+        { key: "danish-superliga", id: 119, name: "Superliga" }
     ],
     "Americas": [
         { key: "mls", id: 253, name: "MLS" },
-        { key: "ligamx", id: 262, name: "Liga MX" },
-        { key: "brazil", id: 71, name: "Brasileirão" },
-        { key: "argentina", id: 128, name: "Liga Profesional" },
-        { key: "colombia", id: 239, name: "Primera A" }
+        { key: "liga-mx", id: 262, name: "Liga MX" },
+        { key: "brasileirao-serie-a", id: 71, name: "Brasileirão" },
+        { key: "argentine-liga-profesional", id: 128, name: "Liga Profesional" },
+        { key: "colombian-primera-a", id: 239, name: "Primera A" }
     ],
     "World": [
-        { key: "saudi", id: 307, name: "Saudi Pro League" },
-        { key: "japan", id: 98, name: "J1 League" },
-        { key: "australia", id: 188, name: "A-League" },
-        { key: "k1", id: 292, name: "K League 1" }
+        { key: "saudi-pro-league", id: 307, name: "Saudi Pro League" },
+        { key: "j1-league", id: 98, name: "J1 League" },
+        { key: "a-league", id: 188, name: "A-League" },
+        { key: "k-league-1", id: 292, name: "K League 1" }
     ],
     "Cups": [
-        { key: "ucl", id: 2, name: "Champions League" },
-        { key: "europa", id: 3, name: "Europa League" },
-        { key: "conference", id: 848, name: "Conference League" },
-        { key: "libertadores", id: 13, name: "Copa Libertadores" },
-        { key: "sudamericana", id: 11, name: "Copa Sudamericana" },
-        { key: "concacaf", id: 16, name: "Champions Cup" },
-        { key: "leaguescup", id: 528, name: "Leagues Cup" },
-        { key: "facup", id: 45, name: "FA Cup" },
-        { key: "eflcup", id: 48, name: "EFL Cup" },
-        { key: "copadelrey", id: 143, name: "Copa del Rey" },
-        { key: "coppaitalia", id: 137, name: "Coppa Italia" },
-        { key: "dfbpokal", id: 81, name: "DFB-Pokal" }
+        { key: "uefa-champions-league", id: 2, name: "Champions League" },
+        { key: "uefa-europa-league", id: 3, name: "Europa League" },
+        { key: "uefa-conference-league", id: 848, name: "Conference League" },
+        { key: "copa-libertadores", id: 13, name: "Copa Libertadores" },
+        { key: "copa-sudamericana", id: 11, name: "Copa Sudamericana" },
+        { key: "concacaf-champions-cup", id: 16, name: "Champions Cup" },
+        { key: "leagues-cup", id: 528, name: "Leagues Cup" },
+        { key: "fa-cup", id: 45, name: "FA Cup" },
+        { key: "efl-cup", id: 48, name: "EFL Cup" },
+        { key: "copa-del-rey", id: 143, name: "Copa del Rey" },
+        { key: "coppa-italia", id: 137, name: "Coppa Italia" },
+        { key: "dfb-pokal", id: 81, name: "DFB-Pokal" }
     ],
     "International": [
-        { key: "worldcup", id: 1, name: "World Cup" },
-        { key: "friendlies", id: 10, name: "Friendlies" },
-        { key: "euros", id: 4, name: "Euro Championship" },
-        { key: "copaamerica", id: 9, name: "Copa America" },
-        { key: "uefanations", id: 5, name: "UEFA Nations League" },
-        { key: "concacafnations", id: 531, name: "CONCACAF Nations League" }
+        { key: "fifa-world-cup", id: 1, name: "World Cup" },
+        { key: "international-friendlies", id: 10, name: "Friendlies" },
+        { key: "uefa-euro", id: 4, name: "Euro Championship" },
+        { key: "copa-america", id: 9, name: "Copa America" },
+        { key: "uefa-nations-league", id: 5, name: "UEFA Nations League" },
+        { key: "concacaf-nations-league", id: 531, name: "CONCACAF Nations League" }
     ],
     "Women": [
-        { key: "wsl", id: 44, name: "Women's Super League" },
+        { key: "womens-super-league", id: 44, name: "Women's Super League" },
         { key: "nwsl", id: 254, name: "NWSL" }
     ]
 };
@@ -511,7 +511,9 @@ function getRibbonHtml(data) {
         : `<span style="font-size: 0.75rem; margin-right: 4px; vertical-align: middle;">🏆</span>`;
     
     const params = getUrlParams();
-    const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
+    const lKey = getLeagueKey(data.league.id);
+    const dQuery = params.date === DEFAULT_DATE ? '' : `?date=${params.date}`;
+    const leagueHref = lKey === 'top' ? `/${dQuery}` : `/leagues/${lKey}/${dQuery}`;
 
     let hAggDisplay = '';
     let aAggDisplay = '';
@@ -782,7 +784,9 @@ function getInjuriesHtml(data) {
 
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
-    return { league: params.get('league') || 'top', date: params.get('date') || DEFAULT_DATE };
+    // 🎯 If the HTML gave us a hardcoded slug (because we are in a /leagues/ folder), use it!
+    const activeLeague = window.ACTIVE_LEAGUE_SLUG || params.get('league') || 'top';
+    return { league: activeLeague, date: params.get('date') || DEFAULT_DATE };
 }
 
 function renderLeagueMenu(activeLeague, currentDate) {
@@ -795,11 +799,14 @@ function renderLeagueMenu(activeLeague, currentDate) {
     mobileMenu.innerHTML = '';
 
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-    const dateParam = currentDate === todayStr ? '' : `&date=${currentDate}`;
+    // Switch from '&date=' to '?date=' since there are no longer other parameters
+    const dateQuery = currentDate === todayStr ? '' : `?date=${currentDate}`;
     
     LEAGUE_GROUPS["priority"].forEach(league => {
         const a = document.createElement('a');
-        a.href = `?league=${league.key}${dateParam}`;
+        // 🎯 Route directly to the physical folder
+        const baseHref = league.key === 'top' ? '/' : `/leagues/${league.key}/`;
+        a.href = `${baseHref}${dateQuery}`;
         a.className = `league-pill ${league.key === activeLeague ? 'active' : ''}`;
         a.textContent = league.name;
         desktopMenu.appendChild(a);
@@ -816,9 +823,10 @@ function renderLeagueMenu(activeLeague, currentDate) {
                 ${region}
             </button>
             <ul class="dropdown-menu dropdown-menu-dark shadow" style="background-color: #343a40; border-color: #495057;">
-                ${regionLeagues.map(league => `
-                    <li><a class="dropdown-item ${league.key === activeLeague ? 'text-success fw-bold' : 'text-light'}" href="?league=${league.key}${dateParam}">${league.name}</a></li>
-                `).join('')}
+                ${regionLeagues.map(league => {
+                    const baseHref = league.key === 'top' ? '/' : `/leagues/${league.key}/`;
+                    return `<li><a class="dropdown-item ${league.key === activeLeague ? 'text-success fw-bold' : 'text-light'}" href="${baseHref}${dateQuery}">${league.name}</a></li>`;
+                }).join('')}
             </ul>`;
         desktopMenu.appendChild(dropdownDiv);
     });
@@ -834,7 +842,8 @@ function renderLeagueMenu(activeLeague, currentDate) {
 
     topLinks.forEach(league => {
         const a = document.createElement('a');
-        a.href = `?league=${league.key}${dateParam}`;
+        const baseHref = league.key === 'top' ? '/' : `/leagues/${league.key}/`;
+        a.href = `${baseHref}${dateQuery}`;
         a.className = `league-pill ${league.key === activeLeague ? 'active' : ''}`;
         a.textContent = mobileNames[league.name] || league.name;
         mobileMenu.appendChild(a);
@@ -856,7 +865,8 @@ function renderLeagueMenu(activeLeague, currentDate) {
         }
         dropdownHtml += `<li><h6 class="dropdown-header pb-0" style="color: #adb5bd; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;">${region}</h6></li>`;
         LEAGUE_GROUPS[region].forEach(league => {
-            dropdownHtml += `<li><a class="dropdown-item ${league.key === activeLeague ? 'text-success fw-bold' : 'text-light'}" href="?league=${league.key}${dateParam}">${league.name}</a></li>`;
+            const baseHref = league.key === 'top' ? '/' : `/leagues/${league.key}/`;
+            dropdownHtml += `<li><a class="dropdown-item ${league.key === activeLeague ? 'text-success fw-bold' : 'text-light'}" href="${baseHref}${dateQuery}">${league.name}</a></li>`;
         });
     });
 
@@ -1572,7 +1582,9 @@ function createGameCard(data) {
     const isPreGame = ['NS', 'TBD'].includes(statusShort);
     const isFinished = ['FT', 'AET', 'PEN'].includes(statusShort);
     const params = getUrlParams();
-    const leagueHref = `?league=${getLeagueKey(data.league.id)}&date=${params.date}`;
+    const lKey = getLeagueKey(data.league.id);
+    const dQuery = params.date === DEFAULT_DATE ? '' : `?date=${params.date}`;
+    const leagueHref = lKey === 'top' ? `/${dQuery}` : `/leagues/${lKey}/${dQuery}`;
 
     const xiTabText = isFinished ? "FINAL XI" : "STARTING XI";
     const statsTabText = isFinished ? "FINAL STATS" : "LIVE STATS";
