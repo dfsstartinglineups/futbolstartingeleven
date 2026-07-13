@@ -264,14 +264,26 @@
             const wrapper = document.getElementById('pitch-wrapper');
             const pitch = document.getElementById('capture-area');
             
-            // Calculate scale based on the wrapper's current width vs original 1080px width
-            const scale = wrapper.clientWidth / 1080;
+            // 1. Calculate the maximum available width
+            const maxWidth = wrapper.clientWidth;
             
-            // Apply scale
-            pitch.style.transform = `scale(${scale})`;
+            // 2. Calculate the maximum available height (e.g., 80% of the browser window)
+            // This leaves room for the navbar and header text without forcing a scroll
+            const maxHeight = window.innerHeight * 0.80; 
             
-            // Force wrapper height to match scaled pitch height
-            wrapper.style.height = `${1350 * scale}px`;
+            // 3. Determine the scale needed to fit the width, and the scale to fit the height
+            const scaleWidth = maxWidth / 1080;
+            const scaleHeight = maxHeight / 1350;
+            
+            // 4. Use whichever scale is SMALLER to guarantee it fits entirely on the screen
+            const finalScale = Math.min(scaleWidth, scaleHeight);
+            
+            // 5. Apply the scale
+            pitch.style.transform = `scale(${finalScale})`;
+            
+            // 6. Force the wrapper to perfectly shrink-wrap the newly scaled pitch
+            wrapper.style.width = `${1080 * finalScale}px`;
+            wrapper.style.height = `${1350 * finalScale}px`;
         }
 
         // Run on load and whenever browser is resized
