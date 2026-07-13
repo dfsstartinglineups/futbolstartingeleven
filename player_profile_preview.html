@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bukayo Saka Stats, Lineups & Profile | Futbol Starting Eleven</title>
     
+    <!-- 1. STANDARD SEO META TAGS -->
+    <title>{{ player_name }} Stats, Lineups & Profile | Futbol Starting Eleven</title>
+    <meta name="description" content="Get live matchday stats, starting lineup status, and season performance metrics for {{ player_name }} ({{ team_name }}). Track historical data and tactical profiles.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://futbolstartingeleven.com/players/{{ player_slug }}/">
+
+    <!-- 2. OPEN GRAPH META TAGS (Facebook, Bluesky, LinkedIn) -->
+    <meta property="og:site_name" content="Futbol Starting Eleven">
+    <meta property="og:type" content="profile">
+    <meta property="og:title" content="{{ player_name }} Profile & Live Stats | Futbol Starting Eleven">
+    <meta property="og:description" content="Live starting lineups, form ratings, and seasonal breakdown for {{ player_name }} at {{ team_name }}.">
+    <meta property="og:url" content="https://futbolstartingeleven.com/players/{{ player_slug }}/">
+    <meta property="og:image" content="https://futbolstartingeleven.com/social-share1.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- 3. X / TWITTER CARD META TAGS -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="futbolstartingeleven.com">
+    <meta name="twitter:title" content="{{ player_name }} - {{ team_name }} Matchday Profile">
+    <meta name="twitter:description" content="Track live performance matrix, formation maps, and stats for {{ player_name }} on Futbol Starting Eleven.">
+    <meta name="twitter:image" content="https://futbolstartingeleven.com/social-share1.png">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
@@ -75,15 +97,24 @@
             letter-spacing: 0.5px;
             margin-bottom: 20px;
         }
+
+        /* SEAMLESS SEO LINK STYLES (Keeps native formatting) */
         .seo-link {
-            color: #198754;
-            text-decoration: none;
-            font-weight: 700;
+            color: inherit; 
+            text-decoration: none; 
             transition: color 0.15s ease-in-out;
         }
-        .seo-link:hover {
-            color: #20c997;
-            text-decoration: underline;
+        .sidebar-player-meta .seo-link:hover {
+            color: #20c997; 
+        }
+        .table tbody td .seo-link:hover {
+            color: #198754;
+        }
+        .info-card .seo-link {
+            font-weight: inherit;
+        }
+        .info-card .seo-link:hover {
+            color: #198754;
         }
 
         /* INFO CARDS & DATA TABLES */
@@ -231,13 +262,14 @@
                     </div>
                     
                     <div class="sidebar-player-name">Bukayo Saka</div>
-                    <div class="sidebar-player-meta"><a href="/lineups/arsenal/" class="seo-link">Arsenal</a> • Attacker</div>
+                    <div class="sidebar-player-meta"><a href="/lineups/arsenal/" class="seo-link fw-bold">Arsenal</a> • Attacker</div>
                     
                     <hr style="border-color: #dee2e6; opacity: 1; margin: 15px 0;">
                     
                     <div class="text-start">
                         <div class="stat-row">
                             <span class="stat-label">Nationality</span>
+                            <!-- HTML Decimal Entities used for cross-platform rendering -->
                             <span class="stat-value">England &#127461;&#127463;&#127470;&#127481;</span>
                         </div>
                         <div class="stat-row">
@@ -276,7 +308,7 @@
                             <span class="fw-bold text-dark" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Live Matchday Center</span>
                         </div>
                         <div class="stat-value text-end" style="font-size: 0.9rem;">
-                            <a href="/lineups/arsenal/" class="seo-link">Arsenal</a> vs Chelsea (62') <span class="text-muted font-monospace mx-1">|</span> <span class="badge bg-success text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Starting XI (LW)</span>
+                            <a href="/lineups/arsenal/" class="seo-link fw-bold text-dark">Arsenal</a> vs <a href="/lineups/chelsea/" class="seo-link fw-bold text-dark">Chelsea</a> (62') <span class="text-muted font-monospace mx-1">|</span> <span class="badge bg-success text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Starting XI (LW)</span>
                         </div>
                     </div>
                 </div>
@@ -390,7 +422,7 @@
                                 <tr>
                                     <td>
                                         <img src="https://media.api-sports.io/football/leagues/39.png" class="comp-logo">
-                                        <a href="/leagues/english-premier-league/" class="seo-link">Premier League</a>
+                                        <a href="/leagues/english-premier-league/" class="seo-link fw-bold text-dark">Premier League</a>
                                     </td>
                                     <td class="text-center">26</td>
                                     <td class="text-center">2,210</td>
@@ -405,7 +437,7 @@
                                 <tr>
                                     <td>
                                         <img src="https://media.api-sports.io/football/leagues/2.png" class="comp-logo">
-                                        <a href="/leagues/uefa-champions-league/" class="seo-link">Champions League</a>
+                                        <a href="/leagues/uefa-champions-league/" class="seo-link fw-bold text-dark">Champions League</a>
                                     </td>
                                     <td class="text-center">6</td>
                                     <td class="text-center">495</td>
