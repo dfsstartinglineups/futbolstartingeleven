@@ -50,11 +50,9 @@ def format_date(iso_string):
         return "Upcoming"
 
 def is_youth_team(team_name):
-    """Regex filter to detect Youth Teams (e.g. U17, U19, U21, U23)."""
     pattern = r'\bU-?\d{2}\b'
     if re.search(pattern, team_name, re.IGNORECASE):
         return True
-    # Also catch "Youth" or "Reserves" explicitly
     if "youth" in team_name.lower() or "reserves" in team_name.lower():
         return True
     return False
@@ -107,9 +105,7 @@ def generate_team_pages():
             team_id = team["id"]
             team_name = team["name"]
             
-            # --- THE NEW JUNK FILTER ---
             if is_youth_team(team_name):
-                print(f"   🚫 Skipping Youth/Reserve Team: {team_name}")
                 continue
                 
             team_logo = team["logo"]
@@ -137,7 +133,7 @@ def generate_team_pages():
                 else:
                     next_opponent = f"@ {home_team}"
             
-            print(f"   ✅ Generating /lineups/{team_slug}/ ({team_name} {next_opponent})")
+            print(f"   ✅ Generating /lineups/{team_slug}/")
             
             team_folder = os.path.join(LINEUPS_DIR, team_slug)
             os.makedirs(team_folder, exist_ok=True)
@@ -151,6 +147,11 @@ def generate_team_pages():
     generate_team_sitemap(seen_slugs)
 
 def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_date, competition):
+    page_title = f"{team_name} Starting Lineup Today | Futbol Starting Eleven"
+    page_desc = f"Get the official {team_name} starting lineup, live match stats, and tactical formation. Next match: {team_name} {next_opponent} in {competition} on {next_date}."
+    page_url = f"https://futbolstartingeleven.com/lineups/{team_slug}/"
+    social_image = "https://futbolstartingeleven.com/social-share1.png"
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -158,10 +159,25 @@ def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_dat
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- SEO META TAGS -->
-    <title>{team_name} Starting Lineup Today | Futbol Starting Eleven</title>
-    <meta name="description" content="Get the official {team_name} starting lineup, live match stats, and tactical formation. Next match: {team_name} {next_opponent} in {competition} on {next_date}.">
+    <title>{page_title}</title>
+    <meta name="description" content="{page_desc}">
     <meta name="keywords" content="{team_name} lineup, {team_name} starting 11, {team_name} formation, {team_name} next match, {team_name} {next_opponent}, soccer lineups, tactical board">
-    <link rel="canonical" href="https://futbolstartingeleven.com/lineups/{team_slug}/" />
+    <link rel="canonical" href="{page_url}" />
+    
+    <!-- OPEN GRAPH & TWITTER CARDS -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Futbol Starting Eleven">
+    <meta property="og:url" content="{page_url}">
+    <meta property="og:title" content="{page_title}">
+    <meta property="og:description" content="{page_desc}">
+    <meta property="og:image" content="{social_image}">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="futbolstartingeleven.com">
+    <meta name="twitter:url" content="{page_url}">
+    <meta name="twitter:title" content="{page_title}">
+    <meta name="twitter:description" content="{page_desc}">
+    <meta name="twitter:image" content="{social_image}">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -254,7 +270,6 @@ def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_dat
         </div>
     </div>
 
-    <!-- INJECT CRITICAL VARIABLES FOR JS -->
     <script>
         window.TARGET_TEAM_ID = {team_id};
         window.TARGET_TEAM_NAME = "{team_name}";
@@ -282,7 +297,6 @@ def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_dat
         window.addEventListener('DOMContentLoaded', resizePitch);
     </script>
     
-    <!-- LOAD THE TEAM-SPECIFIC LOGIC -->
     <script src="../../js/team_lineups.js"></script>
 
 </body>
