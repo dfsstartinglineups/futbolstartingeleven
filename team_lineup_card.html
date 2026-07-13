@@ -32,7 +32,7 @@
         /* --- RESPONSIVE PITCH WRAPPER --- */
         .pitch-wrapper {
             width: 100%;
-            max-width: 600px; /* Limits how big it gets on desktop */
+            max-width: 650px; /* Slightly widened since we shortened the height */
             margin: 0 auto;
             position: relative;
             overflow: hidden;
@@ -41,52 +41,60 @@
         }
 
         /* =========================================
-           THE EXACT CANVAS (1080x1350)
+           THE EXACT CANVAS (1080x1200) - Reduced Height!
            ========================================= */
         #capture-area {
             width: 1080px;
-            height: 1350px; 
+            height: 1200px; /* Shaved 150px of vertical dead space */
             background: radial-gradient(circle at center, #1a2235 0%, #080a0f 100%);
-            position: absolute; /* Needed for transform scaling */
+            position: absolute; 
             top: 0;
             left: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transform-origin: top left; /* Critical for clean scaling */
+            transform-origin: top left; 
         }
 
-        /* --- Header: Centered & Focused on One Team --- */
+        /* --- Header: Horizontal Layout --- */
         #header {
             width: 100%;
-            padding: 20px 30px;
+            padding: 20px 40px 10px 40px;
             display: flex;
-            flex-direction: column;
+            flex-direction: row; /* Aligns logo and text side-by-side */
             justify-content: center;
             align-items: center;
+            gap: 25px; /* Spacing between logo and text */
             z-index: 10;
             box-sizing: border-box;
             background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
         }
 
-        .team-logo { width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6)); margin-bottom: 10px; }
-        .team-name { font-size: 38px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin: 0; line-height: 1; text-align: center; color: white;}
-        .formation { font-size: 20px; font-weight: bold; color: #20c997; margin-top: 6px; letter-spacing: 1px; }
+        .team-logo { width: 85px; height: 85px; object-fit: contain; filter: drop-shadow(0 6px 15px rgba(0,0,0,0.6)); }
+        
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .team-name { font-size: 42px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin: 0; line-height: 1; color: white;}
+        .formation { font-size: 22px; font-weight: bold; color: #20c997; margin-top: 6px; letter-spacing: 1px; }
 
         /* --- 2D Flat Half-Pitch --- */
         #scene {
             width: 100%;
-            height: 1100px; 
+            height: 1080px; 
             position: absolute;
-            bottom: 20px;
+            bottom: 15px;
             display: flex;
             justify-content: center;
-            align-items: flex-end; /* Anchor pitch to the bottom */
+            align-items: flex-end; 
         }
 
         #pitch {
             width: 980px; 
-            height: 1080px; 
+            height: 1060px; 
             background: repeating-linear-gradient(
                 0deg,
                 #1e4d2b,
@@ -96,7 +104,7 @@
             );
             position: relative;
             border: 5px solid rgba(255,255,255,0.6);
-            border-top: 8px solid rgba(255,255,255,0.8); /* Halfway line */
+            border-top: 8px solid rgba(255,255,255,0.8);
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             border-radius: 4px;
         }
@@ -104,7 +112,6 @@
         /* Half-Field Lines */
         .pitch-line { position: absolute; border: 3px solid rgba(255,255,255,0.5); z-index: 2; }
         
-        /* Top: Half of the Center Circle */
         .center-circle-half { 
             width: 280px; 
             height: 140px; 
@@ -118,7 +125,6 @@
             z-index: 2; 
         }
         
-        /* Bottom: Penalty Area */
         .penalty-box-bottom { width: 500px; height: 180px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; }
         .six-yard-bottom { width: 250px; height: 70px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; position: absolute; border: 3px solid rgba(255,255,255,0.5); z-index: 2;}
         .penalty-arc-bottom { width: 180px; height: 100px; bottom: 180px; left: 50%; transform: translateX(-50%); border: 3px solid rgba(255,255,255,0.5); border-bottom: none; border-radius: 90px 90px 0 0; position: absolute; border-bottom-color: transparent; z-index: 2;}
@@ -137,7 +143,7 @@
             pointer-events: none; 
         }
 
-        /* --- Player Nodes (Bigger for Single Team View) --- */
+        /* --- Player Nodes --- */
         .player-node {
             position: absolute;
             width: 160px; 
@@ -208,7 +214,6 @@
 </head>
 <body>
 
-    <!-- NAVBAR MATCHING MAIN SITE -->
     <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-4" style="background-color: #212529; z-index: 1050;">
         <div class="container d-flex justify-content-between align-items-center flex-wrap">
             <div class="header-brand">
@@ -222,28 +227,27 @@
 
     <div class="container mb-5">
         
-        <div class="text-center mb-3">
-            <h2 class="h5 fw-bold text-dark">Real Madrid Starting Lineup & Tactics</h2>
-            <p class="text-muted small">Live formation and starting XI</p>
+        <!-- Refined Outer Header (Removed the extra sub-text) -->
+        <div class="text-center mb-3 mt-1">
+            <h2 class="h5 fw-bold text-dark m-0">Real Madrid Starting Lineup & Tactics</h2>
         </div>
 
-        <!-- RESPONSIVE WRAPPER -->
         <div class="pitch-wrapper" id="pitch-wrapper">
             <div id="capture-area">
+                
+                <!-- Refined Inner Header (Horizontal Layout) -->
                 <div id="header">
                     <img id="team-logo" class="team-logo" src="" alt="Team Logo">
-                    <h1 id="team-name" class="team-name">TEAM NAME</h1>
-                    <div id="team-formation" class="formation">4-3-3</div>
+                    <div class="header-text">
+                        <h1 id="team-name" class="team-name">TEAM NAME</h1>
+                        <div id="team-formation" class="formation">Starting XI • 4-3-3</div>
+                    </div>
                 </div>
 
                 <div id="scene">
                     <div id="pitch">
                         <img id="team-watermark" class="watermark" src="" alt="Watermark">
-
-                        <!-- Half-field lines -->
                         <div class="center-circle-half"></div>
-                        
-                        <!-- Bottom Penalty Area -->
                         <div class="pitch-line penalty-box-bottom"></div>
                         <div class="six-yard-bottom"></div>
                         <div class="penalty-arc-bottom"></div>
@@ -258,35 +262,31 @@
 
     <script>
         // ==========================================
-        // RESPONSIVE SCALING LOGIC
+        // UPGRADED RESPONSIVE SCALING LOGIC
         // ==========================================
         function resizePitch() {
             const wrapper = document.getElementById('pitch-wrapper');
             const pitch = document.getElementById('capture-area');
             
-            // 1. Calculate the maximum available width
             const maxWidth = wrapper.clientWidth;
             
-            // 2. Calculate the maximum available height (e.g., 80% of the browser window)
-            // This leaves room for the navbar and header text without forcing a scroll
-            const maxHeight = window.innerHeight * 0.80; 
+            // Allow the graphic to take up slightly more vertical space 
+            // since we stripped out the outer header text!
+            const maxHeight = window.innerHeight * 0.85; 
             
-            // 3. Determine the scale needed to fit the width, and the scale to fit the height
             const scaleWidth = maxWidth / 1080;
-            const scaleHeight = maxHeight / 1350;
+            // Updated to calculate against the new 1200px canvas height
+            const scaleHeight = maxHeight / 1200; 
             
-            // 4. Use whichever scale is SMALLER to guarantee it fits entirely on the screen
             const finalScale = Math.min(scaleWidth, scaleHeight);
             
-            // 5. Apply the scale
             pitch.style.transform = `scale(${finalScale})`;
             
-            // 6. Force the wrapper to perfectly shrink-wrap the newly scaled pitch
             wrapper.style.width = `${1080 * finalScale}px`;
-            wrapper.style.height = `${1350 * finalScale}px`;
+            // Updated to map to the new 1200px canvas height
+            wrapper.style.height = `${1200 * finalScale}px`; 
         }
 
-        // Run on load and whenever browser is resized
         window.addEventListener('resize', resizePitch);
 
         // ==========================================
@@ -317,7 +317,7 @@
         function sliceArrayByFormation(formationStr, startXI) {
             const parts = formationStr.split('-').map(Number);
             const rows = [];
-            rows.push([startXI[0]]); // Goalkeeper
+            rows.push([startXI[0]]); 
             let currentIndex = 1;
             for (let i = 0; i < parts.length; i++) {
                 const count = parts[i];
@@ -328,8 +328,8 @@
         }
 
         function getYPositions(numRows) {
-            const bottomStart = 90; 
-            const topEnd = 15; 
+            const bottomStart = 88; 
+            const topEnd = 14; 
             const step = (bottomStart - topEnd) / Math.max(1, numRows - 1);
             return Array.from({length: numRows}, (_, i) => bottomStart - (step * i));
         }
