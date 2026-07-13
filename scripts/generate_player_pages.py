@@ -80,6 +80,33 @@ def generate_player_sitemap(database):
         f.write(pretty_xml)
     print(f"✅ sitemap-players.xml saved with {len(database)} player profile links.")
 
+def parse_stats(stats_list, player_rating="N/A"):
+    """Globally parses raw API statistics objects into our standardized layout."""
+    enriched = {"total": {}, "competitions": {}}
+    if not stats_list: return enriched
+    for stat in stats_list:
+        comp_name = stat.get("league", {}).get("name", "Unknown")
+        g = stat.get("games", {}).get("appearences", 0) or 0
+        if g == 0: continue
+        enriched["competitions"][comp_name] = {
+            "games": g, "minutes": stat.get("games", {}).get("minutes", 0),
+            "goals": stat.get("goals", {}).get("total", 0) or 0, "assists": stat.get("goals", {}).get("assists", 0) or 0,
+            "saves": stat.get("goals", {}).get("saves", 0) or 0, "shots_on": stat.get("shots", {}).get("on", 0) or 0,
+            "key_passes": stat.get("passes", {}).get("key", 0) or 0, "pass_acc": stat.get("passes", {}).get("accuracy", 0) or 0,
+            "tackles": stat.get("tackles", {}).get("total", 0) or 0, "interceptions": stat.get("tackles", {}).get("interceptions", 0) or 0,
+            "yellow_cards": stat.get("cards", {}).get("yellow", 0) or 0, "red_cards": stat.get("cards", {}).get("red", 0) or 0,
+            "rating": stat.get("games", {}).get("rating", "N/A")
+        }
+    t_games = sum(s["games"] for s in enriched["competitions"].values())
+    t_goals = sum(s["goals"] for s in enriched["competitions"].values())
+    t_assists = sum(s["assists"] for s in enriched["competitions"].values())
+    
+    total_pass_sum = sum((s["pass_acc"] * s["games"]) for s in enriched["competitions"].values() if s["pass_acc"])
+    t_pass_acc = round(total_pass_sum / t_games) if t_games > 0 else 0
+    
+    enriched["total"] = {"games": t_games, "goals": t_goals, "assists": t_assists, "pass_acc": t_pass_acc, "rating": player_rating}
+    return enriched
+
 def build_competition_rows(season_stats, year="2026"):
     comps = season_stats.get("competitions", {})
     if not comps:
@@ -447,32 +474,6 @@ def bootstrap_universe():
             main_stat = stats_list_2026[0] if stats_list_2026 else stats_list_2025[0]
             team_name = main_stat.get("team", {}).get("name", "Unknown")
             
-            def parse_stats(stats_list):
-                enriched = {"total": {}, "competitions": {}}
-                if not stats_list: return enriched
-                for stat in stats_list:
-                    comp_name = stat.get("league", {}).get("name", "Unknown")
-                    g = stat.get("games", {}).get("appearences", 0) or 0
-                    if g == 0: continue
-                    enriched["competitions"][comp_name] = {
-                        "games": g, "minutes": stat.get("games", {}).get("minutes", 0),
-                        "goals": stat.get("goals", {}).get("total", 0) or 0, "assists": stat.get("goals", {}).get("assists", 0) or 0,
-                        "saves": stat.get("goals", {}).get("saves", 0) or 0, "shots_on": stat.get("shots", {}).get("on", 0) or 0,
-                        "key_passes": stat.get("passes", {}).get("key", 0) or 0, "pass_acc": stat.get("passes", {}).get("accuracy", 0) or 0,
-                        "tackles": stat.get("tackles", {}).get("total", 0) or 0, "interceptions": stat.get("tackles", {}).get("interceptions", 0) or 0,
-                        "yellow_cards": stat.get("cards", {}).get("yellow", 0) or 0, "red_cards": stat.get("cards", {}).get("red", 0) or 0,
-                        "rating": stat.get("games", {}).get("rating", "N/A")
-                    }
-                t_games = sum(s["games"] for s in enriched["competitions"].values())
-                t_goals = sum(s["goals"] for s in enriched["competitions"].values())
-                t_assists = sum(s["assists"] for s in enriched["competitions"].values())
-                # Calculate weighted pass accuracy
-                total_pass_sum = sum((s["pass_acc"] * s["games"]) for s in enriched["competitions"].values() if s["pass_acc"])
-                t_pass_acc = round(total_pass_sum / t_games) if t_games > 0 else 0
-                
-                enriched["total"] = {"games": t_games, "goals": t_goals, "assists": t_assists, "pass_acc": t_pass_acc, "rating": player.get("rating", "N/A")}
-                return enriched
-
             database[p_id] = {
                 "name": player["name"],
                 "slug": get_player_slug(player["name"]),
@@ -481,8 +482,8 @@ def bootstrap_universe():
                 "photo": player.get("photo", ""),
                 "age": player.get("age", "N/A"),
                 "nationality": player.get("nationality", "N/A"),
-                "stats_2026": parse_stats(stats_list_2026),
-                "stats_2025": parse_stats(stats_list_2025),
+                "stats_2026": parse_stats(stats_list_2026, player.get("rating", "N/A")),
+                "stats_2025": parse_stats(stats_list_2025, item_2025.get("player", {}).get("rating", "N/A")),
                 "recent_games": []
             }
             
@@ -522,11 +523,12 @@ def process_nightly_maintenance(database):
                     player_obj = slot.get("player", {})
                     p_id = str(player_obj.get("id"))
                     live_stats = player_obj.get("live_stats", {})
-                    season_stats_snapshot = player_obj.get("season_stats", {})
                     
+                    # 1. Skip if no ID, or if player played 0 minutes (no live stats / N/A rating)
                     if not p_id or p_id == "None" or not live_stats or live_stats.get("rating") == "N/A":
                         continue
                         
+                    # 2. Discover unknown players
                     if p_id not in database:
                         print(f"      🆕 New Player Discovered: {player_obj.get('name')} (ID: {p_id})")
                         database[p_id] = {
@@ -537,9 +539,10 @@ def process_nightly_maintenance(database):
                             "stats_2026": {"total": {}, "competitions": {}}, "stats_2025": {"total": {}, "competitions": {}},
                             "recent_games": []
                         }
+                        # We write initial HTML to disk, we'll update it below
                         write_initial_html_file(p_id, database[p_id])
                     
-                    # Update Game Log
+                    # 3. Prepend to Game Log Queue
                     match_log_entry = {
                         "date": yesterday_str, "opponent_name": opp_name, "is_home": is_home,
                         "result": res_char, "score_line": score_line,
@@ -549,10 +552,27 @@ def process_nightly_maintenance(database):
                     database[p_id]["recent_games"].insert(0, match_log_entry)
                     if len(database[p_id]["recent_games"]) > 10: database[p_id]["recent_games"].pop()
                     
-                    # Prep HTML In-Place Updates
+                    # 4. FETCH FRESH 2026 SEASON STATS DIRECTLY FROM API-FOOTBALL
+                    print(f"      📡 Fetching fresh 2026 season stats for {player_obj.get('name')}...")
+                    fresh_api_data = fetch_api(f"players?id={p_id}&season=2026")
+                    
+                    season_stats_snapshot = {}
+                    player_api_rating = live_stats.get("rating", "N/A")
+                    
+                    if fresh_api_data and fresh_api_data.get("response"):
+                        p_data_api = fresh_api_data["response"][0]
+                        stats_list_2026 = p_data_api.get("statistics", [])
+                        player_api_rating = p_data_api.get("player", {}).get("rating", live_stats.get("rating", "N/A"))
+                        
+                        # Parse the fresh stats object
+                        season_stats_snapshot = parse_stats(stats_list_2026, player_api_rating)
+                        # Optionally update age/position directly from the API response
+                        player_obj["age"] = p_data_api.get("player", {}).get("age", player_obj.get("age"))
+                    
+                    # 5. Prep HTML In-Place Updates
                     updates = {
                         "rows_gamelog": build_gamelog_rows(database[p_id]["recent_games"]),
-                        "rating": live_stats.get("rating", "N/A"),
+                        "rating": player_api_rating,
                         "age": player_obj.get("age"),
                         "position": player_obj.get("pos")
                     }
@@ -567,6 +587,7 @@ def process_nightly_maintenance(database):
                             "rows_2026": build_competition_rows(season_stats_snapshot, "2026")
                         })
                         
+                    # Surgically execute the DOM swap on the HTML file
                     update_player_html(database[p_id]["slug"], updates)
 
     with open(DATABASE_PATH, "w", encoding="utf-8") as f:
