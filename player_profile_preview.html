@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- 1. STANDARD SEO META TAGS -->
-    <title>{{ player_name }} Stats, Lineups & Profile | Futbol Starting Eleven</title>
-    <meta name="description" content="Get live matchday stats, starting lineup status, and season performance metrics for {{ player_name }} ({{ team_name }}). Track historical data and tactical profiles.">
+    <!-- 1. CONVERSATIONAL SEO META TAGS -->
+    <title>Is Bukayo Saka Starting Today? Lineup & Stats | Futbol Starting Eleven</title>
+    <meta name="description" content="Is Bukayo Saka starting today? Get live matchday lineup status, real-time performance stats, and season overview metrics for Bukayo Saka (Arsenal).">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://futbolstartingeleven.com/players/{{ player_slug }}/">
+    <link rel="canonical" href="https://futbolstartingeleven.com/players/bukayo-saka/">
 
-    <!-- 2. OPEN GRAPH META TAGS (Facebook, Bluesky, LinkedIn) -->
+    <!-- 2. OPEN GRAPH META TAGS -->
     <meta property="og:site_name" content="Futbol Starting Eleven">
     <meta property="og:type" content="profile">
-    <meta property="og:title" content="{{ player_name }} Profile & Live Stats | Futbol Starting Eleven">
-    <meta property="og:description" content="Live starting lineups, form ratings, and seasonal breakdown for {{ player_name }} at {{ team_name }}.">
-    <meta property="og:url" content="https://futbolstartingeleven.com/players/{{ player_slug }}/">
+    <meta property="og:title" content="Is Bukayo Saka Starting Today? Lineup & Stats | Futbol Starting Eleven">
+    <meta property="og:description" content="Live starting lineups, form ratings, and seasonal breakdown for Bukayo Saka at Arsenal.">
+    <meta property="og:url" content="https://futbolstartingeleven.com/players/bukayo-saka/">
     <meta property="og:image" content="https://futbolstartingeleven.com/social-share1.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -23,8 +23,8 @@
     <!-- 3. X / TWITTER CARD META TAGS -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:domain" content="futbolstartingeleven.com">
-    <meta name="twitter:title" content="{{ player_name }} - {{ team_name }} Matchday Profile">
-    <meta name="twitter:description" content="Track live performance matrix, formation maps, and stats for {{ player_name }} on Futbol Starting Eleven.">
+    <meta name="twitter:title" content="Bukayo Saka - Arsenal Matchday Profile">
+    <meta name="twitter:description" content="Track live performance matrix, formation maps, and stats for Bukayo Saka on Futbol Starting Eleven.">
     <meta name="twitter:image" content="https://futbolstartingeleven.com/social-share1.png">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -98,24 +98,16 @@
             margin-bottom: 20px;
         }
 
-        /* SEAMLESS SEO LINK STYLES (Keeps native formatting) */
+        /* SEAMLESS SEO LINK STYLES */
         .seo-link {
             color: inherit; 
             text-decoration: none; 
             transition: color 0.15s ease-in-out;
         }
-        .sidebar-player-meta .seo-link:hover {
-            color: #20c997; 
-        }
-        .table tbody td .seo-link:hover {
-            color: #198754;
-        }
-        .info-card .seo-link {
-            font-weight: inherit;
-        }
-        .info-card .seo-link:hover {
-            color: #198754;
-        }
+        .sidebar-player-meta .seo-link:hover { color: #20c997; }
+        .table tbody td .seo-link:hover { color: #198754; }
+        .info-card .seo-link { font-weight: inherit; }
+        .info-card .seo-link:hover { color: #198754; }
 
         /* INFO CARDS & DATA TABLES */
         .info-card {
@@ -269,7 +261,6 @@
                     <div class="text-start">
                         <div class="stat-row">
                             <span class="stat-label">Nationality</span>
-                            <!-- HTML Decimal Entities used for cross-platform rendering -->
                             <span class="stat-value">England &#127461;&#127463;&#127470;&#127481;</span>
                         </div>
                         <div class="stat-row">
@@ -313,7 +304,7 @@
                     </div>
                 </div>
 
-                <!-- NEW SECTION: UPCOMING MATCHUP HEAD-TO-HEAD -->
+                <!-- UPCOMING MATCHUP HEAD-TO-HEAD -->
                 <div class="info-card" style="margin-bottom: 20px;">
                     <h3>Matchup History: Arsenal vs Chelsea</h3>
                     <div class="row g-2 mb-3">
@@ -337,7 +328,6 @@
                         </div>
                     </div>
                     
-                    <!-- Last 5 Match Outcomes -->
                     <div class="table-responsive">
                         <table class="table table-sm table-borderless mb-0 text-center" style="font-size: 0.8rem;">
                             <thead>
@@ -368,7 +358,7 @@
                     </div>
                 </div>
 
-                <!-- POSITION STATISTICS -->
+                <!-- POSITION STATISTICS OVERVIEW -->
                 <div class="info-card">
                     <h3>2025/2026 Season Overview (All Comps)</h3>
                     <div class="row g-3">
@@ -448,6 +438,94 @@
                                     <td class="text-center">12</td>
                                     <td class="text-center">55%</td>
                                     <td class="text-center">0 / 0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ROLLING 10-GAME MATCH LOG -->
+                <div class="info-card">
+                    <h3>Recent Matches (Last 10 Games)</h3>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-borderless mb-0 text-center" style="font-size: 0.8rem;">
+                            <thead>
+                                <tr style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                                    <th class="text-start" style="padding: 8px 12px; color: #6c757d;">Date</th>
+                                    <th class="text-start" style="padding: 8px; color: #6c757d;">Opponent</th>
+                                    <th style="padding: 8px; color: #6c757d;">Result</th>
+                                    <th style="padding: 8px; color: #6c757d;">Min</th>
+                                    <th style="padding: 8px; color: #6c757d;">Gls</th>
+                                    <th style="padding: 8px; color: #6c757d;">Ast</th>
+                                    <th style="padding: 8px; color: #6c757d;">Sh (On)</th>
+                                    <th style="padding: 8px; color: #6c757d;">Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- MATCH ROW 1 -->
+                                <tr>
+                                    <td class="text-start" style="padding: 8px 12px;">Apr 23</td>
+                                    <td class="text-start" style="padding: 8px;">
+                                        vs <a href="/lineups/chelsea/" class="seo-link fw-bold text-dark">Chelsea</a>
+                                    </td>
+                                    <td class="text-success fw-bold" style="padding: 8px;">W 5-0</td>
+                                    <td style="padding: 8px;">85'</td>
+                                    <td class="text-success fw-bold" style="padding: 8px;">1</td>
+                                    <td class="text-success fw-bold" style="padding: 8px;">1</td>
+                                    <td style="padding: 8px;">3 (2)</td>
+                                    <td class="text-success fw-bold" style="padding: 8px;">8.4</td>
+                                </tr>
+                                <!-- MATCH ROW 2 -->
+                                <tr>
+                                    <td class="text-start" style="padding: 8px 12px;">Apr 18</td>
+                                    <td class="text-start" style="padding: 8px;">
+                                        @ <a href="/lineups/tottenham-hotspur/" class="seo-link fw-bold text-dark">Tottenham</a>
+                                    </td>
+                                    <td class="text-danger fw-bold" style="padding: 8px;">L 1-2</td>
+                                    <td style="padding: 8px;">90'</td>
+                                    <td class="text-muted" style="padding: 8px;">0</td>
+                                    <td class="text-muted" style="padding: 8px;">0</td>
+                                    <td style="padding: 8px;">1 (0)</td>
+                                    <td style="padding: 8px;">6.2</td>
+                                </tr>
+                                <!-- MATCH ROW 3 -->
+                                <tr>
+                                    <td class="text-start" style="padding: 8px 12px;">Apr 12</td>
+                                    <td class="text-start" style="padding: 8px;">
+                                        vs <a href="/lineups/manchester-city/" class="seo-link fw-bold text-dark">Man City</a>
+                                    </td>
+                                    <td class="text-muted fw-bold" style="padding: 8px;">D 1-1</td>
+                                    <td style="padding: 8px;">75'</td>
+                                    <td class="text-muted" style="padding: 8px;">0</td>
+                                    <td class="text-success fw-bold" style="padding: 8px;">1</td>
+                                    <td style="padding: 8px;">2 (1)</td>
+                                    <td class="text-success fw-bold" style="padding: 8px;">7.1</td>
+                                </tr>
+                                <!-- MATCH ROW 4 -->
+                                <tr>
+                                    <td class="text-start" style="padding: 8px 12px;">Apr 05</td>
+                                    <td class="text-start" style="padding: 8px;">
+                                        @ <a href="/lineups/brighton-and-hove-albion/" class="seo-link fw-bold text-dark">Brighton</a>
+                                    </td>
+                                    <td class="text-success fw-bold" style="padding: 8px;">W 3-0</td>
+                                    <td style="padding: 8px;">64'</td>
+                                    <td class="text-success fw-bold" style="padding: 8px;">1</td>
+                                    <td class="text-muted" style="padding: 8px;">0</td>
+                                    <td style="padding: 8px;">4 (2)</td>
+                                    <td class="text-success fw-bold" style="padding: 8px;">7.8</td>
+                                </tr>
+                                <!-- MATCH ROW 5 -->
+                                <tr>
+                                    <td class="text-start" style="padding: 8px 12px;">Mar 30</td>
+                                    <td class="text-start" style="padding: 8px;">
+                                        vs <a href="/lineups/aston-villa/" class="seo-link fw-bold text-dark">Aston Villa</a>
+                                    </td>
+                                    <td class="text-danger fw-bold" style="padding: 8px;">L 0-2</td>
+                                    <td style="padding: 8px;">90'</td>
+                                    <td class="text-muted" style="padding: 8px;">0</td>
+                                    <td class="text-muted" style="padding: 8px;">0</td>
+                                    <td style="padding: 8px;">2 (0)</td>
+                                    <td style="padding: 8px;">6.5</td>
                                 </tr>
                             </tbody>
                         </table>
