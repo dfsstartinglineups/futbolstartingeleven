@@ -173,6 +173,23 @@
             letter-spacing: 0.5px;
         }
 
+        /* GREEN PULSING BALL ANIMATION */
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); }
+        }
+        .live-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #20c997;
+            border-radius: 50%;
+            margin-right: 6px;
+            margin-bottom: 1px;
+            animation: pulse-green 2s infinite;
+        }
+
         @media (max-width: 576px) { 
             .header-brand { font-size: 1.5rem; } 
             .page-title-bar h1 { font-size: 1.4rem; }
@@ -208,22 +225,20 @@
             <div class="col-lg-4">
                 <div class="profile-sidebar-card">
                     
-                    <!-- Integrated Profile Image & Badges -->
                     <div class="player-avatar-wrapper">
                         <img src="https://media.api-sports.io/football/players/1467.png" alt="Bukayo Saka" class="player-avatar">
                         <img src="https://media.api-sports.io/football/teams/42.png" alt="Arsenal" class="team-badge-sub">
                     </div>
                     
                     <div class="sidebar-player-name">Bukayo Saka</div>
-                    <div class="sidebar-player-meta">Arsenal • Midfielder</div>
+                    <div class="sidebar-player-meta">Arsenal • Attacker</div>
                     
                     <hr style="border-color: #dee2e6; opacity: 1; margin: 15px 0;">
                     
-                    <!-- Personal Details List -->
                     <div class="text-start">
                         <div class="stat-row">
                             <span class="stat-label">Nationality</span>
-                            <span class="stat-value">England 🏴󠁧󠁢󠁥󠁮󠁧󠁿</span>
+                            <span class="stat-value">England \uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67\uDB40\uDC7F</span>
                         </div>
                         <div class="stat-row">
                             <span class="stat-label">Age</span>
@@ -250,10 +265,23 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: STATS AND TABLES -->
+            <!-- RIGHT COLUMN: LIVE CARD + MATCH SPECIFIC STATISTICS -->
             <div class="col-lg-8">
                 
-                <!-- Aggregate Stats Summary -->
+                <!-- LIVE STATUS BAR (Toggled programmatically by generator) -->
+                <div class="info-card border-success" style="border-left: 5px solid #20c997;">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center">
+                            <span class="live-dot"></span>
+                            <span class="fw-bold text-dark" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Live Matchday Center</span>
+                        </div>
+                        <div class="stat-value text-end" style="font-size: 0.9rem;">
+                            Arsenal vs Chelsea (62') <span class="text-muted font-monospace mx-1">|</span> <span class="badge bg-success text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Starting XI (LW)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- POSITION SPECIFIC BLOCK: ATTACKER / FORWARD PROFILE SCHEMA -->
                 <div class="info-card">
                     <h3>2025/2026 Season Overview (All Comps)</h3>
                     <div class="row g-3">
@@ -261,12 +289,6 @@
                             <div class="big-stat-box">
                                 <div class="big-stat-value">34</div>
                                 <div class="big-stat-label">Matches</div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-sm-3">
-                            <div class="big-stat-box">
-                                <div class="big-stat-value">2,850</div>
-                                <div class="big-stat-label">Minutes</div>
                             </div>
                         </div>
                         <div class="col-6 col-sm-3">
@@ -281,10 +303,16 @@
                                 <div class="big-stat-label">Assists</div>
                             </div>
                         </div>
+                        <div class="col-6 col-sm-3">
+                            <div class="big-stat-box">
+                                <div class="big-stat-value">28</div>
+                                <div class="big-stat-label">Shots on Target</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Granular Competition Split -->
+                <!-- PERFORMANCE BREAKDOWN MATRIX -->
                 <div class="info-card">
                     <h3>Performance by Competition</h3>
                     <div class="table-responsive">
@@ -328,23 +356,8 @@
                                     <td class="text-center">55%</td>
                                     <td class="text-center">0 / 0</td>
                                 </tr>
-                                <tr>
-                                    <td><img src="https://media.api-sports.io/football/leagues/45.png" class="comp-logo"> FA Cup</td>
-                                    <td class="text-center">2</td>
-                                    <td class="text-center">145</td>
-                                    <td class="text-center fw-bold text-success">0</td>
-                                    <td class="text-center fw-bold">0</td>
-                                    <td class="text-center">3 (1)</td>
-                                    <td class="text-center">78%</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">40%</td>
-                                    <td class="text-center">1 / 0</td>
-                                </tr>
                             </tbody>
                         </table>
-                    </div>
-                    <div class="mt-2 text-muted fst-italic text-end" style="font-size: 0.75rem;">
-                        MP = Matches Played | Sh (On) = Shots (On Target) | Drb % = Successful Dribbles
                     </div>
                 </div>
                 
