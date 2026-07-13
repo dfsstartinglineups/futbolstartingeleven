@@ -26,21 +26,6 @@
             filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6)); 
         }
 
-        /* LOW-PROFILE TITLE BAR */
-        .page-title-bar {
-            background-color: #fff;
-            border-bottom: 1px solid #dee2e6;
-            padding: 20px 0;
-            margin-bottom: 25px;
-        }
-        .page-title-bar h1 {
-            font-size: 1.75rem;
-            font-weight: 900;
-            color: #212529;
-            margin: 0;
-            letter-spacing: -0.5px;
-        }
-
         /* SIDEBAR PROFILE CARD */
         .profile-sidebar-card {
             background: #fff;
@@ -113,18 +98,20 @@
         .stat-row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 8px 0;
             border-bottom: 1px solid #f8f9fa;
         }
         .stat-row:last-child { border-bottom: none; }
         .stat-label { color: #6c757d; font-size: 0.85rem; font-weight: 600; }
-        .stat-value { color: #212529; font-size: 0.9rem; font-weight: 700; }
+        .stat-value { color: #212529; font-size: 0.9rem; font-weight: 700; text-align: right; }
 
-        /* PERFORMANCE TABLE */
+        /* PERFORMANCE TABLE WRAPPER WITH CONTAINED OVERFLOW */
         .table-responsive {
             border-radius: 8px;
-            overflow: hidden;
+            overflow-x: auto;
             border: 1px solid #dee2e6;
+            width: 100%;
         }
         .table thead th {
             background-color: #212529;
@@ -192,14 +179,13 @@
 
         @media (max-width: 576px) { 
             .header-brand { font-size: 1.5rem; } 
-            .page-title-bar h1 { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-0" style="background-color: #212529; z-index: 1050;">
+    <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-4" style="background-color: #212529; z-index: 1050;">
         <div class="container d-flex justify-content-between align-items-center flex-wrap">
             <div class="header-brand">
                 <a href="/" class="text-decoration-none">Futbol Starting <span>Eleven</span></a>
@@ -210,18 +196,11 @@
         </div>
     </nav>
 
-    <!-- LOW-PROFILE TITLE BAR -->
-    <div class="page-title-bar">
-        <div class="container">
-            <h1>Player Performance Center</h1>
-        </div>
-    </div>
-
     <!-- MAIN GRID CONTAINER -->
     <div class="container mb-5">
         <div class="row g-4">
             
-            <!-- LEFT COLUMN: COMBINED PHOTO + PERSONAL DETAILS -->
+            <!-- LEFT COLUMN: PHOTO + PERSONAL DETAILS -->
             <div class="col-lg-4">
                 <div class="profile-sidebar-card">
                     
@@ -238,7 +217,8 @@
                     <div class="text-start">
                         <div class="stat-row">
                             <span class="stat-label">Nationality</span>
-                            <span class="stat-value">England \uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67\uDB40\uDC7F</span>
+                            <!-- Used proper HTML hex entities for the England flag cross sequence -->
+                            <span class="stat-value">England &#127461;&#127463;&#127470;&#127481;</span>
                         </div>
                         <div class="stat-row">
                             <span class="stat-label">Age</span>
@@ -265,10 +245,10 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: LIVE CARD + MATCH SPECIFIC STATISTICS -->
+            <!-- RIGHT COLUMN: LIVE CARD + SPECIFIC STATISTICS -->
             <div class="col-lg-8">
                 
-                <!-- LIVE STATUS BAR (Toggled programmatically by generator) -->
+                <!-- LIVE STATUS BAR -->
                 <div class="info-card border-success" style="border-left: 5px solid #20c997;">
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div class="d-flex align-items-center">
@@ -281,7 +261,7 @@
                     </div>
                 </div>
 
-                <!-- POSITION SPECIFIC BLOCK: ATTACKER / FORWARD PROFILE SCHEMA -->
+                <!-- POSITION STATISTICS -->
                 <div class="info-card">
                     <h3>2025/2026 Season Overview (All Comps)</h3>
                     <div class="row g-3">
