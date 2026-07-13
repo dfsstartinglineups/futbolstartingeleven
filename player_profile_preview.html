@@ -75,6 +75,16 @@
             letter-spacing: 0.5px;
             margin-bottom: 20px;
         }
+        .seo-link {
+            color: #198754;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.15s ease-in-out;
+        }
+        .seo-link:hover {
+            color: #20c997;
+            text-decoration: underline;
+        }
 
         /* INFO CARDS & DATA TABLES */
         .info-card {
@@ -105,6 +115,17 @@
         .stat-row:last-child { border-bottom: none; }
         .stat-label { color: #6c757d; font-size: 0.85rem; font-weight: 600; }
         .stat-value { color: #212529; font-size: 0.9rem; font-weight: 700; text-align: right; }
+
+        /* H2H METRIC STYLING */
+        .h2h-summary-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .h2h-record-title { font-size: 0.75rem; font-weight: 700; color: #6c757d; text-transform: uppercase; margin-bottom: 3px; }
+        .h2h-record-value { font-size: 1.25rem; font-weight: 800; color: #212529; }
 
         /* PERFORMANCE TABLE WRAPPER WITH CONTAINED OVERFLOW */
         .table-responsive {
@@ -210,14 +231,13 @@
                     </div>
                     
                     <div class="sidebar-player-name">Bukayo Saka</div>
-                    <div class="sidebar-player-meta">Arsenal • Attacker</div>
+                    <div class="sidebar-player-meta"><a href="/lineups/arsenal/" class="seo-link">Arsenal</a> • Attacker</div>
                     
                     <hr style="border-color: #dee2e6; opacity: 1; margin: 15px 0;">
                     
                     <div class="text-start">
                         <div class="stat-row">
                             <span class="stat-label">Nationality</span>
-                            <!-- Used proper HTML hex entities for the England flag cross sequence -->
                             <span class="stat-value">England &#127461;&#127463;&#127470;&#127481;</span>
                         </div>
                         <div class="stat-row">
@@ -249,15 +269,70 @@
             <div class="col-lg-8">
                 
                 <!-- LIVE STATUS BAR -->
-                <div class="info-card border-success" style="border-left: 5px solid #20c997;">
+                <div class="info-card border-success" style="border-left: 5px solid #20c997; margin-bottom: 20px;">
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div class="d-flex align-items-center">
                             <span class="live-dot"></span>
                             <span class="fw-bold text-dark" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Live Matchday Center</span>
                         </div>
                         <div class="stat-value text-end" style="font-size: 0.9rem;">
-                            Arsenal vs Chelsea (62') <span class="text-muted font-monospace mx-1">|</span> <span class="badge bg-success text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Starting XI (LW)</span>
+                            <a href="/lineups/arsenal/" class="seo-link">Arsenal</a> vs Chelsea (62') <span class="text-muted font-monospace mx-1">|</span> <span class="badge bg-success text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Starting XI (LW)</span>
                         </div>
+                    </div>
+                </div>
+
+                <!-- NEW SECTION: UPCOMING MATCHUP HEAD-TO-HEAD -->
+                <div class="info-card" style="margin-bottom: 20px;">
+                    <h3>Matchup History: Arsenal vs Chelsea</h3>
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <div class="h2h-summary-box">
+                                <div class="h2h-record-title">Arsenal Wins</div>
+                                <div class="h2h-record-value text-success">12</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="h2h-summary-box">
+                                <div class="h2h-record-title">Draws</div>
+                                <div class="h2h-record-value text-muted">8</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="h2h-summary-box">
+                                <div class="h2h-record-title">Chelsea Wins</div>
+                                <div class="h2h-record-value text-danger">6</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Last 5 Match Outcomes -->
+                    <div class="table-responsive">
+                        <table class="table table-sm table-borderless mb-0 text-center" style="font-size: 0.8rem;">
+                            <thead>
+                                <tr style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                                    <th class="text-start" style="padding: 8px 12px; color: #6c757d;">Date</th>
+                                    <th style="padding: 8px; color: #6c757d;">Competition</th>
+                                    <th class="text-end" style="padding: 8px 12px; color: #6c757d;">Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-start" style="padding: 8px 12px;">Apr 23, 2026</td>
+                                    <td style="padding: 8px;"><a href="/leagues/english-premier-league/" class="seo-link text-muted font-weight-normal">Premier League</a></td>
+                                    <td class="text-end fw-bold text-success" style="padding: 8px 12px;">Arsenal 5 - 0 Chelsea</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-start" style="padding: 8px 12px;">Oct 21, 2025</td>
+                                    <td style="padding: 8px;"><a href="/leagues/english-premier-league/" class="seo-link text-muted font-weight-normal">Premier League</a></td>
+                                    <td class="text-end fw-bold text-muted" style="padding: 8px 12px;">Chelsea 2 - 2 Arsenal</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-start" style="padding: 8px 12px;">May 02, 2025</td>
+                                    <td style="padding: 8px;"><a href="/leagues/english-premier-league/" class="seo-link text-muted font-weight-normal">Premier League</a></td>
+                                    <td class="text-end fw-bold text-success" style="padding: 8px 12px;">Arsenal 3 - 1 Chelsea</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -313,7 +388,10 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><img src="https://media.api-sports.io/football/leagues/39.png" class="comp-logo"> Premier League</td>
+                                    <td>
+                                        <img src="https://media.api-sports.io/football/leagues/39.png" class="comp-logo">
+                                        <a href="/leagues/english-premier-league/" class="seo-link">Premier League</a>
+                                    </td>
                                     <td class="text-center">26</td>
                                     <td class="text-center">2,210</td>
                                     <td class="text-center fw-bold text-success">11</td>
@@ -325,7 +403,10 @@
                                     <td class="text-center">3 / 0</td>
                                 </tr>
                                 <tr>
-                                    <td><img src="https://media.api-sports.io/football/leagues/2.png" class="comp-logo"> Champions League</td>
+                                    <td>
+                                        <img src="https://media.api-sports.io/football/leagues/2.png" class="comp-logo">
+                                        <a href="/leagues/uefa-champions-league/" class="seo-link">Champions League</a>
+                                    </td>
                                     <td class="text-center">6</td>
                                     <td class="text-center">495</td>
                                     <td class="text-center fw-bold text-success">3</td>
