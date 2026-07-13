@@ -21,7 +21,7 @@ SITEMAP_PATH = os.path.join(ROOT_DIR, "sitemap-players.xml")
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(PLAYERS_DIR, exist_ok=True)
 
-# 41 Supported Leagues from your core stack
+# 41 Supported Leagues
 TOP_LEAGUE_IDS = [
     39, 40, 140, 135, 78, 61, 88, 94, 203, 144, 179, 119, # Europe
     253, 262, 71, 128, 239, # Americas
@@ -80,12 +80,12 @@ def generate_player_sitemap(database):
         f.write(pretty_xml)
     print(f"✅ sitemap-players.xml saved with {len(database)} player profile links.")
 
-def build_competition_rows(season_stats):
-    rows = ""
+def build_competition_rows(season_stats, year="2026"):
     comps = season_stats.get("competitions", {})
     if not comps:
-        return '<tr><td colspan="10" class="text-center text-muted">No competitive data available for this player.</td></tr>'
+        return f'<tr><td colspan="10" class="text-center text-muted fst-italic py-3">No competitive data available for the {year} season yet.</td></tr>'
     
+    rows = ""
     for comp_name, stats in comps.items():
         comp_slug = get_league_slug(comp_name)
         games = stats.get("games", 0)
@@ -93,7 +93,6 @@ def build_competition_rows(season_stats):
         goals = stats.get("goals", 0)
         assists = stats.get("assists", 0)
         
-        # Positional layout metric handling
         shots_on = stats.get("shots_on", 0)
         pass_acc = stats.get("pass_acc", 0)
         key_passes = stats.get("key_passes", 0)
@@ -101,9 +100,6 @@ def build_competition_rows(season_stats):
         
         yellow = stats.get("yellow_cards", 0)
         red = stats.get("red_cards", 0)
-        rating = stats.get("rating", "N/A")
-        
-        rating_class = "text-success fw-bold" if rating != "N/A" and float(rating) >= 7.0 else ""
         
         rows += f"""<tr>
             <td><a href="/leagues/{comp_slug}/" class="seo-link fw-bold text-dark">{comp_name}</a></td>
@@ -121,7 +117,7 @@ def build_competition_rows(season_stats):
 
 def build_gamelog_rows(recent_games):
     if not recent_games:
-        return '<tr><td colspan="8" class="text-center text-muted">No recent game log data. Waiting for match appearance.</td></tr>'
+        return '<tr><td colspan="8" class="text-center text-muted fst-italic py-3">No recent game log data. Waiting for match appearance.</td></tr>'
     
     rows = ""
     for match in recent_games:
@@ -147,19 +143,21 @@ def build_gamelog_rows(recent_games):
         </tr>"""
     return rows
 
-def write_html_file(p_data):
+def write_initial_html_file(p_id, p_data):
+    """Creates the HTML file from scratch during the Bootstrap phase."""
     player_folder = os.path.join(PLAYERS_DIR, p_data['slug'])
     os.makedirs(player_folder, exist_ok=True)
     
     stats_2026 = p_data.get("stats_2026", {})
+    stats_2025 = p_data.get("stats_2025", {})
     total_stats = stats_2026.get("total", {})
     
-    # Extract structural metrics
     gls = total_stats.get("goals", 0)
     ast = total_stats.get("assists", 0)
     rating = total_stats.get("rating", "N/A")
     
-    comp_rows_html = build_competition_rows(stats_2026)
+    comp_rows_2026 = build_competition_rows(stats_2026, "2026")
+    comp_rows_2025 = build_competition_rows(stats_2025, "2025")
     gamelog_rows_html = build_gamelog_rows(p_data.get("recent_games", []))
     
     html_content = f"""<!DOCTYPE html>
@@ -168,13 +166,11 @@ def write_html_file(p_data):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- 1. CONVERSATIONAL SEO META TAGS -->
     <title>Is {p_data['name']} Starting Today? Lineup & Stats | Futbol Starting Eleven</title>
     <meta name="description" content="Is {p_data['name']} starting today? Get live matchday lineup status, real-time performance stats, and season overview metrics for {p_data['name']} ({p_data['team_name']}).">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://futbolstartingeleven.com/players/{p_data['slug']}/">
 
-    <!-- 2. OPEN GRAPH META TAGS -->
     <meta property="og:site_name" content="Futbol Starting Eleven">
     <meta property="og:type" content="profile">
     <meta property="og:title" content="Is {p_data['name']} Starting Today? Lineup & Stats | Futbol Starting Eleven">
@@ -184,7 +180,6 @@ def write_html_file(p_data):
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
-    <!-- 3. X / TWITTER CARD META TAGS -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:domain" content="futbolstartingeleven.com">
     <meta name="twitter:title" content="{p_data['name']} - {p_data['team_name']} Matchday Profile">
@@ -244,12 +239,12 @@ def write_html_file(p_data):
                         <img src="{p_data['photo']}" alt="{p_data['name']}" class="player-avatar">
                     </div>
                     <div class="sidebar-player-name">{p_data['name']}</div>
-                    <div class="sidebar-player-meta"><a href="/lineups/{get_team_slug(p_data['team_name'])}/" class="seo-link fw-bold">{p_data['team_name']}</a> • {p_data['position']}</div>
+                    <div class="sidebar-player-meta"><a href="/lineups/{get_team_slug(p_data['team_name'])}/" class="seo-link fw-bold">{p_data['team_name']}</a> • <span id="val-position">{p_data['position']}</span></div>
                     <hr style="border-color: #dee2e6; opacity: 1; margin: 15px 0;">
                     <div class="text-start">
-                        <div class="stat-row"><span class="stat-label">Age</span><span class="stat-value">{p_data.get('age', 'N/A')}</span></div>
                         <div class="stat-row"><span class="stat-label">Nationality</span><span class="stat-value">{p_data.get('nationality', 'N/A')}</span></div>
-                        <div class="stat-row"><span class="stat-label">Form Rating</span><span class="stat-value text-success">{rating}</span></div>
+                        <div class="stat-row"><span class="stat-label">Age</span><span class="stat-value" id="val-age">{p_data.get('age', 'N/A')}</span></div>
+                        <div class="stat-row"><span class="stat-label">Form Rating</span><span class="stat-value text-success" id="val-rating">{rating}</span></div>
                     </div>
                 </div>
             </div>
@@ -268,15 +263,16 @@ def write_html_file(p_data):
                 <div class="info-card">
                     <h3>2026 Season Overview</h3>
                     <div class="row g-3">
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{total_stats.get('games', 0)}</div><div class="big-stat-label">Matches</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{gls}</div><div class="big-stat-label">Goals</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{ast}</div><div class="big-stat-label">Assists</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{total_stats.get('pass_acc', 0)}%</div><div class="big-stat-label">Pass Acc</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-matches">{total_stats.get('games', 0)}</div><div class="big-stat-label">Matches</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-goals">{gls}</div><div class="big-stat-label">Goals</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-assists">{ast}</div><div class="big-stat-label">Assists</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-pass">{total_stats.get('pass_acc', 0)}%</div><div class="big-stat-label">Pass Acc</div></div></div>
                     </div>
                 </div>
 
+                <!-- 2026 PERFORMANCE BREAKDOWN MATRIX -->
                 <div class="info-card">
-                    <h3>Performance by Competition</h3>
+                    <h3>2026 Performance by Competition</h3>
                     <div class="table-responsive">
                         <table class="table table-borderless mb-0">
                             <thead>
@@ -293,7 +289,39 @@ def write_html_file(p_data):
                                     <th class="text-center">Yel/Red</th>
                                 </tr>
                             </thead>
-                            <tbody>{comp_rows_html}</tbody>
+                            <tbody>
+                                <!-- START 2026 ROWS -->
+                                {comp_rows_2026}
+                                <!-- END 2026 ROWS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2025 PERFORMANCE BREAKDOWN MATRIX -->
+                <div class="info-card">
+                    <h3>2025 Performance by Competition</h3>
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Competition</th>
+                                    <th class="text-center">MP</th>
+                                    <th class="text-center">Min</th>
+                                    <th class="text-center">Gls</th>
+                                    <th class="text-center">Ast</th>
+                                    <th class="text-center">Sh (On)</th>
+                                    <th class="text-center">Pass Acc</th>
+                                    <th class="text-center">Key P</th>
+                                    <th class="text-center">Tkl(Int) / Sav</th>
+                                    <th class="text-center">Yel/Red</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- START 2025 ROWS -->
+                                {comp_rows_2025}
+                                <!-- END 2025 ROWS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -313,7 +341,11 @@ def write_html_file(p_data):
                                     <th style="padding: 8px; color: #6c757d;">Rating</th>
                                 </tr>
                             </thead>
-                            <tbody>{gamelog_rows_html}</tbody>
+                            <tbody>
+                                <!-- START GAMELOG ROWS -->
+                                {gamelog_rows_html}
+                                <!-- END GAMELOG ROWS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -330,81 +362,129 @@ def write_html_file(p_data):
     with open(os.path.join(player_folder, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_content)
 
+def update_player_html(player_slug, updates):
+    """Surgically updates the HTML file without rebuilding it from scratch."""
+    filepath = os.path.join(PLAYERS_DIR, player_slug, "index.html")
+    if not os.path.exists(filepath):
+        return
+
+    with open(filepath, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    # 1. Update Single Values via IDs
+    single_value_mappings = {
+        "val-age": updates.get("age"),
+        "val-position": updates.get("position"),
+        "val-rating": updates.get("rating"),
+        "val-overview-matches": str(updates.get("overview_matches")) if updates.get("overview_matches") is not None else None,
+        "val-overview-goals": str(updates.get("overview_goals")) if updates.get("overview_goals") is not None else None,
+        "val-overview-assists": str(updates.get("overview_assists")) if updates.get("overview_assists") is not None else None,
+        "val-overview-pass": str(updates.get("overview_pass")) + "%" if updates.get("overview_pass") is not None else None
+    }
+
+    for tag_id, new_val in single_value_mappings.items():
+        if new_val is not None:
+            html = re.sub(
+                rf'(id="{tag_id}"[^>]*>).*?(</)', 
+                rf'\g<1>{new_val}\g<2>', 
+                html
+            )
+
+    # 2. Update Multiline Table Rows via Boundaries
+    if updates.get("rows_2026"):
+        html = re.sub(
+            r'<!-- START 2026 ROWS -->.*?<!-- END 2026 ROWS -->', 
+            f'<!-- START 2026 ROWS -->\n{updates["rows_2026"]}\n<!-- END 2026 ROWS -->', 
+            html, 
+            flags=re.DOTALL
+        )
+
+    if updates.get("rows_gamelog"):
+        html = re.sub(
+            r'<!-- START GAMELOG ROWS -->.*?<!-- END GAMELOG ROWS -->', 
+            f'<!-- START GAMELOG ROWS -->\n{updates["rows_gamelog"]}\n<!-- END GAMELOG ROWS -->', 
+            html, 
+            flags=re.DOTALL
+        )
+
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(html)
+
 def bootstrap_universe():
     print("🛸 DATABASE NOT FOUND! Entering Initial 2026 Roster Bootstrap...")
     database = {}
     
-    # Iterate through each defined league
     for league_id in TOP_LEAGUE_IDS:
-        print(f"📥 Extracting rosters for League {league_id}...")
-        page = 1
-        total_pages = 1
+        print(f"📥 Extracting 2026 and 2025 rosters for League {league_id}...")
         
-        while page <= total_pages:
-            data = fetch_api(f"players?league={league_id}&season=2026&page={page}")
-            if not data or not data.get("response"):
-                break
+        # We will fetch 2026 players, then 2025 players to build the complete dictionary
+        season_data = {2026: {}, 2025: {}}
+        
+        for season in [2026, 2025]:
+            page = 1
+            total_pages = 1
+            while page <= total_pages:
+                data = fetch_api(f"players?league={league_id}&season={season}&page={page}")
+                if not data or not data.get("response"): break
+                total_pages = data.get("paging", {}).get("total", 1)
                 
-            total_pages = data.get("paging", {}).get("total", 1)
+                for item in data["response"]:
+                    p_id = str(item["player"]["id"])
+                    season_data[season][p_id] = item
+                page += 1
+
+        # Build database merging both seasons
+        for p_id, item_2026 in season_data[2026].items():
+            player = item_2026["player"]
+            if not player.get("name") or p_id in database: continue
             
-            for item in data["response"]:
-                player = item["player"]
-                p_id = str(player["id"])
+            stats_list_2026 = item_2026.get("statistics", [])
+            item_2025 = season_data[2025].get(p_id, {})
+            stats_list_2025 = item_2025.get("statistics", [])
+            
+            if not stats_list_2026 and not stats_list_2025: continue
                 
-                if not player.get("name") or p_id in database:
-                    continue
-                    
-                stats_list = item.get("statistics", [])
-                if not stats_list:
-                    continue
-                    
-                main_stat = stats_list[0]
-                team_name = main_stat.get("team", {}).get("name", "Unknown")
-                
-                # Format core stats object
-                enriched_stats = {"total": {}, "competitions": {}}
-                # Minimal translation mapping matching your JIT layout framework
+            main_stat = stats_list_2026[0] if stats_list_2026 else stats_list_2025[0]
+            team_name = main_stat.get("team", {}).get("name", "Unknown")
+            
+            def parse_stats(stats_list):
+                enriched = {"total": {}, "competitions": {}}
+                if not stats_list: return enriched
                 for stat in stats_list:
                     comp_name = stat.get("league", {}).get("name", "Unknown")
                     g = stat.get("games", {}).get("appearences", 0) or 0
                     if g == 0: continue
-                    
-                    enriched_stats["competitions"][comp_name] = {
-                        "games": g,
-                        "minutes": stat.get("games", {}).get("minutes", 0),
-                        "goals": stat.get("goals", {}).get("total", 0) or 0,
-                        "assists": stat.get("goals", {}).get("assists", 0) or 0,
-                        "saves": stat.get("goals", {}).get("saves", 0) or 0,
-                        "shots_on": stat.get("shots", {}).get("on", 0) or 0,
-                        "key_passes": stat.get("passes", {}).get("key", 0) or 0,
-                        "pass_acc": stat.get("passes", {}).get("accuracy", 0) or 0,
-                        "tackles": stat.get("tackles", {}).get("total", 0) or 0,
-                        "interceptions": stat.get("tackles", {}).get("interceptions", 0) or 0,
-                        "yellow_cards": stat.get("cards", {}).get("yellow", 0) or 0,
-                        "red_cards": stat.get("cards", {}).get("red", 0) or 0,
+                    enriched["competitions"][comp_name] = {
+                        "games": g, "minutes": stat.get("games", {}).get("minutes", 0),
+                        "goals": stat.get("goals", {}).get("total", 0) or 0, "assists": stat.get("goals", {}).get("assists", 0) or 0,
+                        "saves": stat.get("goals", {}).get("saves", 0) or 0, "shots_on": stat.get("shots", {}).get("on", 0) or 0,
+                        "key_passes": stat.get("passes", {}).get("key", 0) or 0, "pass_acc": stat.get("passes", {}).get("accuracy", 0) or 0,
+                        "tackles": stat.get("tackles", {}).get("total", 0) or 0, "interceptions": stat.get("tackles", {}).get("interceptions", 0) or 0,
+                        "yellow_cards": stat.get("cards", {}).get("yellow", 0) or 0, "red_cards": stat.get("cards", {}).get("red", 0) or 0,
                         "rating": stat.get("games", {}).get("rating", "N/A")
                     }
+                t_games = sum(s["games"] for s in enriched["competitions"].values())
+                t_goals = sum(s["goals"] for s in enriched["competitions"].values())
+                t_assists = sum(s["assists"] for s in enriched["competitions"].values())
+                # Calculate weighted pass accuracy
+                total_pass_sum = sum((s["pass_acc"] * s["games"]) for s in enriched["competitions"].values() if s["pass_acc"])
+                t_pass_acc = round(total_pass_sum / t_games) if t_games > 0 else 0
                 
-                # Combine totals
-                t_games, t_goals, t_assists = 0, 0, 0
-                for c, s in enriched_stats["competitions"].items():
-                    t_games += s["games"]
-                    t_goals += s["goals"]
-                    t_assists += s["assists"]
-                enriched_stats["total"] = {"games": t_games, "goals": t_goals, "assists": t_assists, "rating": player.get("rating", "N/A")}
+                enriched["total"] = {"games": t_games, "goals": t_goals, "assists": t_assists, "pass_acc": t_pass_acc, "rating": player.get("rating", "N/A")}
+                return enriched
 
-                database[p_id] = {
-                    "name": player["name"],
-                    "slug": get_player_slug(player["name"]),
-                    "team_name": team_name,
-                    "position": main_stat.get("games", {}).get("position", "Midfielder"),
-                    "photo": player.get("photo", ""),
-                    "age": player.get("age", "N/A"),
-                    "nationality": player.get("nationality", "N/A"),
-                    "stats_2026": enriched_stats,
-                    "recent_games": []
-                }
-            page += 1
+            database[p_id] = {
+                "name": player["name"],
+                "slug": get_player_slug(player["name"]),
+                "team_name": team_name,
+                "position": main_stat.get("games", {}).get("position", "Midfielder"),
+                "photo": player.get("photo", ""),
+                "age": player.get("age", "N/A"),
+                "nationality": player.get("nationality", "N/A"),
+                "stats_2026": parse_stats(stats_list_2026),
+                "stats_2025": parse_stats(stats_list_2025),
+                "recent_games": []
+            }
             
     with open(DATABASE_PATH, "w", encoding="utf-8") as f:
         json.dump(database, f, indent=4)
@@ -418,103 +498,88 @@ def process_nightly_maintenance(database):
     yesterday_file = os.path.join(DATA_DIR, f"games_{yesterday_str}.json")
     
     if not os.path.exists(yesterday_file):
-        print(f"ℹ️ Yesterday's match log file matches_{yesterday_str}.json does not exist. Skipping pipeline queue scan.")
+        print(f"ℹ️ Yesterday's match log file matches_{yesterday_str}.json does not exist.")
         return
         
     with open(yesterday_file, "r", encoding="utf-8") as f:
         matches = json.load(f)
         
-    updated_players = set()
-    
     for match in matches:
         status_short = match.get("fixture", {}).get("status", {}).get("short", "NS")
-        if status_short not in ["FT", "AET", "PEN"]:
-            continue
+        if status_short not in ["FT", "AET", "PEN"]: continue
             
-        fixture_id = match["fixture"]["id"]
-        print(f"   📊 Processing box scores for Fixture {fixture_id}...")
-        
-        # Pull player stats directly from the finalized JSON structure
         for side in ["homeLineup", "awayLineup"]:
             lineup_data = match.get(side)
-            if not lineup_data:
-                continue
+            if not lineup_data: continue
                 
-            team_name = lineup_data.get("team", {}).get("name", "Unknown")
             is_home = (side == "homeLineup")
             opp_name = match["teams"]["away"]["name"] if is_home else match["teams"]["home"]["name"]
             score_line = f"{match['goals']['home']}-{match['goals']['away']}"
-            
-            # Determine W/D/L status
-            res_char = "D"
-            if match["goals"]["home"] > match["goals"]["away"]:
-                res_char = "W" if is_home else "L"
-            elif match["goals"]["away"] > match["goals"]["home"]:
-                res_char = "L" if is_home else "W"
+            res_char = "W" if (match["goals"]["home"] > match["goals"]["away"] and is_home) or (match["goals"]["away"] > match["goals"]["home"] and not is_home) else "L" if match["goals"]["home"] != match["goals"]["away"] else "D"
 
             for group in ["startXI", "substitutes"]:
                 for slot in lineup_data.get(group, []):
                     player_obj = slot.get("player", {})
                     p_id = str(player_obj.get("id"))
-                    
-                    if not p_id or p_id == "None":
-                        continue
-                        
                     live_stats = player_obj.get("live_stats", {})
-                    # If they didn't play a single minute, skip log allocation
-                    if not live_stats or live_stats.get("rating") == "N/A":
+                    season_stats_snapshot = player_obj.get("season_stats", {})
+                    
+                    if not p_id or p_id == "None" or not live_stats or live_stats.get("rating") == "N/A":
                         continue
                         
-                    # Discover unknown players on the fly
                     if p_id not in database:
                         print(f"      🆕 New Player Discovered: {player_obj.get('name')} (ID: {p_id})")
                         database[p_id] = {
-                            "name": player_obj.get("name"),
-                            "slug": get_player_slug(player_obj.get("name")),
-                            "team_name": team_name,
-                            "position": player_obj.get("pos", "Midfielder"),
-                            "photo": player_obj.get("photo", ""),
-                            "age": player_obj.get("age", "N/A"),
-                            "nationality": player_obj.get("nationality", "N/A"),
-                            "stats_2026": {"total": {}, "competitions": {}},
+                            "name": player_obj.get("name"), "slug": get_player_slug(player_obj.get("name")),
+                            "team_name": lineup_data.get("team", {}).get("name", "Unknown"),
+                            "position": player_obj.get("pos", "Midfielder"), "photo": player_obj.get("photo", ""),
+                            "age": player_obj.get("age", "N/A"), "nationality": player_obj.get("nationality", "N/A"),
+                            "stats_2026": {"total": {}, "competitions": {}}, "stats_2025": {"total": {}, "competitions": {}},
                             "recent_games": []
                         }
+                        write_initial_html_file(p_id, database[p_id])
                     
-                    # Prepend match stats to rolling queue
+                    # Update Game Log
                     match_log_entry = {
-                        "date": yesterday_str,
-                        "opponent_name": opp_name,
-                        "is_home": is_home,
-                        "result": res_char,
-                        "score_line": score_line,
-                        "minutes": live_stats.get("minutes", 90),
-                        "goals": live_stats.get("goals", 0),
-                        "assists": live_stats.get("assists", 0),
-                        "rating": live_stats.get("rating", "6.5")
+                        "date": yesterday_str, "opponent_name": opp_name, "is_home": is_home,
+                        "result": res_char, "score_line": score_line,
+                        "minutes": live_stats.get("minutes", 90), "goals": live_stats.get("goals", 0),
+                        "assists": live_stats.get("assists", 0), "rating": live_stats.get("rating", "6.5")
                     }
-                    
                     database[p_id]["recent_games"].insert(0, match_log_entry)
-                    # Shift tail index out if capacity exceeded
-                    if len(database[p_id]["recent_games"]) > 10:
-                        database[p_id]["recent_games"].pop()
-                        
-                    updated_players.add(p_id)
+                    if len(database[p_id]["recent_games"]) > 10: database[p_id]["recent_games"].pop()
                     
-    # Rewrite only pages that were actively involved in yesterday's fixtures
-    for p_id in updated_players:
-        write_html_file(database[p_id])
-        
+                    # Prep HTML In-Place Updates
+                    updates = {
+                        "rows_gamelog": build_gamelog_rows(database[p_id]["recent_games"]),
+                        "rating": live_stats.get("rating", "N/A"),
+                        "age": player_obj.get("age"),
+                        "position": player_obj.get("pos")
+                    }
+
+                    if season_stats_snapshot:
+                        total = season_stats_snapshot.get("total", {})
+                        updates.update({
+                            "overview_matches": total.get("games", 0),
+                            "overview_goals": total.get("goals", 0),
+                            "overview_assists": total.get("assists", 0),
+                            "overview_pass": total.get("pass_acc", 0),
+                            "rows_2026": build_competition_rows(season_stats_snapshot, "2026")
+                        })
+                        
+                    update_player_html(database[p_id]["slug"], updates)
+
     with open(DATABASE_PATH, "w", encoding="utf-8") as f:
         json.dump(database, f, indent=4)
         
-    print(f"✅ Maintenance complete. Updated {len(updated_players)} profile pages.")
+    print("✅ Maintenance complete. Static HTML files updated in place.")
 
 def main():
     if not os.path.exists(DATABASE_PATH):
         database = bootstrap_universe()
         print("📁 Dumping initial batch static pages...")
         for p_id, p_data in database.items():
-            write_html_file(p_data)
+            write_initial_html_file(p_id, p_data)
     else:
         with open(DATABASE_PATH, "r", encoding="utf-8") as f:
             database = json.load(f)
