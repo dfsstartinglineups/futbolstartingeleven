@@ -166,6 +166,27 @@ def main(local_memory):
     else:
         old_live_data = local_memory
 
+    # =========================================================
+    # 🧹 48-HOUR TTL SWEEPER
+    # =========================================================
+    keys_to_delete = []
+    for fix_id, game_data in old_live_data.items():
+        g_ts = (game_data.get('fixture') or {}).get('timestamp', 0)
+        # 172800 seconds = 48 hours
+        if g_ts > 0 and (now_ts - g_ts) > 172800:
+            keys_to_delete.append(fix_id)
+            
+    for k in keys_to_delete:
+        print(f"🧹 Sweeper: Game {k} is over 48 hours old. Deleting from Firebase live pool.")
+        if firebase_admin._apps:
+            try:
+                db.reference(f'futbol_live_games/{k}').delete()
+            except Exception as e:
+                print(f"⚠️ Failed to sweep game {k}: {e}")
+        
+        # Remove from local memory so the engine forgets it entirely
+        del old_live_data[k]
+
     for target_date in dates_to_process:
         current_date_str = target_date.strftime("%Y-%m-%d")
         github_raw_url = f"https://raw.githubusercontent.com/dfsstartinglineups/futbolstartingeleven/refs/heads/main/data/games_{current_date_str}.json"
