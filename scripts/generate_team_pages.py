@@ -8,7 +8,7 @@ from xml.dom import minidom
 
 # --- CONFIGURATION ---
 API_HOST = "https://v3.football.api-sports.io"
-API_KEY = os.environ.get("FOOTBALL_API_KEY", "YOUR_API_KEY_HERE") # Fallback for local testing
+API_KEY = os.environ.get("FOOTBALL_API_KEY", "YOUR_API_KEY_HERE")
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.join(SCRIPT_DIR, '..')
@@ -21,7 +21,7 @@ TOP_LEAGUE_IDS = [
     307, 98, 188, 292, # World
     2, 3, 848, 13, 11, 16, 528, 45, 48, 143, 137, 81, # Cups
     1, 4, 9, 5, 531, 10, # International
-    254 # Women
+    254 # Women (NWSL)
 ]
 
 os.makedirs(LINEUPS_DIR, exist_ok=True)
@@ -38,7 +38,6 @@ def fetch_api(endpoint):
         return None
 
 def get_team_slug(full_name):
-    """Creates a clean, SEO-friendly URL slug"""
     slug = full_name.lower().replace(".", "").replace("'", "")
     slug = re.sub(r'[^a-z0-9]+', '-', slug).strip('-')
     return slug
@@ -49,6 +48,16 @@ def format_date(iso_string):
         return dt.strftime("%B %d, %Y")
     except:
         return "Upcoming"
+
+def is_youth_team(team_name):
+    """Regex filter to detect Youth Teams (e.g. U17, U19, U21, U23)."""
+    pattern = r'\bU-?\d{2}\b'
+    if re.search(pattern, team_name, re.IGNORECASE):
+        return True
+    # Also catch "Youth" or "Reserves" explicitly
+    if "youth" in team_name.lower() or "reserves" in team_name.lower():
+        return True
+    return False
 
 def generate_team_sitemap(slugs):
     print("🗺️ Generating sitemap-teams.xml...")
@@ -97,15 +106,19 @@ def generate_team_pages():
             team = item["team"]
             team_id = team["id"]
             team_name = team["name"]
+            
+            # --- THE NEW JUNK FILTER ---
+            if is_youth_team(team_name):
+                print(f"   🚫 Skipping Youth/Reserve Team: {team_name}")
+                continue
+                
             team_logo = team["logo"]
             team_slug = get_team_slug(team_name)
             
-            # Deduplicate entities
             if team_slug in seen_slugs:
                 continue
             seen_slugs.add(team_slug)
             
-            # Fetch Next Match for SEO Context
             next_match_data = fetch_api(f"fixtures?team={team_id}&next=1")
             
             next_opponent = "TBD"
@@ -246,7 +259,6 @@ def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_dat
         window.TARGET_TEAM_ID = {team_id};
         window.TARGET_TEAM_NAME = "{team_name}";
         
-        // Dynamic pixel scaler
         function resizePitch() {{
             const wrapper = document.getElementById('pitch-wrapper');
             const pitch = document.getElementById('capture-area');
