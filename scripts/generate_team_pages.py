@@ -261,7 +261,7 @@ def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_dat
                         <div id="players-container">
                             <div class="position-absolute top-50 start-50 translate-middle text-center text-white" style="z-index: 10;">
                                 <h3 class="fw-bold" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Awaiting Live Lineup Data</h3>
-                                <p class="text-light" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8);">The tactical board will populate right before kickoff.</p>
+                                <p class="text-light" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8);">The tactical board will populate as soon as lineups are released.</p>
                             </div>
                         </div>
                     </div>
