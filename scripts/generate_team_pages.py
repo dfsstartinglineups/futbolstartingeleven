@@ -3,16 +3,18 @@ import re
 import json
 import requests
 from datetime import datetime
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 
 # --- CONFIGURATION ---
 API_HOST = "https://v3.football.api-sports.io"
-API_KEY = os.environ.get("FOOTBALL_API_KEY", "YOUR_API_KEY_HERE") # Fallback to hardcode if running locally
+API_KEY = os.environ.get("FOOTBALL_API_KEY", "YOUR_API_KEY_HERE") # Fallback for local testing
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.join(SCRIPT_DIR, '..')
 LINEUPS_DIR = os.path.join(ROOT_DIR, 'lineups')
 
-# We pull from the same 41 IDs used in your scraper engine
+# 41 Supported Leagues
 TOP_LEAGUE_IDS = [
     39, 40, 140, 135, 78, 61, 88, 94, 203, 144, 179, 119, # Europe
     253, 262, 71, 128, 239, # Americas
@@ -22,7 +24,6 @@ TOP_LEAGUE_IDS = [
     254 # Women
 ]
 
-# Create the top-level /lineups/ directory
 os.makedirs(LINEUPS_DIR, exist_ok=True)
 
 def fetch_api(endpoint):
@@ -37,18 +38,42 @@ def fetch_api(endpoint):
         return None
 
 def get_team_slug(full_name):
-    """Creates a clean, SEO-friendly URL slug (e.g., 'Real Madrid' -> 'real-madrid')"""
+    """Creates a clean, SEO-friendly URL slug"""
     slug = full_name.lower().replace(".", "").replace("'", "")
     slug = re.sub(r'[^a-z0-9]+', '-', slug).strip('-')
     return slug
 
 def format_date(iso_string):
-    """Converts '2026-08-15T19:00:00+00:00' into a readable format"""
     try:
         dt = datetime.fromisoformat(iso_string)
         return dt.strftime("%B %d, %Y")
     except:
         return "Upcoming"
+
+def generate_team_sitemap(slugs):
+    print("🗺️ Generating sitemap-teams.xml...")
+    
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    sitemap_path = os.path.join(ROOT_DIR, "sitemap-teams.xml")
+    
+    ET.register_namespace('', "http://www.sitemaps.org/schemas/sitemap/0.9")
+    urlset = ET.Element('urlset', xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+    
+    for slug in sorted(slugs):
+        url = ET.SubElement(urlset, 'url')
+        ET.SubElement(url, 'loc').text = f"https://futbolstartingeleven.com/lineups/{slug}/"
+        ET.SubElement(url, 'lastmod').text = today_str
+        ET.SubElement(url, 'changefreq').text = "daily"
+        ET.SubElement(url, 'priority').text = "0.8"
+        
+    raw_xml = ET.tostring(urlset, 'utf-8')
+    parsed_xml = minidom.parseString(raw_xml)
+    pretty_xml = "\n".join([line for line in parsed_xml.toprettyxml(indent="  ").splitlines() if line.strip()])
+    
+    with open(sitemap_path, "w", encoding="utf-8") as f:
+        f.write(pretty_xml)
+        
+    print(f"✅ sitemap-teams.xml saved with {len(slugs)} URLs.")
 
 def generate_team_pages():
     print("🚀 Starting Team Page Generator...")
@@ -59,12 +84,8 @@ def generate_team_pages():
     for league_id in TOP_LEAGUE_IDS:
         print(f"\nFetching teams for League ID {league_id}...")
         
-        # 1. Fetch Teams for the League
-        # Note: We check the current year, but API-Football might use year-1 for some leagues (e.g., 2023 for 23/24).
-        # We query the teams endpoint which requires a season. 
         teams_data = fetch_api(f"teams?league={league_id}&season={current_year}")
         
-        # Fallback to previous year if the new season hasn't officially ticked over in the API
         if not teams_data or not teams_data.get("response"):
             teams_data = fetch_api(f"teams?league={league_id}&season={current_year - 1}")
             
@@ -79,12 +100,12 @@ def generate_team_pages():
             team_logo = team["logo"]
             team_slug = get_team_slug(team_name)
             
-            # 🛑 The Duplicate Blocker
+            # Deduplicate entities
             if team_slug in seen_slugs:
                 continue
             seen_slugs.add(team_slug)
             
-            # 2. Fetch the Team's Next Match for SEO Hardcoding
+            # Fetch Next Match for SEO Context
             next_match_data = fetch_api(f"fixtures?team={team_id}&next=1")
             
             next_opponent = "TBD"
@@ -105,17 +126,16 @@ def generate_team_pages():
             
             print(f"   ✅ Generating /lineups/{team_slug}/ ({team_name} {next_opponent})")
             
-            # 3. Create the Directory
             team_folder = os.path.join(LINEUPS_DIR, team_slug)
             os.makedirs(team_folder, exist_ok=True)
             
-            # 4. Generate the HTML
             html_content = build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_date, competition)
             
             with open(os.path.join(team_folder, "index.html"), "w", encoding="utf-8") as f:
                 f.write(html_content)
 
     print(f"\n🎉 Finished! Generated {len(seen_slugs)} unique team lineup pages.")
+    generate_team_sitemap(seen_slugs)
 
 def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_date, competition):
     return f"""<!DOCTYPE html>
@@ -186,7 +206,6 @@ def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_dat
     </nav>
 
     <div class="container mb-2">
-        
         <div class="text-center mb-2 mt-0">
             <h2 class="h5 fw-bold text-dark m-0">{team_name} Starting Lineup & Tactics</h2>
         </div>
@@ -226,6 +245,29 @@ def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_dat
     <script>
         window.TARGET_TEAM_ID = {team_id};
         window.TARGET_TEAM_NAME = "{team_name}";
+        
+        // Dynamic pixel scaler
+        function resizePitch() {{
+            const wrapper = document.getElementById('pitch-wrapper');
+            const pitch = document.getElementById('capture-area');
+            
+            const maxWidth = wrapper.clientWidth;
+            const wrapperTopOffset = wrapper.getBoundingClientRect().top;
+            const safeTop = wrapperTopOffset > 0 ? wrapperTopOffset : 100;
+            const maxHeight = window.innerHeight - safeTop - 20; 
+            
+            const scaleWidth = maxWidth / 1080;
+            const scaleHeight = maxHeight / 1200; 
+            
+            const finalScale = Math.min(scaleWidth, scaleHeight);
+            
+            pitch.style.transform = `scale(${{finalScale}})`;
+            wrapper.style.width = `${{1080 * finalScale}}px`;
+            wrapper.style.height = `${{1200 * finalScale}}px`; 
+        }}
+
+        window.addEventListener('resize', resizePitch);
+        window.addEventListener('DOMContentLoaded', resizePitch);
     </script>
     
     <!-- LOAD THE TEAM-SPECIFIC LOGIC -->
@@ -233,3 +275,6 @@ def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_dat
 
 </body>
 </html>"""
+
+if __name__ == "__main__":
+    generate_team_pages()
