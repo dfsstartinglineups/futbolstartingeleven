@@ -32,7 +32,7 @@
         /* --- RESPONSIVE PITCH WRAPPER --- */
         .pitch-wrapper {
             width: 100%;
-            max-width: 650px; /* Slightly widened since we shortened the height */
+            max-width: 650px; 
             margin: 0 auto;
             position: relative;
             overflow: hidden;
@@ -41,11 +41,11 @@
         }
 
         /* =========================================
-           THE EXACT CANVAS (1080x1200) - Reduced Height!
+           THE EXACT CANVAS (1080x1200)
            ========================================= */
         #capture-area {
             width: 1080px;
-            height: 1200px; /* Shaved 150px of vertical dead space */
+            height: 1200px; 
             background: radial-gradient(circle at center, #1a2235 0%, #080a0f 100%);
             position: absolute; 
             top: 0;
@@ -56,15 +56,15 @@
             transform-origin: top left; 
         }
 
-        /* --- Header: Horizontal Layout --- */
+        /* --- Header: Horizontal Layout (Tightened Padding) --- */
         #header {
             width: 100%;
-            padding: 20px 40px 10px 40px;
+            padding: 10px 40px 5px 40px; /* Reduced vertical padding */
             display: flex;
-            flex-direction: row; /* Aligns logo and text side-by-side */
+            flex-direction: row; 
             justify-content: center;
             align-items: center;
-            gap: 25px; /* Spacing between logo and text */
+            gap: 25px; 
             z-index: 10;
             box-sizing: border-box;
             background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
@@ -214,7 +214,8 @@
 </head>
 <body>
 
-    <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-4" style="background-color: #212529; z-index: 1050;">
+    <!-- Tightened mb-2 margin on Navbar -->
+    <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-2" style="background-color: #212529; z-index: 1050;">
         <div class="container d-flex justify-content-between align-items-center flex-wrap">
             <div class="header-brand">
                 <a href="/" class="text-decoration-none">Futbol Starting <span>Eleven</span></a>
@@ -225,17 +226,16 @@
         </div>
     </nav>
 
-    <div class="container mb-5">
+    <div class="container mb-4">
         
-        <!-- Refined Outer Header (Removed the extra sub-text) -->
-        <div class="text-center mb-3 mt-1">
+        <!-- Tightened margins on Outer Header -->
+        <div class="text-center mb-2 mt-0">
             <h2 class="h5 fw-bold text-dark m-0">Real Madrid Starting Lineup & Tactics</h2>
         </div>
 
         <div class="pitch-wrapper" id="pitch-wrapper">
             <div id="capture-area">
                 
-                <!-- Refined Inner Header (Horizontal Layout) -->
                 <div id="header">
                     <img id="team-logo" class="team-logo" src="" alt="Team Logo">
                     <div class="header-text">
@@ -270,12 +270,10 @@
             
             const maxWidth = wrapper.clientWidth;
             
-            // Allow the graphic to take up slightly more vertical space 
-            // since we stripped out the outer header text!
-            const maxHeight = window.innerHeight * 0.85; 
+            // Increased to 88% to take advantage of the tightened top margins
+            const maxHeight = window.innerHeight * 0.88; 
             
             const scaleWidth = maxWidth / 1080;
-            // Updated to calculate against the new 1200px canvas height
             const scaleHeight = maxHeight / 1200; 
             
             const finalScale = Math.min(scaleWidth, scaleHeight);
@@ -283,7 +281,6 @@
             pitch.style.transform = `scale(${finalScale})`;
             
             wrapper.style.width = `${1080 * finalScale}px`;
-            // Updated to map to the new 1200px canvas height
             wrapper.style.height = `${1200 * finalScale}px`; 
         }
 
@@ -400,7 +397,6 @@
                 });
             });
 
-            // Ensure the pitch resizes properly once content is loaded
             resizePitch();
         }
 
