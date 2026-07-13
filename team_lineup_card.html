@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Team Half-Pitch Lineup</title>
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #controls {
+            margin-bottom: 20px;
+            background: #2a2a2a;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+
+        button {
+            padding: 8px 16px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background: #333;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover { background: #444; }
+
+        /* =========================================
+           THE EXPORTABLE CANVAS (1080x1350)
+           ========================================= */
+        #capture-area {
+            width: 1080px;
+            height: 1350px; 
+            background: radial-gradient(circle at center, #1a2235 0%, #080a0f 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        /* --- Header: Centered & Focused on One Team --- */
+        #header {
+            width: 100%;
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            box-sizing: border-box;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        .team-logo { width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6)); margin-bottom: 10px; }
+        .team-name { font-size: 38px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin: 0; line-height: 1; text-align: center; }
+        .formation { font-size: 20px; font-weight: bold; color: #20c997; margin-top: 6px; letter-spacing: 1px; }
+
+        /* --- 2D Flat Half-Pitch --- */
+        #scene {
+            width: 100%;
+            height: 1100px; 
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Anchor pitch to the bottom */
+        }
+
+        #pitch {
+            width: 980px; 
+            height: 1080px; 
+            background: repeating-linear-gradient(
+                0deg,
+                #1e4d2b,
+                #1e4d2b 80px,
+                #1a4224 80px,
+                #1a4224 160px
+            );
+            position: relative;
+            border: 5px solid rgba(255,255,255,0.6);
+            border-top: 8px solid rgba(255,255,255,0.8); /* Halfway line */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border-radius: 4px;
+        }
+
+        /* Half-Field Lines */
+        .pitch-line { position: absolute; border: 3px solid rgba(255,255,255,0.5); z-index: 2; }
+        
+        /* Top: Half of the Center Circle */
+        .center-circle-half { 
+            width: 280px; 
+            height: 140px; 
+            border: 4px solid rgba(255,255,255,0.6);
+            border-top: none;
+            border-radius: 0 0 140px 140px; 
+            position: absolute; 
+            top: 0; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 2; 
+        }
+        
+        /* Bottom: Penalty Area */
+        .penalty-box-bottom { width: 500px; height: 180px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; }
+        .six-yard-bottom { width: 250px; height: 70px; bottom: 0; left: 50%; transform: translateX(-50%); border-bottom: none; position: absolute; border: 3px solid rgba(255,255,255,0.5); z-index: 2;}
+        .penalty-arc-bottom { width: 180px; height: 100px; bottom: 180px; left: 50%; transform: translateX(-50%); border: 3px solid rgba(255,255,255,0.5); border-bottom: none; border-radius: 90px 90px 0 0; position: absolute; border-bottom-color: transparent; z-index: 2;}
+
+        /* --- Central Watermark --- */
+        .watermark {
+            position: absolute;
+            width: 700px; 
+            height: 700px; 
+            object-fit: contain;
+            opacity: 0.15; 
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            z-index: 1; 
+            pointer-events: none; 
+        }
+
+        /* --- Player Nodes (Bigger for Single Team View) --- */
+        .player-node {
+            position: absolute;
+            width: 160px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
+        }
+
+        .player-photo-container {
+            width: 120px;  /* Huge increase from 90px */
+            height: 120px; 
+            border-radius: 50%;
+            border: 5px solid var(--node-color); 
+            background-color: #2b3035;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.8);
+            z-index: 3; 
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .player-photo { width: 100%; height: 100%; object-fit: cover; }
+        .fallback-initials { font-size: 40px; font-weight: bold; color: #adb5bd; }
+
+        .player-number {
+            position: absolute;
+            top: -4px; 
+            right: 4px; 
+            background-color: #111;
+            color: white;
+            border: 3px solid var(--node-color);
+            width: 32px; 
+            height: 32px; 
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px; 
+            font-weight: 900;
+            z-index: 4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .player-nameplate {
+            margin-top: -12px; 
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 4px 10px; 
+            border-radius: 8px; 
+            font-size: 20px; /* Big readable font */
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 4;
+            white-space: nowrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.7);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="controls">
+        <label style="font-weight: bold;">Half-Pitch Layout Prototype</label>
+        <button onclick="takeScreenshot()">Simulate Screenshot Capture</button>
+    </div>
+
+    <div id="capture-area">
+        <div id="header">
+            <img id="team-logo" class="team-logo" src="" alt="Team Logo">
+            <h1 id="team-name" class="team-name">TEAM NAME</h1>
+            <div id="team-formation" class="formation">4-3-3</div>
+        </div>
+
+        <div id="scene">
+            <div id="pitch">
+                <img id="team-watermark" class="watermark" src="" alt="Watermark">
+
+                <!-- Half-field lines -->
+                <div class="center-circle-half"></div>
+                
+                <!-- Bottom Penalty Area -->
+                <div class="pitch-line penalty-box-bottom"></div>
+                <div class="six-yard-bottom"></div>
+                <div class="penalty-arc-bottom"></div>
+                
+                <div id="players-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // HARDCODED MOCK DATA (For layout testing)
+        // ==========================================
+        const mockTeamData = {
+            team: { 
+                name: "Real Madrid", 
+                logo: "https://media.api-sports.io/football/teams/541.png", 
+                colors: { player: { primary: "ffffff" } } 
+            },
+            formation: "4-3-3",
+            startXI: [
+                { player: { id: 1, name: "Courtois", number: 1, pos: "G", photo: "https://media.api-sports.io/football/players/738.png" } },
+                { player: { id: 2, name: "Carvajal", number: 2, pos: "D", photo: "https://media.api-sports.io/football/players/733.png" } },
+                { player: { id: 3, name: "Militao", number: 3, pos: "D", photo: "https://media.api-sports.io/football/players/734.png" } },
+                { player: { id: 4, name: "Rudiger", number: 22, pos: "D", photo: "https://media.api-sports.io/football/players/26.png" } },
+                { player: { id: 5, name: "Mendy", number: 23, pos: "D", photo: "https://media.api-sports.io/football/players/735.png" } },
+                { player: { id: 6, name: "Valverde", number: 15, pos: "M", photo: "https://media.api-sports.io/football/players/739.png" } },
+                { player: { id: 7, name: "Tchouameni", number: 18, pos: "M", photo: "https://media.api-sports.io/football/players/22.png" } },
+                { player: { id: 8, name: "Bellingham", number: 5, pos: "M", photo: "https://media.api-sports.io/football/players/28.png" } },
+                { player: { id: 9, name: "Rodrygo", number: 11, pos: "F", photo: "https://media.api-sports.io/football/players/737.png" } },
+                { player: { id: 10, name: "Mbappe", number: 9, pos: "F", photo: "https://media.api-sports.io/football/players/25.png" } },
+                { player: { id: 11, name: "Vini Jr", number: 7, pos: "F", photo: "https://media.api-sports.io/football/players/736.png" } }
+            ]
+        };
+
+        function sliceArrayByFormation(formationStr, startXI) {
+            const parts = formationStr.split('-').map(Number);
+            const rows = [];
+            rows.push([startXI[0]]); // Goalkeeper
+            let currentIndex = 1;
+            for (let i = 0; i < parts.length; i++) {
+                const count = parts[i];
+                rows.push(startXI.slice(currentIndex, currentIndex + count));
+                currentIndex += count;
+            }
+            return rows;
+        }
+
+        // Expanded Y-positions to fill the full half-pitch
+        // 90% is bottom (GK), 15% is top (Forwards)
+        function getYPositions(numRows) {
+            const bottomStart = 90; 
+            const topEnd = 15; 
+            const step = (bottomStart - topEnd) / Math.max(1, numRows - 1);
+            return Array.from({length: numRows}, (_, i) => bottomStart - (step * i));
+        }
+
+        function getXPositions(numPlayers) {
+            if (numPlayers === 1) return [50];
+            if (numPlayers === 2) return [32, 68]; 
+            if (numPlayers === 3) return [20, 50, 80];
+            if (numPlayers === 4) return [14, 38, 62, 86];
+            if (numPlayers === 5) return [10, 30, 50, 70, 90];
+            
+            let positions = [];
+            let step = 80 / (numPlayers - 1);
+            for(let i=0; i<numPlayers; i++) {
+                positions.push(10 + (step * i));
+            }
+            return positions;
+        }
+
+        function renderMatch() {
+            document.getElementById('team-name').textContent = mockTeamData.team.name;
+            document.getElementById('team-logo').src = mockTeamData.team.logo;
+            document.getElementById('team-watermark').src = mockTeamData.team.logo;
+            document.getElementById('team-formation').textContent = `Starting XI • ${mockTeamData.formation}`;
+
+            let teamColor = mockTeamData.team.colors?.player?.primary ? `#${mockTeamData.team.colors.player.primary}` : '#ffffff';
+
+            const container = document.getElementById('players-container');
+            container.innerHTML = '';
+
+            const rows = sliceArrayByFormation(mockTeamData.formation, mockTeamData.startXI);
+            const numRows = rows.length;
+            const yPositions = getYPositions(numRows); 
+            
+            rows.forEach((rowPlayers, rowIndex) => {
+                if (!rowPlayers || rowPlayers.length === 0) return;
+                
+                const yPos = yPositions[rowIndex];
+                const numPlayers = rowPlayers.length;
+                const xPositions = getXPositions(numPlayers); 
+                
+                const baseZIndex = 100 - rowIndex;
+
+                rowPlayers.forEach((slot, colIndex) => {
+                    const p = slot.player;
+                    const xPos = xPositions[colIndex];
+
+                    let displayName = p.name;
+                    if (displayName.length > 18) {
+                        displayName = displayName.substring(0, 16) + '...';
+                    }
+
+                    let photoHtml = `<div class="fallback-initials">${p.name.charAt(0).toUpperCase()}</div>`;
+                    if (p.photo && p.photo.includes("http")) {
+                        photoHtml = `<img src="${p.photo}" class="player-photo" crossorigin="anonymous">`;
+                    }
+
+                    const nodeHtml = `
+                        <div class="player-node" style="left: ${xPos}%; top: ${yPos}%; z-index: ${baseZIndex}; --node-color: ${teamColor};">
+                            <div class="player-number">${p.number || ''}</div>
+                            <div class="player-photo-container">
+                                ${photoHtml}
+                            </div>
+                            <div class="player-nameplate">${displayName}</div>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', nodeHtml);
+                });
+            });
+        }
+
+        function takeScreenshot() {
+            const capture = document.getElementById('capture-area');
+            capture.style.opacity = '0.5';
+            setTimeout(() => { capture.style.opacity = '1'; }, 100);
+            alert("Ready! Your Python bot will capture this mobile-optimized 1080x1350 layout.");
+        }
+
+        renderMatch();
+    </script>
+</body>
+</html>
