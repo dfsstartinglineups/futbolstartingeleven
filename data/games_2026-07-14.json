@@ -18,7 +18,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 23,
+                "elapsed": 25,
                 "extra": null
             }
         },
@@ -2106,8 +2106,19 @@
                         "name": "Giorgi Kutsia",
                         "number": 27,
                         "pos": "M",
-                        "grid": "3:1"
-                    }
+                        "grid": "3:1",
+                        "isSubbedIn": true,
+                        "subMinute": "75"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 278614,
+                            "name": "Eldar Kuliiev",
+                            "number": 23,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -2115,17 +2126,39 @@
                         "name": "Vakhtang Bedoshvili",
                         "number": 24,
                         "pos": "M",
-                        "grid": "4:3"
-                    }
+                        "grid": "4:3",
+                        "isSubbedIn": true,
+                        "subMinute": "85"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 292336,
+                            "name": "Lucas Cafe",
+                            "number": 18,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
                         "id": 540542,
                         "name": "Nika Sikharulashvili",
                         "number": 19,
-                        "pos": "M",
-                        "grid": "4:2"
-                    }
+                        "pos": "F",
+                        "grid": "4:2",
+                        "isSubbedIn": true,
+                        "subMinute": "90+2"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 306190,
+                            "name": "Amiran Dzagania",
+                            "number": 9,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -2189,33 +2222,6 @@
                         "name": "Givi Khachidze",
                         "number": 22,
                         "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 278614,
-                        "name": "Eldar Kuliiev",
-                        "number": 23,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 292336,
-                        "name": "Lucas Cafe",
-                        "number": 18,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 306190,
-                        "name": "Amiran Dzagania",
-                        "number": 9,
-                        "pos": "F",
                         "grid": null
                     }
                 },
@@ -2306,8 +2312,19 @@
                         "name": "Remo Valdmets",
                         "number": 18,
                         "pos": "M",
-                        "grid": "3:3"
-                    }
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "62"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 60617,
+                            "name": "Rauno Alliku",
+                            "number": 9,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -2315,8 +2332,19 @@
                         "name": "Vladislav Kreida",
                         "number": 32,
                         "pos": "M",
-                        "grid": "3:2"
-                    }
+                        "grid": "3:2",
+                        "isSubbedIn": true,
+                        "subMinute": "67"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 60460,
+                            "name": "Tristan Toomas Teev\u00e4li",
+                            "number": 8,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -2332,9 +2360,20 @@
                         "id": 55916,
                         "name": "Sergei Zenjov",
                         "number": 20,
-                        "pos": "M",
-                        "grid": "4:3"
-                    }
+                        "pos": "F",
+                        "grid": "4:3",
+                        "isSubbedIn": true,
+                        "subMinute": "62"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 128208,
+                            "name": "Taaniel Usta",
+                            "number": 17,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -2403,24 +2442,6 @@
                 },
                 {
                     "player": {
-                        "id": 60460,
-                        "name": "Tristan Toomas Teev\u00e4li",
-                        "number": 8,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 60617,
-                        "name": "Rauno Alliku",
-                        "number": 9,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 556294,
                         "name": "Marten Kukkonen",
                         "number": 51,
@@ -2443,15 +2464,6 @@
                         "name": "Maksim Kalimullin",
                         "number": 89,
                         "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 128208,
-                        "name": "Taaniel Usta",
-                        "number": 17,
-                        "pos": "F",
                         "grid": null
                     }
                 }
@@ -2477,9 +2489,168 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "13",
+                "team_id": 3502,
+                "player": "N. Sikharulashvili",
+                "player_id": 540542,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "G. Kutsia"
+            },
+            {
+                "time": "36",
+                "team_id": 3502,
+                "player": "N. Sikharulashvili",
+                "player_id": 540542,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "Z. Natchkebia"
+            },
+            {
+                "time": "62",
+                "team_id": 687,
+                "player": "S. Zenjov",
+                "player_id": 55916,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "T. Usta",
+                "player_out": "T. Usta",
+                "player_out_id": 128208
+            },
+            {
+                "time": "62",
+                "team_id": 687,
+                "player": "R. Valdmets",
+                "player_id": 459095,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "R. Alliku",
+                "player_out": "R. Alliku",
+                "player_out_id": 60617
+            },
+            {
+                "time": "67",
+                "team_id": 687,
+                "player": "V. Kreida",
+                "player_id": 60612,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "T. Teevali",
+                "player_out": "T. Teevali",
+                "player_out_id": 60460
+            },
+            {
+                "time": "69",
+                "team_id": 687,
+                "player": "T. Varjund",
+                "player_id": 357669,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "R. Alliku"
+            },
+            {
+                "time": "74",
+                "team_id": 3502,
+                "player": "J. Jinjolava",
+                "player_id": 24550,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "75",
+                "team_id": 3502,
+                "player": "G. Kutsia",
+                "player_id": 24676,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "E. Kuliyev",
+                "player_out": "E. Kuliyev",
+                "player_out_id": 278614
+            },
+            {
+                "time": "78",
+                "team_id": 687,
+                "player": "R. Veering",
+                "player_id": 333867,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "83",
+                "team_id": 3502,
+                "player": "E. Kuliyev",
+                "player_id": 278614,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "84",
+                "team_id": 687,
+                "player": "R. Sappinen",
+                "player_id": 37470,
+                "type": "Goal",
+                "detail": "Penalty",
+                "assist": null
+            },
+            {
+                "time": "85",
+                "team_id": 3502,
+                "player": "V. Bedoshvili",
+                "player_id": 427652,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "Lucas Cafe",
+                "player_out": "Lucas Cafe",
+                "player_out_id": 292336
+            },
+            {
+                "time": "90+2",
+                "team_id": 3502,
+                "player": "N. Sikharulashvili",
+                "player_id": 540542,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "A. Dzagania",
+                "player_out": "A. Dzagania",
+                "player_out_id": 306190
+            },
+            {
+                "time": "90+2",
+                "team_id": 3502,
+                "player": "Z. Natchkebia",
+                "player_id": 543954,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "G. Kobuladze",
+                "player_out": "G. Kobuladze",
+                "player_out_id": 24461
+            },
+            {
+                "time": "90+4",
+                "team_id": 3502,
+                "player": "A. Dzagania",
+                "player_id": 306190,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90+4",
+                "team_id": 3502,
+                "player": "A. Demchenko",
+                "player_id": null,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            }
+        ],
         "match_ended_at": "2026-07-14T17:54:23.493142+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-14T15:56:25.161003+00:00",
         "final_odds_check": true,
@@ -4628,7 +4799,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 63,
+                "elapsed": 65,
                 "extra": null
             }
         },
@@ -5676,7 +5847,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 23,
+                "elapsed": 25,
                 "extra": null
             }
         },
@@ -6007,7 +6178,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 22,
+                "elapsed": 24,
                 "extra": null
             }
         },
@@ -7033,7 +7204,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 23,
+                "elapsed": 25,
                 "extra": null
             }
         },
@@ -7067,7 +7238,7 @@
         },
         "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
         },
         "homeLineup": {
             "team": {
