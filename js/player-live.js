@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (finalStatus === 'starting') {
             badgeClass = "bg-success";
-            badgeText = "Starting XI";
+            badgeText = "In the Starting XI";
         } else if (finalStatus === 'bench') {
             badgeClass = "bg-warning text-dark";
             badgeText = "Bench";
