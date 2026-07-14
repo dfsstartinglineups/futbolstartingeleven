@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.head.appendChild(style);
     }
 
-    // 🎯 THE FIX: Completely rewritten player status logic
+    // 🎯 THE FIX: Correctly maps original starters vs. incoming substitutes
     function findPlayerInMatch(match, targetId) {
         let playerObj = null;
         let status = 'not_in_squad'; 
@@ -96,37 +96,45 @@ document.addEventListener("DOMContentLoaded", () => {
         function checkLineup(lineup, sideName) {
             if (!lineup) return;
             
-            // 1. Check if they are currently occupying a slot on the pitch
             if (lineup.startXI) {
-                const activeSlot = lineup.startXI.find(slot => slot.player.id == targetId);
-                if (activeSlot) {
-                    playerObj = activeSlot.player;
-                    teamSide = sideName;
-                    status = 'on_pitch'; // Captures both original starters and players who subbed in
-                    return;
-                }
-
-                // 2. Check if they used to be on the pitch but were subbed out
                 for (const slot of lineup.startXI) {
-                    if (slot.sub_history) {
-                        const subOut = slot.sub_history.find(h => h.id == targetId);
-                        if (subOut) {
-                            playerObj = subOut;
-                            teamSide = sideName;
+                    
+                    // 1. Are they the original starter occupying this slot?
+                    if (slot.player && slot.player.id == targetId) {
+                        playerObj = slot.player;
+                        teamSide = sideName;
+                        
+                        // If someone is in sub_history for this slot, the starter was taken OFF the pitch
+                        if (slot.sub_history && slot.sub_history.length > 0) {
                             status = 'subbed_out';
+                        } else {
+                            status = 'on_pitch';
+                        }
+                        return;
+                    }
+
+                    // 2. Are they the substitute who came ON to the pitch?
+                    if (slot.sub_history) {
+                        const subIn = slot.sub_history.find(h => h.id == targetId);
+                        if (subIn) {
+                            playerObj = subIn;
+                            teamSide = sideName;
+                            // The substitute who replaced the starter is currently ON the pitch
+                            status = 'on_pitch';
                             return;
                         }
                     }
                 }
             }
             
-            // 3. Check if they are just sitting on the bench untouched
+            // 3. Are they sitting on the bench unused?
             if (lineup.substitutes) {
                 const benchSlot = lineup.substitutes.find(slot => slot.player.id == targetId);
                 if (benchSlot) {
                     playerObj = benchSlot.player;
                     teamSide = sideName;
                     status = 'bench';
+                    return;
                 }
             }
         }
@@ -255,7 +263,6 @@ document.addEventListener("DOMContentLoaded", () => {
             finalStatus = 'pending';
         }
 
-        // 🎯 THE FIX: Dynamic Badges that respond to the match timer
         let badgeClass = "bg-secondary";
         let badgeText = "Lineup Pending";
 
