@@ -79,7 +79,9 @@ def fetch_api(endpoint, retries=5):
     return None
 
 def normalize_string(text):
-    text = text.lower()
+    if not text:
+        return "unknown"
+    text = str(text).lower()
     text = text.replace('ø', 'o').replace('æ', 'ae').replace('œ', 'oe').replace('ß', 'ss').replace('đ', 'd')
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8')
     return text
@@ -106,8 +108,9 @@ def get_league_slug(league_name):
 
 def get_single_next_match(team_id, team_name):
     """Fetches the next match for a single team and returns (UTC_Datetime, HTML_String)."""
-    if not team_id or team_name == "N/A":
-        return None, f'<a href="/lineups/{get_team_slug(team_name)}/" class="seo-link fw-bold text-dark">{team_name}</a> Match Center <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Scheduled</span>'
+    # If the team ID or name is invalid/missing, do not attempt to build a widget for it
+    if not team_id or not team_name or str(team_name) in ["N/A", "Unknown", "None"]:
+        return None, None
         
     if team_id not in TEAM_NEXT_MATCH_CACHE:
         data = fetch_api(f"fixtures?team={team_id}&next=1")
@@ -148,14 +151,18 @@ def get_smart_next_match(club_id, club_name, nat_id, nat_name):
     club_dt, club_html = get_single_next_match(club_id, club_name)
     nat_dt, nat_html = get_single_next_match(nat_id, nat_name)
     
+    # Return the HTML string of the chronologically closest valid match
     if club_dt and nat_dt:
         return nat_html if nat_dt < club_dt else club_html
-    elif club_dt:
+    elif club_html:
         return club_html
-    elif nat_dt:
+    elif nat_html:
         return nat_html
     else:
-        return club_html
+        # Absolute fallback if neither team has an upcoming match or if the API returned null teams
+        safe_name = club_name if club_name and str(club_name) not in ["N/A", "Unknown", "None"] else "Club"
+        safe_slug = get_team_slug(safe_name) if safe_name != "Club" else "unknown"
+        return f'<a href="/lineups/{safe_slug}/" class="seo-link fw-bold text-dark">{safe_name}</a> Match Center <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Scheduled</span>'
 
 def generate_player_sitemap(database):
     print("🗺️ Generating sitemap-players.xml...")
