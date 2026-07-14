@@ -7,6 +7,8 @@ from xml.dom import minidom
 from datetime import datetime, timedelta, timezone
 import unicodedata
 import zoneinfo
+import time
+import urllib.error
 
 # --- CONFIGURATION ---
 API_HOST = "https://v3.football.api-sports.io"
@@ -38,15 +40,44 @@ INT_LEAGUE_IDS = [1, 4, 9, 5, 531, 10]
 
 TEAM_NEXT_MATCH_CACHE = {}
 
-def fetch_api(endpoint):
+def fetch_api(endpoint, retries=5):
+    """Fetches data from the API with automatic retries for rate limits (429 errors)."""
     req = urllib.request.Request(f"{API_HOST}/{endpoint}")
     req.add_header("x-apisports-key", API_KEY)
-    try:
-        with urllib.request.urlopen(req) as response:
-            return json.loads(response.read().decode())
-    except Exception as e:
-        print(f"⚠️ API Fetch Failed ({endpoint}): {e}")
-        return None
+    
+    for attempt in range(retries):
+        try:
+            with urllib.request.urlopen(req) as response:
+                data = json.loads(response.read().decode())
+                
+                # Catch "soft" rate limits where the API returns 200 OK but puts the error in the JSON
+                if data.get("errors"):
+                    errors = data["errors"]
+                    if isinstance(errors, dict) and "rateLimit" in errors:
+                        print(f"   🛑 Rate Limit Hit (JSON). Pausing for 60 seconds to reset quota... (Attempt {attempt+1}/{retries})")
+                        time.sleep(60)
+                        continue # Skip to the next loop iteration to retry
+                
+                # Small delay to gently throttle normal requests (adjust based on your plan)
+                time.sleep(0.5) 
+                return data
+                
+        except urllib.error.HTTPError as e:
+            if e.code == 429:
+                print(f"   🛑 HTTP 429 Too Many Requests. Pausing for 60 seconds to reset quota... (Attempt {attempt+1}/{retries})")
+                time.sleep(60)
+            elif e.code in [499, 500, 502, 503, 504]:
+                print(f"   ⚠️ Server Error {e.code}. Pausing for 5 seconds... (Attempt {attempt+1}/{retries})")
+                time.sleep(5)
+            else:
+                print(f"⚠️ API Fetch Failed ({endpoint}): HTTP {e.code}")
+                return None
+        except Exception as e:
+            print(f"⚠️ API Fetch Failed ({endpoint}): {e}")
+            return None
+            
+    print(f"❌ Max retries reached for {endpoint}. Skipping.")
+    return None
 
 def normalize_string(text):
     text = text.lower()
