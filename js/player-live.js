@@ -33,8 +33,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================
-    // SAFE MERGE LOGIC (Shields FT API Glitch)
+    // HELPERS & SAFE MERGE LOGIC
     // ==========================================
+    function getTeamSlug(tName) {
+        if (!tName) return "";
+        return tName
+            .toLowerCase()
+            .normalize("NFD") 
+            .replace(/[\u0300-\u036f]/g, "") 
+            .replace(/[^a-z0-9\s-]/g, "") 
+            .replace(/\s+/g, "-") 
+            .replace(/-+/g, "-") 
+            .trim();
+    }
+
     function mergeFirebaseIntoJSON(jsonMatch, fbMatch) {
         if (!jsonMatch) return fbMatch;
 
@@ -295,6 +307,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ? `<span class="mx-2 text-muted">vs</span>` 
             : `<span class="mx-3 fw-bold text-dark" style="font-size: 1.3rem;">${homeScore} - ${awayScore}</span>`;
 
+        const targetTeamSlug = getTeamSlug(teamName);
+
         // Render live interface mapping
         widget.innerHTML = `
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3" style="width: 100%;">
@@ -311,7 +325,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 </div>
                 <div class="text-end">
-                    <span class="badge ${badgeClass}">${badgeText}</span>
+                    <div class="d-flex justify-content-end align-items-center gap-2">
+                        <span class="badge ${badgeClass}">${badgeText}</span>
+                        <a href="/lineups/${targetTeamSlug}/" class="text-decoration-none fw-bold" style="font-size: 0.7rem; color: #adb5bd; transition: color 0.2s;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='#adb5bd'">View Lineup &rarr;</a>
+                    </div>
                     ${playerStatsHtml}
                 </div>
             </div>
