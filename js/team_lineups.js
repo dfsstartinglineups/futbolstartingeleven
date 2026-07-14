@@ -1,43 +1,54 @@
-document.addEventListener("DOMContentLoaded", () => {
+let PLAYER_DATABASE = null;
+
+document.addEventListener("DOMContentLoaded", async () => {
     const teamId = window.TARGET_TEAM_ID;
     if (!teamId) return;
 
     // 1. Get today's date in EST/EDT (YYYY-MM-DD) to match the Python scraper's logic
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
     
-    // 2. Since this JS runs from inside /lineups/team-slug/index.html, we go up two levels to reach /data/
-    const dataUrl = `../../data/games_${todayStr}.json`;
+    // 2. Fetch both the daily games AND the player database using absolute root paths
+    const dataUrl = `/data/games_${todayStr}.json`;
+    const dbUrl = `/data/player_database.json`;
 
-    fetch(dataUrl)
-        .then(res => {
-            if (!res.ok) throw new Error("No schedule file for today.");
-            return res.json();
-        })
-        .then(games => {
-            // 3. Find if our target team is playing today
-            const match = games.find(g => 
-                g.teams.home.id === teamId || g.teams.away.id === teamId
-            );
+    try {
+        // Fetch both files simultaneously for maximum speed
+        const [gamesRes, dbRes] = await Promise.all([
+            fetch(dataUrl),
+            fetch(dbUrl)
+        ]);
 
-            if (!match) {
-                console.log(`Team ID ${teamId} is not playing today. Keeping placeholder.`);
-                return; 
-            }
+        if (dbRes.ok) {
+            PLAYER_DATABASE = await dbRes.json();
+        }
 
-            // 4. Determine if they are home or away, and grab their lineup
-            const isHome = match.teams.home.id === teamId;
-            const lineupData = isHome ? match.homeLineup : match.awayLineup;
+        if (!gamesRes.ok) throw new Error("No schedule file for today.");
+        const games = await gamesRes.json();
 
-            // 5. If the lineup is officially out, render it!
-            if (lineupData && lineupData.startXI && lineupData.startXI.length > 0) {
-                renderTacticalBoard(lineupData);
-            } else {
-                console.log("Match found, but official starting XI is not published yet.");
-            }
-        })
-        .catch(err => {
-            console.log("Awaiting match data:", err.message);
-        });
+        // 3. Find if our target team is playing today
+        const match = games.find(g => 
+            g.teams.home.id === teamId || g.teams.away.id === teamId
+        );
+
+        if (!match) {
+            console.log(`Team ID ${teamId} is not playing today. Keeping placeholder.`);
+            return; 
+        }
+
+        // 4. Determine if they are home or away, and grab their lineup
+        const isHome = match.teams.home.id === teamId;
+        const lineupData = isHome ? match.homeLineup : match.awayLineup;
+
+        // 5. If the lineup is officially out (and shielded from the FT empty array glitch), render it!
+        if (lineupData && Array.isArray(lineupData.startXI) && lineupData.startXI.length > 0) {
+            renderTacticalBoard(lineupData);
+        } else {
+            console.log("Match found, but official starting XI is not published yet.");
+        }
+
+    } catch (err) {
+        console.log("Awaiting match data:", err.message);
+    }
 });
 
 // ==========================================
@@ -85,6 +96,13 @@ function renderTacticalBoard(lineupData) {
                 displayName = parts.length > 1 ? parts[parts.length - 1] : displayName.substring(0, 14) + '...';
             }
 
+            // --- THE DYNAMIC LINK INTEGRATION ---
+            let nameContentHtml = displayName;
+            if (PLAYER_DATABASE && PLAYER_DATABASE[p.id]) {
+                const pSlug = PLAYER_DATABASE[p.id].slug;
+                nameContentHtml = `<a href="/players/${pSlug}/" style="color: inherit; text-decoration: none;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">${displayName}</a>`;
+            }
+
             // Build the player photo (fallback to initial if API lacks a headshot)
             let photoHtml = `<div class="fallback-initials">${p.name.charAt(0).toUpperCase()}</div>`;
             if (p.photo && p.photo.includes("http")) {
@@ -94,7 +112,7 @@ function renderTacticalBoard(lineupData) {
             // Sub Badge Logic (Adds a tiny green sub icon if the player was subbed in)
             let subBadgeHtml = '';
             if (p.isSubbedIn) {
-                subBadgeHtml = `<div style="position: absolute; bottom: -5px; right: -5px; background: #198754; color: white; font-size: 10px; font-weight: bold; padding: 2px 4px; border-radius: 4px; border: 2px solid #000; z-index: 5;">🔄 ${p.subMinute}'</div>`;
+                subBadgeHtml = `<div style="position: absolute; bottom: -5px; right: -5px; background: #198754; color: white; font-size: 10px; font-weight: bold; padding: 2px 4px; border-radius: 4px; border: 2px solid #000; z-index: 5;">↻ ${p.subMinute}'</div>`;
             }
 
             // Construct the final Node HTML
@@ -105,7 +123,7 @@ function renderTacticalBoard(lineupData) {
                         ${photoHtml}
                         ${subBadgeHtml}
                     </div>
-                    <div class="player-nameplate">${displayName}</div>
+                    <div class="player-nameplate">${nameContentHtml}</div>
                 </div>
             `;
             
