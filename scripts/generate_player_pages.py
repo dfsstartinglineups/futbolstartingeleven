@@ -634,13 +634,21 @@ def bootstrap_universe():
             player = item_2026.get("player") or item_2025.get("player")
             if not player: continue
             
-            first_name = player.get("firstname", "")
-            last_name = player.get("lastname", "")
+            first_name = player.get("firstname") or ""
+            last_name = player.get("lastname") or ""
+            
+            # Catch API returning literal "None" or nulls
+            if str(first_name).lower() in ["none", "null"]: first_name = ""
+            if str(last_name).lower() in ["none", "null"]: last_name = ""
+            
             full_name = f"{first_name} {last_name}".strip()
             
             if not full_name:
-                full_name = player.get("name", "Unknown")
-            if not full_name or full_name == "Unknown": continue
+                full_name = player.get("name") or "Unknown"
+                
+            # Block the ghost players from being processed
+            if not full_name or full_name == "Unknown" or str(full_name).lower() in ["none", "null", "none none"]: 
+                continue
             
             if not stats_list_2026 and not stats_list_2025: continue
                 
@@ -747,12 +755,20 @@ def process_nightly_maintenance(database):
                         p_data_api = fresh_api_data["response"][0]
                         api_player = p_data_api.get("player", {})
                         
-                        first_name = api_player.get("firstname", "")
-                        last_name = api_player.get("lastname", "")
+                        first_name = api_player.get("firstname") or ""
+                        last_name = api_player.get("lastname") or ""
+                        
+                        if str(first_name).lower() in ["none", "null"]: first_name = ""
+                        if str(last_name).lower() in ["none", "null"]: last_name = ""
+                        
                         if first_name or last_name:
                             full_name = f"{first_name} {last_name}".strip()
                         elif api_player.get("name"):
                             full_name = api_player.get("name")
+                            
+                        # Block the ghost players from being written overnight
+                        if not full_name or str(full_name).lower() in ["unknown", "none", "null", "none none"]:
+                            continue
                             
                         stats_list_2026 = p_data_api.get("statistics", [])
                         player_api_rating = api_player.get("rating", live_stats.get("rating", "N/A"))
