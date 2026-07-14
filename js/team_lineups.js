@@ -68,6 +68,11 @@ function renderTacticalBoard(lineupData) {
 
     // Parse the formation (e.g., "4-3-3" or "4-2-3-1") and slice the players into rows
     const formationStr = lineupData.formation || "4-4-2"; 
+    
+    // 🎯 NEW: Inject the formation badge at the top of the pitch
+    const formationBadgeHtml = `<div style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background-color: rgba(0, 0, 0, 0.65); color: #fff; font-size: 0.85rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; z-index: 1000; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(2px);">FORMATION: ${formationStr}</div>`;
+    container.insertAdjacentHTML('beforeend', formationBadgeHtml);
+
     const rows = sliceArrayByFormation(formationStr, lineupData.startXI);
     
     const numRows = rows.length;
