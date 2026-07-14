@@ -13,6 +13,21 @@ const db = firebase.database();
 // CONFIGURATION & SAFE MERGE LOGIC
 // ==========================================
 const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+let PLAYER_DATABASE = null;
+
+// Lightweight client-side slugifier that mirrors your Python pipeline safely
+function getTeamSlug(teamName) {
+    if (!teamName) return "";
+    return teamName
+        .toLowerCase()
+        .normalize("NFD") // Splits accents from characters
+        .replace(/[\u0300-\u036f]/g, "") // Removes the accents
+        .replace(/[^a-z0-9\s-]/g, "") // Strips special symbols
+        .replace(/\s+/g, "-") // Collapses spaces to hyphens
+        .replace(/-+/g, "-") // Normalizes double hyphens
+        .trim();
+}
+
 let ALL_GAMES_DATA = []; 
 
 let savedLineupState = localStorage.getItem('futbolLineupsExpanded');
@@ -225,151 +240,6 @@ function getLeagueKey(leagueId) {
     return 'top'; 
 }
 
-window.openPlayerModal = function(el) {
-    const playerDataStr = el.getAttribute('data-player');
-    if (!playerDataStr) return;
-    
-    const p = JSON.parse(decodeURIComponent(playerDataStr));
-    
-    const nameEl = document.getElementById('modal-player-name');
-    const bioEl = document.getElementById('modal-player-bio');
-    const photoEl = document.getElementById('modal-player-photo');
-    const initialsEl = document.getElementById('modal-player-initials');
-    const statsContainer = document.getElementById('modal-player-stats-container');
-    const noStatsEl = document.getElementById('modal-no-stats');
-
-    nameEl.textContent = p.name || 'Unknown Player';
-    
-    const pos = p.pos || '?';
-    const age = p.age ? `${p.age}y` : 'Age N/A';
-    const nat = p.nationality || 'N/A';
-    bioEl.innerHTML = `<span class="fw-bold text-dark">${pos}</span> &nbsp;•&nbsp; ${age} &nbsp;•&nbsp; ${nat}`;
-
-    if (p.photo && p.photo.includes("http")) {
-        photoEl.src = p.photo;
-        photoEl.style.display = 'block';
-        initialsEl.style.display = 'none';
-    } else {
-        photoEl.style.display = 'none';
-        initialsEl.textContent = p.name ? p.name.charAt(0).toUpperCase() : '?';
-        initialsEl.style.display = 'flex';
-    }
-
-    statsContainer.innerHTML = '';
-    
-    if (p.season_stats) {
-        const isNested = p.season_stats.total !== undefined;
-        const mainStats = isNested ? p.season_stats.total : p.season_stats;
-        
-        if (mainStats.games > 0) {
-            noStatsEl.classList.add('d-none');
-            
-            const goals = mainStats.goals || 0;
-            const assists = mainStats.assists || 0;
-            const saves = mainStats.saves || 0;
-            const conceded = mainStats.conceded || 0;
-            const shotsOn = mainStats.shots_on || 0;
-            const keyPasses = mainStats.key_passes || 0;
-            const passAcc = mainStats.pass_acc ? `${mainStats.pass_acc}%` : "-";
-            const tackles = mainStats.tackles || 0;
-            const ints = mainStats.interceptions || 0;
-            const yel = mainStats.yellow_cards || 0;
-            const rat = mainStats.rating || "-";
-
-            let stats = [];
-            
-            if (pos === 'G') {
-                stats = [
-                    { label: "Matches", val: mainStats.games, color: "text-dark" },
-                    { label: "Saves", val: saves, color: "text-success" },
-                    { label: "Conceded", val: conceded, color: "text-danger" },
-                    { label: "Pass Acc", val: passAcc, color: "text-primary" },
-                    { label: "Yellows", val: yel, color: "text-warning" },
-                    { label: "Rating", val: rat, color: "text-info" }
-                ];
-            } else if (pos === 'D') {
-                stats = [
-                    { label: "Matches", val: mainStats.games, color: "text-dark" },
-                    { label: "Tackles", val: tackles, color: "text-success" },
-                    { label: "Intercepts", val: ints, color: "text-primary" },
-                    { label: "Pass Acc", val: passAcc, color: "text-dark" },
-                    { label: "Yellows", val: yel, color: "text-warning" },
-                    { label: "Rating", val: rat, color: "text-info" }
-                ];
-            } else if (pos === 'M') {
-                stats = [
-                    { label: "Matches", val: mainStats.games, color: "text-dark" },
-                    { label: "Goals", val: goals, color: "text-success" },
-                    { label: "Assists", val: assists, color: "text-primary" },
-                    { label: "Key Passes", val: keyPasses, color: "text-dark" },
-                    { label: "Pass Acc", val: passAcc, color: "text-dark" },
-                    { label: "Rating", val: rat, color: "text-info" }
-                ];
-            } else { 
-                stats = [
-                    { label: "Matches", val: mainStats.games, color: "text-dark" },
-                    { label: "Goals", val: goals, color: "text-success" },
-                    { label: "Assists", val: assists, color: "text-primary" },
-                    { label: "Shots (On)", val: shotsOn, color: "text-dark" },
-                    { label: "Yellows", val: yel, color: "text-warning" },
-                    { label: "Rating", val: rat, color: "text-info" }
-                ];
-            }
-
-            let gridHtml = '';
-            stats.forEach(s => {
-                gridHtml += `
-                    <div class="col-4 mb-2">
-                        <div class="border rounded bg-light p-2 h-100">
-                            <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.label}</div>
-                            <div class="fw-bold ${s.color}" style="font-size: 1.1rem;">${s.val}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            statsContainer.innerHTML = gridHtml;
-
-            if (isNested && p.season_stats.competitions) {
-                let breakdownHtml = `<div class="mt-2 text-start w-100 px-1">
-                                        <div class="text-muted mb-1 border-bottom pb-1" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Competition Breakdown</div>`;
-                
-                for (const [compName, compStats] of Object.entries(p.season_stats.competitions)) {
-                    if (compStats.games > 0) { 
-                        
-                        let compDisplay = "";
-                        if (pos === 'G') {
-                            compDisplay = `<b>${compStats.games}</b>M &nbsp; <b>${compStats.saves || 0}</b>SV &nbsp; <b>${compStats.conceded || 0}</b>GC`;
-                        } else if (pos === 'D') {
-                            compDisplay = `<b>${compStats.games}</b>M &nbsp; <b>${compStats.tackles || 0}</b>TK &nbsp; <b>${compStats.interceptions || 0}</b>IN`;
-                        } else if (pos === 'M') {
-                            compDisplay = `<b>${compStats.games}</b>M &nbsp; <b>${compStats.goals || 0}</b>G &nbsp; <b>${compStats.key_passes || 0}</b>KP`;
-                        } else {
-                            compDisplay = `<b>${compStats.games}</b>M &nbsp; <b>${compStats.goals || 0}</b>G &nbsp; <b>${compStats.assists || 0}</b>A`;
-                        }
-
-                        breakdownHtml += `
-                        <div class="d-flex justify-content-between align-items-center py-1" style="font-size: 0.75rem; border-bottom: 1px dashed #f1f3f5;">
-                            <span class="fw-bold text-dark text-truncate pe-2" style="max-width: 55%;">${compName}</span>
-                            <span class="text-muted text-end" style="font-size: 0.70rem;">
-                                ${compDisplay}
-                            </span>
-                        </div>`;
-                    }
-                }
-                breakdownHtml += `</div>`;
-                statsContainer.innerHTML += breakdownHtml;
-            }
-            
-        } else {
-            noStatsEl.classList.remove('d-none');
-        }
-    } else {
-        noStatsEl.classList.remove('d-none');
-    }
-
-    const modal = new bootstrap.Modal(document.getElementById('playerProfileModal'));
-    modal.show();
-};
 
 function getTimeBadgeHtml(data) {
     const status = data.fixture.status.short;
@@ -542,13 +412,21 @@ function getRibbonHtml(data) {
         </div>
         <div class="col-5 px-2">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: ${nameMaxWidth};"><img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}</span>
+                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: ${nameMaxWidth};">
+                    <a href="/lineups/${getTeamSlug(home.name)}/" onclick="event.stopPropagation();" class="text-decoration-none text-dark" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">
+                        <img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}
+                    </a>
+                </span>
                 <div class="text-end" style="min-width: fit-content; white-space: nowrap;">
                     <span class="fw-bold text-dark" style="font-size: 0.85rem;">${homeScore}</span>${hAggDisplay}
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-center">
-                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: ${nameMaxWidth};"><img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}</span>
+                <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: ${nameMaxWidth};">
+                    <a href="/lineups/${getTeamSlug(away.name)}/" onclick="event.stopPropagation();" class="text-decoration-none text-dark" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">
+                        <img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}
+                    </a>
+                </span>
                 <div class="text-end" style="min-width: fit-content; white-space: nowrap;">
                     <span class="fw-bold text-dark" style="font-size: 0.85rem;">${awayScore}</span>${aAggDisplay}
                 </div>
@@ -1091,6 +969,19 @@ async function init() {
 
     container.innerHTML = `<div class="col-12 text-center mt-5 pt-5"><div class="spinner-border text-success" role="status"></div><p class="mt-3 text-muted fw-bold">Loading Pitch Data...</p></div>`;
     
+    // --- FETCH PLAYER DATABASE ONCE ON INITIALIZATION ---
+    try {
+        if (!PLAYER_DATABASE) {
+            const dbRes = await fetch('/data/player_database.json');
+            if (dbRes.ok) {
+                PLAYER_DATABASE = await dbRes.json();
+                console.log("📂 Player Database loaded safely into memory.");
+            }
+        }
+    } catch (dbErr) {
+        console.error("Error loading player database:", dbErr);
+    }
+
     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
     
     const yesterdayDate = new Date();
@@ -1484,7 +1375,7 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
         players.forEach(p => {
             const lStats = p.live_stats || {};
             const name = shortenPlayerName(p.name || 'Unknown');
-            const encodedPlayer = encodeURIComponent(JSON.stringify(p));
+            
             
             const v1 = lStats[gConf.keys[0]] || 0;
             const v2 = lStats[gConf.keys[1]] || 0;
@@ -1495,10 +1386,20 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
             if (p.isSubbedIn || p._isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: -3px; left: -8px; font-size: 0.45rem;">↻</span>`;
             if (p._isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: -3px; left: -8px; font-size: 0.45rem;">▲</span>`;
 
+            // Inject link if the player exists inside our memory registry database
+            let liveNameContentHtml = `<span class="position-relative" style="margin-left: 8px;">${prefix}${name}</span>`;
+            if (PLAYER_DATABASE && PLAYER_DATABASE[p.id]) {
+                const pSlug = PLAYER_DATABASE[p.id].slug;
+                liveNameContentHtml = `
+                    <a href="/players/${pSlug}/" class="text-decoration-none d-inline-block text-truncate position-relative" style="margin-left: 8px; max-width: 100%; vertical-align: middle;" onclick="event.stopPropagation();">
+                        <span class="fw-bold text-dark" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">${prefix}${name}</span>
+                    </a>`;
+            }
+
             html += `
-                <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom user-select-none player-stat-row" style="font-size: 0.70rem; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'" onclick="openPlayerModal(this)" data-player="${encodedPlayer}">
+                <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom user-select-none player-stat-row" style="font-size: 0.70rem; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
                     <div class="text-truncate text-start fw-bold text-dark" style="flex: 1;">
-                        <span class="position-relative" style="margin-left: 8px;">${prefix}${name}</span>
+                        ${liveNameContentHtml}
                     </div>
                     <div class="text-muted" style="width: 14px; text-align: center; font-weight: 600;">${v1}</div>
                     <div class="text-muted" style="width: 14px; text-align: center; font-weight: 600;">${v2}</div>
@@ -1526,7 +1427,7 @@ function buildLineupList(lineupData, gameData) {
             const safeNum = p.number || '';
             const photoUrl = p.photo || '';
             
-            const encodedPlayer = encodeURIComponent(JSON.stringify(p));
+            
             let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
             
             const photoHtml = photoUrl && photoUrl.includes("http") 
@@ -1537,17 +1438,25 @@ function buildLineupList(lineupData, gameData) {
             if (p.isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: -3px; left: 0; font-size: 0.45rem;" title="Subbed in at ${p.subMinute}'">↻</span>`;
             if (isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: -3px; left: 0; font-size: 0.45rem;" title="Subbed out at ${p.subMinute}'">▲</span>`;
 
-            const rowStyle = isSubbedOut ? `font-style: italic; opacity: 0.75; background-color: #fcfcfc; border-bottom: 1px dashed #dee2e6;` : `cursor: pointer; transition: background-color 0.2s; border-bottom: 1px solid #f1f3f5;`;
+            // Look up player database entry safely using a direct ID query
+            let nameContentHtml = `<span class="batter-name fw-bold text-dark text-truncate position-relative" style="font-size: 0.85rem; padding-left: 8px;" title="${originalName}">${prefix}${displaySafeName}</span>`;
+            
+            if (PLAYER_DATABASE && PLAYER_DATABASE[p.id]) {
+                const pSlug = PLAYER_DATABASE[p.id].slug;
+                nameContentHtml = `
+                    <a href="/players/${pSlug}/" class="text-decoration-none d-inline-block text-truncate position-relative" style="padding-left: 8px; max-width: 100%; vertical-align: middle;" onclick="event.stopPropagation();">
+                        <span class="batter-name fw-bold text-dark" style="font-size: 0.85rem;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'" title="${originalName}">${prefix}${displaySafeName}</span>
+                    </a>`;
+            }
+
+            const rowStyle = isSubbedOut ? `font-style: italic; opacity: 0.75; background-color: #fcfcfc; border-bottom: 1px dashed #dee2e6;` : `transition: background-color 0.2s; border-bottom: 1px solid #f1f3f5;`;
             const hoverAttr = isSubbedOut ? `` : `onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'"`;
-            const toggleAttr = `onclick="openPlayerModal(this)"`;
 
             return `
-                <li class="d-flex align-items-center w-100 px-2 py-1 user-select-none" style="${rowStyle}" ${hoverAttr} ${toggleAttr} data-player="${encodedPlayer}">
+                <li class="d-flex align-items-center w-100 px-2 py-1 user-select-none" style="${rowStyle}" ${hoverAttr}>
                     <span class="text-muted fw-bold d-inline-block text-start me-1" style="font-size: 0.7rem; width: 15px; color: ${posColor} !important;">${safePos}</span>
                     <div class="me-2">${photoHtml}</div>
-                    <span class="batter-name fw-bold text-dark text-truncate position-relative" style="font-size: 0.85rem; padding-left: 8px;" title="${originalName}">
-                        ${prefix}${displaySafeName}
-                    </span>
+                    ${nameContentHtml}
                     <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${safeNum}</span>
                 </li>`;
         };
@@ -1602,8 +1511,10 @@ function createGameCard(data) {
             </div>
             <div class="d-flex justify-content-between align-items-center px-1 pt-1 pb-1 w-100">
                 <div class="text-center transition-width" style="width: ${data.team_stats ? '25%' : '41%'}; flex-shrink: 0;"> 
-                    <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1" style="width: ${data.team_stats ? '35px' : '55px'}; height: ${data.team_stats ? '35px' : '55px'}; transition: all 0.3s ease;">
-                    <div class="fw-bold text-dark text-truncate w-100" style="font-size: ${data.team_stats ? '0.75rem' : '0.9rem'}; transition: font-size 0.3s ease;" title="${home.name}">${homeRank}${home.name}</div>
+                    <a href="/lineups/${getTeamSlug(home.name)}/" class="text-decoration-none" style="color: inherit;">
+                        <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1" style="width: ${data.team_stats ? '35px' : '55px'}; height: ${data.team_stats ? '35px' : '55px'}; transition: all 0.3s ease;">
+                        <div class="fw-bold text-dark text-truncate w-100" style="font-size: ${data.team_stats ? '0.75rem' : '0.9rem'}; transition: font-size 0.3s ease;" title="${home.name}" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">${homeRank}${home.name}</div>
+                    </a>
                     ${homeRecord}
                 </div>
                 
@@ -1612,8 +1523,10 @@ function createGameCard(data) {
                 </div>
                 
                 <div class="text-center transition-width" style="width: ${data.team_stats ? '25%' : '41%'}; flex-shrink: 0;"> 
-                    <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1" style="width: ${data.team_stats ? '35px' : '55px'}; height: ${data.team_stats ? '35px' : '55px'}; transition: all 0.3s ease;">
-                    <div class="fw-bold text-dark text-truncate w-100" style="font-size: ${data.team_stats ? '0.75rem' : '0.9rem'}; transition: font-size 0.3s ease;" title="${away.name}">${awayRank}${away.name}</div>
+                    <a href="/lineups/${getTeamSlug(away.name)}/" class="text-decoration-none" style="color: inherit;">
+                        <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1" style="width: ${data.team_stats ? '35px' : '55px'}; height: ${data.team_stats ? '35px' : '55px'}; transition: all 0.3s ease;">
+                        <div class="fw-bold text-dark text-truncate w-100" style="font-size: ${data.team_stats ? '0.75rem' : '0.9rem'}; transition: font-size 0.3s ease;" title="${away.name}" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">${awayRank}${away.name}</div>
+                    </a>
                     ${awayRecord}
                 </div>
             </div>
