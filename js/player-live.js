@@ -285,6 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const ls = playerObj.live_stats || {};
             const posKey = playerObj.pos || 'M';
             const rating = ls.rating || playerObj.rating || "-";
+            const mins = ls.minutes || 0;
             
             // Mirrors the positional logic from the main index dashboard
             const groups = {
@@ -304,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
             playerStatsHtml = `
                 <div class="mt-2 d-flex justify-content-end">
                     <div class="d-flex align-items-center bg-light border rounded px-3 py-1 gap-3 shadow-sm">
+                        <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">MIN</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">${mins}'</div></div>
                         <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">${gConf.stats[0]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">${v1}</div></div>
                         <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">${gConf.stats[1]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">${v2}</div></div>
                         <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">${gConf.stats[2]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">${v3}</div></div>
