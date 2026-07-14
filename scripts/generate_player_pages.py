@@ -504,6 +504,7 @@ def write_initial_html_file(p_id, p_data):
         window.TARGET_PLAYER_ID = {p_id};
         window.TARGET_TEAM_NAME = "{p_data['team_name']}";
     </script>
+    <script src="/js/player-live.js"></script>
 </body>
 </html>"""
     with open(os.path.join(player_folder, "index.html"), "w", encoding="utf-8") as f:
