@@ -461,6 +461,9 @@ def main(local_memory):
                         p_stats = stats_list[0] if len(stats_list) > 0 else {}
                         
                         live_player_map[str(p_id)] = {
+                            # 🎯 NEW: Collecting live minutes played from the games object
+                            "minutes": ((p_stats.get("games") or {}).get("minutes") or 0),
+                            
                             "goals": ((p_stats.get("goals") or {}).get("total") or 0),
                             "assists": ((p_stats.get("goals") or {}).get("assists") or 0),
                             "total_shots": ((p_stats.get("shots") or {}).get("total") or 0),
@@ -469,8 +472,11 @@ def main(local_memory):
                             "key_passes": ((p_stats.get("passes") or {}).get("key") or 0),
                             "tackles": ((p_stats.get("tackles") or {}).get("total") or 0),
                             "interceptions": ((p_stats.get("tackles") or {}).get("interceptions") or 0),
+                            
+                            # 🎯 NOTE: Saves and Conceded are correctly mapped to the goals object here
                             "saves": ((p_stats.get("goals") or {}).get("saves") or 0),
                             "conceded": ((p_stats.get("goals") or {}).get("conceded") or 0),
+                            
                             "yellow_cards": ((p_stats.get("cards") or {}).get("yellow") or 0),
                             "red_cards": ((p_stats.get("cards") or {}).get("red") or 0),
                             "rating": ((p_stats.get("games") or {}).get("rating") or "N/A")
