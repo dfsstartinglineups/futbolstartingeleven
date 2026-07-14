@@ -58,7 +58,6 @@ def fetch_api(endpoint, retries=5):
                         time.sleep(61) # 61 seconds ensures the minute rolls over safely
                         continue 
                 
-                # NO ARTIFICIAL THROTTLE HERE
                 return data
                 
         except urllib.error.HTTPError as e:
@@ -92,6 +91,21 @@ def get_player_slug(full_name):
     slug = re.sub(r'[^a-z0-9]+', '-', slug).strip('-')
     return slug
 
+# 🎯 THE UNIQUE SLUG ENGINE (Duplicate Prevention)
+def calculate_unique_slug(player_id, player_name, collision_registry):
+    """Returns a stable, unique slug. Appends the player ID only if a collision exists."""
+    base_slug = get_player_slug(player_name)
+    
+    # If the clean slug is free, or already owned by THIS exact player ID, claim it
+    if base_slug not in collision_registry or str(collision_registry[base_slug]) == str(player_id):
+        collision_registry[base_slug] = player_id
+        return base_slug
+        
+    # Name collision! Append unique API-Football ID to isolate the directories safely
+    fallback_slug = f"{base_slug}-{player_id}"
+    collision_registry[fallback_slug] = player_id
+    return fallback_slug
+
 def get_team_slug(full_name):
     slug = normalize_string(full_name)
     slug = slug.replace(".", "").replace("'", "")
@@ -108,7 +122,6 @@ def get_league_slug(league_name):
 
 def get_single_next_match(team_id, team_name):
     """Fetches the next match for a single team and returns (UTC_Datetime, HTML_String)."""
-    # If the team ID or name is invalid/missing, do not attempt to build a widget for it
     if not team_id or not team_name or str(team_name) in ["N/A", "Unknown", "None"]:
         return None, None
         
@@ -123,7 +136,7 @@ def get_single_next_match(team_id, team_name):
                 dt_est = dt_utc.astimezone(zoneinfo.ZoneInfo("America/New_York"))
                 date_str = dt_est.strftime("%A, %b %d - %I:%M %p EST")
             except:
-                dt_utc = datetime.now(timezone.utc) + timedelta(days=365) # Fallback far future
+                dt_utc = datetime.now(timezone.utc) + timedelta(days=365) 
                 date_str = "Upcoming"
                 
             home_team = match["teams"]["home"]["name"]
@@ -151,7 +164,6 @@ def get_smart_next_match(club_id, club_name, nat_id, nat_name):
     club_dt, club_html = get_single_next_match(club_id, club_name)
     nat_dt, nat_html = get_single_next_match(nat_id, nat_name)
     
-    # Return the HTML string of the chronologically closest valid match
     if club_dt and nat_dt:
         return nat_html if nat_dt < club_dt else club_html
     elif club_html:
@@ -159,7 +171,6 @@ def get_smart_next_match(club_id, club_name, nat_id, nat_name):
     elif nat_html:
         return nat_html
     else:
-        # Absolute fallback if neither team has an upcoming match or if the API returned null teams
         safe_name = club_name if club_name and str(club_name) not in ["N/A", "Unknown", "None"] else "Club"
         safe_slug = get_team_slug(safe_name) if safe_name != "Club" else "unknown"
         return f'<a href="/lineups/{safe_slug}/" class="seo-link fw-bold text-dark">{safe_name}</a> Match Center <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Scheduled</span>'
@@ -196,7 +207,6 @@ def parse_stats(stats_list, player_rating="N/A"):
         g = stat.get("games", {}).get("appearences", 0) or 0
         if g == 0: continue
         
-        # Unique composite key to prevent overriding if they played for two teams in one comp
         key = f"{comp_name}|{team_name}"
         
         enriched["competitions"][key] = {
@@ -300,7 +310,6 @@ def write_initial_html_file(p_id, p_data):
     comp_rows_2025 = build_competition_rows(stats_2025, "2025")
     gamelog_rows_html = build_gamelog_rows(p_data.get("recent_games", []))
     
-    # Get Smart Widget
     next_match_text = get_smart_next_match(
         p_data.get("team_id"), p_data.get("team_name"), 
         p_data.get("national_team_id"), p_data.get("national_team_name")
@@ -397,7 +406,6 @@ def write_initial_html_file(p_id, p_data):
             </div>
 
             <div class="col-lg-8">
-                <!-- CLIENT SIDE REAL-TIME RUNTIME OVERWRITES TARGETED CONTAINER -->
                 <div id="live-match-widget" class="info-card border-dark" style="border-left: 5px solid #212529; margin-bottom: 20px;">
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div class="d-flex align-items-center"><span class="fw-bold text-dark" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Upcoming Matchup</span></div>
@@ -417,7 +425,6 @@ def write_initial_html_file(p_id, p_data):
                     </div>
                 </div>
 
-                <!-- 2026 PERFORMANCE BREAKDOWN MATRIX -->
                 <div class="info-card">
                     <h3>2026 Performance by Competition</h3>
                     <div class="table-responsive">
@@ -437,15 +444,12 @@ def write_initial_html_file(p_id, p_data):
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- START 2026 ROWS -->
                                 {comp_rows_2026}
-                                <!-- END 2026 ROWS -->
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- 2025 PERFORMANCE BREAKDOWN MATRIX -->
                 <div class="info-card">
                     <h3>2025 Performance by Competition</h3>
                     <div class="table-responsive">
@@ -465,9 +469,7 @@ def write_initial_html_file(p_id, p_data):
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- START 2025 ROWS -->
                                 {comp_rows_2025}
-                                <!-- END 2025 ROWS -->
                             </tbody>
                         </table>
                     </div>
@@ -489,9 +491,7 @@ def write_initial_html_file(p_id, p_data):
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- START GAMELOG ROWS -->
                                 {gamelog_rows_html}
-                                <!-- END GAMELOG ROWS -->
                             </tbody>
                         </table>
                     </div>
@@ -569,6 +569,9 @@ def bootstrap_universe():
     print("🛸 DATABASE NOT FOUND! Entering Initial 2026 Roster Bootstrap...")
     database = {}
     
+    # 🎯 STEP 1: Initialize local tracking dict for unique slug resolution
+    collision_registry = {}
+    
     for league_id in TOP_LEAGUE_IDS:
         print(f"📥 Extracting 2026 and 2025 rosters for League {league_id}...")
         
@@ -587,7 +590,6 @@ def bootstrap_universe():
                     season_data[season][p_id] = item
                 page += 1
 
-        # Combine all player IDs from both seasons for this league
         all_players = set(season_data[2026].keys()).union(set(season_data[2025].keys()))
         
         for p_id in all_players:
@@ -597,9 +599,7 @@ def bootstrap_universe():
             stats_list_2026 = item_2026.get("statistics", [])
             stats_list_2025 = item_2025.get("statistics", [])
             
-            # --- THE MERGE FIX 2.0 (The True Aggregator) ---
             if p_id in database: 
-                # 1. Catch National Team Identity if it appears in this later loop
                 if database[p_id].get("national_team_name", "N/A") == "N/A":
                     for stat in (stats_list_2026 + stats_list_2025):
                         if stat.get("league", {}).get("id") in INT_LEAGUE_IDS:
@@ -607,16 +607,13 @@ def bootstrap_universe():
                             database[p_id]["national_team_name"] = stat.get("team", {}).get("name", "N/A")
                             break
                             
-                # 2. Helper to dynamically merge stats from different leagues
                 def integrate_stats(season_key, raw_stats_list):
                     if not raw_stats_list: return
                     new_parsed = parse_stats(raw_stats_list, database[p_id].get("rating", "N/A"))
                     
-                    # Inject newly discovered competitions (e.g., Champions League, World Cup)
                     for comp_key, comp_data in new_parsed.get("competitions", {}).items():
                         database[p_id][season_key]["competitions"][comp_key] = comp_data
                         
-                    # Recalculate Totals based on the newly merged data
                     comps = database[p_id][season_key]["competitions"]
                     t_games = sum(s.get("games", 0) for s in comps.values())
                     t_goals = sum(s.get("goals", 0) for s in comps.values())
@@ -634,7 +631,6 @@ def bootstrap_universe():
                 integrate_stats("stats_2025", stats_list_2025)
                 continue
             
-            # If they aren't in the database yet, extract their core info
             player = item_2026.get("player") or item_2025.get("player")
             if not player: continue
             
@@ -648,13 +644,11 @@ def bootstrap_universe():
             
             if not stats_list_2026 and not stats_list_2025: continue
                 
-            # Identifiers for Dual-Team Tracking
             club_stat = None
             nat_stat = None
             
             for stat in (stats_list_2026 + stats_list_2025):
                 l_id = stat.get("league", {}).get("id")
-                # Lowercase check handles both "league" and "League" API variations safely
                 league_type = stat.get("league", {}).get("type", "").lower() 
                 
                 if l_id in INT_LEAGUE_IDS:
@@ -671,9 +665,12 @@ def bootstrap_universe():
             national_team_name = nat_stat.get("team", {}).get("name", "N/A") if nat_stat else "N/A"
             national_team_id = nat_stat.get("team", {}).get("id") if nat_stat else None
             
+            # 🎯 STEP 2: Use collision manager during fresh bootstrap mapping
+            assigned_slug = calculate_unique_slug(p_id, full_name, collision_registry)
+            
             database[p_id] = {
                 "name": full_name,
-                "slug": get_player_slug(full_name),
+                "slug": assigned_slug,
                 "team_name": team_name,
                 "team_id": team_id,
                 "national_team_name": national_team_name,
@@ -695,6 +692,13 @@ def bootstrap_universe():
 
 def process_nightly_maintenance(database):
     print("⚙️ Running Automated Nightly Maintenance Mode...")
+    
+    # 🎯 STEP 3: Pre-build collision registry from current database to protect SEO
+    collision_registry = {}
+    for existing_id, existing_data in database.items():
+        if "slug" in existing_data:
+            collision_registry[existing_data["slug"]] = existing_id
+            
     yesterday_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     yesterday_file = os.path.join(DATA_DIR, f"games_{yesterday_str}.json")
     
@@ -760,9 +764,13 @@ def process_nightly_maintenance(database):
                         
                     if p_id not in database:
                         print(f"      🆕 New Player Discovered: {full_name} (ID: {p_id})")
+                        
+                        # 🎯 STEP 4: Resolve name collision safely for late discovered players
+                        assigned_slug = calculate_unique_slug(p_id, full_name, collision_registry)
+                        
                         database[p_id] = {
                             "name": full_name, 
-                            "slug": get_player_slug(full_name),
+                            "slug": assigned_slug,
                             "team_name": team_name if not is_international else "Unknown",
                             "team_id": team_id if not is_international else None,
                             "national_team_name": team_name if is_international else "N/A",
@@ -777,7 +785,6 @@ def process_nightly_maintenance(database):
                         }
                         write_initial_html_file(p_id, database[p_id])
                     
-                    # Update Teams if Transferred or First National Appearance
                     if is_international:
                         if str(database[p_id].get("national_team_id")) != str(team_id):
                             database[p_id]["national_team_id"] = team_id
@@ -803,7 +810,6 @@ def process_nightly_maintenance(database):
                         "national_team_name": database[p_id]["national_team_name"]
                     }
 
-                    # Enforce Club Precedence: Only update core ID data if this is a club match
                     if not is_international:
                         updates["age"] = player_obj.get("age")
                         updates["position"] = player_obj.get("pos")
@@ -820,9 +826,6 @@ def process_nightly_maintenance(database):
                         
                     update_player_html(database[p_id]["slug"], updates)
 
-    # ==========================================
-    # TEAM SWEEP: UPDATE SCHEDULE FOR ALL PLAYERS
-    # ==========================================
     print("   📅 Updating Next Match schedules for active teams...")
     active_teams = {}
     for match in matches:
@@ -831,7 +834,6 @@ def process_nightly_maintenance(database):
             active_teams[str(match["teams"]["away"]["id"])] = match["teams"]["away"]["name"]
 
     for t_id, t_name in active_teams.items():
-        # Force a cache update by removing old if exists, though next=1 handles rolling schedules naturally
         if t_id in TEAM_NEXT_MATCH_CACHE:
             del TEAM_NEXT_MATCH_CACHE[t_id]
         
