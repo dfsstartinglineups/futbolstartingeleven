@@ -91,17 +91,20 @@ document.addEventListener("DOMContentLoaded", () => {
     function findPlayerInMatch(match, targetId) {
         let playerObj = null;
         let status = 'not_in_squad'; // starting, bench, not_in_squad
+        let teamSide = null; // Track if they are playing for home or away
 
         if (match.homeLineup) {
             const starter = match.homeLineup.startXI?.find(slot => slot.player.id == targetId);
             if (starter) {
                 playerObj = starter.player;
                 status = 'starting';
+                teamSide = 'home';
             } else {
                 const sub = match.homeLineup.substitutes?.find(slot => slot.player.id == targetId);
                 if (sub) {
                     playerObj = sub.player;
                     status = 'bench';
+                    teamSide = 'home';
                 }
             }
             // Safely parse mutated Python Live Engine arrays if subbed out
@@ -112,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (subbedPlayer) {
                             playerObj = subbedPlayer;
                             status = 'starting';
+                            teamSide = 'home';
                             break;
                         }
                     }
@@ -124,11 +128,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (starter) {
                 playerObj = starter.player;
                 status = 'starting';
+                teamSide = 'away';
             } else {
                 const sub = match.awayLineup.substitutes?.find(slot => slot.player.id == targetId);
                 if (sub) {
                     playerObj = sub.player;
                     status = 'bench';
+                    teamSide = 'away';
                 }
             }
             if (!playerObj && match.awayLineup.startXI) {
@@ -138,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (subbedPlayer) {
                             playerObj = subbedPlayer;
                             status = 'starting';
+                            teamSide = 'away';
                             break;
                         }
                     }
@@ -145,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        return { playerObj, status };
+        return { playerObj, status, teamSide };
     }
 
     // ==========================================
@@ -246,8 +253,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Determine Lineup Status & extract current Match Stats
-        const { playerObj, status: lineupStatus } = findPlayerInMatch(game, playerId);
+        const { playerObj, status: lineupStatus, teamSide } = findPlayerInMatch(game, playerId);
         
+        // Determine active team for the lineup link dynamically
+        let activeTeamName = teamName; // Fallback to global club team
+        if (teamSide && game.teams[teamSide]) {
+            activeTeamName = game.teams[teamSide].name; // Perfect match: we know exactly which team they are on
+        } else {
+            // If they aren't in the lineup yet, check if the global team matched home or away
+            if (game.teams.home.name === teamName) activeTeamName = game.teams.home.name;
+            else if (game.teams.away.name === teamName) activeTeamName = game.teams.away.name;
+        }
+        
+        const targetTeamSlug = getTeamSlug(activeTeamName);
+
         let hasLineupsAnnounced = (game.homeLineup?.startXI?.length > 0) || (game.awayLineup?.startXI?.length > 0);
         let finalStatus = lineupStatus;
         if (lineupStatus === 'not_in_squad' && !hasLineupsAnnounced) {
@@ -307,7 +326,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ? `<span class="mx-2 text-muted">vs</span>` 
             : `<span class="mx-3 fw-bold text-dark" style="font-size: 1.3rem;">${homeScore} - ${awayScore}</span>`;
 
-        const targetTeamSlug = getTeamSlug(teamName);
+        // Pre-calculate slugs for the scoreboard links
+        const homeTeamSlug = getTeamSlug(game.teams.home.name);
+        const awayTeamSlug = getTeamSlug(game.teams.away.name);
 
         // Render live interface mapping
         widget.innerHTML = `
@@ -317,17 +338,21 @@ document.addEventListener("DOMContentLoaded", () => {
                         ${liveIndicator} ${headerText}
                     </span>
                     <div class="d-flex align-items-center" style="font-size: 1rem; font-weight: 700;">
-                        <img src="${game.teams.home.logo}" width="18" height="18" class="me-1" style="object-fit:contain;">
-                        ${game.teams.home.name} 
+                        <a href="/lineups/${homeTeamSlug}/" class="text-decoration-none text-dark" style="color: inherit;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">
+                            <img src="${game.teams.home.logo}" width="18" height="18" class="me-1" style="object-fit:contain;">
+                            ${game.teams.home.name} 
+                        </a>
                         ${scoreHtml} 
-                        <img src="${game.teams.away.logo}" width="18" height="18" class="me-1" style="object-fit:contain;">
-                        ${game.teams.away.name}
+                        <a href="/lineups/${awayTeamSlug}/" class="text-decoration-none text-dark" style="color: inherit;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">
+                            <img src="${game.teams.away.logo}" width="18" height="18" class="me-1" style="object-fit:contain;">
+                            ${game.teams.away.name}
+                        </a>
                     </div>
                 </div>
                 <div class="text-end">
                     <div class="d-flex justify-content-end align-items-center gap-2">
                         <span class="badge ${badgeClass}">${badgeText}</span>
-                        <a href="/lineups/${targetTeamSlug}/" class="text-decoration-none fw-bold" style="font-size: 0.7rem; color: #adb5bd; transition: color 0.2s;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='#adb5bd'">View Lineup &rarr;</a>
+                        <a href="/lineups/${targetTeamSlug}/" class="text-decoration-none fw-bold" style="font-size: 0.7rem; color: #6c757d; transition: color 0.2s;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='#6c757d'">View Lineup &rarr;</a>
                     </div>
                     ${playerStatsHtml}
                 </div>
