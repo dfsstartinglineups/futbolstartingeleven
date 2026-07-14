@@ -172,7 +172,7 @@ def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_dat
     <meta property="og:description" content="{page_desc}">
     <meta property="og:image" content="{social_image}">
     
-    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:card" content="summary">
     <meta name="twitter:domain" content="futbolstartingeleven.com">
     <meta name="twitter:url" content="{page_url}">
     <meta name="twitter:title" content="{page_title}">
