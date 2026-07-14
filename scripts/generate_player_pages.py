@@ -579,9 +579,29 @@ def bootstrap_universe():
                     season_data[season][p_id] = item
                 page += 1
 
-        for p_id, item_2026 in season_data[2026].items():
-            player = item_2026["player"]
-            if p_id in database: continue
+        # Combine all player IDs from both seasons for this league
+        all_players = set(season_data[2026].keys()).union(set(season_data[2025].keys()))
+        
+        for p_id in all_players:
+            item_2026 = season_data[2026].get(p_id, {})
+            item_2025 = season_data[2025].get(p_id, {})
+            
+            stats_list_2026 = item_2026.get("statistics", [])
+            stats_list_2025 = item_2025.get("statistics", [])
+            
+            # --- THE MERGE FIX ---
+            # If the player is already in the database (e.g., created during their 2025 club loop), 
+            # don't skip them entirely! Just inject any new 2026/2025 stats we found in this loop.
+            if p_id in database: 
+                if stats_list_2026 and not database[p_id]["stats_2026"].get("competitions"):
+                    database[p_id]["stats_2026"] = parse_stats(stats_list_2026, database[p_id].get("rating", "N/A"))
+                if stats_list_2025 and not database[p_id]["stats_2025"].get("competitions"):
+                    database[p_id]["stats_2025"] = parse_stats(stats_list_2025, database[p_id].get("rating", "N/A"))
+                continue
+            
+            # If they aren't in the database yet, extract their core info
+            player = item_2026.get("player") or item_2025.get("player")
+            if not player: continue
             
             first_name = player.get("firstname", "")
             last_name = player.get("lastname", "")
@@ -591,10 +611,6 @@ def bootstrap_universe():
                 full_name = player.get("name", "Unknown")
             if not full_name or full_name == "Unknown": continue
             
-            stats_list_2026 = item_2026.get("statistics", [])
-            item_2025 = season_data[2025].get(p_id, {})
-            stats_list_2025 = item_2025.get("statistics", [])
-            
             if not stats_list_2026 and not stats_list_2025: continue
                 
             # Identifiers for Dual-Team Tracking
@@ -603,8 +619,8 @@ def bootstrap_universe():
             
             for stat in (stats_list_2026 + stats_list_2025):
                 l_id = stat.get("league", {}).get("id")
-                # Add .lower() so it catches "league", "League", "cup", or "Cup" safely
-                league_type = stat.get("league", {}).get("type", "").lower()
+                # Lowercase check handles both "league" and "League" API variations safely
+                league_type = stat.get("league", {}).get("type", "").lower() 
                 
                 if l_id in INT_LEAGUE_IDS:
                     if not nat_stat: nat_stat = stat
