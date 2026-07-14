@@ -103,10 +103,17 @@ function renderTacticalBoard(lineupData) {
                 nameContentHtml = `<a href="/players/${pSlug}/" style="color: inherit; text-decoration: none;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">${displayName}</a>`;
             }
 
-            // Build the player photo (fallback to initial if API lacks a headshot)
+            // 🎯 THE PHOTO FIX: Try live match image first, fallback to player database if empty
+            let finalPhotoUrl = p.photo || '';
+            if ((!finalPhotoUrl || !finalPhotoUrl.includes("http")) && PLAYER_DATABASE && PLAYER_DATABASE[p.id]) {
+                // Adjust to match whatever property key name you use in player_database.json (e.g., .photo or .photo_url)
+                finalPhotoUrl = PLAYER_DATABASE[p.id].photo || PLAYER_DATABASE[p.id].photo_url || '';
+            }
+
+            // Build the final player photo node element safely
             let photoHtml = `<div class="fallback-initials">${p.name.charAt(0).toUpperCase()}</div>`;
-            if (p.photo && p.photo.includes("http")) {
-                photoHtml = `<img src="${p.photo}" class="player-photo" crossorigin="anonymous" alt="${p.name}">`;
+            if (finalPhotoUrl && finalPhotoUrl.includes("http")) {
+                photoHtml = `<img src="${finalPhotoUrl}" class="player-photo" crossorigin="anonymous" alt="${p.name}">`;
             }
 
             // Sub Badge Logic (Adds a tiny green sub icon if the player was subbed in)
