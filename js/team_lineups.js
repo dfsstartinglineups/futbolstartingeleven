@@ -136,7 +136,7 @@ function renderTacticalBoard(lineupData) {
                 innerNodeHtml = `
                     <a href="/players/${pSlug}/" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 100%;" 
                        onmouseover="this.querySelector('.player-nameplate').style.color='#20c997'" 
-                       onmouseout="this.querySelector('.player-nameplate').style.color='inherit'">
+                       onmouseout="this.querySelector('.player-nameplate').style.color=''">
                         ${innerNodeHtml}
                     </a>
                 `;
