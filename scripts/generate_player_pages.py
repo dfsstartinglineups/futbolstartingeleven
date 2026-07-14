@@ -596,14 +596,41 @@ def bootstrap_universe():
             stats_list_2026 = item_2026.get("statistics", [])
             stats_list_2025 = item_2025.get("statistics", [])
             
-            # --- THE MERGE FIX ---
-            # If the player is already in the database (e.g., created during their 2025 club loop), 
-            # don't skip them entirely! Just inject any new 2026/2025 stats we found in this loop.
+            # --- THE MERGE FIX 2.0 (The True Aggregator) ---
             if p_id in database: 
-                if stats_list_2026 and not database[p_id]["stats_2026"].get("competitions"):
-                    database[p_id]["stats_2026"] = parse_stats(stats_list_2026, database[p_id].get("rating", "N/A"))
-                if stats_list_2025 and not database[p_id]["stats_2025"].get("competitions"):
-                    database[p_id]["stats_2025"] = parse_stats(stats_list_2025, database[p_id].get("rating", "N/A"))
+                # 1. Catch National Team Identity if it appears in this later loop
+                if database[p_id].get("national_team_name", "N/A") == "N/A":
+                    for stat in (stats_list_2026 + stats_list_2025):
+                        if stat.get("league", {}).get("id") in INT_LEAGUE_IDS:
+                            database[p_id]["national_team_id"] = stat.get("team", {}).get("id")
+                            database[p_id]["national_team_name"] = stat.get("team", {}).get("name", "N/A")
+                            break
+                            
+                # 2. Helper to dynamically merge stats from different leagues
+                def integrate_stats(season_key, raw_stats_list):
+                    if not raw_stats_list: return
+                    new_parsed = parse_stats(raw_stats_list, database[p_id].get("rating", "N/A"))
+                    
+                    # Inject newly discovered competitions (e.g., Champions League, World Cup)
+                    for comp_key, comp_data in new_parsed.get("competitions", {}).items():
+                        database[p_id][season_key]["competitions"][comp_key] = comp_data
+                        
+                    # Recalculate Totals based on the newly merged data
+                    comps = database[p_id][season_key]["competitions"]
+                    t_games = sum(s.get("games", 0) for s in comps.values())
+                    t_goals = sum(s.get("goals", 0) for s in comps.values())
+                    t_assists = sum(s.get("assists", 0) for s in comps.values())
+                    t_pass_sum = sum((s.get("pass_acc", 0) * s.get("games", 0)) for s in comps.values())
+                    
+                    database[p_id][season_key]["total"].update({
+                        "games": t_games,
+                        "goals": t_goals,
+                        "assists": t_assists,
+                        "pass_acc": round(t_pass_sum / t_games) if t_games > 0 else 0
+                    })
+
+                integrate_stats("stats_2026", stats_list_2026)
+                integrate_stats("stats_2025", stats_list_2025)
                 continue
             
             # If they aren't in the database yet, extract their core info
