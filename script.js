@@ -1383,22 +1383,23 @@ function buildLiveStatsGrid(lineupData, teamColorHex) {
             const v4 = lStats[gConf.keys[3]] || 0;
 
             let prefix = '';
-            if (p.isSubbedIn || p._isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: -3px; left: -8px; font-size: 0.45rem;">↻</span>`;
-            if (p._isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: -3px; left: -8px; font-size: 0.45rem;">▲</span>`;
+            if (p.isSubbedIn || p._isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: 1px; left: 0; font-size: 0.50rem;">↻</span>`;
+            if (p._isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: 1px; left: 0; font-size: 0.50rem;">▲</span>`;
 
             // Inject link if the player exists inside our memory registry database
-            let liveNameContentHtml = `<span class="position-relative" style="margin-left: 8px;">${prefix}${name}</span>`;
+            let liveNameContentHtml = `<span class="position-relative d-inline-block text-truncate" style="padding-left: 10px; max-width: 100%; vertical-align: middle;">${prefix}${name}</span>`;
+            
             if (PLAYER_DATABASE && PLAYER_DATABASE[p.id]) {
                 const pSlug = PLAYER_DATABASE[p.id].slug;
                 liveNameContentHtml = `
-                    <a href="/players/${pSlug}/" class="text-decoration-none d-inline-block text-truncate position-relative" style="margin-left: 8px; max-width: 100%; vertical-align: middle;" onclick="event.stopPropagation();">
-                        <span class="fw-bold text-dark" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">${prefix}${name}</span>
+                    <a href="/players/${pSlug}/" class="text-decoration-none d-inline-block text-truncate position-relative" style="padding-left: 10px; max-width: 100%; vertical-align: middle;" onclick="event.stopPropagation();">
+                        ${prefix}<span class="fw-bold text-dark" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">${name}</span>
                     </a>`;
             }
 
             html += `
                 <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom user-select-none player-stat-row" style="font-size: 0.70rem; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-                    <div class="text-truncate text-start fw-bold text-dark" style="flex: 1;">
+                    <div class="text-start d-flex align-items-center" style="flex: 1; min-width: 0;">
                         ${liveNameContentHtml}
                     </div>
                     <div class="text-muted" style="width: 14px; text-align: center; font-weight: 600;">${v1}</div>
@@ -1435,17 +1436,17 @@ function buildLineupList(lineupData, gameData) {
                 : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #f1f3f5; color: #adb5bd; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; border: 1px solid #dee2e6;">${originalName.charAt(0).toUpperCase()}</div>`;
 
             let prefix = '';
-            if (p.isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: -3px; left: 0; font-size: 0.45rem;" title="Subbed in at ${p.subMinute}'">↻</span>`;
-            if (isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: -3px; left: 0; font-size: 0.45rem;" title="Subbed out at ${p.subMinute}'">▲</span>`;
+            if (p.isSubbedIn) prefix = `<span class="text-primary fw-bold" style="position: absolute; top: 1px; left: 0; font-size: 0.50rem;" title="Subbed in at ${p.subMinute}'">↻</span>`;
+            if (isSubbedOut) prefix = `<span class="text-success fw-bold" style="position: absolute; top: 1px; left: 0; font-size: 0.50rem;" title="Subbed out at ${p.subMinute}'">▲</span>`;
 
             // Look up player database entry safely using a direct ID query
-            let nameContentHtml = `<span class="batter-name fw-bold text-dark text-truncate position-relative" style="font-size: 0.85rem; padding-left: 8px;" title="${originalName}">${prefix}${displaySafeName}</span>`;
+            let nameContentHtml = `<span class="batter-name fw-bold text-dark text-truncate position-relative d-inline-block" style="font-size: 0.85rem; padding-left: 10px; max-width: 100%; vertical-align: middle;" title="${originalName}">${prefix}${displaySafeName}</span>`;
             
             if (PLAYER_DATABASE && PLAYER_DATABASE[p.id]) {
                 const pSlug = PLAYER_DATABASE[p.id].slug;
                 nameContentHtml = `
-                    <a href="/players/${pSlug}/" class="text-decoration-none d-inline-block text-truncate position-relative" style="padding-left: 8px; max-width: 100%; vertical-align: middle;" onclick="event.stopPropagation();">
-                        <span class="batter-name fw-bold text-dark" style="font-size: 0.85rem;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'" title="${originalName}">${prefix}${displaySafeName}</span>
+                    <a href="/players/${pSlug}/" class="text-decoration-none d-inline-block text-truncate position-relative" style="padding-left: 10px; max-width: 100%; vertical-align: middle;" onclick="event.stopPropagation();">
+                        ${prefix}<span class="batter-name fw-bold text-dark" style="font-size: 0.85rem;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'" title="${originalName}">${displaySafeName}</span>
                     </a>`;
             }
 
