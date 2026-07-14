@@ -87,70 +87,52 @@ document.addEventListener("DOMContentLoaded", () => {
         document.head.appendChild(style);
     }
 
-    // Helper to scan starting XIs and substitutes for our player ID
+    // 🎯 THE FIX: Completely rewritten player status logic
     function findPlayerInMatch(match, targetId) {
         let playerObj = null;
-        let status = 'not_in_squad'; // starting, bench, not_in_squad
-        let teamSide = null; // Track if they are playing for home or away
+        let status = 'not_in_squad'; 
+        let teamSide = null; 
 
-        if (match.homeLineup) {
-            const starter = match.homeLineup.startXI?.find(slot => slot.player.id == targetId);
-            if (starter) {
-                playerObj = starter.player;
-                status = 'starting';
-                teamSide = 'home';
-            } else {
-                const sub = match.homeLineup.substitutes?.find(slot => slot.player.id == targetId);
-                if (sub) {
-                    playerObj = sub.player;
-                    status = 'bench';
-                    teamSide = 'home';
+        function checkLineup(lineup, sideName) {
+            if (!lineup) return;
+            
+            // 1. Check if they are currently occupying a slot on the pitch
+            if (lineup.startXI) {
+                const activeSlot = lineup.startXI.find(slot => slot.player.id == targetId);
+                if (activeSlot) {
+                    playerObj = activeSlot.player;
+                    teamSide = sideName;
+                    status = 'on_pitch'; // Captures both original starters and players who subbed in
+                    return;
                 }
-            }
-            // Safely parse mutated Python Live Engine arrays if subbed out
-            if (!playerObj && match.homeLineup.startXI) {
-                for (const slot of match.homeLineup.startXI) {
+
+                // 2. Check if they used to be on the pitch but were subbed out
+                for (const slot of lineup.startXI) {
                     if (slot.sub_history) {
-                        const subbedPlayer = slot.sub_history.find(h => h.id == targetId);
-                        if (subbedPlayer) {
-                            playerObj = subbedPlayer;
-                            status = 'starting';
-                            teamSide = 'home';
-                            break;
+                        const subOut = slot.sub_history.find(h => h.id == targetId);
+                        if (subOut) {
+                            playerObj = subOut;
+                            teamSide = sideName;
+                            status = 'subbed_out';
+                            return;
                         }
                     }
                 }
             }
+            
+            // 3. Check if they are just sitting on the bench untouched
+            if (lineup.substitutes) {
+                const benchSlot = lineup.substitutes.find(slot => slot.player.id == targetId);
+                if (benchSlot) {
+                    playerObj = benchSlot.player;
+                    teamSide = sideName;
+                    status = 'bench';
+                }
+            }
         }
 
-        if (!playerObj && match.awayLineup) {
-            const starter = match.awayLineup.startXI?.find(slot => slot.player.id == targetId);
-            if (starter) {
-                playerObj = starter.player;
-                status = 'starting';
-                teamSide = 'away';
-            } else {
-                const sub = match.awayLineup.substitutes?.find(slot => slot.player.id == targetId);
-                if (sub) {
-                    playerObj = sub.player;
-                    status = 'bench';
-                    teamSide = 'away';
-                }
-            }
-            if (!playerObj && match.awayLineup.startXI) {
-                for (const slot of match.awayLineup.startXI) {
-                    if (slot.sub_history) {
-                        const subbedPlayer = slot.sub_history.find(h => h.id == targetId);
-                        if (subbedPlayer) {
-                            playerObj = subbedPlayer;
-                            status = 'starting';
-                            teamSide = 'away';
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        checkLineup(match.homeLineup, 'home');
+        if (!playerObj) checkLineup(match.awayLineup, 'away');
 
         return { playerObj, status, teamSide };
     }
@@ -273,12 +255,16 @@ document.addEventListener("DOMContentLoaded", () => {
             finalStatus = 'pending';
         }
 
+        // 🎯 THE FIX: Dynamic Badges that respond to the match timer
         let badgeClass = "bg-secondary";
         let badgeText = "Lineup Pending";
 
-        if (finalStatus === 'starting') {
+        if (finalStatus === 'on_pitch') {
             badgeClass = "bg-success";
-            badgeText = "In the Starting XI";
+            badgeText = isPreGame ? "In the Starting XI" : "On Field";
+        } else if (finalStatus === 'subbed_out') {
+            badgeClass = "bg-secondary text-white";
+            badgeText = "Off Field";
         } else if (finalStatus === 'bench') {
             badgeClass = "bg-warning text-dark";
             badgeText = "Bench";
