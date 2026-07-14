@@ -1,4 +1,3 @@
-import unicodedata
 import os
 import re
 import json
@@ -6,6 +5,8 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from datetime import datetime, timedelta, timezone
+import unicodedata
+import zoneinfo
 
 # --- CONFIGURATION ---
 API_HOST = "https://v3.football.api-sports.io"
@@ -32,6 +33,8 @@ TOP_LEAGUE_IDS = [
     254 # Women (NWSL)
 ]
 
+TEAM_NEXT_MATCH_CACHE = {}
+
 def fetch_api(endpoint):
     req = urllib.request.Request(f"{API_HOST}/{endpoint}")
     req.add_header("x-apisports-key", API_KEY)
@@ -45,9 +48,7 @@ def fetch_api(endpoint):
 def normalize_string(text):
     """Translates special characters and strips accents."""
     text = text.lower()
-    # Handle specific characters that unicodedata drops completely
     text = text.replace('ø', 'o').replace('æ', 'ae').replace('œ', 'oe').replace('ß', 'ss').replace('đ', 'd')
-    # Normalize the rest (e.g., é -> e, ã -> a)
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8')
     return text
 
@@ -70,6 +71,43 @@ def get_league_slug(league_name):
     if "premier-league" in slug and "english" not in slug:
         slug = "english-" + slug
     return slug
+
+def get_next_match_info(team_id, team_name):
+    """Fetches and caches the next match for a team to save API calls."""
+    if not team_id:
+        return f'<a href="/lineups/{get_team_slug(team_name)}/" class="seo-link fw-bold text-dark">{team_name}</a> Match Center <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Scheduled</span>'
+        
+    if team_id not in TEAM_NEXT_MATCH_CACHE:
+        data = fetch_api(f"fixtures?team={team_id}&next=1")
+        if data and data.get("response"):
+            match = data["response"][0]
+            
+            date_iso = match["fixture"]["date"]
+            try:
+                dt = datetime.fromisoformat(date_iso).astimezone(zoneinfo.ZoneInfo("America/New_York"))
+                date_str = dt.strftime("%A %I:%M %p EST")
+            except:
+                date_str = "Upcoming"
+                
+            home_team = match["teams"]["home"]["name"]
+            away_team = match["teams"]["away"]["name"]
+            
+            if str(match["teams"]["home"]["id"]) == str(team_id):
+                opp_name = away_team
+                prefix = "vs"
+            else:
+                opp_name = home_team
+                prefix = "@"
+                
+            opp_slug = get_team_slug(opp_name)
+            team_slug = get_team_slug(team_name)
+            
+            html_string = f'<a href="/lineups/{team_slug}/" class="seo-link fw-bold text-dark">{team_name}</a> {prefix} <a href="/lineups/{opp_slug}/" class="seo-link fw-bold text-dark">{opp_name}</a> <span class="text-muted font-monospace mx-1">|</span> <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">{date_str}</span>'
+            TEAM_NEXT_MATCH_CACHE[team_id] = html_string
+        else:
+            TEAM_NEXT_MATCH_CACHE[team_id] = f'<a href="/lineups/{get_team_slug(team_name)}/" class="seo-link fw-bold text-dark">{team_name}</a> Match Center <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Scheduled</span>'
+            
+    return TEAM_NEXT_MATCH_CACHE[team_id]
 
 def generate_player_sitemap(database):
     print("🗺️ Generating sitemap-players.xml...")
@@ -197,6 +235,7 @@ def write_initial_html_file(p_id, p_data):
     comp_rows_2026 = build_competition_rows(stats_2026, "2026")
     comp_rows_2025 = build_competition_rows(stats_2025, "2025")
     gamelog_rows_html = build_gamelog_rows(p_data.get("recent_games", []))
+    next_match_text = get_next_match_info(p_data.get("team_id"), p_data.get("team_name"))
     
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -293,7 +332,7 @@ def write_initial_html_file(p_id, p_data):
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div class="d-flex align-items-center"><span class="fw-bold text-dark" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Upcoming Matchup</span></div>
                         <div class="stat-value text-end" style="font-size: 0.9rem;">
-                            <a href="/lineups/{get_team_slug(p_data['team_name'])}/" class="seo-link fw-bold text-dark">{p_data['team_name']}</a> Match Center <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Scheduled</span>
+                            {next_match_text}
                         </div>
                     </div>
                 </div>
@@ -441,6 +480,14 @@ def update_player_html(player_slug, updates):
             html, 
             flags=re.DOTALL
         )
+        
+    if updates.get("next_match"):
+        html = re.sub(
+            r'(<div id="live-match-widget".*?<div class="stat-value text-end"[^>]*>).*?(</div>\s*</div>\s*</div>)',
+            rf'\g<1>\n                            {updates["next_match"]}\n                        \g<2>',
+            html,
+            flags=re.DOTALL
+        )
 
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(html)
@@ -471,7 +518,6 @@ def bootstrap_universe():
             player = item_2026["player"]
             if p_id in database: continue
             
-            # Construct the true full name from firstname/lastname
             first_name = player.get("firstname", "")
             last_name = player.get("lastname", "")
             full_name = f"{first_name} {last_name}".strip()
@@ -488,11 +534,13 @@ def bootstrap_universe():
                 
             main_stat = stats_list_2026[0] if stats_list_2026 else stats_list_2025[0]
             team_name = main_stat.get("team", {}).get("name", "Unknown")
+            team_id = main_stat.get("team", {}).get("id")
             
             database[p_id] = {
                 "name": full_name,
                 "slug": get_player_slug(full_name),
                 "team_name": team_name,
+                "team_id": team_id,
                 "position": main_stat.get("games", {}).get("position", "Midfielder"),
                 "photo": player.get("photo", ""),
                 "age": player.get("age", "N/A"),
@@ -533,6 +581,8 @@ def process_nightly_maintenance(database):
             score_line = f"{match['goals']['home']}-{match['goals']['away']}"
             res_char = "W" if (match["goals"]["home"] > match["goals"]["away"] and is_home) or (match["goals"]["away"] > match["goals"]["home"] and not is_home) else "L" if match["goals"]["home"] != match["goals"]["away"] else "D"
 
+            team_id = lineup_data.get("team", {}).get("id")
+
             for group in ["startXI", "substitutes"]:
                 for slot in lineup_data.get(group, []):
                     player_obj = slot.get("player", {})
@@ -542,7 +592,6 @@ def process_nightly_maintenance(database):
                     if not p_id or p_id == "None" or not live_stats or live_stats.get("rating") == "N/A":
                         continue
                         
-                    # Pre-fetch the API directly if new player OR to update season stats
                     fresh_api_data = fetch_api(f"players?id={p_id}&season=2026")
                     
                     full_name = player_obj.get("name", "Unknown")
@@ -553,7 +602,6 @@ def process_nightly_maintenance(database):
                         p_data_api = fresh_api_data["response"][0]
                         api_player = p_data_api.get("player", {})
                         
-                        # Build the true full name
                         first_name = api_player.get("firstname", "")
                         last_name = api_player.get("lastname", "")
                         if first_name or last_name:
@@ -575,6 +623,7 @@ def process_nightly_maintenance(database):
                             "name": full_name, 
                             "slug": get_player_slug(full_name),
                             "team_name": lineup_data.get("team", {}).get("name", "Unknown"),
+                            "team_id": team_id,
                             "position": player_obj.get("pos", "Midfielder"), 
                             "photo": player_obj.get("photo", ""),
                             "age": player_obj.get("age", "N/A"), 
@@ -612,6 +661,22 @@ def process_nightly_maintenance(database):
                         })
                         
                     update_player_html(database[p_id]["slug"], updates)
+
+    # ==========================================
+    # TEAM SWEEP: UPDATE SCHEDULE FOR ALL PLAYERS
+    # ==========================================
+    print("   📅 Updating Next Match schedules for active teams...")
+    active_teams = {}
+    for match in matches:
+        if match.get("fixture", {}).get("status", {}).get("short") in ["FT", "AET", "PEN"]:
+            active_teams[str(match["teams"]["home"]["id"])] = match["teams"]["home"]["name"]
+            active_teams[str(match["teams"]["away"]["id"])] = match["teams"]["away"]["name"]
+
+    for t_id, t_name in active_teams.items():
+        next_match_string = get_next_match_info(t_id, t_name)
+        for p_id, p_data in database.items():
+            if str(p_data.get("team_id")) == str(t_id):
+                update_player_html(p_data["slug"], {"next_match": next_match_string})
 
     with open(DATABASE_PATH, "w", encoding="utf-8") as f:
         json.dump(database, f, indent=4)
