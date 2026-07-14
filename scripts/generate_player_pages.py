@@ -33,6 +33,9 @@ TOP_LEAGUE_IDS = [
     254 # Women (NWSL)
 ]
 
+# Explicitly flag international leagues so the script can identify national teams
+INT_LEAGUE_IDS = [1, 4, 9, 5, 531, 10]
+
 TEAM_NEXT_MATCH_CACHE = {}
 
 def fetch_api(endpoint):
@@ -46,7 +49,6 @@ def fetch_api(endpoint):
         return None
 
 def normalize_string(text):
-    """Translates special characters and strips accents."""
     text = text.lower()
     text = text.replace('ø', 'o').replace('æ', 'ae').replace('œ', 'oe').replace('ß', 'ss').replace('đ', 'd')
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8')
@@ -72,22 +74,23 @@ def get_league_slug(league_name):
         slug = "english-" + slug
     return slug
 
-def get_next_match_info(team_id, team_name):
-    """Fetches and caches the next match for a team to save API calls."""
-    if not team_id:
-        return f'<a href="/lineups/{get_team_slug(team_name)}/" class="seo-link fw-bold text-dark">{team_name}</a> Match Center <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Scheduled</span>'
+def get_single_next_match(team_id, team_name):
+    """Fetches the next match for a single team and returns (UTC_Datetime, HTML_String)."""
+    if not team_id or team_name == "N/A":
+        return None, f'<a href="/lineups/{get_team_slug(team_name)}/" class="seo-link fw-bold text-dark">{team_name}</a> Match Center <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Scheduled</span>'
         
     if team_id not in TEAM_NEXT_MATCH_CACHE:
         data = fetch_api(f"fixtures?team={team_id}&next=1")
         if data and data.get("response"):
             match = data["response"][0]
-            
             date_iso = match["fixture"]["date"]
+            
             try:
-                dt = datetime.fromisoformat(date_iso).astimezone(zoneinfo.ZoneInfo("America/New_York"))
-                # ADDED THE MONTH AND DAY HERE
-                date_str = dt.strftime("%A, %b %d - %I:%M %p EST")
+                dt_utc = datetime.fromisoformat(date_iso)
+                dt_est = dt_utc.astimezone(zoneinfo.ZoneInfo("America/New_York"))
+                date_str = dt_est.strftime("%A, %b %d - %I:%M %p EST")
             except:
+                dt_utc = datetime.now(timezone.utc) + timedelta(days=365) # Fallback far future
                 date_str = "Upcoming"
                 
             home_team = match["teams"]["home"]["name"]
@@ -104,11 +107,25 @@ def get_next_match_info(team_id, team_name):
             team_slug = get_team_slug(team_name)
             
             html_string = f'<a href="/lineups/{team_slug}/" class="seo-link fw-bold text-dark">{team_name}</a> {prefix} <a href="/lineups/{opp_slug}/" class="seo-link fw-bold text-dark">{opp_name}</a> <span class="text-muted font-monospace mx-1">|</span> <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">{date_str}</span>'
-            TEAM_NEXT_MATCH_CACHE[team_id] = html_string
+            TEAM_NEXT_MATCH_CACHE[team_id] = (dt_utc, html_string)
         else:
-            TEAM_NEXT_MATCH_CACHE[team_id] = f'<a href="/lineups/{get_team_slug(team_name)}/" class="seo-link fw-bold text-dark">{team_name}</a> Match Center <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Scheduled</span>'
+            TEAM_NEXT_MATCH_CACHE[team_id] = (None, f'<a href="/lineups/{get_team_slug(team_name)}/" class="seo-link fw-bold text-dark">{team_name}</a> Match Center <span class="badge bg-dark text-white fw-bold px-2 py-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Scheduled</span>')
             
     return TEAM_NEXT_MATCH_CACHE[team_id]
+
+def get_smart_next_match(club_id, club_name, nat_id, nat_name):
+    """Compares club and national team schedules and returns the chronologically closest match."""
+    club_dt, club_html = get_single_next_match(club_id, club_name)
+    nat_dt, nat_html = get_single_next_match(nat_id, nat_name)
+    
+    if club_dt and nat_dt:
+        return nat_html if nat_dt < club_dt else club_html
+    elif club_dt:
+        return club_html
+    elif nat_dt:
+        return nat_html
+    else:
+        return club_html
 
 def generate_player_sitemap(database):
     print("🗺️ Generating sitemap-players.xml...")
@@ -133,13 +150,20 @@ def generate_player_sitemap(database):
     print(f"✅ sitemap-players.xml saved with {len(database)} player profile links.")
 
 def parse_stats(stats_list, player_rating="N/A"):
+    """Groups statistics by Competition AND Team Name."""
     enriched = {"total": {}, "competitions": {}}
     if not stats_list: return enriched
     for stat in stats_list:
         comp_name = stat.get("league", {}).get("name", "Unknown")
+        team_name = stat.get("team", {}).get("name", "Unknown")
         g = stat.get("games", {}).get("appearences", 0) or 0
         if g == 0: continue
-        enriched["competitions"][comp_name] = {
+        
+        # Unique composite key to prevent overriding if they played for two teams in one comp
+        key = f"{comp_name}|{team_name}"
+        
+        enriched["competitions"][key] = {
+            "comp_name": comp_name, "team_name": team_name,
             "games": g, "minutes": stat.get("games", {}).get("minutes", 0),
             "goals": stat.get("goals", {}).get("total", 0) or 0, "assists": stat.get("goals", {}).get("assists", 0) or 0,
             "saves": stat.get("goals", {}).get("saves", 0) or 0, "shots_on": stat.get("shots", {}).get("on", 0) or 0,
@@ -148,6 +172,7 @@ def parse_stats(stats_list, player_rating="N/A"):
             "yellow_cards": stat.get("cards", {}).get("yellow", 0) or 0, "red_cards": stat.get("cards", {}).get("red", 0) or 0,
             "rating": stat.get("games", {}).get("rating", "N/A")
         }
+        
     t_games = sum(s["games"] for s in enriched["competitions"].values())
     t_goals = sum(s["goals"] for s in enriched["competitions"].values())
     t_assists = sum(s["assists"] for s in enriched["competitions"].values())
@@ -164,23 +189,24 @@ def build_competition_rows(season_stats, year="2026"):
         return f'<tr><td colspan="10" class="text-center text-muted fst-italic py-3">No competitive data available for the {year} season yet.</td></tr>'
     
     rows = ""
-    for comp_name, stats in comps.items():
+    for key, stats in comps.items():
+        comp_name = stats["comp_name"]
+        team_name = stats["team_name"]
         comp_slug = get_league_slug(comp_name)
+        
         games = stats.get("games", 0)
         minutes = stats.get("minutes", 0) or stats.get("min", 0)
         goals = stats.get("goals", 0)
         assists = stats.get("assists", 0)
-        
         shots_on = stats.get("shots_on", 0)
         pass_acc = stats.get("pass_acc", 0)
         key_passes = stats.get("key_passes", 0)
         drb_or_saves = stats.get("saves", 0) if stats.get("saves", 0) > 0 else f"{stats.get('tackles', 0)} ({stats.get('interceptions', 0)})"
-        
         yellow = stats.get("yellow_cards", 0)
         red = stats.get("red_cards", 0)
         
         rows += f"""<tr>
-            <td><a href="/leagues/{comp_slug}/" class="seo-link fw-bold text-dark">{comp_name}</a></td>
+            <td><a href="/leagues/{comp_slug}/" class="seo-link fw-bold text-dark">{comp_name} <span class="text-muted fw-normal">({team_name})</span></a></td>
             <td class="text-center">{games}</td>
             <td class="text-center">{minutes:,}</td>
             <td class="text-center text-success fw-bold">{goals}</td>
@@ -236,7 +262,12 @@ def write_initial_html_file(p_id, p_data):
     comp_rows_2026 = build_competition_rows(stats_2026, "2026")
     comp_rows_2025 = build_competition_rows(stats_2025, "2025")
     gamelog_rows_html = build_gamelog_rows(p_data.get("recent_games", []))
-    next_match_text = get_next_match_info(p_data.get("team_id"), p_data.get("team_name"))
+    
+    # Get Smart Widget
+    next_match_text = get_smart_next_match(
+        p_data.get("team_id"), p_data.get("team_name"), 
+        p_data.get("national_team_id"), p_data.get("national_team_name")
+    )
     
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -317,10 +348,11 @@ def write_initial_html_file(p_id, p_data):
                         <img src="{p_data['photo']}" alt="{p_data['name']}" class="player-avatar">
                     </div>
                     <div class="sidebar-player-name">{p_data['name']}</div>
-                    <div class="sidebar-player-meta"><a href="/lineups/{get_team_slug(p_data['team_name'])}/" class="seo-link fw-bold">{p_data['team_name']}</a> • <span id="val-position">{p_data['position']}</span></div>
+                    <div class="sidebar-player-meta"><a href="/lineups/{get_team_slug(p_data['team_name'])}/" class="seo-link fw-bold" id="val-team">{p_data['team_name']}</a> • <span id="val-position">{p_data['position']}</span></div>
                     <hr style="border-color: #dee2e6; opacity: 1; margin: 15px 0;">
                     <div class="text-start">
                         <div class="stat-row"><span class="stat-label">Nationality</span><span class="stat-value">{p_data.get('nationality', 'N/A')}</span></div>
+                        <div class="stat-row"><span class="stat-label">National Team</span><span class="stat-value" id="val-national-team">{p_data.get('national_team_name', 'N/A')}</span></div>
                         <div class="stat-row"><span class="stat-label">Age</span><span class="stat-value" id="val-age">{p_data.get('age', 'N/A')}</span></div>
                         <div class="stat-row"><span class="stat-label">Form Rating</span><span class="stat-value text-success" id="val-rating">{rating}</span></div>
                     </div>
@@ -449,6 +481,8 @@ def update_player_html(player_slug, updates):
         html = f.read()
 
     single_value_mappings = {
+        "val-team": updates.get("team_name"),
+        "val-national-team": updates.get("national_team_name"),
         "val-age": updates.get("age"),
         "val-position": updates.get("position"),
         "val-rating": updates.get("rating"),
@@ -533,16 +567,34 @@ def bootstrap_universe():
             
             if not stats_list_2026 and not stats_list_2025: continue
                 
-            main_stat = stats_list_2026[0] if stats_list_2026 else stats_list_2025[0]
-            team_name = main_stat.get("team", {}).get("name", "Unknown")
-            team_id = main_stat.get("team", {}).get("id")
+            # Identifiers for Dual-Team Tracking
+            club_stat = None
+            nat_stat = None
+            
+            for stat in (stats_list_2026 + stats_list_2025):
+                l_id = stat.get("league", {}).get("id")
+                if l_id in INT_LEAGUE_IDS:
+                    if not nat_stat: nat_stat = stat
+                elif stat.get("league", {}).get("type") in ["League", "Cup"]:
+                    if not club_stat: club_stat = stat
+                    
+            if not club_stat:
+                club_stat = stats_list_2026[0] if stats_list_2026 else stats_list_2025[0]
+                
+            team_name = club_stat.get("team", {}).get("name", "Unknown")
+            team_id = club_stat.get("team", {}).get("id")
+            
+            national_team_name = nat_stat.get("team", {}).get("name", "N/A") if nat_stat else "N/A"
+            national_team_id = nat_stat.get("team", {}).get("id") if nat_stat else None
             
             database[p_id] = {
                 "name": full_name,
                 "slug": get_player_slug(full_name),
                 "team_name": team_name,
                 "team_id": team_id,
-                "position": main_stat.get("games", {}).get("position", "Midfielder"),
+                "national_team_name": national_team_name,
+                "national_team_id": national_team_id,
+                "position": club_stat.get("games", {}).get("position", "Midfielder"),
                 "photo": player.get("photo", ""),
                 "age": player.get("age", "N/A"),
                 "nationality": player.get("nationality", "N/A"),
@@ -572,6 +624,9 @@ def process_nightly_maintenance(database):
     for match in matches:
         status_short = match.get("fixture", {}).get("status", {}).get("short", "NS")
         if status_short not in ["FT", "AET", "PEN"]: continue
+        
+        match_league_id = match.get("league", {}).get("id")
+        is_international = match_league_id in INT_LEAGUE_IDS
             
         for side in ["homeLineup", "awayLineup"]:
             lineup_data = match.get(side)
@@ -583,6 +638,7 @@ def process_nightly_maintenance(database):
             res_char = "W" if (match["goals"]["home"] > match["goals"]["away"] and is_home) or (match["goals"]["away"] > match["goals"]["home"] and not is_home) else "L" if match["goals"]["home"] != match["goals"]["away"] else "D"
 
             team_id = lineup_data.get("team", {}).get("id")
+            team_name = lineup_data.get("team", {}).get("name", "Unknown")
 
             for group in ["startXI", "substitutes"]:
                 for slot in lineup_data.get(group, []):
@@ -623,8 +679,10 @@ def process_nightly_maintenance(database):
                         database[p_id] = {
                             "name": full_name, 
                             "slug": get_player_slug(full_name),
-                            "team_name": lineup_data.get("team", {}).get("name", "Unknown"),
-                            "team_id": team_id,
+                            "team_name": team_name if not is_international else "Unknown",
+                            "team_id": team_id if not is_international else None,
+                            "national_team_name": team_name if is_international else "N/A",
+                            "national_team_id": team_id if is_international else None,
                             "position": player_obj.get("pos", "Midfielder"), 
                             "photo": player_obj.get("photo", ""),
                             "age": player_obj.get("age", "N/A"), 
@@ -634,6 +692,16 @@ def process_nightly_maintenance(database):
                             "recent_games": []
                         }
                         write_initial_html_file(p_id, database[p_id])
+                    
+                    # Update Teams if Transferred or First National Appearance
+                    if is_international:
+                        if str(database[p_id].get("national_team_id")) != str(team_id):
+                            database[p_id]["national_team_id"] = team_id
+                            database[p_id]["national_team_name"] = team_name
+                    else:
+                        if str(database[p_id].get("team_id")) != str(team_id):
+                            database[p_id]["team_id"] = team_id
+                            database[p_id]["team_name"] = team_name
                     
                     match_log_entry = {
                         "date": yesterday_str, "opponent_name": opp_name, "is_home": is_home,
@@ -647,9 +715,14 @@ def process_nightly_maintenance(database):
                     updates = {
                         "rows_gamelog": build_gamelog_rows(database[p_id]["recent_games"]),
                         "rating": player_api_rating,
-                        "age": player_obj.get("age"),
-                        "position": player_obj.get("pos")
+                        "team_name": database[p_id]["team_name"],
+                        "national_team_name": database[p_id]["national_team_name"]
                     }
+
+                    # Enforce Club Precedence: Only update core ID data if this is a club match
+                    if not is_international:
+                        updates["age"] = player_obj.get("age")
+                        updates["position"] = player_obj.get("pos")
 
                     if season_stats_snapshot:
                         total = season_stats_snapshot.get("total", {})
@@ -674,10 +747,17 @@ def process_nightly_maintenance(database):
             active_teams[str(match["teams"]["away"]["id"])] = match["teams"]["away"]["name"]
 
     for t_id, t_name in active_teams.items():
-        next_match_string = get_next_match_info(t_id, t_name)
+        # Force a cache update by removing old if exists, though next=1 handles rolling schedules naturally
+        if t_id in TEAM_NEXT_MATCH_CACHE:
+            del TEAM_NEXT_MATCH_CACHE[t_id]
+        
         for p_id, p_data in database.items():
-            if str(p_data.get("team_id")) == str(t_id):
-                update_player_html(p_data["slug"], {"next_match": next_match_string})
+            if str(p_data.get("team_id")) == str(t_id) or str(p_data.get("national_team_id")) == str(t_id):
+                smart_next_match = get_smart_next_match(
+                    p_data.get("team_id"), p_data.get("team_name"), 
+                    p_data.get("national_team_id"), p_data.get("national_team_name")
+                )
+                update_player_html(p_data["slug"], {"next_match": smart_next_match})
 
     with open(DATABASE_PATH, "w", encoding="utf-8") as f:
         json.dump(database, f, indent=4)
