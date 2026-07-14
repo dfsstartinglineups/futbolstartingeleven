@@ -101,13 +101,6 @@ function renderTacticalBoard(lineupData) {
                 displayName = parts.length > 1 ? parts[parts.length - 1] : displayName.substring(0, 14) + '...';
             }
 
-            // --- THE DYNAMIC LINK INTEGRATION ---
-            let nameContentHtml = displayName;
-            if (PLAYER_DATABASE && PLAYER_DATABASE[p.id]) {
-                const pSlug = PLAYER_DATABASE[p.id].slug;
-                nameContentHtml = `<a href="/players/${pSlug}/" style="color: inherit; text-decoration: none;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">${displayName}</a>`;
-            }
-
             // 🎯 THE PHOTO FIX: Try live match image first, fallback to player database if empty
             let finalPhotoUrl = p.photo || '';
             if ((!finalPhotoUrl || !finalPhotoUrl.includes("http")) && PLAYER_DATABASE && PLAYER_DATABASE[p.id]) {
@@ -127,15 +120,32 @@ function renderTacticalBoard(lineupData) {
                 subBadgeHtml = `<div style="position: absolute; bottom: -5px; right: -5px; background: #198754; color: white; font-size: 10px; font-weight: bold; padding: 2px 4px; border-radius: 4px; border: 2px solid #000; z-index: 5;">↻ ${p.subMinute}'</div>`;
             }
 
+            // 🎯 THE NEW DYNAMIC LINK INTEGRATION (Wraps entire Node Contents)
+            let innerNodeHtml = `
+                <div class="player-number">${p.number || ''}</div>
+                <div class="player-photo-container">
+                    ${photoHtml}
+                    ${subBadgeHtml}
+                </div>
+                <div class="player-nameplate" style="transition: color 0.2s;">${displayName}</div>
+            `;
+
+            // If the player exists in the DB, wrap everything in an anchor tag
+            if (PLAYER_DATABASE && PLAYER_DATABASE[p.id]) {
+                const pSlug = PLAYER_DATABASE[p.id].slug;
+                innerNodeHtml = `
+                    <a href="/players/${pSlug}/" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 100%;" 
+                       onmouseover="this.querySelector('.player-nameplate').style.color='#20c997'" 
+                       onmouseout="this.querySelector('.player-nameplate').style.color='inherit'">
+                        ${innerNodeHtml}
+                    </a>
+                `;
+            }
+
             // Construct the final Node HTML
             const nodeHtml = `
                 <div class="player-node" style="left: ${xPos}%; top: ${yPos}%; z-index: ${baseZIndex}; --node-color: ${teamColor};">
-                    <div class="player-number">${p.number || ''}</div>
-                    <div class="player-photo-container">
-                        ${photoHtml}
-                        ${subBadgeHtml}
-                    </div>
-                    <div class="player-nameplate">${nameContentHtml}</div>
+                    ${innerNodeHtml}
                 </div>
             `;
             
