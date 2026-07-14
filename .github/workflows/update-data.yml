@@ -31,11 +31,13 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/ sitemap.xml
+          
+          # Only stage the data directory
+          git add data/
           
           # Check if there are staged changes ready to be committed
           if ! git diff --quiet --staged; then
-            git commit -m "⚽ Automated API-Football update and sitemap generation [skip ci]"
+            git commit -m "⚽ Automated API-Football data update [skip ci]"
             
             # Pull latest changes and rebase BEFORE pushing
             git pull --rebase origin main || echo "Nothing to pull"
@@ -43,5 +45,5 @@ jobs:
             # Try pushing. If rejected, pull again and immediately push.
             git push origin main || (git pull --rebase origin main && git push origin main)
           else
-            echo "No new soccer data or sitemap updates. Skipping commit."
+            echo "No new soccer data updates. Skipping commit."
           fi
