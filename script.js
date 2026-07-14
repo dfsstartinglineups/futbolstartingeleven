@@ -1426,8 +1426,13 @@ function buildLineupList(lineupData, gameData) {
             const originalName = p.name || 'Unknown';
             const displaySafeName = shortenPlayerName(originalName);
             const safeNum = p.number || '';
-            const photoUrl = p.photo || '';
             
+            // 🎯 THE FIX: Try the match feed first, but fallback to the master database if missing
+            let photoUrl = p.photo || '';
+            if ((!photoUrl || !photoUrl.includes("http")) && PLAYER_DATABASE && PLAYER_DATABASE[p.id]) {
+                // Checks for 'photo' or 'photo_url' depending on your JSON key structure
+                photoUrl = PLAYER_DATABASE[p.id].photo || PLAYER_DATABASE[p.id].photo_url || '';
+            }
             
             let posColor = safePos === 'G' ? "#dc3545" : safePos === 'D' ? "#0d6efd" : safePos === 'M' ? "#20c997" : "#ffc107";
             
