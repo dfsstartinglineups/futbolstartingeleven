@@ -89,8 +89,19 @@
                         "name": "Marco Mazzotti",
                         "number": 5,
                         "pos": "D",
-                        "grid": "2:3"
-                    }
+                        "grid": "2:3",
+                        "isSubbedIn": true,
+                        "subMinute": "60"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 56697,
+                            "name": "Andrea Brighi",
+                            "number": 3,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -181,15 +192,6 @@
                         "name": "Davide Colonna",
                         "number": 1,
                         "pos": "G",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 56697,
-                        "name": "Andrea Brighi",
-                        "number": 3,
-                        "pos": "D",
                         "grid": null
                     }
                 },
@@ -343,8 +345,19 @@
                         "name": "Daryl Myre",
                         "number": 94,
                         "pos": "D",
-                        "grid": "2:1"
-                    }
+                        "grid": "2:1",
+                        "isSubbedIn": true,
+                        "subMinute": "77"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 106896,
+                            "name": "Alexandre Sacras",
+                            "number": 14,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -352,8 +365,19 @@
                         "name": "Omar Natami",
                         "number": 11,
                         "pos": "M",
-                        "grid": "3:3"
-                    }
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "70"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 149436,
+                            "name": "Amine Zenadji",
+                            "number": 9,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -413,15 +437,6 @@
                 },
                 {
                     "player": {
-                        "id": 106896,
-                        "name": "Alexandre Sacras",
-                        "number": 14,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 203670,
                         "name": "Alen Agovic",
                         "number": 20,
@@ -434,15 +449,6 @@
                         "id": 320976,
                         "name": "Jimmy Goncalves",
                         "number": 8,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 149436,
-                        "name": "Amine Zenadji",
-                        "number": 9,
                         "pos": "M",
                         "grid": null
                     }
@@ -496,9 +502,165 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "8",
+                "team_id": 2036,
+                "player": "N. Perez",
+                "player_id": 1679,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "O. Natami"
+            },
+            {
+                "time": "22",
+                "team_id": 2249,
+                "player": "G. Nigretti",
+                "player_id": 122157,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "38",
+                "team_id": 2036,
+                "player": "V. Steinmetz",
+                "player_id": 667095,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "B. Seye"
+            },
+            {
+                "time": "56",
+                "team_id": 2036,
+                "player": "N. Perez",
+                "player_id": 1679,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "Matheus Souza",
+                "player_out": "Matheus Souza",
+                "player_out_id": 544240
+            },
+            {
+                "time": "60",
+                "team_id": 2249,
+                "player": "M. Bonetti",
+                "player_id": 535634,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "T. Guidi",
+                "player_out": "T. Guidi",
+                "player_out_id": 642708
+            },
+            {
+                "time": "60",
+                "team_id": 2249,
+                "player": "M. Mazzotti",
+                "player_id": 440988,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "A. Brighi",
+                "player_out": "A. Brighi",
+                "player_out_id": 56697
+            },
+            {
+                "time": "70",
+                "team_id": 2036,
+                "player": "K. Delorge",
+                "player_id": 93043,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "J. Tiago",
+                "player_out": "J. Tiago",
+                "player_out_id": 667092
+            },
+            {
+                "time": "70",
+                "team_id": 2036,
+                "player": "O. Natami",
+                "player_id": 106875,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "A. Zenadji",
+                "player_out": "A. Zenadji",
+                "player_out_id": 149436
+            },
+            {
+                "time": "71",
+                "team_id": 2249,
+                "player": "M. Djuric",
+                "player_id": 647804,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "76",
+                "team_id": 2249,
+                "player": "R. Zulli",
+                "player_id": 544028,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "M. Mularoni",
+                "player_out": "M. Mularoni",
+                "player_out_id": 571708
+            },
+            {
+                "time": "77",
+                "team_id": 2036,
+                "player": "D. Myre",
+                "player_id": 377286,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "A. Sacras",
+                "player_out": "A. Sacras",
+                "player_out_id": 106896
+            },
+            {
+                "time": "77",
+                "team_id": 2036,
+                "player": "B. Seye",
+                "player_id": 489469,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "A. Agovic",
+                "player_out": "A. Agovic",
+                "player_out_id": 544238
+            },
+            {
+                "time": "83",
+                "team_id": 2249,
+                "player": "A. Molossi",
+                "player_id": null,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90",
+                "team_id": 2249,
+                "player": "M. Djuric",
+                "player_id": 647804,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "T. Bonifazi",
+                "player_out": "T. Bonifazi",
+                "player_out_id": 667096
+            },
+            {
+                "time": "90",
+                "team_id": 2249,
+                "player": "M. Drudi",
+                "player_id": 30648,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "H. Zazas",
+                "player_out": "H. Zazas",
+                "player_out_id": 667097
+            }
+        ],
         "match_ended_at": "2026-07-14T20:54:24.094549+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-14T19:02:23.819907+00:00",
         "final_odds_check": true,
@@ -11113,7 +11275,31 @@
                         "name": "R. Ferguson",
                         "number": 1,
                         "pos": "G",
-                        "grid": "1:1"
+                        "grid": "1:1",
+                        "live_stats": {
+                            "minutes": 90,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11122,7 +11308,31 @@
                         "name": "T. Cosgrove",
                         "number": 23,
                         "pos": "D",
-                        "grid": "2:4"
+                        "grid": "2:4",
+                        "live_stats": {
+                            "minutes": 90,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11131,7 +11341,31 @@
                         "name": "D. Bent",
                         "number": 26,
                         "pos": "D",
-                        "grid": "2:3"
+                        "grid": "2:3",
+                        "live_stats": {
+                            "minutes": 90,
+                            "goals": 1,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11140,7 +11374,31 @@
                         "name": "M. Ridley",
                         "number": 3,
                         "pos": "D",
-                        "grid": "2:2"
+                        "grid": "2:2",
+                        "live_stats": {
+                            "minutes": 90,
+                            "goals": 1,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11149,7 +11407,31 @@
                         "name": "R. Doherty",
                         "number": 15,
                         "pos": "M",
-                        "grid": "2:1"
+                        "grid": "2:1",
+                        "live_stats": {
+                            "minutes": 76,
+                            "goals": 0,
+                            "assists": 1,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11158,7 +11440,31 @@
                         "name": "C. Gallagher",
                         "number": 6,
                         "pos": "M",
-                        "grid": "3:3"
+                        "grid": "3:3",
+                        "live_stats": {
+                            "minutes": 90,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11166,18 +11472,136 @@
                         "id": 125139,
                         "name": "S. Graham",
                         "number": 11,
-                        "pos": "M",
-                        "grid": "3:2"
-                    }
+                        "pos": "D",
+                        "grid": "3:2",
+                        "isSubbedIn": true,
+                        "subMinute": "80",
+                        "live_stats": {
+                            "minutes": 80,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
+                    },
+                    "sub_history": [
+                        {
+                            "id": 456222,
+                            "name": "J. Simpson",
+                            "number": 47,
+                            "pos": "D",
+                            "grid": null,
+                            "live_stats": {
+                                "minutes": 10,
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": "0",
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "0"
+                            }
+                        }
+                    ]
                 },
                 {
                     "player": {
                         "id": 143643,
                         "name": "C. McKendry",
                         "number": 7,
-                        "pos": "F",
-                        "grid": "3:1"
-                    }
+                        "pos": "M",
+                        "grid": "3:1",
+                        "isSubbedIn": true,
+                        "subMinute": "59",
+                        "live_stats": {
+                            "minutes": 58,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 1,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
+                    },
+                    "sub_history": [
+                        {
+                            "id": 138782,
+                            "name": "J. McEneff",
+                            "number": 22,
+                            "pos": "M",
+                            "grid": null,
+                            "live_stats": {
+                                "minutes": 32,
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": "0",
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "0"
+                            }
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -11185,8 +11609,67 @@
                         "name": "M. Lusty",
                         "number": 30,
                         "pos": "F",
-                        "grid": "4:3"
-                    }
+                        "grid": "4:3",
+                        "isSubbedIn": true,
+                        "subMinute": "80",
+                        "live_stats": {
+                            "minutes": 80,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
+                    },
+                    "sub_history": [
+                        {
+                            "id": 128075,
+                            "name": "P. O&apos;Neill",
+                            "number": 9,
+                            "pos": "F",
+                            "grid": null,
+                            "live_stats": {
+                                "minutes": 10,
+                                "goals": 0,
+                                "assists": 0,
+                                "total_shots": 0,
+                                "shots_on_target": 0,
+                                "offsides": 0,
+                                "passes": 0,
+                                "key_passes": 0,
+                                "pass_acc": "0",
+                                "tackles": 0,
+                                "blocks": 0,
+                                "interceptions": 0,
+                                "duels_total": 0,
+                                "duels_won": 0,
+                                "clearances": 0,
+                                "saves": 0,
+                                "conceded": 0,
+                                "yellow_cards": 0,
+                                "red_cards": 0,
+                                "fouls_drawn": 0,
+                                "fouls_committed": 0,
+                                "rating": "0"
+                            }
+                        }
+                    ]
                 }
             ],
             "substitutes": [
@@ -11196,7 +11679,31 @@
                         "name": "Dylan Graham",
                         "number": 36,
                         "pos": "G",
-                        "grid": null
+                        "grid": null,
+                        "live_stats": {
+                            "minutes": 0,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11205,34 +11712,31 @@
                         "name": "B. Magee",
                         "number": 14,
                         "pos": "F",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 138782,
-                        "name": "J. McEneff",
-                        "number": 22,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 128075,
-                        "name": "P. O&apos;Neill",
-                        "number": 9,
-                        "pos": "F",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 456222,
-                        "name": "J. Simpson",
-                        "number": 47,
-                        "pos": "D",
-                        "grid": null
+                        "grid": null,
+                        "live_stats": {
+                            "minutes": 0,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 }
             ]
@@ -11257,7 +11761,31 @@
                         "name": "M. Nardi",
                         "number": 17,
                         "pos": "G",
-                        "grid": "1:1"
+                        "grid": "1:1",
+                        "live_stats": {
+                            "minutes": 90,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11266,7 +11794,31 @@
                         "name": "A. D&apos;Addario",
                         "number": 2,
                         "pos": "D",
-                        "grid": "2:4"
+                        "grid": "2:4",
+                        "live_stats": {
+                            "minutes": 59,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 1,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11275,7 +11827,31 @@
                         "name": "Simone Rea",
                         "number": 5,
                         "pos": "D",
-                        "grid": "2:3"
+                        "grid": "2:3",
+                        "live_stats": {
+                            "minutes": 63,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 1,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11284,7 +11860,31 @@
                         "name": "M. Sancisi",
                         "number": 3,
                         "pos": "D",
-                        "grid": "2:2"
+                        "grid": "2:2",
+                        "live_stats": {
+                            "minutes": 90,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11293,7 +11893,31 @@
                         "name": "Brando Sami",
                         "number": 4,
                         "pos": "M",
-                        "grid": "2:1"
+                        "grid": "2:1",
+                        "live_stats": {
+                            "minutes": 90,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11302,7 +11926,31 @@
                         "name": "F. Benedettini",
                         "number": 20,
                         "pos": "M",
-                        "grid": "3:2"
+                        "grid": "3:2",
+                        "live_stats": {
+                            "minutes": 90,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 }
             ],
@@ -11313,7 +11961,31 @@
                         "name": "F. Dolcini",
                         "number": 16,
                         "pos": "M",
-                        "grid": null
+                        "grid": null,
+                        "live_stats": {
+                            "minutes": 0,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11322,7 +11994,31 @@
                         "name": "L. Censoni",
                         "number": 8,
                         "pos": "M",
-                        "grid": null
+                        "grid": null,
+                        "live_stats": {
+                            "minutes": 7,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11331,7 +12027,31 @@
                         "name": "L. Terenzi",
                         "number": 28,
                         "pos": "M",
-                        "grid": null
+                        "grid": null,
+                        "live_stats": {
+                            "minutes": 7,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 },
                 {
@@ -11340,7 +12060,31 @@
                         "name": "A. Sirri",
                         "number": 23,
                         "pos": "D",
-                        "grid": null
+                        "grid": null,
+                        "live_stats": {
+                            "minutes": 0,
+                            "goals": 0,
+                            "assists": 0,
+                            "total_shots": 0,
+                            "shots_on_target": 0,
+                            "offsides": 0,
+                            "passes": 0,
+                            "key_passes": 0,
+                            "pass_acc": "0",
+                            "tackles": 0,
+                            "blocks": 0,
+                            "interceptions": 0,
+                            "duels_total": 0,
+                            "duels_won": 0,
+                            "clearances": 0,
+                            "saves": 0,
+                            "conceded": 0,
+                            "yellow_cards": 0,
+                            "red_cards": 0,
+                            "fouls_drawn": 0,
+                            "fouls_committed": 0,
+                            "rating": "0"
+                        }
                     }
                 }
             ]
@@ -11360,14 +12104,271 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "11",
+                "team_id": 2260,
+                "player": "P. Mengucci",
+                "player_id": 579651,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "M. Prandelli"
+            },
+            {
+                "time": "25",
+                "team_id": 5354,
+                "player": "M. Ridley",
+                "player_id": 357259,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "R. Doherty"
+            },
+            {
+                "time": "32",
+                "team_id": 2260,
+                "player": "A. D'Addario",
+                "player_id": 667086,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "49",
+                "team_id": 2260,
+                "player": "T. Syku",
+                "player_id": 633881,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "54",
+                "team_id": 5354,
+                "player": "C. McKendry",
+                "player_id": 143643,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "58",
+                "team_id": 2260,
+                "player": "S. Rea",
+                "player_id": 303444,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "59",
+                "team_id": 5354,
+                "player": "C. McKendry",
+                "player_id": 143643,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "J. McEneff",
+                "player_out": "J. McEneff",
+                "player_out_id": 138782
+            },
+            {
+                "time": "59",
+                "team_id": 5354,
+                "player": "M. Gibson",
+                "player_id": 82299,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "K. O'Hara",
+                "player_out": "K. O'Hara",
+                "player_out_id": 553377
+            },
+            {
+                "time": "60",
+                "team_id": 2260,
+                "player": "M. Prandelli",
+                "player_id": 106216,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "G. Ponticelli",
+                "player_out": "G. Ponticelli",
+                "player_out_id": 667084
+            },
+            {
+                "time": "60",
+                "team_id": 2260,
+                "player": "A. D'Addario",
+                "player_id": 667086,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "M. Ben Kacem",
+                "player_out": "M. Ben Kacem",
+                "player_out_id": 535654
+            },
+            {
+                "time": "63",
+                "team_id": 2260,
+                "player": "S. Rea",
+                "player_id": 303444,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "63",
+                "team_id": 2260,
+                "player": "S. Rea",
+                "player_id": 303444,
+                "type": "Card",
+                "detail": "Red Card",
+                "assist": null
+            },
+            {
+                "time": "67",
+                "team_id": 2260,
+                "player": "N. Manara",
+                "player_id": 631487,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "69",
+                "team_id": 5354,
+                "player": "D. Bent",
+                "player_id": 321076,
+                "type": "Goal",
+                "detail": "Penalty",
+                "assist": null
+            },
+            {
+                "time": "72",
+                "team_id": 2260,
+                "player": "N. Manara",
+                "player_id": 631487,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "T. L. Bernardi",
+                "player_out": "T. L. Bernardi",
+                "player_out_id": 136070
+            },
+            {
+                "time": "76",
+                "team_id": 5354,
+                "player": "R. Doherty",
+                "player_id": 535526,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "D. Sloan",
+                "player_out": "D. Sloan",
+                "player_out_id": 316087
+            },
+            {
+                "time": "80",
+                "team_id": 5354,
+                "player": "S. Graham",
+                "player_id": 125139,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "J. Simpson",
+                "player_out": "J. Simpson",
+                "player_out_id": 456222
+            },
+            {
+                "time": "80",
+                "team_id": 5354,
+                "player": "M. Lusty",
+                "player_id": 309855,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "P. O'Neill",
+                "player_out": "P. O'Neill",
+                "player_out_id": 128075
+            },
+            {
+                "time": "83",
+                "team_id": 2260,
+                "player": "P. Mengucci",
+                "player_id": 579651,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "L. Terenzi",
+                "player_out": "L. Terenzi",
+                "player_out_id": 667085
+            },
+            {
+                "time": "83",
+                "team_id": 2260,
+                "player": "R. Bertani",
+                "player_id": 631516,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "L. Censoni",
+                "player_out": "L. Censoni",
+                "player_out_id": 56102
+            },
+            {
+                "time": "90",
+                "team_id": 2260,
+                "player": "T. L. Bernardi",
+                "player_id": 136070,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90+1",
+                "team_id": 2260,
+                "player": "G. Ponticelli",
+                "player_id": 667084,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90+1",
+                "team_id": 2260,
+                "player": "T. L. Bernardi",
+                "player_id": 136070,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90+1",
+                "team_id": 2260,
+                "player": "T. L. Bernardi",
+                "player_id": 136070,
+                "type": "Card",
+                "detail": "Red Card",
+                "assist": null
+            }
+        ],
         "match_ended_at": "2026-07-14T20:54:24.094742+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-14T18:56:23.913764+00:00",
         "final_odds_check": true,
         "refreshed_15m": true,
-        "refreshed_5m": true
+        "refreshed_5m": true,
+        "team_stats": {
+            "home": {
+                "possession": 68,
+                "total_shots": 12,
+                "shots_on_target": 4,
+                "corners": 5,
+                "fouls": 0,
+                "yellow_cards": 1,
+                "red_cards": 0
+            },
+            "away": {
+                "possession": 32,
+                "total_shots": 7,
+                "shots_on_target": 3,
+                "corners": 1,
+                "fouls": 0,
+                "yellow_cards": 4,
+                "red_cards": 2
+            }
+        }
     },
     {
         "fixture": {
