@@ -85,7 +85,8 @@ def get_next_match_info(team_id, team_name):
             date_iso = match["fixture"]["date"]
             try:
                 dt = datetime.fromisoformat(date_iso).astimezone(zoneinfo.ZoneInfo("America/New_York"))
-                date_str = dt.strftime("%A %I:%M %p EST")
+                # ADDED THE MONTH AND DAY HERE
+                date_str = dt.strftime("%A, %b %d - %I:%M %p EST")
             except:
                 date_str = "Upcoming"
                 
