@@ -257,33 +257,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         let playerStatsHtml = "";
-        if (playerObj && playerObj.live_stats) {
-            const ls = playerObj.live_stats;
-            const rating = ls.rating || playerObj.rating || "N/A";
+        if (playerObj) {
+            const ls = playerObj.live_stats || {};
+            const posKey = playerObj.pos || 'M';
+            const rating = ls.rating || playerObj.rating || "-";
+            const mins = ls.minutes || 0;
             
-            let badges = [];
-            if (rating && rating !== "N/A" && rating !== "0" && rating !== 0) {
-                badges.push(`<span class="fw-bold text-success" style="font-size: 0.9rem;">⭐ ${rating}</span>`);
-            }
-            if (ls.goals > 0) {
-                badges.push(`<span class="badge bg-success" style="font-size: 0.7rem;">⚽ ${ls.goals} Goal${ls.goals > 1 ? 's' : ''}</span>`);
-            }
-            if (ls.assists > 0) {
-                badges.push(`<span class="badge bg-primary" style="font-size: 0.7rem;">🎯 ${ls.assists} Assist${ls.assists > 1 ? 's' : ''}</span>`);
-            }
-            if (ls.saves > 0) {
-                badges.push(`<span class="badge bg-info text-dark" style="font-size: 0.7rem;">🧤 ${ls.saves} Sv</span>`);
-            }
-            if (ls.key_passes > 0) {
-                badges.push(`<span class="badge bg-secondary" style="font-size: 0.7rem;">👟 ${ls.key_passes} KP</span>`);
-            }
-            if (ls.tackles > 0) {
-                badges.push(`<span class="badge bg-dark" style="font-size: 0.7rem;">🛡️ ${ls.tackles} Tkl</span>`);
-            }
+            // Mirrors the positional logic from the main index dashboard
+            const groups = {
+                'F': { stats: ['G', 'A', 'SOT', 'SH'], keys: ['goals', 'assists', 'shots_on_target', 'total_shots'] },
+                'M': { stats: ['G', 'A', 'KP', 'TK'], keys: ['goals', 'assists', 'key_passes', 'tackles'] },
+                'D': { stats: ['G', 'A', 'TK', 'IN'], keys: ['goals', 'assists', 'tackles', 'interceptions'] },
+                'G': { stats: ['SV', 'GC', 'PA', 'YC'], keys: ['saves', 'conceded', 'passes', 'yellow_cards'] }
+            };
             
-            if (badges.length > 0) {
-                playerStatsHtml = `<div class="mt-2 d-flex gap-1 justify-content-end align-items-center">${badges.join('')}</div>`;
-            }
+            const gConf = groups[posKey] || groups['M'];
+            
+            const v1 = ls[gConf.keys[0]] || 0;
+            const v2 = ls[gConf.keys[1]] || 0;
+            const v3 = ls[gConf.keys[2]] || 0;
+            const v4 = ls[gConf.keys[3]] || 0;
+
+            playerStatsHtml = `
+                <div class="mt-2 d-flex justify-content-end">
+                    <div class="d-flex align-items-center bg-light border rounded px-3 py-1 gap-3 shadow-sm">
+                        <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">MIN</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">${mins}'</div></div>
+                        <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">${gConf.stats[0]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">${v1}</div></div>
+                        <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">${gConf.stats[1]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">${v2}</div></div>
+                        <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">${gConf.stats[2]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">${v3}</div></div>
+                        <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">${gConf.stats[3]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">${v4}</div></div>
+                        <div class="border-start" style="height: 20px;"></div>
+                        <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">RTG</div><div class="fw-bold text-success" style="font-size: 0.85rem;">${rating}</div></div>
+                    </div>
+                </div>
+            `;
         }
 
         const scoreHtml = isPreGame 
