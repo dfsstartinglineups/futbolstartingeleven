@@ -41,7 +41,7 @@ INT_LEAGUE_IDS = [1, 4, 9, 5, 531, 10]
 TEAM_NEXT_MATCH_CACHE = {}
 
 def fetch_api(endpoint, retries=5):
-    """Fetches data from the API with automatic retries for rate limits (429 errors)."""
+    """Fetches data from the API as fast as possible, only pausing when rate limited."""
     req = urllib.request.Request(f"{API_HOST}/{endpoint}")
     req.add_header("x-apisports-key", API_KEY)
     
@@ -54,18 +54,17 @@ def fetch_api(endpoint, retries=5):
                 if data.get("errors"):
                     errors = data["errors"]
                     if isinstance(errors, dict) and "rateLimit" in errors:
-                        print(f"   🛑 Rate Limit Hit (JSON). Pausing for 60 seconds to reset quota... (Attempt {attempt+1}/{retries})")
-                        time.sleep(60)
-                        continue # Skip to the next loop iteration to retry
+                        print(f"   🛑 Rate Limit Hit (JSON). Pausing for 61 seconds to reset quota... (Attempt {attempt+1}/{retries})")
+                        time.sleep(61) # 61 seconds ensures the minute rolls over safely
+                        continue 
                 
-                # Small delay to gently throttle normal requests (adjust based on your plan)
-                time.sleep(0.5) 
+                # NO ARTIFICIAL THROTTLE HERE
                 return data
                 
         except urllib.error.HTTPError as e:
             if e.code == 429:
-                print(f"   🛑 HTTP 429 Too Many Requests. Pausing for 60 seconds to reset quota... (Attempt {attempt+1}/{retries})")
-                time.sleep(60)
+                print(f"   🛑 HTTP 429 Too Many Requests. Pausing for 61 seconds to reset quota... (Attempt {attempt+1}/{retries})")
+                time.sleep(61)
             elif e.code in [499, 500, 502, 503, 504]:
                 print(f"   ⚠️ Server Error {e.code}. Pausing for 5 seconds... (Attempt {attempt+1}/{retries})")
                 time.sleep(5)
