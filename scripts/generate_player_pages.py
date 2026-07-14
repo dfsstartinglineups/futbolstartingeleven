@@ -603,9 +603,12 @@ def bootstrap_universe():
             
             for stat in (stats_list_2026 + stats_list_2025):
                 l_id = stat.get("league", {}).get("id")
+                # Add .lower() so it catches "league", "League", "cup", or "Cup" safely
+                league_type = stat.get("league", {}).get("type", "").lower()
+                
                 if l_id in INT_LEAGUE_IDS:
                     if not nat_stat: nat_stat = stat
-                elif stat.get("league", {}).get("type") in ["League", "Cup"]:
+                elif league_type in ["league", "cup"]:
                     if not club_stat: club_stat = stat
                     
             if not club_stat:
