@@ -1,3 +1,4 @@
+import unicodedata
 import os
 import re
 import json
@@ -41,18 +42,30 @@ def fetch_api(endpoint):
         print(f"⚠️ API Fetch Failed ({endpoint}): {e}")
         return None
 
+def normalize_string(text):
+    """Translates special characters and strips accents."""
+    text = text.lower()
+    # Handle specific characters that unicodedata drops completely
+    text = text.replace('ø', 'o').replace('æ', 'ae').replace('œ', 'oe').replace('ß', 'ss').replace('đ', 'd')
+    # Normalize the rest (e.g., é -> e, ã -> a)
+    text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8')
+    return text
+
 def get_player_slug(full_name):
-    slug = full_name.lower().replace(".", "").replace("'", "")
+    slug = normalize_string(full_name)
+    slug = slug.replace(".", "").replace("'", "")
     slug = re.sub(r'[^a-z0-9]+', '-', slug).strip('-')
     return slug
 
 def get_team_slug(full_name):
-    slug = full_name.lower().replace(".", "").replace("'", "")
+    slug = normalize_string(full_name)
+    slug = slug.replace(".", "").replace("'", "")
     slug = re.sub(r'[^a-z0-9]+', '-', slug).strip('-')
     return slug
 
 def get_league_slug(league_name):
-    slug = league_name.lower().replace(".", "").replace("'", "")
+    slug = normalize_string(league_name)
+    slug = slug.replace(".", "").replace("'", "")
     slug = re.sub(r'[^a-z0-9]+', '-', slug).strip('-')
     if "premier-league" in slug and "english" not in slug:
         slug = "english-" + slug
