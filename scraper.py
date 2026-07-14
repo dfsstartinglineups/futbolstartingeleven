@@ -952,6 +952,8 @@ def process_date(target_date, force_master_sync=False):
                                     p_stats = p["statistics"][0] if len(p["statistics"]) > 0 else {}
                                     
                                     live_player_map[p_id] = {
+                                        # 🎯 NEW: Collect final minutes played
+                                        "minutes": p_stats.get("games", {}).get("minutes") or 0,
                                         "goals": p_stats.get("goals", {}).get("total") or 0,
                                         "assists": p_stats.get("goals", {}).get("assists") or 0,
                                         "total_shots": p_stats.get("shots", {}).get("total") or 0,
