@@ -3452,8 +3452,19 @@
                         "name": "Aldin Ad\u017eovi\u0107",
                         "number": 14,
                         "pos": "M",
-                        "grid": "3:3"
-                    }
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "70"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 67101,
+                            "name": "Matija Bo\u017eanovi\u0107",
+                            "number": 16,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -3470,8 +3481,19 @@
                         "name": "Aleksa \u0106etkovi\u0107",
                         "number": 8,
                         "pos": "M",
-                        "grid": "3:1"
-                    }
+                        "grid": "3:1",
+                        "isSubbedIn": true,
+                        "subMinute": "70"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 197600,
+                            "name": "Petar Pavli\u0107evi\u0107",
+                            "number": 74,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -3567,27 +3589,9 @@
                 },
                 {
                     "player": {
-                        "id": 67101,
-                        "name": "Matija Bo\u017eanovi\u0107",
-                        "number": 16,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 457344,
                         "name": "Medo Jukovic",
                         "number": 88,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 197600,
-                        "name": "Petar Pavli\u0107evi\u0107",
-                        "number": 74,
                         "pos": "M",
                         "grid": null
                     }
@@ -3678,9 +3682,20 @@
                         "id": 63418,
                         "name": "Andriy Korobenko",
                         "number": 28,
-                        "pos": "M",
-                        "grid": "2:1"
-                    }
+                        "pos": "D",
+                        "grid": "2:1",
+                        "isSubbedIn": true,
+                        "subMinute": "46"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 56033,
+                            "name": "Vja\u010deslavs Isajevs",
+                            "number": 26,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -3758,15 +3773,6 @@
                 },
                 {
                     "player": {
-                        "id": 56033,
-                        "name": "Vja\u010deslavs Isajevs",
-                        "number": 26,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 296700,
                         "name": "Abiodun Ogunniyi",
                         "number": 7,
@@ -3832,9 +3838,181 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "12",
+                "team_id": 3745,
+                "player": "D. Kontic",
+                "player_id": 540228,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "S. Stanisavic"
+            },
+            {
+                "time": "18",
+                "team_id": 3745,
+                "player": "B. Radusinovic",
+                "player_id": 323860,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "26",
+                "team_id": 3745,
+                "player": "A. Adzovic",
+                "player_id": 92924,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "45+1",
+                "team_id": 661,
+                "player": "K. Leidsman",
+                "player_id": 93291,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "B. Straalman"
+            },
+            {
+                "time": "46",
+                "team_id": 661,
+                "player": "A. Korobenko",
+                "player_id": 63418,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "V. Isajevs",
+                "player_out": "V. Isajevs",
+                "player_out_id": 56033
+            },
+            {
+                "time": "59",
+                "team_id": 661,
+                "player": "K. Leidsman",
+                "player_id": 93291,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "A. Ogunniyi",
+                "player_out": "A. Ogunniyi",
+                "player_out_id": 546338
+            },
+            {
+                "time": "61",
+                "team_id": 661,
+                "player": "Fellipe Vieira",
+                "player_id": 460605,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
+            },
+            {
+                "time": "70",
+                "team_id": 3745,
+                "player": "L. Maras",
+                "player_id": 394680,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "P. Ljuljdjuraj",
+                "player_out": "P. Ljuljdjuraj",
+                "player_out_id": 540226
+            },
+            {
+                "time": "70",
+                "team_id": 3745,
+                "player": "A. Adzovic",
+                "player_id": 92924,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "M. Bozanovic",
+                "player_out": "M. Bozanovic",
+                "player_out_id": 67101
+            },
+            {
+                "time": "70",
+                "team_id": 3745,
+                "player": "A. Cetkovic",
+                "player_id": 304749,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "P. Pavlicevic",
+                "player_out": "P. Pavlicevic",
+                "player_out_id": 197600
+            },
+            {
+                "time": "70",
+                "team_id": 3745,
+                "player": "B. Radusinovic",
+                "player_id": 323860,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "J. Mugosa",
+                "player_out": "J. Mugosa",
+                "player_out_id": 667150
+            },
+            {
+                "time": "81",
+                "team_id": 3745,
+                "player": "D. Kontic",
+                "player_id": 540228,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "P. Ivanovic",
+                "player_out": "P. Ivanovic",
+                "player_out_id": 667135
+            },
+            {
+                "time": "84",
+                "team_id": 661,
+                "player": "Fellipe Vieira",
+                "player_id": 460605,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "D. Gueye",
+                "player_out": "D. Gueye",
+                "player_out_id": 271788
+            },
+            {
+                "time": "84",
+                "team_id": 661,
+                "player": "A. Ogunniyi",
+                "player_id": 546338,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "87",
+                "team_id": 661,
+                "player": "D. Oss",
+                "player_id": 72540,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90",
+                "team_id": 661,
+                "player": "V. Sorokins",
+                "player_id": 72364,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90+4",
+                "team_id": 661,
+                "player": "E. Oloko",
+                "player_id": 546327,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "K. Iljins",
+                "player_out": "K. Iljins",
+                "player_out_id": 72494
+            }
+        ],
         "match_ended_at": "2026-07-15T20:26:24.892413+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-15T18:26:25.601775+00:00",
         "final_odds_check": true,
