@@ -16,15 +16,18 @@ const DEFAULT_DATE = new Date().toLocaleDateString('en-CA', { timeZone: 'America
 let PLAYER_DATABASE = null;
 
 // Lightweight client-side slugifier that mirrors your Python pipeline safely
+// Lightweight client-side slugifier that mirrors your Python pipeline safely
 function getTeamSlug(teamName) {
     if (!teamName) return "";
     return teamName
         .toLowerCase()
         .normalize("NFD") // Splits accents from characters
         .replace(/[\u0300-\u036f]/g, "") // Removes the accents
-        .replace(/[^a-z0-9\s-]/g, "") // Strips special symbols
+        .replace(/\//g, "-") // <-- THE TRUE FIX: Converts forward slashes into hyphens first!
+        .replace(/[^a-z0-9\s-]/g, "") // Strips remaining special symbols
         .replace(/\s+/g, "-") // Collapses spaces to hyphens
         .replace(/-+/g, "-") // Normalizes double hyphens
+        .replace(/^-+|-+$/g, "") // Trims leading/trailing hyphens cleanly
         .trim();
 }
 
