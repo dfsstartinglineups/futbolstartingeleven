@@ -41,9 +41,11 @@ document.addEventListener("DOMContentLoaded", () => {
             .toLowerCase()
             .normalize("NFD") 
             .replace(/[\u0300-\u036f]/g, "") 
+            .replace(/\//g, "-") // <-- THE FIX: Converts forward slashes into hyphens first
             .replace(/[^a-z0-9\s-]/g, "") 
             .replace(/\s+/g, "-") 
             .replace(/-+/g, "-") 
+            .replace(/^-+|-+$/g, "") // Trims leading/trailing hyphens cleanly
             .trim();
     }
 
