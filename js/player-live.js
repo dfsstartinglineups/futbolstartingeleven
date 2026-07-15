@@ -366,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (metaZone && !document.getElementById('dynamic-hero-badge')) {
         const badgeDiv = document.createElement('div');
         badgeDiv.id = 'dynamic-hero-badge'; 
-        badgeDiv.className = "mt-3 d-flex justify-content-center justify-content-lg-start align-items-center gap-2";
+        badgeDiv.className = "mt-3 d-flex justify-content-center align-items-center gap-2";
         
         badgeDiv.innerHTML = `
             <span class="badge ${badgeClass} py-2 px-3 fw-bold shadow-sm" style="font-size: 0.85rem; border-radius: 6px;">
