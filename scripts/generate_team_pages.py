@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import unicodedata
 import requests
 from datetime import datetime
 import xml.etree.ElementTree as ET
@@ -38,8 +39,17 @@ def fetch_api(endpoint):
         return None
 
 def get_team_slug(full_name):
-    slug = full_name.lower().replace(".", "").replace("'", "")
+    slug = full_name.lower()
+    
+    # Normalize accents/special characters (e.g., Shkodër -> shkoder)
+    slug = unicodedata.normalize('NFKD', slug).encode('ascii', 'ignore').decode('utf-8')
+    
+    # Strip basic punctuation
+    slug = slug.replace(".", "").replace("'", "")
+    
+    # Replace any remaining spaces or non-alphanumerics with a clean hyphen
     slug = re.sub(r'[^a-z0-9]+', '-', slug).strip('-')
+    
     return slug
 
 def format_date(iso_string):
