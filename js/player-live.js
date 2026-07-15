@@ -328,42 +328,58 @@ document.addEventListener("DOMContentLoaded", () => {
         const awayTeamSlug = getTeamSlug(game.teams.away.name);
 
         // Render live interface mapping
-        widget.innerHTML = `
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3" style="width: 100%;">
-                <div class="d-flex flex-column align-items-start">
-                    <span class="fw-bold ${headerClass} mb-1" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center;">
-                        ${liveIndicator} ${headerText}
-                    </span>
-                    <div class="d-flex align-items-center" style="font-size: 1rem; font-weight: 700;">
-                        <a href="/lineups/${homeTeamSlug}/" class="text-decoration-none text-dark" style="color: inherit;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">
-                            <img src="${game.teams.home.logo}" width="18" height="18" class="me-1" style="object-fit:contain;">
-                            ${game.teams.home.name} 
-                        </a>
-                        ${scoreHtml} 
-                        <a href="/lineups/${awayTeamSlug}/" class="text-decoration-none text-dark" style="color: inherit;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">
-                            <img src="${game.teams.away.logo}" width="18" height="18" class="me-1" style="object-fit:contain;">
-                            ${game.teams.away.name}
-                        </a>
-                    </div>
-                </div>
-                <div class="text-end">
-                    <div class="d-flex justify-content-end align-items-center gap-2">
-                        <span class="badge ${badgeClass}">${badgeText}</span>
-                        <a href="/lineups/${targetTeamSlug}/" class="text-decoration-none fw-bold" style="font-size: 0.7rem; color: #6c757d; transition: color 0.2s;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='#6c757d'">View Lineup &rarr;</a>
-                    </div>
-                    ${playerStatsHtml}
+        // ... (Keep the exact same code above that sets badgeClass, badgeText, playerStatsHtml, etc.)
+
+    // Render live interface mapping into the main widget
+    widget.innerHTML = `
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3" style="width: 100%;">
+            <div class="d-flex flex-column align-items-start">
+                <span class="fw-bold ${headerClass} mb-1" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center;">
+                    ${liveIndicator} ${headerText}
+                </span>
+                <div class="d-flex align-items-center" style="font-size: 1rem; font-weight: 700;">
+                    <a href="/lineups/${homeTeamSlug}/" class="text-decoration-none text-dark" style="color: inherit;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">
+                        <img src="${game.teams.home.logo}" width="18" height="18" class="me-1" style="object-fit:contain;">
+                        ${game.teams.home.name} 
+                    </a>
+                    ${scoreHtml} 
+                    <a href="/lineups/${awayTeamSlug}/" class="text-decoration-none text-dark" style="color: inherit;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='inherit'">
+                        <img src="${game.teams.away.logo}" width="18" height="18" class="me-1" style="object-fit:contain;">
+                        ${game.teams.away.name}
+                    </a>
                 </div>
             </div>
-        `;
+            <div class="text-end">
+                <div class="d-flex justify-content-end align-items-center gap-2">
+                    <span class="badge ${badgeClass}">${badgeText}</span>
+                    <a href="/lineups/${targetTeamSlug}/" class="text-decoration-none fw-bold" style="font-size: 0.7rem; color: #6c757d; transition: color 0.2s;" onmouseover="this.style.color='#20c997'" onmouseout="this.style.color='#6c757d'">View Lineup &rarr;</a>
+                </div>
+                ${playerStatsHtml}
+            </div>
+        </div>
+    `;
 
-        if (liveIndicator !== "") {
-            widget.style.borderLeft = "5px solid #20c997";
-            widget.style.paddingLeft = "15px";
-        } else {
-            widget.style.removeProperty('border-left');
-            widget.style.removeProperty('padding-left');
-        }
+    // 🎯 THE MOBILE HERO FIX: Inject the exact same badge straight into the upper header zone
+    const heroBadgeZone = document.getElementById('badge-matrix-zone');
+    if (heroBadgeZone) {
+        // We match Bootstrap classes nicely for clean layout execution
+        heroBadgeZone.innerHTML = `
+            <div class="d-flex justify-content-center justify-content-sm-end align-items-center gap-2">
+                <span class="badge ${badgeClass} py-2 px-3 fw-bold shadow-sm" style="font-size: 0.85rem; border-radius: 6px;">
+                    ${badgeText.toUpperCase()}
+                </span>
+            </div>
+        `;
     }
+
+    if (liveIndicator !== "") {
+        widget.style.borderLeft = "5px solid #20c997";
+        widget.style.paddingLeft = "15px";
+    } else {
+        widget.style.removeProperty('border-left');
+        widget.style.removeProperty('padding-left');
+    }
+}
 
     init();
 });
