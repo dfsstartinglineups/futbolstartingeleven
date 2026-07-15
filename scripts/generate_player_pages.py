@@ -53,10 +53,14 @@ def fetch_api(endpoint, retries=5):
                 # Catch "soft" rate limits where the API returns 200 OK but puts the error in the JSON
                 if data.get("errors"):
                     errors = data["errors"]
-                    if isinstance(errors, dict) and "rateLimit" in errors:
-                        print(f"   🛑 Rate Limit Hit (JSON). Pausing for 61 seconds to reset quota... (Attempt {attempt+1}/{retries})")
-                        time.sleep(61) # 61 seconds ensures the minute rolls over safely
-                        continue 
+                    if isinstance(errors, dict):
+                        if "rateLimit" in errors:
+                            print(f"   🛑 Rate Limit Hit (Minute). Pausing for 61 seconds to reset quota... (Attempt {attempt+1}/{retries})")
+                            time.sleep(61) # 61 seconds ensures the minute rolls over safely
+                            continue 
+                        if "requests" in errors:
+                            print(f"\n   ❌ FATAL ERROR: API-Football DAILY request limit reached! The build is capped.\n")
+                            return None
                 
                 return data
                 
@@ -566,14 +570,14 @@ def update_player_html(player_slug, updates):
         f.write(html)
 
 def bootstrap_universe():
-    print("🛸 DATABASE NOT FOUND! Entering Initial 2026 Roster Bootstrap...")
+    print("🛸 DATABASE NOT FOUND! Entering Initial Roster Bootstrap...")
     database = {}
     
-    # 🎯 STEP 1: Initialize local tracking dict for unique slug resolution
+    # Tracking dict for unique slug resolution
     collision_registry = {}
     
     for league_id in TOP_LEAGUE_IDS:
-        print(f"📥 Extracting 2026 and 2025 rosters for League {league_id}...")
+        print(f"📥 Extracting rosters for League {league_id}...")
         
         season_data = {2026: {}, 2025: {}}
         
@@ -634,20 +638,34 @@ def bootstrap_universe():
             player = item_2026.get("player") or item_2025.get("player")
             if not player: continue
             
-            first_name = player.get("firstname") or ""
-            last_name = player.get("lastname") or ""
-            
-            # Catch API returning literal "None" or nulls
-            if str(first_name).lower() in ["none", "null"]: first_name = ""
-            if str(last_name).lower() in ["none", "null"]: last_name = ""
-            
-            full_name = f"{first_name} {last_name}".strip()
-            
+            # 🎯 VETTED SMART NAME ENGINE
+            raw_name = player.get("name") or ""
+            first_name_raw = player.get("firstname") or ""
+            last_name_raw = player.get("lastname") or ""
+
+            if str(raw_name).lower() in ["none", "null"]: raw_name = ""
+            if str(first_name_raw).lower() in ["none", "null"]: first_name_raw = ""
+            if str(last_name_raw).lower() in ["none", "null"]: last_name_raw = ""
+
+            full_name = raw_name.strip()
+
+            # Safely transform formatting patterns (e.g. "C. Gakpo" -> "Cody Gakpo")
+            if full_name and "." in full_name:
+                parts = full_name.split(".", 1)
+                if len(parts) == 2:
+                    initial = parts[0].strip()
+                    rest_of_name = parts[1].strip()
+                    actual_first_name = first_name_raw.split()[0] if first_name_raw else ""
+                    if actual_first_name and actual_first_name[0].upper() == initial[-1].upper():
+                        full_name = f"{actual_first_name} {rest_of_name}"
+
+            # General parsing fallback scenario
             if not full_name:
-                full_name = player.get("name") or "Unknown"
-                
-            # Block the ghost players from being processed
-            if not full_name or full_name == "Unknown" or str(full_name).lower() in ["none", "null", "none none"]: 
+                actual_first = first_name_raw.split()[0] if first_name_raw else ""
+                full_name = f"{actual_first} {last_name_raw}".strip()
+
+            # Enforce hard validation blocks against ghost players
+            if not full_name or str(full_name).lower() in ["unknown", "none none", ""]:
                 continue
             
             if not stats_list_2026 and not stats_list_2025: continue
@@ -673,7 +691,6 @@ def bootstrap_universe():
             national_team_name = nat_stat.get("team", {}).get("name", "N/A") if nat_stat else "N/A"
             national_team_id = nat_stat.get("team", {}).get("id") if nat_stat else None
             
-            # 🎯 STEP 2: Use collision manager during fresh bootstrap mapping
             assigned_slug = calculate_unique_slug(p_id, full_name, collision_registry)
             
             database[p_id] = {
@@ -701,7 +718,6 @@ def bootstrap_universe():
 def process_nightly_maintenance(database):
     print("⚙️ Running Automated Nightly Maintenance Mode...")
     
-    # 🎯 STEP 3: Pre-build collision registry from current database to protect SEO
     collision_registry = {}
     for existing_id, existing_data in database.items():
         if "slug" in existing_data:
@@ -755,19 +771,30 @@ def process_nightly_maintenance(database):
                         p_data_api = fresh_api_data["response"][0]
                         api_player = p_data_api.get("player", {})
                         
+                        # 🎯 VETTED SMART NAME ENGINE
                         first_name = api_player.get("firstname") or ""
                         last_name = api_player.get("lastname") or ""
+                        raw_name = api_player.get("name") or ""
                         
                         if str(first_name).lower() in ["none", "null"]: first_name = ""
                         if str(last_name).lower() in ["none", "null"]: last_name = ""
+                        if str(raw_name).lower() in ["none", "null"]: raw_name = ""
                         
-                        if first_name or last_name:
-                            full_name = f"{first_name} {last_name}".strip()
-                        elif api_player.get("name"):
-                            full_name = api_player.get("name")
+                        full_name = raw_name.strip()
+                        if full_name and "." in full_name:
+                            parts = full_name.split(".", 1)
+                            if len(parts) == 2:
+                                initial = parts[0].strip()
+                                rest_of_name = parts[1].strip()
+                                actual_first_name = first_name.split()[0] if first_name else ""
+                                if actual_first_name and actual_first_name[0].upper() == initial[-1].upper():
+                                    full_name = f"{actual_first_name} {rest_of_name}"
+                        
+                        if not full_name:
+                            actual_first = first_name.split()[0] if first_name else ""
+                            full_name = f"{actual_first} {last_name}".strip()
                             
-                        # Block the ghost players from being written overnight
-                        if not full_name or str(full_name).lower() in ["unknown", "none", "null", "none none"]:
+                        if not full_name or str(full_name).lower() in ["unknown", "none none", ""]:
                             continue
                             
                         stats_list_2026 = p_data_api.get("statistics", [])
@@ -781,7 +808,6 @@ def process_nightly_maintenance(database):
                     if p_id not in database:
                         print(f"      🆕 New Player Discovered: {full_name} (ID: {p_id})")
                         
-                        # 🎯 STEP 4: Resolve name collision safely for late discovered players
                         assigned_slug = calculate_unique_slug(p_id, full_name, collision_registry)
                         
                         database[p_id] = {
