@@ -359,16 +359,30 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
     `;
 
-    // 🎯 THE MOBILE HERO FIX: Inject the exact same badge straight into the upper header zone
-    const heroBadgeZone = document.getElementById('badge-matrix-zone');
-    if (heroBadgeZone) {
-        // We match Bootstrap classes nicely for clean layout execution
-        heroBadgeZone.innerHTML = `
-            <div class="d-flex justify-content-center justify-content-sm-end align-items-center gap-2">
-                <span class="badge ${badgeClass} py-2 px-3 fw-bold shadow-sm" style="font-size: 0.85rem; border-radius: 6px;">
-                    ${badgeText.toUpperCase()}
-                </span>
-            </div>
+    // 🎯 THE MOBILE HERO FIX: Target existing HTML without needing a rebuild
+    const metaZone = document.querySelector('.sidebar-player-meta');
+    
+    // Check if we found the zone AND make sure we haven't already added the badge 
+    if (metaZone && !document.getElementById('dynamic-hero-badge')) {
+        const badgeDiv = document.createElement('div');
+        badgeDiv.id = 'dynamic-hero-badge'; 
+        badgeDiv.className = "mt-3 d-flex justify-content-center justify-content-lg-start align-items-center gap-2";
+        
+        badgeDiv.innerHTML = `
+            <span class="badge ${badgeClass} py-2 px-3 fw-bold shadow-sm" style="font-size: 0.85rem; border-radius: 6px;">
+                ${badgeText.toUpperCase()}
+            </span>
+        `;
+        
+        // Append it directly to the bottom of the meta block
+        metaZone.appendChild(badgeDiv);
+        
+    } else if (document.getElementById('dynamic-hero-badge')) {
+        // If Firebase pushes a live update, just update the existing badge
+        document.getElementById('dynamic-hero-badge').innerHTML = `
+            <span class="badge ${badgeClass} py-2 px-3 fw-bold shadow-sm" style="font-size: 0.85rem; border-radius: 6px;">
+                ${badgeText.toUpperCase()}
+            </span>
         `;
     }
 
