@@ -97,7 +97,7 @@
         "match_ended_at": null,
         "post_game_sync": false,
         "first_leg_goals": null,
-        "last_lineup_check": "2026-07-16T22:00:38.056952+00:00"
+        "last_lineup_check": "2026-07-16T22:06:26.674509+00:00"
     },
     {
         "fixture": {
@@ -7859,18 +7859,40 @@
                         "id": 379655,
                         "name": "Dylan Wells",
                         "number": 16,
-                        "pos": "F",
-                        "grid": "3:3"
-                    }
+                        "pos": "D",
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "46"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 286767,
+                            "name": "Dane McCullough",
+                            "number": 34,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
                         "id": 44794,
                         "name": "Adam Frizzell",
                         "number": 10,
-                        "pos": "M",
-                        "grid": "3:2"
-                    }
+                        "pos": "F",
+                        "grid": "3:2",
+                        "isSubbedIn": true,
+                        "subMinute": "46"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 326924,
+                            "name": "Kieran Offord",
+                            "number": 9,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -7921,15 +7943,6 @@
                 },
                 {
                     "player": {
-                        "id": 286767,
-                        "name": "Dane McCullough",
-                        "number": 34,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 350750,
                         "name": "Ryan McKay",
                         "number": 37,
@@ -7961,15 +7974,6 @@
                         "name": "Isaac Baird",
                         "number": 26,
                         "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 326924,
-                        "name": "Kieran Offord",
-                        "number": 9,
-                        "pos": "F",
                         "grid": null
                     }
                 },
@@ -8104,9 +8108,20 @@
                         "id": 448179,
                         "name": "Enrique Esono",
                         "number": 17,
-                        "pos": "M",
-                        "grid": "4:2"
-                    }
+                        "pos": "F",
+                        "grid": "4:2",
+                        "isSubbedIn": true,
+                        "subMinute": "63"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 318299,
+                            "name": "Mihhail Orlov",
+                            "number": 11,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -8114,8 +8129,19 @@
                         "name": "Tiago Baptista",
                         "number": 21,
                         "pos": "M",
-                        "grid": "4:1"
-                    }
+                        "grid": "4:1",
+                        "isSubbedIn": true,
+                        "subMinute": "73"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 292493,
+                            "name": "Nikita Ivanov",
+                            "number": 10,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 }
             ],
             "substitutes": [
@@ -8166,15 +8192,6 @@
                 },
                 {
                     "player": {
-                        "id": 292493,
-                        "name": "Nikita Ivanov",
-                        "number": 10,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 440267,
                         "name": "Godwin Chinemeren",
                         "number": 9,
@@ -8187,15 +8204,6 @@
                         "id": 511224,
                         "name": "Ibrahim Jabir",
                         "number": 30,
-                        "pos": "F",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 318299,
-                        "name": "Mihhail Orlov",
-                        "number": 11,
                         "pos": "F",
                         "grid": null
                     }
@@ -8231,9 +8239,137 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "11",
+                "team_id": 583,
+                "player": "E. McGee",
+                "player_id": 131252,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "A. Frizzell"
+            },
+            {
+                "time": "12",
+                "team_id": 583,
+                "player": "M. Fitzpatrick",
+                "player_id": 194543,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "26",
+                "team_id": 583,
+                "player": "E. McGee",
+                "player_id": 131252,
+                "type": "Card",
+                "detail": "Red Card",
+                "assist": null
+            },
+            {
+                "time": "27",
+                "team_id": 662,
+                "player": "O. Musolitin",
+                "player_id": 432295,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
+            },
+            {
+                "time": "46",
+                "team_id": 583,
+                "player": "D. Wells",
+                "player_id": 379655,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "D. McCullough",
+                "player_out": "D. McCullough",
+                "player_out_id": 286767
+            },
+            {
+                "time": "46",
+                "team_id": 583,
+                "player": "A. Frizzell",
+                "player_id": 44794,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "K. Offord",
+                "player_out": "K. Offord",
+                "player_out_id": 326924
+            },
+            {
+                "time": "49",
+                "team_id": 583,
+                "player": "K. Offord",
+                "player_id": 326924,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "M. Fitzpatrick"
+            },
+            {
+                "time": "62",
+                "team_id": 662,
+                "player": "O. Musolitin",
+                "player_id": 432295,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "63",
+                "team_id": 662,
+                "player": "E. E. Lotar Eyang",
+                "player_id": 448179,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "M. Orlov",
+                "player_out": "M. Orlov",
+                "player_out_id": 318299
+            },
+            {
+                "time": "65",
+                "team_id": 583,
+                "player": "R. Nolan",
+                "player_id": 196,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "73",
+                "team_id": 662,
+                "player": "T. Baptista",
+                "player_id": 441502,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "N. Ivanov",
+                "player_out": "N. Ivanov",
+                "player_out_id": 292493
+            },
+            {
+                "time": "73",
+                "team_id": 662,
+                "player": "D. Mashchenko",
+                "player_id": 333241,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "D. Sotsugov",
+                "player_out": "D. Sotsugov",
+                "player_out_id": 556336
+            },
+            {
+                "time": "90+2",
+                "team_id": 662,
+                "player": "M. Orlov",
+                "player_id": 318299,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "R. Vukusic"
+            }
+        ],
         "match_ended_at": "2026-07-16T20:36:25.040302+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-16T18:40:34.424834+00:00",
         "final_odds_check": true,
@@ -20950,7 +21086,7 @@
         "match_ended_at": null,
         "post_game_sync": false,
         "first_leg_goals": null,
-        "last_lineup_check": "2026-07-16T22:00:38.318914+00:00",
+        "last_lineup_check": "2026-07-16T22:06:27.766646+00:00",
         "final_odds_check": true
     },
     {
@@ -21055,7 +21191,7 @@
         "match_ended_at": null,
         "post_game_sync": false,
         "first_leg_goals": null,
-        "last_lineup_check": "2026-07-16T22:00:38.511920+00:00",
+        "last_lineup_check": "2026-07-16T22:06:27.981164+00:00",
         "final_odds_check": true
     }
 ]
