@@ -2702,9 +2702,20 @@
                         "id": 440039,
                         "name": "Callum West",
                         "number": 8,
-                        "pos": "M",
-                        "grid": "4:1"
-                    }
+                        "pos": "D",
+                        "grid": "4:1",
+                        "isSubbedIn": true,
+                        "subMinute": "67"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 667111,
+                            "name": "Alex Hughes",
+                            "number": 5,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 }
             ],
             "substitutes": [
@@ -2722,15 +2733,6 @@
                         "id": 559851,
                         "name": "Marco Fregapane",
                         "number": 21,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 667111,
-                        "name": "Alex Hughes",
-                        "number": 5,
                         "pos": "D",
                         "grid": null
                     }
@@ -2811,9 +2813,237 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "13",
+                "team_id": 12733,
+                "player": "G. Halili",
+                "player_id": 215909,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "20",
+                "team_id": 12733,
+                "player": "E. Kuc",
+                "player_id": 557277,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "A. Dosso"
+            },
+            {
+                "time": "42",
+                "team_id": 357,
+                "player": "H. Franklin",
+                "player_id": 118543,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "46",
+                "team_id": 12733,
+                "player": "A. Klinaku",
+                "player_id": 655110,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "M. Ismajlgeci",
+                "player_out": "M. Ismajlgeci",
+                "player_out_id": 544795
+            },
+            {
+                "time": "49",
+                "team_id": 12733,
+                "player": "Giovanni",
+                "player_id": 273555,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "D. Vokrri"
+            },
+            {
+                "time": "52",
+                "team_id": 357,
+                "player": "F. Deane",
+                "player_id": 667110,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "53",
+                "team_id": 357,
+                "player": "F. Deane",
+                "player_id": 667110,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "M. Woodcock",
+                "player_out": "M. Woodcock",
+                "player_out_id": 428602
+            },
+            {
+                "time": "57",
+                "team_id": 12733,
+                "player": "V. Serebe",
+                "player_id": 454492,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "Giovanni"
+            },
+            {
+                "time": "66",
+                "team_id": 12733,
+                "player": "E. Kuc",
+                "player_id": 557277,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "E. Xhemajli",
+                "player_out": "E. Xhemajli",
+                "player_out_id": 667116
+            },
+            {
+                "time": "66",
+                "team_id": 357,
+                "player": "D. Cowan",
+                "player_id": 559842,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "D. Stephenson",
+                "player_out": "D. Stephenson",
+                "player_out_id": 553601
+            },
+            {
+                "time": "66",
+                "team_id": 357,
+                "player": "H. Franklin",
+                "player_id": 118543,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "H. Mehasseb",
+                "player_out": "H. Mehasseb",
+                "player_out_id": 559804
+            },
+            {
+                "time": "67",
+                "team_id": 12733,
+                "player": "Giovanni",
+                "player_id": 273555,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "L. Dobratiqi",
+                "player_out": "L. Dobratiqi",
+                "player_out_id": 582451
+            },
+            {
+                "time": "67",
+                "team_id": 12733,
+                "player": "E. Ajazaj",
+                "player_id": 544872,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "A. Berisha",
+                "player_out": "A. Berisha",
+                "player_out_id": 74665
+            },
+            {
+                "time": "67",
+                "team_id": 357,
+                "player": "C. West",
+                "player_id": 440039,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "A. Hughes",
+                "player_out": "A. Hughes",
+                "player_out_id": 667111
+            },
+            {
+                "time": "69",
+                "team_id": 357,
+                "player": "M. Woodcock",
+                "player_id": 428602,
+                "type": "Goal",
+                "detail": "Penalty",
+                "assist": null
+            },
+            {
+                "time": "76",
+                "team_id": 357,
+                "player": "H. Mehasseb",
+                "player_id": 559804,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
+            },
+            {
+                "time": "79",
+                "team_id": 12733,
+                "player": "V. Serebe",
+                "player_id": 454492,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "A. Diene",
+                "player_out": "A. Diene",
+                "player_out_id": 544796
+            },
+            {
+                "time": "80",
+                "team_id": 357,
+                "player": "H. Mehasseb",
+                "player_id": 559804,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "80",
+                "team_id": 357,
+                "player": "D. Cowan",
+                "player_id": 559842,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "87",
+                "team_id": 357,
+                "player": "M. Stone",
+                "player_id": 562756,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90+1",
+                "team_id": 357,
+                "player": "M. Stone",
+                "player_id": 562756,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "F. Redshaw",
+                "player_out": "F. Redshaw",
+                "player_out_id": 459547
+            },
+            {
+                "time": "90+5",
+                "team_id": 12733,
+                "player": "I. Batarelo",
+                "player_id": 79923,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90+7",
+                "team_id": 12733,
+                "player": null,
+                "player_id": null,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            }
+        ],
         "match_ended_at": "2026-07-16T19:54:25.662033+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-16T17:56:27.419288+00:00",
         "final_odds_check": true,
@@ -18684,7 +18914,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 67,
+                "elapsed": 69,
                 "extra": null
             }
         },
