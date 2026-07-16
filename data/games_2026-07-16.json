@@ -688,8 +688,19 @@
                         "name": "Hamza Ryahi",
                         "number": 14,
                         "pos": "M",
-                        "grid": "3:3"
-                    }
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "46"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 26721,
+                            "name": "Jean Luc",
+                            "number": 8,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -714,9 +725,20 @@
                         "id": 182554,
                         "name": "David Valero Climent",
                         "number": 11,
-                        "pos": "M",
-                        "grid": "4:3"
-                    }
+                        "pos": "G",
+                        "grid": "4:3",
+                        "isSubbedIn": true,
+                        "subMinute": "90+5"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 474762,
+                            "name": "Diego Fernandes Antunes",
+                            "number": 19,
+                            "pos": "G",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -749,27 +771,9 @@
                 },
                 {
                     "player": {
-                        "id": 474762,
-                        "name": "Diego Fernandes Antunes",
-                        "number": 19,
-                        "pos": "G",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": null,
                         "name": "Kevin Olah",
                         "number": 23,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 26721,
-                        "name": "Jean Luc",
-                        "number": 8,
                         "pos": "M",
                         "grid": null
                     }
@@ -878,9 +882,20 @@
                         "id": 98442,
                         "name": "Darko Zori\u0107",
                         "number": 18,
-                        "pos": "M",
-                        "grid": "3:2"
-                    }
+                        "pos": "F",
+                        "grid": "3:2",
+                        "isSubbedIn": true,
+                        "subMinute": "72"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 127630,
+                            "name": "Nikola Vujnovi\u0107",
+                            "number": 19,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -991,15 +1006,6 @@
                         "pos": "M",
                         "grid": null
                     }
-                },
-                {
-                    "player": {
-                        "id": 127630,
-                        "name": "Nikola Vujnovi\u0107",
-                        "number": 19,
-                        "pos": "F",
-                        "grid": null
-                    }
                 }
             ],
             "coach": {
@@ -1023,9 +1029,159 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "20",
+                "team_id": 3740,
+                "player": "J. Dasic",
+                "player_id": 264160,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "D. Zoric"
+            },
+            {
+                "time": "25",
+                "team_id": 3740,
+                "player": "S. Denkovic",
+                "player_id": 46039,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "41",
+                "team_id": 3345,
+                "player": "N. Vieira",
+                "player_id": 293193,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "46",
+                "team_id": 3345,
+                "player": "H. Bouharma",
+                "player_id": 5115,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "J. L. Assoubre",
+                "player_out": "J. L. Assoubre",
+                "player_out_id": 26721
+            },
+            {
+                "time": "50",
+                "team_id": 3345,
+                "player": "M. Blasco",
+                "player_id": 324355,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "63",
+                "team_id": 3740,
+                "player": "S. Denkovic",
+                "player_id": 46039,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "M. Rovcanin",
+                "player_out": "M. Rovcanin",
+                "player_out_id": 420949
+            },
+            {
+                "time": "64",
+                "team_id": 3740,
+                "player": "P. Vukcevic",
+                "player_id": 66791,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "65",
+                "team_id": 3345,
+                "player": "J. L. Assoubre",
+                "player_id": 26721,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "68",
+                "team_id": 3345,
+                "player": "J. Barragan",
+                "player_id": 580557,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "B. Morales",
+                "player_out": "B. Morales",
+                "player_out_id": 581150
+            },
+            {
+                "time": "72",
+                "team_id": 3740,
+                "player": "D. Zoric",
+                "player_id": 98442,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "N. Vujnovic",
+                "player_out": "N. Vujnovic",
+                "player_out_id": 127630
+            },
+            {
+                "time": "72",
+                "team_id": 3740,
+                "player": "A. Kaludjerovic",
+                "player_id": 540324,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "B. Dubljevic",
+                "player_out": "B. Dubljevic",
+                "player_out_id": 158176
+            },
+            {
+                "time": "79",
+                "team_id": 3345,
+                "player": "B. Sohaib",
+                "player_id": 581149,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "J. Sanmarful",
+                "player_out": "J. Sanmarful",
+                "player_out_id": 667131
+            },
+            {
+                "time": "90",
+                "team_id": 3345,
+                "player": "D. Valero",
+                "player_id": 182554,
+                "type": "Goal",
+                "detail": "Penalty",
+                "assist": null
+            },
+            {
+                "time": "90+3",
+                "team_id": 3345,
+                "player": "D. Valero",
+                "player_id": 182554,
+                "type": "Goal",
+                "detail": "Penalty",
+                "assist": null
+            },
+            {
+                "time": "90+5",
+                "team_id": 3345,
+                "player": "D. Valero",
+                "player_id": 182554,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "Didi",
+                "player_out": "Didi",
+                "player_out_id": 474762
+            }
+        ],
         "match_ended_at": "2026-07-16T20:42:29.714355+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-16T18:40:33.791343+00:00",
         "final_odds_check": true,
