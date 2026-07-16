@@ -580,7 +580,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 26,
+                "elapsed": 28,
                 "extra": null
             }
         },
@@ -1050,7 +1050,7 @@
             "status": {
                 "long": "Extra Time",
                 "short": "ET",
-                "elapsed": 108,
+                "elapsed": 109,
                 "extra": null
             }
         },
@@ -1131,7 +1131,7 @@
             "status": {
                 "long": "Extra Time",
                 "short": "ET",
-                "elapsed": 98,
+                "elapsed": 99,
                 "extra": null
             }
         },
@@ -1188,7 +1188,7 @@
         "match_ended_at": null,
         "post_game_sync": false,
         "first_leg_goals": null,
-        "last_lineup_check": "2026-07-16T19:02:24.897725+00:00",
+        "last_lineup_check": "2026-07-16T19:12:27.526302+00:00",
         "final_odds_check": true,
         "refreshed_15m": true,
         "refreshed_5m": true
@@ -1288,8 +1288,19 @@
                         "name": "K. Bartolec",
                         "number": 2,
                         "pos": "D",
-                        "grid": "2:4"
-                    }
+                        "grid": "2:4",
+                        "isSubbedIn": true,
+                        "subMinute": "88"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 43348,
+                            "name": "I. Miladinovi\u0107",
+                            "number": 45,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -1332,18 +1343,40 @@
                         "id": 162222,
                         "name": "I. Ba\u0161i\u0107",
                         "number": 8,
-                        "pos": "M",
-                        "grid": "3:3"
-                    }
+                        "pos": "D",
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "53"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 2226,
+                            "name": "A. Beisebekov",
+                            "number": 15,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
                         "id": 111503,
                         "name": "D. Karaman",
                         "number": 7,
-                        "pos": "M",
-                        "grid": "3:2"
-                    }
+                        "pos": "F",
+                        "grid": "3:2",
+                        "isSubbedIn": true,
+                        "subMinute": "105"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 385740,
+                            "name": "N. Ahanonu",
+                            "number": 20,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -1351,17 +1384,39 @@
                         "name": "R. Karimov",
                         "number": 81,
                         "pos": "F",
-                        "grid": "3:1"
-                    }
+                        "grid": "3:1",
+                        "isSubbedIn": true,
+                        "subMinute": "76"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 111728,
+                            "name": "S. Basmanov",
+                            "number": 72,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
                         "id": 56082,
                         "name": "B. Islamkhan",
                         "number": 9,
-                        "pos": "F",
-                        "grid": "4:2"
-                    }
+                        "pos": "M",
+                        "grid": "4:2",
+                        "isSubbedIn": true,
+                        "subMinute": "53"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 37265,
+                            "name": "A. Merkel",
+                            "number": 21,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 }
             ],
             "substitutes": [
@@ -1371,24 +1426,6 @@
                         "name": "D. Karpikov",
                         "number": 99,
                         "pos": "G",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 37265,
-                        "name": "A. Merkel",
-                        "number": 21,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 43348,
-                        "name": "I. Miladinovi\u0107",
-                        "number": 45,
-                        "pos": "D",
                         "grid": null
                     }
                 },
@@ -1416,33 +1453,6 @@
                         "name": "S. Anuarov",
                         "number": 4,
                         "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 385740,
-                        "name": "N. Ahanonu",
-                        "number": 20,
-                        "pos": "F",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 2226,
-                        "name": "A. Beisebekov",
-                        "number": 15,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 111728,
-                        "name": "S. Basmanov",
-                        "number": 72,
-                        "pos": "F",
                         "grid": null
                     }
                 },
@@ -1600,9 +1610,273 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "22",
+                "team_id": 3326,
+                "player": "U. Ismaili",
+                "player_id": 544927,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "22",
+                "team_id": 3326,
+                "player": "L. Vila",
+                "player_id": 3559,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "23",
+                "team_id": 562,
+                "player": "B. Islamkhan",
+                "player_id": 56082,
+                "type": "Goal",
+                "detail": "Penalty",
+                "assist": null
+            },
+            {
+                "time": "32",
+                "team_id": 562,
+                "player": "K. Kazukolovas",
+                "player_id": 169263,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "49",
+                "team_id": 562,
+                "player": "K. Kazukolovas",
+                "player_id": 169263,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "49",
+                "team_id": 562,
+                "player": "K. Kazukolovas",
+                "player_id": 169263,
+                "type": "Card",
+                "detail": "Red Card",
+                "assist": null
+            },
+            {
+                "time": "50",
+                "team_id": 3326,
+                "player": "B. Dita",
+                "player_id": 3600,
+                "type": "Goal",
+                "detail": "Penalty",
+                "assist": null
+            },
+            {
+                "time": "53",
+                "team_id": 562,
+                "player": "B. Islamkhan",
+                "player_id": 56082,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "A. Merkel",
+                "player_out": "A. Merkel",
+                "player_out_id": 37265
+            },
+            {
+                "time": "53",
+                "team_id": 562,
+                "player": "M. Abrayev",
+                "player_id": 646466,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "D. Shomko",
+                "player_out": "D. Shomko",
+                "player_out_id": 2231
+            },
+            {
+                "time": "53",
+                "team_id": 562,
+                "player": "I. Basic",
+                "player_id": 162222,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "A. Beysebekov",
+                "player_out": "A. Beysebekov",
+                "player_out_id": 2226
+            },
+            {
+                "time": "62",
+                "team_id": 3326,
+                "player": "H. Berisha",
+                "player_id": 524309,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "I. Manellari"
+            },
+            {
+                "time": "64",
+                "team_id": 562,
+                "player": "K. Bartolec",
+                "player_id": 2760,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "67",
+                "team_id": 562,
+                "player": "R. Karimov",
+                "player_id": 2244,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "70",
+                "team_id": 3326,
+                "player": "M. Ayodeji",
+                "player_id": 354777,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "F. Ruci",
+                "player_out": "F. Ruci",
+                "player_out_id": 4352
+            },
+            {
+                "time": "76",
+                "team_id": 562,
+                "player": "R. Karimov",
+                "player_id": 2244,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "S. Basmanov",
+                "player_out": "S. Basmanov",
+                "player_out_id": 111728
+            },
+            {
+                "time": "77",
+                "team_id": 3326,
+                "player": "E. Qardaku",
+                "player_id": 119895,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "M. Koma",
+                "player_out": "M. Koma",
+                "player_out_id": 624835
+            },
+            {
+                "time": "82",
+                "team_id": 3326,
+                "player": "F. Perndreca",
+                "player_id": 405517,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "86",
+                "team_id": 3326,
+                "player": "M. Koma",
+                "player_id": 624835,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "88",
+                "team_id": 562,
+                "player": "K. Bartolec",
+                "player_id": 2760,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "I. Miladinovic",
+                "player_out": "I. Miladinovic",
+                "player_out_id": 43348
+            },
+            {
+                "time": "91",
+                "team_id": 3326,
+                "player": "F. Perndreca",
+                "player_id": 405517,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "E. Hoxhallari",
+                "player_out": "E. Hoxhallari",
+                "player_out_id": 3622
+            },
+            {
+                "time": "93",
+                "team_id": 3326,
+                "player": "L. Vila",
+                "player_id": 3559,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": "U. Ismaili"
+            },
+            {
+                "time": "104",
+                "team_id": 3326,
+                "player": "H. Berisha",
+                "player_id": 524309,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "F. Farruku",
+                "player_out": "F. Farruku",
+                "player_out_id": 666632
+            },
+            {
+                "time": "105",
+                "team_id": 3326,
+                "player": "I. Manellari",
+                "player_id": 4139,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "105",
+                "team_id": 562,
+                "player": "D. Karaman",
+                "player_id": 111503,
+                "type": "subst",
+                "detail": "Substitution 6",
+                "assist": "N. Ahanonu",
+                "player_out": "N. Ahanonu",
+                "player_out_id": 385740
+            },
+            {
+                "time": "107",
+                "team_id": 3326,
+                "player": "F. Farruku",
+                "player_id": 666632,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "111",
+                "team_id": 562,
+                "player": "B. Kalaica",
+                "player_id": 41567,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "120+4",
+                "team_id": 3326,
+                "player": "M. Koma",
+                "player_id": 624835,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
+            }
+        ],
         "match_ended_at": "2026-07-16T17:42:27.700232+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-16T14:56:30.063811+00:00",
         "final_odds_check": true,
@@ -1628,7 +1902,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 55,
+                "elapsed": 57,
                 "extra": null
             }
         },
@@ -2658,7 +2932,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 81,
+                "elapsed": 83,
                 "extra": null
             }
         },
@@ -6027,7 +6301,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 25,
+                "elapsed": 27,
                 "extra": null
             }
         },
@@ -8611,7 +8885,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 54,
+                "elapsed": 56,
                 "extra": null
             }
         },
@@ -9099,7 +9373,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 56,
+                "elapsed": 58,
                 "extra": null
             }
         },
@@ -11488,7 +11762,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 11,
+                "elapsed": 13,
                 "extra": null
             }
         },
@@ -12374,7 +12648,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 51,
+                "elapsed": 53,
                 "extra": null
             }
         },
@@ -14638,7 +14912,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 80,
+                "elapsed": 82,
                 "extra": null
             }
         },
@@ -15237,7 +15511,7 @@
         "match_ended_at": null,
         "post_game_sync": false,
         "first_leg_goals": null,
-        "last_lineup_check": "2026-07-16T19:06:24.583519+00:00",
+        "last_lineup_check": "2026-07-16T19:12:28.542591+00:00",
         "final_odds_check": true
     },
     {
@@ -15259,7 +15533,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 42,
+                "elapsed": 44,
                 "extra": null
             }
         },
