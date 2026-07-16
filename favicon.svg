@@ -1,29 +1,133 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <defs>
-    <clipPath id="ballClip">
-      <circle cx="50" cy="50" r="46"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><metadata><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Description><dc:creator>RealFaviconGenerator</dc:creator><dc:source>https://realfavicongenerator.net</dc:source></rdf:Description></rdf:RDF></metadata><defs>
+    <!-- 3D Spherical Radial Gradients for White Hexagon Panels -->
+    <radialGradient id="white-hex" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffffff"></stop>
+      <stop offset="60%" stop-color="#f8fafc"></stop>
+      <stop offset="85%" stop-color="#cbd5e1"></stop>
+      <stop offset="100%" stop-color="#94a3b8"></stop>
+    </radialGradient>
+
+    <!-- 3D Spherical Radial Gradients for Black Pentagon Panels -->
+    <radialGradient id="black-pent" cx="45%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#2d3748"></stop>
+      <stop offset="70%" stop-color="#1a202c"></stop>
+      <stop offset="100%" stop-color="#090d16"></stop>
+    </radialGradient>
+
+    <!-- Master Spherical Shading Overlay for 3D Volume -->
+    <radialGradient id="sphere-shading" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"></stop>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0"></stop>
+      <stop offset="85%" stop-color="#020617" stop-opacity="0.35"></stop>
+      <stop offset="100%" stop-color="#020617" stop-opacity="0.75"></stop>
+    </radialGradient>
+
+    <!-- Soft Drop Shadow for the entire ball -->
+    <filter id="ball-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="4" dy="12" stdDeviation="10" flood-color="#020617" flood-opacity="0.6"></feDropShadow>
+    </filter>
+
+    <!-- Glowing Neon Green Bloom Filter -->
+    <filter id="neon-bloom" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12" result="coloredBlur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="coloredBlur"></feMergeNode>
+        <feMergeNode in="coloredBlur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+
+    <!-- Drop Shadow to lift the "11" off the ball surface slightly -->
+    <filter id="num-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="3" dy="6" stdDeviation="5" flood-color="#020617" flood-opacity="0.8"></feDropShadow>
+    </filter>
+
+    <!-- Clean clipping boundary for the perfect 440px diameter soccer ball -->
+    <clipPath id="ball-clip">
+      <circle cx="256" cy="256" r="220"></circle>
     </clipPath>
-  </defs>
+  </defs><ellipse cx="256" cy="485" rx="170" ry="20" fill="#020617" opacity="0.35" filter="blur(12px)"></ellipse><g filter="url(#ball-shadow)">
+    <!-- Base Spherical Cap -->
+    <circle cx="256" cy="256" r="220" fill="#0f172a"></circle>
 
-  <circle cx="50" cy="50" r="46" fill="#f8f9fa"/>
+    <!-- Clipped 3D Panel Layout -->
+    <g clip-path="url(#ball-clip)">
+      <!-- Master White base -->
+      <circle cx="256" cy="256" r="220" fill="url(#white-hex)"></circle>
 
-  <g clip-path="url(#ballClip)">
-    <line x1="50" y1="25" x2="50" y2="0" stroke="#212529" stroke-width="4"/>
-    <line x1="74" y1="42" x2="100" y2="33" stroke="#212529" stroke-width="4"/>
-    <line x1="65" y1="70" x2="85" y2="100" stroke="#212529" stroke-width="4"/>
-    <line x1="35" y1="70" x2="15" y2="100" stroke="#212529" stroke-width="4"/>
-    <line x1="26" y1="42" x2="0" y2="33" stroke="#212529" stroke-width="4"/>
-    
-    <path d="M50 0 L65 8 L35 8 Z" fill="#212529"/>
-    <path d="M100 33 L90 55 L75 20 Z" fill="#212529"/>
-    <path d="M85 100 L95 75 L60 90 Z" fill="#212529"/>
-    <path d="M15 100 L5 75 L40 90 Z" fill="#212529"/>
-    <path d="M0 33 L10 55 L25 20 Z" fill="#212529"/>
+      <!-- Black Pentagons -->
+      <!-- Center-Top-Right Pentagon -->
+      <path d="M 330 140 L 370 70 L 440 85 L 440 160 L 370 190 Z" fill="url(#black-pent)" stroke="#090d16" stroke-width="4" stroke-linejoin="round"></path>
+      
+      <!-- Center-Top-Left Pentagon -->
+      <path d="M 182 140 L 142 70 L 72 85 L 72 160 L 142 190 Z" fill="url(#black-pent)" stroke="#090d16" stroke-width="4" stroke-linejoin="round"></path>
+      
+      <!-- Center-Bottom Pentagon -->
+      <path d="M 256 295 L 316 345 L 293 415 L 219 415 L 196 345 Z" fill="url(#black-pent)" stroke="#090d16" stroke-width="4" stroke-linejoin="round"></path>
+      
+      <!-- Left-Edge Pentagon -->
+      <path d="M 15 250 L 5 190 L 55 130 L 95 180 L 70 250 Z" fill="url(#black-pent)" stroke="#090d16" stroke-width="4" stroke-linejoin="round"></path>
 
-    <polygon points="50,25 74,42 65,70 35,70 26,42" fill="#212529"/>
-  </g>
+      <!-- Right-Edge Pentagon -->
+      <path d="M 497 250 L 507 190 L 457 130 L 417 180 L 442 250 Z" fill="url(#black-pent)" stroke="#090d16" stroke-width="4" stroke-linejoin="round"></path>
 
-  <circle cx="50" cy="50" r="46" fill="none" stroke="#212529" stroke-width="4"/>
-  
-  <text x="50" y="65" font-family="Arial, sans-serif" font-size="48" font-weight="900" fill="#28a745" stroke="#f8f9fa" stroke-width="2.5" text-anchor="middle">11</text>
-</svg>
+      <!-- Bottom-Left Edge Pentagon -->
+      <path d="M 100 370 L 150 420 L 120 490 L 50 460 L 50 390 Z" fill="url(#black-pent)" stroke="#090d16" stroke-width="4" stroke-linejoin="round"></path>
+
+      <!-- Bottom-Right Edge Pentagon -->
+      <path d="M 412 370 L 362 420 L 392 490 L 462 460 L 462 390 Z" fill="url(#black-pent)" stroke="#090d16" stroke-width="4" stroke-linejoin="round"></path>
+
+      <!-- Top-Most Pentagon (partially visible) -->
+      <path d="M 215 0 L 297 0 L 310 25 L 256 55 L 202 25 Z" fill="url(#black-pent)" stroke="#090d16" stroke-width="4" stroke-linejoin="round"></path>
+
+      <!-- Panel Seams (Connecting the black pentagons to form the white hexagons) -->
+      <g stroke="#090d16" stroke-width="6" fill="none" stroke-linejoin="round" opacity="0.95">
+        <path d="M 256 55 L 330 140 L 316 230 L 196 230 L 182 140 L 256 55 Z"></path>
+        <path d="M 196 230 L 219 295 L 150 350 L 70 320 L 70 250 L 142 190 M 196 230 L 142 190"></path>
+        <path d="M 316 230 L 293 295 L 362 350 L 442 320 L 442 250 L 370 190 M 316 230 L 370 190"></path>
+        <path d="M 182 140 L 202 25 L 130 10 L 55 50 L 72 85"></path>
+        <path d="M 330 140 L 310 25 L 382 10 L 457 50 L 440 85"></path>
+        <path d="M 72 160 L 15 200 L 15 250"></path>
+        <path d="M 440 160 L 497 200 L 497 250"></path>
+        <path d="M 219 415 L 256 465 L 293 415"></path>
+        <path d="M 150 420 L 170 480 L 256 465"></path>
+        <path d="M 362 420 L 342 480 L 256 465"></path>
+        <path d="M 100 370 L 70 320"></path>
+        <path d="M 412 370 L 442 320"></path>
+      </g>
+
+      <!-- Fine leather texture pattern overlay to give the panels realistic grain -->
+      <circle cx="256" cy="256" r="220" fill="#ffffff" opacity="0.04" style="mix-blend-mode: overlay;"></circle>
+
+      <!-- Master 3D spherical shading overlay -->
+      <circle cx="256" cy="256" r="220" fill="url(#sphere-shading)" style="mix-blend-mode: multiply;"></circle>
+    </g>
+
+    <!-- 2. Neon Green "11" centered, with space between the ones, white outline, and bloom -->
+    <g transform="translate(256, 256)" filter="url(#num-shadow)">
+      
+      <!-- Left '1' Path -->
+      <path id="one-left" d="M -65 -85 L -15 -85 L -15 75 L 5 75 L 5 95 L -65 95 L -65 75 L -45 75 L -45 -45 L -65 -30 L -65 -55 Z"></path>
+      
+      <!-- Right '1' Path (With a clean, deliberate space in the middle) -->
+      <path id="one-right" d="M 15 -85 L 65 -85 L 65 75 L 85 75 L 85 95 L 15 95 L 15 75 L 35 75 L 35 -45 L 15 -30 L 15 -55 Z"></path>
+
+      <!-- Combined Group for Shading Layers -->
+      <g id="eleven-group">
+        <use href="#one-left"></use>
+        <use href="#one-right"></use>
+      </g>
+
+      <!-- LAYER 1: Deep Black outer mask for crisp separation from white/black panels -->
+      <use href="#eleven-group" fill="#020617" stroke="#020617" stroke-width="26" stroke-linejoin="round" opacity="0.95"></use>
+
+      <!-- LAYER 2: Wide Neon Green Electric Glow -->
+      <use href="#eleven-group" fill="#39ff14" stroke="#39ff14" stroke-width="20" stroke-linejoin="round" filter="url(#neon-bloom)" opacity="0.9"></use>
+
+      <!-- LAYER 3: Thick, Crisp White Border Outline -->
+      <use href="#eleven-group" fill="none" stroke="#ffffff" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"></use>
+
+      <!-- LAYER 4: Solid Neon Lime Green Core Fill -->
+      <use href="#eleven-group" fill="#39ff14"></use>
+    </g>
+  </g></svg>
