@@ -10882,9 +10882,20 @@
                         "id": 270776,
                         "name": "Drilon Islami",
                         "number": 5,
-                        "pos": "M",
-                        "grid": "2:2"
-                    }
+                        "pos": "D",
+                        "grid": "2:2",
+                        "isSubbedIn": true,
+                        "subMinute": "89"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 512794,
+                            "name": "Nazif Ceka",
+                            "number": 18,
+                            "pos": "D",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -10901,8 +10912,19 @@
                         "name": "Arbin Zejnullai",
                         "number": 17,
                         "pos": "M",
-                        "grid": "3:3"
-                    }
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "86"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 163586,
+                            "name": "Florent Ramadani",
+                            "number": 77,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -10928,8 +10950,19 @@
                         "name": "Fabrice Tamba",
                         "number": 29,
                         "pos": "F",
-                        "grid": "4:3"
-                    }
+                        "grid": "4:3",
+                        "isSubbedIn": true,
+                        "subMinute": "71"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 283523,
+                            "name": "Vane Krstevski",
+                            "number": 19,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -10937,8 +10970,19 @@
                         "name": "Fahd Ndzengue",
                         "number": 9,
                         "pos": "F",
-                        "grid": "4:2"
-                    }
+                        "grid": "4:2",
+                        "isSubbedIn": true,
+                        "subMinute": "71"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 56023,
+                            "name": "Besart Ibraimi",
+                            "number": 7,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -10971,15 +11015,6 @@
                 },
                 {
                     "player": {
-                        "id": 512794,
-                        "name": "Nazif Ceka",
-                        "number": 18,
-                        "pos": "D",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": null,
                         "name": "Lirian Djeladini",
                         "number": 20,
@@ -10993,33 +11028,6 @@
                         "name": "Armir Isa",
                         "number": 21,
                         "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 163586,
-                        "name": "Florent Ramadani",
-                        "number": 77,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 56023,
-                        "name": "Besart Ibraimi",
-                        "number": 7,
-                        "pos": "F",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 283523,
-                        "name": "Vane Krstevski",
-                        "number": 19,
-                        "pos": "F",
                         "grid": null
                     }
                 }
@@ -11254,9 +11262,156 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "60",
+                "team_id": 10125,
+                "player": "P. A. Heredia J.",
+                "player_id": 593130,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "M. G. Caballero",
+                "player_out": "M. G. Caballero",
+                "player_out_id": 667143
+            },
+            {
+                "time": "60",
+                "team_id": 10125,
+                "player": "F. Di Piedi",
+                "player_id": 621497,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "P. Carmona",
+                "player_out": "P. Carmona",
+                "player_out_id": 667140
+            },
+            {
+                "time": "71",
+                "team_id": 609,
+                "player": "E. Krasniqi",
+                "player_id": 108568,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "71",
+                "team_id": 609,
+                "player": "F. Tamba",
+                "player_id": 365490,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "V. Krstevski",
+                "player_out": "V. Krstevski",
+                "player_out_id": 283523
+            },
+            {
+                "time": "71",
+                "team_id": 609,
+                "player": "F. Ndzengue",
+                "player_id": 111920,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "B. Ibraimi",
+                "player_out": "B. Ibraimi",
+                "player_out_id": 56023
+            },
+            {
+                "time": "71",
+                "team_id": 609,
+                "player": "A. Kryeziu",
+                "player_id": 291654,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "A. Isa",
+                "player_out": "A. Isa",
+                "player_out_id": 664011
+            },
+            {
+                "time": "72",
+                "team_id": 10125,
+                "player": "A. Ruiz",
+                "player_id": 187225,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "J. Labrador",
+                "player_out": "J. Labrador",
+                "player_out_id": 667141
+            },
+            {
+                "time": "72",
+                "team_id": 10125,
+                "player": "C. Mpindi Landu",
+                "player_id": 206253,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "V. Vigolo",
+                "player_out": "V. Vigolo",
+                "player_out_id": 667142
+            },
+            {
+                "time": "82",
+                "team_id": 609,
+                "player": "A. Trumci",
+                "player_id": 197756,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "86",
+                "team_id": 609,
+                "player": "V. Krstevski",
+                "player_id": 283523,
+                "type": "Goal",
+                "detail": "Normal Goal",
+                "assist": null
+            },
+            {
+                "time": "86",
+                "team_id": 609,
+                "player": "A. Zejnullai",
+                "player_id": 105483,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "F. Ramadani",
+                "player_out": "F. Ramadani",
+                "player_out_id": 163586
+            },
+            {
+                "time": "89",
+                "team_id": 609,
+                "player": "D. Islami",
+                "player_id": 270776,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "N. Ceka",
+                "player_out": "N. Ceka",
+                "player_out_id": 512794
+            },
+            {
+                "time": "90",
+                "team_id": 10125,
+                "player": "B. Fernandez",
+                "player_id": 585420,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "90+2",
+                "team_id": 10125,
+                "player": "B. Fernandez",
+                "player_id": 585420,
+                "type": "subst",
+                "detail": "Substitution 5",
+                "assist": "S. Yeo",
+                "player_out": "S. Yeo",
+                "player_out_id": 667165
+            }
+        ],
         "match_ended_at": "2026-07-16T19:52:24.032089+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-16T17:56:28.024407+00:00",
         "final_odds_check": true,
@@ -18529,7 +18684,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 63,
+                "elapsed": 65,
                 "extra": null
             }
         },
