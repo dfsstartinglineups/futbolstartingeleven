@@ -2849,7 +2849,18 @@
                 "id": 9,
                 "name": "Spain",
                 "logo": "https://media.api-sports.io/football/teams/9.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "f94046",
+                        "number": "fddc30",
+                        "border": "f94046"
+                    },
+                    "goalkeeper": {
+                        "primary": "edd542",
+                        "number": "2e3130",
+                        "border": "edd542"
+                    }
+                }
             },
             "formation": "4-1-2-3",
             "coach": {
@@ -4333,7 +4344,18 @@
                 "id": 26,
                 "name": "Argentina",
                 "logo": "https://media.api-sports.io/football/teams/26.png",
-                "colors": null
+                "colors": {
+                    "player": {
+                        "primary": "ffffff",
+                        "number": "000000",
+                        "border": "ffffff"
+                    },
+                    "goalkeeper": {
+                        "primary": "309497",
+                        "number": "272891",
+                        "border": "309497"
+                    }
+                }
             },
             "formation": "4-4-2",
             "coach": {
@@ -6245,13 +6267,14 @@
         "injuries": {
             "home": [],
             "away": [],
-            "checks": 5
+            "checks": 6
         },
         "events": [],
         "match_ended_at": null,
         "post_game_sync": false,
         "first_leg_goals": null,
-        "last_lineup_check": "2026-07-19T18:05:55.266314+00:00",
-        "final_odds_check": true
+        "last_lineup_check": "2026-07-19T18:46:22.892622+00:00",
+        "final_odds_check": true,
+        "refreshed_15m": true
     }
 ]
