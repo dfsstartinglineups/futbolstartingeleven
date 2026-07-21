@@ -167,25 +167,41 @@ def main(local_memory):
         old_live_data = local_memory
 
     # =========================================================
-    # 🧹 48-HOUR TTL SWEEPER
+    # 🧹 48-HOUR TTL SWEEPER (LEAK-PROOF)
     # =========================================================
     keys_to_delete = []
     for fix_id, game_data in old_live_data.items():
-        g_ts = (game_data.get('fixture') or {}).get('timestamp', 0)
-        # 172800 seconds = 48 hours
-        if g_ts > 0 and (now_ts - g_ts) > 172800:
+        raw_ts = (game_data.get('fixture') or {}).get('timestamp')
+        
+        # Safely convert timestamp to float
+        g_ts = 0
+        if raw_ts is not None:
+            try:
+                g_ts = float(raw_ts)
+            except (ValueError, TypeError):
+                g_ts = 0
+        
+        # Sweep if over 48 hours old OR if timestamp is corrupted/missing (0)
+        if g_ts == 0 or (g_ts > 0 and (now_ts - g_ts) > 172800):
             keys_to_delete.append(fix_id)
             
     for k in keys_to_delete:
-        print(f"🧹 Sweeper: Game {k} is over 48 hours old. Deleting from Firebase live pool.")
+        print(f"🧹 Sweeper: Game {k} is over 48 hours old or invalid. Deleting from Firebase live pool...")
+        success = False
         if firebase_admin._apps:
             try:
-                db.reference(f'futbol_live_games/{k}').delete()
+                safe_k = str(k).replace('.', '_').replace('/', '_')
+                db.reference(f'futbol_live_games/{safe_k}').delete()
+                success = True
+                print(f"✅ Successfully deleted game {safe_k} from Firebase.")
             except Exception as e:
                 print(f"⚠️ Failed to sweep game {k}: {e}")
-        
-        # Remove from local memory so the engine forgets it entirely
-        del old_live_data[k]
+        else:
+            success = True # Bypasses Firebase deletion in local offline testing
+            
+        # ONLY delete from local memory if Firebase deletion succeeded
+        if success and k in old_live_data:
+            del old_live_data[k]
 
     for target_date in dates_to_process:
         current_date_str = target_date.strftime("%Y-%m-%d")
@@ -503,28 +519,26 @@ def main(local_memory):
     # =========================================================
     # 3. SECURE PUSH TO FIREBASE (DELTA UPDATES ONLY)
     # =========================================================
-    if active_games_found > 0:
-        if firebase_admin._apps:
-            try:
-                delta_payload = {}
-                for fix_id, game_data in all_new_live_data.items():
-                    if fix_id not in old_live_data or old_live_data[fix_id] != game_data:
-                        delta_payload[fix_id] = game_data
-                for fix_id in old_live_data:
-                    if fix_id not in all_new_live_data:
-                        delta_payload[fix_id] = None  
-                        
-                if delta_payload:
-                    safe_delta = inspect_and_sanitize(delta_payload)
-                    db.reference('futbol_live_games').update(safe_delta)
-                    print(f"🚀 Pushed deltas for {len(delta_payload)} games to Firebase!")
-                else:
-                    pass 
+    if firebase_admin._apps:
+        try:
+            delta_payload = {}
+            for fix_id, game_data in all_new_live_data.items():
+                if fix_id not in old_live_data or old_live_data[fix_id] != game_data:
+                    delta_payload[fix_id] = game_data
+            for fix_id in old_live_data:
+                if fix_id not in all_new_live_data:
+                    delta_payload[fix_id] = None  
                     
-            except Exception as e:
-                print(f"⚠️ Failed to push: {e}")
-    else:
-        print("\n💤 No active futbol games. Memory will carry over until next kickoff.")
+            if delta_payload:
+                safe_delta = inspect_and_sanitize(delta_payload)
+                db.reference('futbol_live_games').update(safe_delta)
+                print(f"🚀 Pushed deltas for {len(delta_payload)} games to Firebase!")
+                
+        except Exception as e:
+            print(f"⚠️ Failed to push: {e}")
+
+    if active_games_found == 0:
+        print("\n💤 No active futbol games. Memory sync complete.")
 
     # 4. SLEEP CALCULATION & LOCAL MEMORY RETURN
     if has_live_games: 
