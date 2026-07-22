@@ -165,6 +165,14 @@ def build_html(team_id, team_name, team_logo, team_slug, next_opponent, next_dat
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Analytics Tracking -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKSS7R4E02"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-WKSS7R4E02');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
