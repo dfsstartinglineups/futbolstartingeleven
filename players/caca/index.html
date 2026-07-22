@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Analytics Tracking -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKSS7R4E02"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WKSS7R4E02');
+    </script>      
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>Is Cacá Starting Today? Lineup & Stats | Futbol Starting Eleven</title>
-    <meta name="description" content="Is Cacá starting today? Get live matchday lineup status, real-time performance stats, and season overview metrics for Cacá (Corinthians).">
+    <meta name="description" content="Is Cacá starting today? Get live matchday lineup status, real-time performance stats, and season overview metrics for Cacá (Vitoria).">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://futbolstartingeleven.com/players/caca/">
 
     <meta property="og:site_name" content="Futbol Starting Eleven">
     <meta property="og:type" content="profile">
     <meta property="og:title" content="Is Cacá Starting Today? Lineup & Stats | Futbol Starting Eleven">
-    <meta property="og:description" content="Live starting lineups, form ratings, and seasonal breakdown for Cacá at Corinthians.">
+    <meta property="og:description" content="Live starting lineups, form ratings, and seasonal breakdown for Cacá at Vitoria.">
     <meta property="og:url" content="https://futbolstartingeleven.com/players/caca/">
     <meta property="og:image" content="https://futbolstartingeleven.com/social-share1.png">
     <meta property="og:image:width" content="1200">
@@ -20,7 +28,7 @@
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:domain" content="futbolstartingeleven.com">
-    <meta name="twitter:title" content="Cacá - Corinthians Matchday Profile">
+    <meta name="twitter:title" content="Cacá - Vitoria Matchday Profile">
     <meta name="twitter:description" content="Track live performance matrix, formation maps, and stats for Cacá on Futbol Starting Eleven.">
     <meta name="twitter:image" content="https://futbolstartingeleven.com/social-share1.png">
 
@@ -65,7 +73,7 @@
     <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-4" style="background-color: #212529; z-index: 1050;">
         <div class="container d-flex justify-content-between align-items-center flex-wrap">
             <div class="header-brand"><a href="/" class="text-decoration-none">Futbol Starting <span>Eleven</span></a></div>
-            <div class="d-flex align-items-center gap-2"><a href="/lineups/corinthians/" class="btn btn-sm btn-outline-light fw-bold" style="font-size:0.75rem;">← Back to Corinthians</a></div>
+            <div class="d-flex align-items-center gap-2"><a href="/lineups/vitoria/" class="btn btn-sm btn-outline-light fw-bold" style="font-size:0.75rem;">← Back to Vitoria</a></div>
         </div>
     </nav>
 
@@ -77,13 +85,13 @@
                         <img src="https://media.api-sports.io/football/players/10085.png" alt="Cacá" class="player-avatar">
                     </div>
                     <div class="sidebar-player-name">Cacá</div>
-                    <div class="sidebar-player-meta"><a href="/lineups/corinthians/" class="seo-link fw-bold" id="val-team">Vitoria</a> • <span id="val-position">D</span></div>
+                    <div class="sidebar-player-meta"><a href="/lineups/vitoria/" class="seo-link fw-bold" id="val-team">Vitoria</a> • <span id="val-position">Defender</span></div>
                     <hr style="border-color: #dee2e6; opacity: 1; margin: 15px 0;">
                     <div class="text-start">
                         <div class="stat-row"><span class="stat-label">Nationality</span><span class="stat-value">Brazil</span></div>
                         <div class="stat-row"><span class="stat-label">National Team</span><span class="stat-value" id="val-national-team">N/A</span></div>
                         <div class="stat-row"><span class="stat-label">Age</span><span class="stat-value" id="val-age">26</span></div>
-                        <div class="stat-row"><span class="stat-label">Form Rating</span><span class="stat-value text-success" id="val-rating">7.3</span></div>
+                        <div class="stat-row"><span class="stat-label">Form Rating</span><span class="stat-value text-success" id="val-rating">N/A</span></div>
                     </div>
                 </div>
             </div>
@@ -101,10 +109,10 @@
                 <div class="info-card">
                     <h3>2026 Season Overview</h3>
                     <div class="row g-3">
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-matches">15</div><div class="big-stat-label">Matches</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-matches">12</div><div class="big-stat-label">Matches</div></div></div>
                         <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-goals">1</div><div class="big-stat-label">Goals</div></div></div>
                         <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-assists">0</div><div class="big-stat-label">Assists</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-pass">82%</div><div class="big-stat-label">Pass Acc</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-pass">87%</div><div class="big-stat-label">Pass Acc</div></div></div>
                     </div>
                 </div>
 
@@ -207,7 +215,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td colspan="8" class="text-center text-muted fst-italic py-3">No recent game log data. Waiting for match appearance.</td></tr>
+                                <tr>
+            <td class="text-start" style="padding: 8px 12px;">2026-07-16</td>
+            <td class="text-start" style="padding: 8px;">
+                vs <a href="/lineups/vasco-da-gama/" class="seo-link fw-bold text-dark">Vasco DA Gama</a>
+            </td>
+            <td class="text-success fw-bold" style="padding: 8px;">W 1-0</td>
+            <td style="padding: 8px;">96'</td>
+            <td class="text-success fw-bold" style="padding: 8px;">0</td>
+            <td class="fw-bold" style="padding: 8px;">0</td>
+            <td style="padding: 8px;">7.3</td>
+        </tr>
                             </tbody>
                         </table>
                     </div>
@@ -218,7 +236,7 @@
 
     <script>
         window.TARGET_PLAYER_ID = 10085;
-        window.TARGET_TEAM_NAME = "Corinthians";
+        window.TARGET_TEAM_NAME = "Vitoria";
     </script>
     <script src="/js/player-live.js"></script>
 </body>

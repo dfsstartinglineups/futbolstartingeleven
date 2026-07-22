@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Analytics Tracking -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKSS7R4E02"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WKSS7R4E02');
+    </script>      
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
@@ -77,13 +85,13 @@
                         <img src="https://media.api-sports.io/football/players/9946.png" alt="Reinaldo" class="player-avatar">
                     </div>
                     <div class="sidebar-player-name">Reinaldo</div>
-                    <div class="sidebar-player-meta"><a href="/lineups/mirassol/" class="seo-link fw-bold" id="val-team">Mirassol</a> • <span id="val-position">D</span></div>
+                    <div class="sidebar-player-meta"><a href="/lineups/mirassol/" class="seo-link fw-bold" id="val-team">Mirassol</a> • <span id="val-position">Defender</span></div>
                     <hr style="border-color: #dee2e6; opacity: 1; margin: 15px 0;">
                     <div class="text-start">
                         <div class="stat-row"><span class="stat-label">Nationality</span><span class="stat-value">Brazil</span></div>
                         <div class="stat-row"><span class="stat-label">National Team</span><span class="stat-value" id="val-national-team">N/A</span></div>
                         <div class="stat-row"><span class="stat-label">Age</span><span class="stat-value" id="val-age">36</span></div>
-                        <div class="stat-row"><span class="stat-label">Form Rating</span><span class="stat-value text-success" id="val-rating">8.3</span></div>
+                        <div class="stat-row"><span class="stat-label">Form Rating</span><span class="stat-value text-success" id="val-rating">N/A</span></div>
                     </div>
                 </div>
             </div>
@@ -101,10 +109,10 @@
                 <div class="info-card">
                     <h3>2026 Season Overview</h3>
                     <div class="row g-3">
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-matches">25</div><div class="big-stat-label">Matches</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-matches">18</div><div class="big-stat-label">Matches</div></div></div>
                         <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-goals">1</div><div class="big-stat-label">Goals</div></div></div>
                         <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-assists">2</div><div class="big-stat-label">Assists</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-pass">57%</div><div class="big-stat-label">Pass Acc</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value" id="val-overview-pass">75%</div><div class="big-stat-label">Pass Acc</div></div></div>
                     </div>
                 </div>
 
@@ -207,7 +215,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td colspan="8" class="text-center text-muted fst-italic py-3">No recent game log data. Waiting for match appearance.</td></tr>
+                                <tr>
+            <td class="text-start" style="padding: 8px 12px;">2026-07-17</td>
+            <td class="text-start" style="padding: 8px;">
+                vs <a href="/lineups/gremio/" class="seo-link fw-bold text-dark">Gremio</a>
+            </td>
+            <td class="text-success fw-bold" style="padding: 8px;">W 2-1</td>
+            <td style="padding: 8px;">90'</td>
+            <td class="text-success fw-bold" style="padding: 8px;">0</td>
+            <td class="fw-bold" style="padding: 8px;">0</td>
+            <td style="padding: 8px;">8.3</td>
+        </tr>
                             </tbody>
                         </table>
                     </div>
