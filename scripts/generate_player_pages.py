@@ -909,13 +909,6 @@ def main():
     else:
         with open(DATABASE_PATH, "r", encoding="utf-8") as f:
             database = json.load(f)
-            
-        # --- ONE-TIME OVERRIDE TO REWRITE ALL HTML FILES ---
-        print("🔄 Forcing a rewrite of all player pages to inject Google Analytics...")
-        for p_id, p_data in database.items():
-            write_initial_html_file(p_id, p_data)
-            
-        # Continue with normal nightly stats updates
         process_nightly_maintenance(database)
         
     generate_player_sitemap(database)
