@@ -3665,7 +3665,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 60,
+                "elapsed": 62,
                 "extra": null
             }
         },
@@ -5702,7 +5702,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 65,
+                "elapsed": 67,
                 "extra": null
             }
         },
@@ -6244,7 +6244,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 67,
+                "elapsed": 69,
                 "extra": null
             }
         },
@@ -6777,7 +6777,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 51,
+                "elapsed": 53,
                 "extra": null
             }
         },
@@ -7844,7 +7844,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": 1
+                "extra": 3
             }
         },
         "league": {
@@ -8909,7 +8909,7 @@
             "status": {
                 "long": "First Half",
                 "short": "1H",
-                "elapsed": 37,
+                "elapsed": 39,
                 "extra": null
             }
         },
@@ -9452,7 +9452,7 @@
                 "long": "Second Half",
                 "short": "2H",
                 "elapsed": 90,
-                "extra": null
+                "extra": 2
             }
         },
         "league": {
@@ -10515,10 +10515,10 @@
                 "city": "Istanbul"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
-                "extra": 3
+                "extra": 4
             }
         },
         "league": {
@@ -11041,7 +11041,7 @@
             "checks": 7
         },
         "events": [],
-        "match_ended_at": null,
+        "match_ended_at": "2026-07-23T19:54:24.171617+00:00",
         "post_game_sync": false,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-23T17:56:26.834748+00:00",
@@ -16506,7 +16506,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 64,
+                "elapsed": 67,
                 "extra": null
             }
         },
@@ -16539,7 +16539,7 @@
             }
         },
         "goals": {
-            "home": 1,
+            "home": 2,
             "away": 0
         },
         "homeLineup": {
@@ -24864,9 +24864,20 @@
                         "id": 289536,
                         "name": "Uro\u0161 Kabi\u0107",
                         "number": 7,
-                        "pos": "M",
-                        "grid": "3:4"
-                    }
+                        "pos": "F",
+                        "grid": "3:4",
+                        "isSubbedIn": true,
+                        "subMinute": "78"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 7657,
+                            "name": "Andreas Gruber",
+                            "number": 9,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -24874,8 +24885,19 @@
                         "name": "Samsondin Ouro",
                         "number": 44,
                         "pos": "M",
-                        "grid": "3:3"
-                    }
+                        "grid": "3:3",
+                        "isSubbedIn": true,
+                        "subMinute": "67"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 656360,
+                            "name": "Fallou Diongue",
+                            "number": 27,
+                            "pos": "M",
+                            "grid": null
+                        }
+                    ]
                 },
                 {
                     "player": {
@@ -24910,8 +24932,19 @@
                         "name": "Abdoulaye Gueye",
                         "number": 11,
                         "pos": "F",
-                        "grid": "4:1"
-                    }
+                        "grid": "4:1",
+                        "isSubbedIn": true,
+                        "subMinute": "67"
+                    },
+                    "sub_history": [
+                        {
+                            "id": 61269,
+                            "name": "Matej Trusa",
+                            "number": 46,
+                            "pos": "F",
+                            "grid": null
+                        }
+                    ]
                 }
             ],
             "substitutes": [
@@ -24962,15 +24995,6 @@
                 },
                 {
                     "player": {
-                        "id": 656360,
-                        "name": "Fallou Diongue",
-                        "number": 27,
-                        "pos": "M",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 242240,
                         "name": "Nathan Udvaros",
                         "number": 36,
@@ -24989,15 +25013,6 @@
                 },
                 {
                     "player": {
-                        "id": 7657,
-                        "name": "Andreas Gruber",
-                        "number": 9,
-                        "pos": "F",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
                         "id": 511218,
                         "name": "Pa Assan Corr",
                         "number": 14,
@@ -25010,15 +25025,6 @@
                         "id": 367059,
                         "name": "B\u00e1lint Cs\u00f3ka",
                         "number": 40,
-                        "pos": "F",
-                        "grid": null
-                    }
-                },
-                {
-                    "player": {
-                        "id": 61269,
-                        "name": "Matej Trusa",
-                        "number": 46,
                         "pos": "F",
                         "grid": null
                     }
@@ -25236,9 +25242,110 @@
             "away": [],
             "checks": 7
         },
-        "events": [],
+        "events": [
+            {
+                "time": "12",
+                "team_id": 3381,
+                "player": "R. Abdullah",
+                "player_id": 78406,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "43",
+                "team_id": 2257,
+                "player": "A. Gueye",
+                "player_id": 540001,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "59",
+                "team_id": 2257,
+                "player": "G. Gagua",
+                "player_id": 215810,
+                "type": "Goal",
+                "detail": "Penalty",
+                "assist": null
+            },
+            {
+                "time": "67",
+                "team_id": 2257,
+                "player": "A. Gueye",
+                "player_id": 540001,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "M. Trusa",
+                "player_out": "M. Trusa",
+                "player_out_id": 61269
+            },
+            {
+                "time": "67",
+                "team_id": 2257,
+                "player": "S. Ouro",
+                "player_id": 159379,
+                "type": "subst",
+                "detail": "Substitution 2",
+                "assist": "F. Diongue",
+                "player_out": "F. Diongue",
+                "player_out_id": 656360
+            },
+            {
+                "time": "77",
+                "team_id": 3381,
+                "player": "D. Salcin",
+                "player_id": 558527,
+                "type": "subst",
+                "detail": "Substitution 1",
+                "assist": "M. Besic",
+                "player_out": "M. Besic",
+                "player_out_id": 534529
+            },
+            {
+                "time": "78",
+                "team_id": 2257,
+                "player": "U. Kabic",
+                "player_id": 289536,
+                "type": "subst",
+                "detail": "Substitution 3",
+                "assist": "A. Gruber",
+                "player_out": "A. Gruber",
+                "player_out_id": 7657
+            },
+            {
+                "time": "82",
+                "team_id": 2257,
+                "player": "A. Ramadan",
+                "player_id": 540003,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "85",
+                "team_id": 3381,
+                "player": "A. Spahic",
+                "player_id": 510973,
+                "type": "Card",
+                "detail": "Yellow Card",
+                "assist": null
+            },
+            {
+                "time": "86",
+                "team_id": 2257,
+                "player": "A. Ramadan",
+                "player_id": 540003,
+                "type": "subst",
+                "detail": "Substitution 4",
+                "assist": "A. Sylla",
+                "player_out": "A. Sylla",
+                "player_out_id": 332479
+            }
+        ],
         "match_ended_at": "2026-07-23T18:22:29.721163+00:00",
-        "post_game_sync": false,
+        "post_game_sync": true,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-23T16:26:27.514229+00:00",
         "final_odds_check": true,
@@ -26303,7 +26410,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 52,
+                "elapsed": 55,
                 "extra": null
             }
         },
@@ -27875,7 +27982,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 50,
+                "elapsed": 52,
                 "extra": null
             }
         },
@@ -29030,7 +29137,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 48,
+                "elapsed": 50,
                 "extra": null
             }
         },
@@ -34197,7 +34304,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 67,
+                "elapsed": 69,
                 "extra": null
             }
         },
@@ -34719,10 +34826,10 @@
                 "city": "Novi Sad"
             },
             "status": {
-                "long": "Second Half",
-                "short": "2H",
+                "long": "Match Finished",
+                "short": "FT",
                 "elapsed": 90,
-                "extra": 3
+                "extra": 4
             }
         },
         "league": {
@@ -34755,7 +34862,7 @@
         },
         "goals": {
             "home": 1,
-            "away": 3
+            "away": 4
         },
         "homeLineup": {
             "team": {
@@ -35236,7 +35343,7 @@
             "checks": 7
         },
         "events": [],
-        "match_ended_at": null,
+        "match_ended_at": "2026-07-23T19:54:26.095677+00:00",
         "post_game_sync": false,
         "first_leg_goals": null,
         "last_lineup_check": "2026-07-23T17:56:29.168663+00:00",
@@ -35814,7 +35921,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 65,
+                "elapsed": 68,
                 "extra": null
             }
         },
@@ -36365,7 +36472,7 @@
             "status": {
                 "long": "Second Half",
                 "short": "2H",
-                "elapsed": 50,
+                "elapsed": 52,
                 "extra": null
             }
         },
