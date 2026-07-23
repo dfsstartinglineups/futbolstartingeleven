@@ -542,8 +542,8 @@ def main(local_memory):
 
     # 4. SLEEP CALCULATION & LOCAL MEMORY RETURN
     if has_live_games: 
-        print("🎯 Target cycle: 30s (Active game updates)...")
-        return 30, all_new_live_data 
+        print("🎯 Target cycle: 60s (Active game updates)...")
+        return 60, all_new_live_data 
 
     if api_failure:
         print("⚠️ API fetch failed. Target cycle: 60s (Retrying)...")
