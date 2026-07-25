@@ -5,6 +5,7 @@ import requests
 import traceback
 import unicodedata
 from datetime import datetime, timedelta
+from concurrent.futures import ThreadPoolExecutor
 import pytz
 from jinja2 import Template
 
@@ -285,6 +286,85 @@ def should_fetch_summary(event):
             except Exception as e: return False, f"Date parse error: {e}"
     return False, f"State '{state}' not eligible"
 
+def fetch_single_player_core_stats(league_slug, event_id, team_id, player_id):
+    if not league_slug or league_slug == 'all' or not team_id or not player_id:
+        return {}
+    url = f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{league_slug}/events/{event_id}/competitions/{event_id}/competitors/{team_id}/roster/{player_id}/statistics/0"
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    try:
+        r = requests.get(url, headers=headers, timeout=3)
+        if r.status_code == 200:
+            stats_data = r.json()
+            raw_stats = {}
+            for category in stats_data.get('splits', {}).get('categories', []):
+                for stat in category.get('stats', []):
+                    raw_stats[stat.get('name')] = stat.get('value', 0)
+            return raw_stats
+    except Exception:
+        pass
+    return {}
+
+def extract_player_live_stats(entry_obj, core_raw_stats=None):
+    stats_raw = (entry_obj.get('stats') or []) + (entry_obj.get('statistics') or [])
+    live_stats = {}
+    
+    # 1. Base Summary API Stats
+    for st in stats_raw:
+        if not isinstance(st, dict): continue
+        raw_k = st.get('name', '')
+        raw_abbr = str(st.get('abbreviation', '')).upper()
+        raw_v = st.get('displayValue', st.get('value', 0))
+        try:
+            num_v = float(str(raw_v)) if '.' in str(raw_v) else int(float(str(raw_v)))
+        except (ValueError, TypeError): num_v = raw_v
+
+        if raw_k:
+            live_stats[raw_k] = num_v
+            live_stats[to_snake_case(raw_k)] = num_v
+        if raw_abbr:
+            live_stats[raw_abbr] = num_v
+            live_stats[raw_abbr.lower()] = num_v
+
+        # Explicit key mapping
+        if raw_k in ['touches', 'totalTouches'] or raw_abbr == 'TCH': live_stats['touches'] = num_v
+        elif raw_k in ['expectedGoals', 'xg'] or raw_abbr == 'XG': live_stats['xg'] = num_v
+        elif raw_k in ['expectedAssists', 'xa'] or raw_abbr == 'XA': live_stats['xa'] = num_v
+        elif raw_k in ['shotsOnTarget', 'shotsOnGoal'] or raw_abbr == 'SOG': live_stats['shots_on_target'] = num_v
+        elif raw_k in ['totalShots', 'shots'] or raw_abbr == 'SHOT': live_stats['total_shots'] = num_v
+        elif raw_k in ['chancesCreated', 'bigChancesCreated'] or raw_abbr == 'BCC': live_stats['bcc'] = num_v
+        elif raw_k in ['interceptions', 'dint', 'defensiveInterventions'] or raw_abbr == 'DINT': live_stats['dint'] = num_v
+        elif raw_k in ['duelsWon', 'duelw', 'groundDuelsWon'] or raw_abbr == 'DUELW': live_stats['duels_won'] = num_v
+        elif raw_k in ['accuratePasses', 'passes'] or raw_abbr in ['PAS', 'PASS']: live_stats['accurate_passes'] = num_v
+        elif raw_k in ['effectiveTackles', 'tackles'] or raw_abbr in ['TK', 'TCKL']: live_stats['tackles'] = num_v
+        elif raw_k in ['totalGoals', 'goals', 'goal'] or raw_abbr == 'G': live_stats['goals'] = num_v
+        elif raw_k in ['goalAssists', 'assists', 'assist'] or raw_abbr == 'A': live_stats['assists'] = num_v
+        elif raw_k in ['goalsConceded', 'goalsAgainst'] or raw_abbr == 'GA': live_stats['conceded'] = num_v
+        elif raw_k in ['saves'] or raw_abbr == 'SV': live_stats['saves'] = num_v
+        elif raw_k in ['expectedGoalsConceded'] or raw_abbr == 'XGA': live_stats['xga'] = num_v
+        elif raw_k in ['shotsFaced'] or raw_abbr == 'SHF': live_stats['shots_faced'] = num_v
+        elif raw_k in ['foulsCommitted'] or raw_abbr == 'FC': live_stats['fouls_committed'] = num_v
+
+    # 2. Advanced Opta Core REST API Overrides
+    if core_raw_stats:
+        if 'touches' in core_raw_stats: live_stats['touches'] = int(core_raw_stats['touches'])
+        if 'expectedGoals' in core_raw_stats: live_stats['xg'] = round(float(core_raw_stats['expectedGoals']), 2)
+        if 'expectedAssists' in core_raw_stats: live_stats['xa'] = round(float(core_raw_stats['expectedAssists']), 2)
+        if 'shotsOnTarget' in core_raw_stats: live_stats['shots_on_target'] = int(core_raw_stats['shotsOnTarget'])
+        if 'totalShots' in core_raw_stats: live_stats['total_shots'] = int(core_raw_stats['totalShots'])
+        if 'bigChancesCreated' in core_raw_stats: live_stats['bcc'] = int(core_raw_stats['bigChancesCreated'])
+        if 'defensiveInterventions' in core_raw_stats: live_stats['dint'] = int(core_raw_stats['defensiveInterventions'])
+        if 'groundDuelsWon' in core_raw_stats: live_stats['duels_won'] = int(core_raw_stats['groundDuelsWon'])
+        if 'accuratePasses' in core_raw_stats: live_stats['accurate_passes'] = int(core_raw_stats['accuratePasses'])
+        if 'effectiveTackles' in core_raw_stats: live_stats['tackles'] = int(core_raw_stats['effectiveTackles'])
+        if 'totalGoals' in core_raw_stats: live_stats['goals'] = int(core_raw_stats['totalGoals'])
+        if 'goalAssists' in core_raw_stats: live_stats['assists'] = int(core_raw_stats['goalAssists'])
+        if 'goalsConceded' in core_raw_stats: live_stats['conceded'] = int(core_raw_stats['goalsConceded'])
+        if 'saves' in core_raw_stats: live_stats['saves'] = int(core_raw_stats['saves'])
+        if 'expectedGoalsConceded' in core_raw_stats: live_stats['xga'] = round(float(core_raw_stats['expectedGoalsConceded']), 2)
+        if 'shotsFaced' in core_raw_stats: live_stats['shots_faced'] = int(core_raw_stats['shotsFaced'])
+
+    return live_stats
+
 def parse_espn_summary(event_id, league_code="all", match_label="Match"):
     headers = {'User-Agent': 'Mozilla/5.0'}
     summary_data = {
@@ -395,55 +475,45 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
+            # Concurrent Core API Pre-Fetcher for Live/Post Matches
+            core_stats_cache = {}
+            if game_state in ['in', 'post']:
+                player_fetch_list = []
+                for r_data in rosters:
+                    team_id = str(r_data.get('team', {}).get('id', ''))
+                    for entry in r_data.get('roster', []):
+                        ath = entry.get('athlete', {})
+                        p_id = str(ath.get('id', ''))
+                        if team_id and p_id:
+                            player_fetch_list.append((team_id, p_id))
+
+                actual_league_slug = league_code
+                if actual_league_slug == 'all':
+                    actual_league_slug = comp_head.get('league', {}).get('slug') or data.get('header', {}).get('league', {}).get('slug') or 'all'
+
+                if actual_league_slug and actual_league_slug != 'all' and player_fetch_list:
+                    def fetch_worker(item):
+                        t_id, p_id = item
+                        stats = fetch_single_player_core_stats(actual_league_slug, event_id, t_id, p_id)
+                        return (t_id, p_id), stats
+
+                    with ThreadPoolExecutor(max_workers=12) as executor:
+                        results = executor.map(fetch_worker, player_fetch_list)
+                        for key, stats in results:
+                            if stats:
+                                core_stats_cache[key] = stats
+
             for r_data in rosters:
                 home_away = r_data.get('homeAway', 'home')
                 key = "homeLineup" if home_away == 'home' else "awayLineup"
                 formation = r_data.get('formation', '4-3-3')
                 team_obj = r_data.get('team', {})
+                team_id = str(team_obj.get('id', ''))
                 start_xi, subs = [], []
                 starters_lookup = {}
                 
                 player_entries = r_data.get('roster', [])
                 if isinstance(player_entries, list):
-                    # Helper function to extract stats from both 'stats' AND 'statistics' arrays
-                    def extract_player_live_stats(entry_obj):
-                        stats_raw = (entry_obj.get('stats') or []) + (entry_obj.get('statistics') or [])
-                        live_stats = {}
-                        for st in stats_raw:
-                            if not isinstance(st, dict): continue
-                            raw_k = st.get('name', '')
-                            raw_abbr = str(st.get('abbreviation', '')).upper()
-                            raw_v = st.get('displayValue', st.get('value', 0))
-                            try:
-                                num_v = float(str(raw_v)) if '.' in str(raw_v) else int(float(str(raw_v)))
-                            except (ValueError, TypeError): num_v = raw_v
-
-                            if raw_k:
-                                live_stats[raw_k] = num_v
-                                live_stats[to_snake_case(raw_k)] = num_v
-                            if raw_abbr:
-                                live_stats[raw_abbr] = num_v
-                                live_stats[raw_abbr.lower()] = num_v
-
-                            # Direct explicit key mapping for Opta web table headers
-                            if raw_k in ['touches', 'totalTouches'] or raw_abbr == 'TCH': live_stats['touches'] = num_v
-                            elif raw_k in ['expectedGoals', 'xg'] or raw_abbr == 'XG': live_stats['xg'] = num_v
-                            elif raw_k in ['expectedAssists', 'xa'] or raw_abbr == 'XA': live_stats['xa'] = num_v
-                            elif raw_k in ['shotsOnTarget', 'shotsOnGoal'] or raw_abbr == 'SOG': live_stats['shots_on_target'] = num_v
-                            elif raw_k in ['totalShots', 'shots'] or raw_abbr == 'SHOT': live_stats['total_shots'] = num_v
-                            elif raw_k in ['chancesCreated', 'bigChancesCreated'] or raw_abbr == 'BCC': live_stats['bcc'] = num_v
-                            elif raw_k in ['interceptions', 'dint'] or raw_abbr == 'DINT': live_stats['dint'] = num_v
-                            elif raw_k in ['duelsWon', 'duelw'] or raw_abbr == 'DUELW': live_stats['duels_won'] = num_v
-                            elif raw_k in ['accuratePasses', 'passes'] or raw_abbr in ['PAS', 'PASS']: live_stats['accurate_passes'] = num_v
-                            elif raw_k in ['effectiveTackles', 'tackles'] or raw_abbr in ['TK', 'TCKL']: live_stats['tackles'] = num_v
-                            elif raw_k in ['totalGoals', 'goals', 'goal'] or raw_abbr == 'G': live_stats['goals'] = num_v
-                            elif raw_k in ['goalAssists', 'assists', 'assist'] or raw_abbr == 'A': live_stats['assists'] = num_v
-                            elif raw_k in ['goalsConceded', 'goalsAgainst'] or raw_abbr == 'GA': live_stats['conceded'] = num_v
-                            elif raw_k in ['saves'] or raw_abbr == 'SV': live_stats['saves'] = num_v
-                            elif raw_k in ['shotsFaced'] or raw_abbr == 'SHF': live_stats['shots_faced'] = num_v
-                            elif raw_k in ['foulsCommitted'] or raw_abbr == 'FC': live_stats['fouls_committed'] = num_v
-                        return live_stats
-
                     # Pass 1: Starters
                     for entry in player_entries:
                         if not entry.get('starter', False): continue
@@ -462,11 +532,12 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                             subbed_in = (p_id in subbed_in_names or p_name.lower() in subbed_in_names or is_valid_sub_minute(in_min))
                             subbed_out = (p_id in subbed_out_names or p_name.lower() in subbed_out_names or is_valid_sub_minute(out_min))
 
+                        c_stats = core_stats_cache.get((team_id, p_id))
                         player_obj = {
                             "id": p_id, "name": p_name,
                             "pos": pos_display, "category": pos_category, "number": str(entry.get('jersey', '')),
                             "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
-                            "live_stats": extract_player_live_stats(entry),
+                            "live_stats": extract_player_live_stats(entry, c_stats),
                             "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
                             "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                         }
@@ -500,7 +571,8 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                             subbed_out = (p_id in subbed_out_names or p_name.lower() in subbed_out_names or is_valid_sub_minute(out_min))
 
                         did_play = entry.get('didPlay', False) or entry.get('played', False) or subbed_in
-                        player_live_stats = extract_player_live_stats(entry)
+                        c_stats = core_stats_cache.get((team_id, p_id))
+                        player_live_stats = extract_player_live_stats(entry, c_stats)
 
                         player_obj = {
                             "id": p_id, "name": p_name,
