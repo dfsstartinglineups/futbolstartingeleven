@@ -7,8 +7,130 @@ from datetime import datetime, timedelta
 import pytz
 from jinja2 import Template
 
+LEAGUE_FLAGS = {
+    "afc.asian.cup": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/2243.png",
+    "afc.cupq": "https://a.espncdn.com/i/leaguelogos/soccer/500/2246.png",
+    "afc.champions": "https://a.espncdn.com/i/leaguelogos/soccer/500/2200.png",
+    "afc.cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/2243.png",
+    "aff.championship": "https://a.espncdn.com/i/leaguelogos/soccer/500/2261.png",
+    "caf.nations": "https://a.espncdn.com/i/leaguelogos/soccer/500/76.png",
+    "arg.copa_de_la_superliga": "https://a.espncdn.com/i/leaguelogos/soccer/500/2407.png",
+    "arg.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1.png",
+    "arg.2": "https://a.espncdn.com/i/leaguelogos/soccer/500/2294.png",
+    "arg.3": "https://a.espncdn.com/i/leaguelogos/soccer/500/2308.png",
+    "arg.supercopa": "https://a.espncdn.com/i/leaguelogos/soccer/500/2343.png",
+    "aus.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1308.png",
+    "aus.w.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2402.png",
+    "aut.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/5.png",
+    "bel.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/6.png",
+    "bol.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1949.png",
+    "bra.camp.carioca": "https://a.espncdn.com/i/leaguelogos/soccer/500/2265.png",
+    "bra.camp.gaucho": "https://a.espncdn.com/i/leaguelogos/soccer/500/2272.png",
+    "bra.camp.mineiro": "https://a.espncdn.com/i/leaguelogos/soccer/500/2360.png",
+    "bra.camp.paulista": "https://a.espncdn.com/i/leaguelogos/soccer/500/2322.png",
+    "bra.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/85.png",
+    "bra.2": "https://a.espncdn.com/i/leaguelogos/soccer/500/2299.png",
+    "caf.champions": "https://a.espncdn.com/i/leaguelogos/soccer/500/2391.png",
+    "conmebol.libertadores": "https://a.espncdn.com/i/leaguelogos/soccer/500/58.png",
+    "fifa.conmebol.olympicsq": "https://a.espncdn.com/i/leaguelogos/soccer/500/19727.png",
+    "conmebol.recopa": "https://a.espncdn.com/i/leaguelogos/soccer/500/2335.png",
+    "conmebol.sudamericana": "https://a.espncdn.com/i/leaguelogos/soccer/500/1208.png",
+    "chi.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/86.png",
+    "chn.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2350.png",
+    "col.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1543.png",
+    "col.superliga": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/2405.png",
+    "concacaf.champions": "https://a.espncdn.com/i/leaguelogos/soccer/500/2298.png",
+    "concacaf.gold": "https://a.espncdn.com/i/leaguelogos/soccer/500/59.png",
+    "concacaf.nations.league": "https://a.espncdn.com/i/leaguelogos/soccer/500/2406.png",
+    "concacaf.womens.championship": "https://a.espncdn.com/i/leaguelogos/soccer/500/18969.png",
+    "conmebol.america": "https://a.espncdn.com/i/leaguelogos/soccer/500/83.png",
+    "arg.copa": "https://a.espncdn.com/i/leaguelogos/soccer/500/2320.png",
+    "chi.copa_chi": "https://a.espncdn.com/i/leaguelogos/soccer/500/2331.png",
+    "col.copa": "https://a.espncdn.com/i/leaguelogos/soccer/500/2332.png",
+    "bra.copa_do_brazil": "https://a.espncdn.com/i/leaguelogos/soccer/500/528.png",
+    "ita.coppa_italia": "https://a.espncdn.com/i/leaguelogos/soccer/500/2192.png",
+    "crc.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2245.png",
+    "fra.coupe_de_france": "https://a.espncdn.com/i/leaguelogos/soccer/500/182.png",
+    "ned.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/11.png",
+    "ned.cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/2196.png",
+    "ned.2": "https://a.espncdn.com/i/leaguelogos/soccer/500/105.png",
+    "ned.w.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2453.png",
+    "eng.league_cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/41.png",
+    "eng.trophy": "https://a.espncdn.com/i/leaguelogos/soccer/500/42.png",
+    "eng.fa": "https://a.espncdn.com/i/leaguelogos/soccer/500/40.png",
+    "eng.2": "https://a.espncdn.com/i/leaguelogos/soccer/500/24.png",
+    "eng.3": "https://a.espncdn.com/i/leaguelogos/soccer/500/25.png",
+    "eng.4": "https://a.espncdn.com/i/leaguelogos/soccer/500/26.png",
+    "eng.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/23.png",
+    "eng.w.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2314.png",
+    "fifa.cwc": "https://a.espncdn.com/i/leaguelogos/soccer/500/1932.png",
+    "fifa.world.u17": "https://a.espncdn.com/i/leaguelogos/soccer/500/2288.png",
+    "fifa.world.u20": "https://a.espncdn.com/i/leaguelogos/soccer/500/2285.png",
+    "fifa.wwc": "https://a.espncdn.com/i/leaguelogos/soccer/500/60.png",
+    "fifa.world": "https://a.espncdn.com/i/leaguelogos/soccer/500/4.png",
+    "fifa.worldq.afc": "https://a.espncdn.com/i/leaguelogos/soccer/500/62.png",
+    "fifa.worldq.caf": "https://a.espncdn.com/i/leaguelogos/soccer/500/63.png",
+    "fifa.worldq.conmebol": "https://a.espncdn.com/i/leaguelogos/soccer/500/65.png",
+    "fifa.worldq.concacaf": "https://a.espncdn.com/i/leaguelogos/soccer/500/64.png",
+    "fifa.worldq.ofc": "https://a.espncdn.com/i/leaguelogos/soccer/500/66.png",
+    "fifa.worldq.uefa": "https://a.espncdn.com/i/leaguelogos/soccer/500/67.png",
+    "fra.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/9.png",
+    "fra.2": "https://a.espncdn.com/i/leaguelogos/soccer/500/96.png",
+    "ger.2": "https://a.espncdn.com/i/leaguelogos/soccer/500/97.png",
+    "ger.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/10.png",
+    "ger.dfb_pokal": "https://a.espncdn.com/i/leaguelogos/soccer/500/2061.png",
+    "gre.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/98.png",
+    "gua.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2248.png",
+    "hon.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2247.png",
+    "ind.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2334.png",
+    "fifa.friendly": "https://a.espncdn.com/i/leaguelogos/soccer/500/53.png",
+    "ita.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/12.png",
+    "ita.2": "https://a.espncdn.com/i/leaguelogos/soccer/500/99.png",
+    "jpn.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2199.png",
+    "concacaf.leagues.cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/2410.png",
+    "uru.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1592.png",
+    "ecu.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1944.png",
+    "usa.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/19.png",
+    "fifa.olympics": "https://a.espncdn.com/i/leaguelogos/soccer/500/71.png",
+    "mex.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/22.png",
+    "mex.2": "https://a.espncdn.com/i/leaguelogos/soccer/500/2306.png",
+    "usa.ncaa.m.1": "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/sports-soccer-solid.png",
+    "usa.ncaa.w.1": "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/sports-soccer-solid.png",
+    "usa.nwsl": "https://a.espncdn.com/i/leaguelogos/soccer/500/2323.png",
+    "usa.nwsl.cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/2445.png",
+    "par.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1892.png",
+    "per.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1813.png",
+    "por.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/14.png",
+    "rus.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/106.png",
+    "slv.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2244.png",
+    "ksa.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2488.png",
+    "sco.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/45.png",
+    "esp.copa_del_rey": "https://a.espncdn.com/i/leaguelogos/soccer/500/80.png",
+    "esp.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/15.png",
+    "esp.2": "https://a.espncdn.com/i/leaguelogos/soccer/500/107.png",
+    "esp.super_cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/431.png",
+    "swe.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/16.png",
+    "tur.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/18.png",
+    "usa.open": "https://a.espncdn.com/i/leaguelogos/soccer/500/69.png",
+    "uefa.champions": "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png",
+    "uefa.europa.conf": "https://a.espncdn.com/i/leaguelogos/soccer/500/20296.png",
+    "uefa.europa": "https://a.espncdn.com/i/leaguelogos/soccer/500/2310.png",
+    "uefa.euro": "https://a.espncdn.com/i/leaguelogos/soccer/500/74.png",
+    "uefa.euroq": "https://a.espncdn.com/i/leaguelogos/soccer/500/56.png",
+    "uefa.euro.u19": "https://a.espncdn.com/i/leaguelogos/soccer/500/2297.png",
+    "uefa.euro_u21": "https://a.espncdn.com/i/leaguelogos/soccer/500/2284.png",
+    "uefa.nations": "https://a.espncdn.com/i/leaguelogos/soccer/500/2395.png",
+    "uefa.super_cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/1272.png",
+    "uefa.wchampions": "https://a.espncdn.com/i/leaguelogos/soccer/500/2408.png",
+    "uefa.weuro": "https://a.espncdn.com/i/leaguelogos/soccer/500/2381.png",
+    "usa.usl.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2292.png",
+    "usa.usl.l1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2452.png",
+    "ven.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1947.png",
+    "fifa.friendly.w": "https://a.espncdn.com/i/leaguelogos/soccer/500/70.png",
+    "fifa.w.olympics": "https://a.espncdn.com/i/leaguelogos/soccer/500/84.png"
+}
+
 def create_slug(name):
-    """Generates clean URL slugs dynamically."""
     if not name:
         return ""
     slug = name.lower()
@@ -18,58 +140,33 @@ def create_slug(name):
     return slug.strip('-')
 
 def to_snake_case(name):
-    """Converts camelCase keys (e.g., shotsOnTarget) to snake_case."""
     s = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s).lower()
 
 def generate_league_abbrev(name):
-    """Dynamically generates a 3-4 letter abbreviation for compact ribbons."""
     if not name or name == "Global Football":
         return "GLB"
         
     name_upper = name.upper()
-    
-    # Direct Overrides for common ESPN altGameNote strings & global leagues
     overrides = {
-        "ENGLISH PREMIER LEAGUE": "EPL",
-        "PREMIER LEAGUE": "EPL",
-        "MAJOR LEAGUE SOCCER": "MLS",
-        "MLS": "MLS",
-        "UEFA CHAMPIONS LEAGUE": "UCL",
-        "UEFA EUROPA LEAGUE": "UEL",
-        "UEFA EUROPA CONFERENCE LEAGUE": "UECL",
-        "SPANISH LALIGA": "LIGA",
-        "LALIGA": "LIGA",
-        "ITALIAN SERIE A": "SERA",
-        "SERIE A": "SERA",
-        "GERMAN BUNDESLIGA": "BUND",
-        "BUNDESLIGA": "BUND",
-        "FRENCH LIGUE 1": "LIG1",
-        "LIGUE 1": "LIG1",
-        "MEXICAN LIGA BBVA MX": "LMX",
-        "LIGA MX": "LMX",
-        "LIGA DE EXPANSIÓN MX": "EXP",
-        "LIGA DE EXPANSION MX": "EXP",
-        "NWSL": "NWSL",
-        "DANISH SUPERLIGA": "DEN",
-        "DENMARK SUPERLIGA": "DEN",
-        "SWEDISH ALLSVENSKAN": "SWE",
-        "ALLSVENSKAN": "ALLS",
-        "ARGENTINE LPF": "LPF",
-        "ARGENTINA LPF": "LPF",
-        "RUSSIAN PREMIER": "RUS",
-        "USL CHAMPIONSHIP": "USL",
-        "CLUB FRIENDLY": "FRND",
-        "FRIENDLY": "FRND",
-        "ASEAN CHAMP": "ASEAN",
-        "SCOTTISH PREMIERSHIP": "SCO",
-        "DUTCH EREDIVISIE": "ERED",
-        "PORTUGUESE LIGA": "POR",
-        "BRAZILIAN SERIE A": "BSA",
-        "COPA DEL REY": "CDR",
-        "FA CUP": "FA",
-        "EFL CUP": "EFL",
-        "DFB POKAL": "DFB",
+        "ENGLISH PREMIER LEAGUE": "EPL", "PREMIER LEAGUE": "EPL",
+        "MAJOR LEAGUE SOCCER": "MLS", "MLS": "MLS",
+        "UEFA CHAMPIONS LEAGUE": "UCL", "UEFA EUROPA LEAGUE": "UEL",
+        "UEFA EUROPA CONFERENCE LEAGUE": "UECL", "SPANISH LALIGA": "LIGA",
+        "LALIGA": "LIGA", "ITALIAN SERIE A": "SERA", "SERIE A": "SERA",
+        "GERMAN BUNDESLIGA": "BUND", "BUNDESLIGA": "BUND",
+        "FRENCH LIGUE 1": "LIG1", "LIGUE 1": "LIG1",
+        "MEXICAN LIGA BBVA MX": "LMX", "LIGA MX": "LMX",
+        "LIGA DE EXPANSIÓN MX": "EXP", "LIGA DE EXPANSION MX": "EXP",
+        "NWSL": "NWSL", "DANISH SUPERLIGA": "DEN", "DENMARK SUPERLIGA": "DEN",
+        "SWEDISH ALLSVENSKAN": "SWE", "ALLSVENSKAN": "ALLS",
+        "ARGENTINE LPF": "LPF", "ARGENTINA LPF": "LPF",
+        "RUSSIAN PREMIER": "RUS", "USL CHAMPIONSHIP": "USL",
+        "CLUB FRIENDLY": "FRND", "FRIENDLY": "FRND",
+        "ASEAN CHAMP": "ASEAN", "SCOTTISH PREMIERSHIP": "SCO",
+        "DUTCH EREDIVISIE": "ERED", "PORTUGUESE LIGA": "POR",
+        "BRAZILIAN SERIE A": "BSA", "COPA DEL REY": "CDR",
+        "FA CUP": "FA", "EFL CUP": "EFL", "DFB POKAL": "DFB",
         "COPPA ITALIA": "COPPA",
     }
     
@@ -77,41 +174,26 @@ def generate_league_abbrev(name):
         if k in name_upper:
             return v
             
-    # Clean filler words for dynamic fallback generation
     clean_name = re.sub(r'\b(THE|OF|AND|FOR|MEN|WOMEN|MENS|WOMENS|DEL|LA)\b', '', name_upper).strip()
     words = clean_name.split()
     
-    if len(words) >= 3:
-        return "".join([w[0] for w in words[:3]])  # First letter of first 3 words
-    elif len(words) == 2:
-        return words[0][:3]  # First 3 letters of first word
-    elif len(words) == 1:
-        return words[0][:4]  # First 4 letters of single word
-        
+    if len(words) >= 3: return "".join([w[0] for w in words[:3]])
+    elif len(words) == 2: return words[0][:3]
+    elif len(words) == 1: return words[0][:4]
     return name[:4].upper()
 
 def get_3day_dates():
     est = pytz.timezone('America/New_York')
     now = datetime.now(est)
+    if now.hour < 3: now -= timedelta(days=1)
     
-    if now.hour < 3:
-        now -= timedelta(days=1)
-        
     y_dt = now - timedelta(days=1)
     t_dt = now
     tm_dt = now + timedelta(days=1)
     
     return {
-        "dates": {
-            "yesterday": y_dt.strftime('%Y%m%d'),
-            "today": t_dt.strftime('%Y%m%d'),
-            "tomorrow": tm_dt.strftime('%Y%m%d')
-        },
-        "display": {
-            "yesterday": y_dt.strftime('%a, %b %d'),
-            "today": t_dt.strftime('%a, %b %d'),
-            "tomorrow": tm_dt.strftime('%a, %b %d')
-        }
+        "dates": {"yesterday": y_dt.strftime('%Y%m%d'), "today": t_dt.strftime('%Y%m%d'), "tomorrow": tm_dt.strftime('%Y%m%d')},
+        "display": {"yesterday": y_dt.strftime('%a, %b %d'), "today": t_dt.strftime('%a, %b %d'), "tomorrow": tm_dt.strftime('%a, %b %d')}
     }
 
 def should_fetch_summary(event):
@@ -119,8 +201,7 @@ def should_fetch_summary(event):
     status_type = status_obj.get('type', {})
     state = status_type.get('state', 'pre')
 
-    if state in ['in', 'post']:
-        return True, f"State is '{state}'"
+    if state in ['in', 'post']: return True, f"State is '{state}'"
 
     if state == 'pre':
         event_date_str = event.get('date')
@@ -129,22 +210,15 @@ def should_fetch_summary(event):
                 event_dt = datetime.fromisoformat(event_date_str.replace('Z', '+00:00'))
                 now_utc = datetime.now(pytz.utc)
                 minutes_until_kickoff = (event_dt - now_utc).total_seconds() / 60.0
-                if minutes_until_kickoff <= 60:
-                    return True, f"Pre-game, starting in {int(minutes_until_kickoff)} mins"
+                if minutes_until_kickoff <= 60: return True, f"Pre-game, starting in {int(minutes_until_kickoff)} mins"
                 return False, f"Pre-game (>60m)"
-            except Exception as e:
-                return False, f"Date parse error: {e}"
-
+            except Exception as e: return False, f"Date parse error: {e}"
     return False, f"State '{state}' not eligible"
 
 def parse_espn_summary(event_id, league_code="all", match_label="Match"):
     headers = {'User-Agent': 'Mozilla/5.0'}
-    
     summary_data = {
-        "team_stats": None,
-        "homeLineup": None,
-        "awayLineup": None,
-        "events": [],
+        "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [],
         "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
         "injuries": {"home": [], "away": []}
     }
@@ -162,27 +236,22 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
             if r.status_code == 200:
                 res = r
                 break
-        except Exception:
-            continue
+        except Exception: continue
 
-    if not res or res.status_code != 200:
-        return summary_data
+    if not res or res.status_code != 200: return summary_data
 
     try:
         data = res.json()
         
-        # 1. Parse Team Statistics
         boxscore = data.get('boxscore', {})
         teams_box = boxscore.get('teams', [])
         if len(teams_box) == 2:
             def extract_stat_dict(stats_list):
-                if not isinstance(stats_list, list):
-                    return {}
+                if not isinstance(stats_list, list): return {}
                 return {s.get('name'): s.get('displayValue', '0') for s in stats_list if isinstance(s, dict)}
 
             home_idx = 0 if teams_box[0].get('homeAway') == 'home' else 1
             away_idx = 1 if home_idx == 0 else 0
-
             h_raw = extract_stat_dict(teams_box[home_idx].get('statistics', []))
             a_raw = extract_stat_dict(teams_box[away_idx].get('statistics', []))
 
@@ -210,13 +279,11 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     }
                 }
 
-        # 2. Parse Rosters & Live Stats
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
             for r_data in rosters:
                 home_away = r_data.get('homeAway', 'home')
                 key = "homeLineup" if home_away == 'home' else "awayLineup"
-                
                 formation = r_data.get('formation', '4-3-3')
                 team_obj = r_data.get('team', {})
                 start_xi, subs = [], []
@@ -226,7 +293,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     for entry in player_entries:
                         ath = entry.get('athlete', {})
                         pos_abbr = entry.get('position', {}).get('abbreviation', 'M')
-                        
                         is_starter = entry.get('starter', False)
                         subbed_in = entry.get('subbedIn', False) or bool(entry.get('subbedInMinute'))
                         subbed_out = entry.get('subbedOut', False) or bool(entry.get('subbedOutMinute'))
@@ -239,59 +305,38 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                                 if isinstance(st, dict):
                                     raw_k = st.get('name', '')
                                     raw_v = st.get('displayValue', st.get('value', 0))
-                                    try:
-                                        num_v = int(float(str(raw_v)))
-                                    except (ValueError, TypeError):
-                                        num_v = raw_v
+                                    try: num_v = int(float(str(raw_v)))
+                                    except (ValueError, TypeError): num_v = raw_v
 
                                     live_stats[raw_k] = num_v
                                     snake_k = to_snake_case(raw_k)
                                     live_stats[snake_k] = num_v
 
-                                    if raw_k == 'goalsConceded':
-                                        live_stats['conceded'] = num_v
-                                    elif raw_k == 'shotsOnTarget':
-                                        live_stats['shots_on_target'] = num_v
-                                    elif raw_k == 'totalShots':
-                                        live_stats['total_shots'] = num_v
-                                    elif raw_k == 'keyPasses':
-                                        live_stats['key_passes'] = num_v
-                                    elif raw_k == 'yellowCards':
-                                        live_stats['yellow_cards'] = num_v
+                                    if raw_k == 'goalsConceded': live_stats['conceded'] = num_v
+                                    elif raw_k == 'shotsOnTarget': live_stats['shots_on_target'] = num_v
+                                    elif raw_k == 'totalShots': live_stats['total_shots'] = num_v
+                                    elif raw_k == 'keyPasses': live_stats['key_passes'] = num_v
+                                    elif raw_k == 'yellowCards': live_stats['yellow_cards'] = num_v
 
                         player_obj = {
-                            "id": str(ath.get('id', '')),
-                            "name": ath.get('displayName', 'Unknown'),
-                            "pos": pos_abbr,
-                            "number": str(entry.get('jersey', '')),
+                            "id": str(ath.get('id', '')), "name": ath.get('displayName', 'Unknown'),
+                            "pos": pos_abbr, "number": str(entry.get('jersey', '')),
                             "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
-                            "live_stats": live_stats,
-                            "isSubbedIn": subbed_in,
-                            "isSubbedOut": subbed_out,
+                            "live_stats": live_stats, "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
                             "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                         }
                         
-                        if is_starter:
-                            start_xi.append({"player": player_obj, "sub_history": []})
+                        if is_starter: start_xi.append({"player": player_obj, "sub_history": []})
                         else:
-                            if did_play or live_stats:
-                                subs.append({"player": player_obj})
+                            if did_play or live_stats: subs.append({"player": player_obj})
 
                 if start_xi:
                     summary_data[key] = {
                         "formation": formation,
-                        "team": {
-                            "colors": {
-                                "player": {
-                                    "primary": team_obj.get('color', '0d6efd')
-                                }
-                            }
-                        },
-                        "startXI": start_xi,
-                        "substitutes": subs
+                        "team": {"colors": {"player": {"primary": team_obj.get('color', '0d6efd')}}},
+                        "startXI": start_xi, "substitutes": subs
                     }
 
-        # 3. Parse Timeline Events
         key_events = data.get('keyEvents', [])
         if isinstance(key_events, list) and len(key_events) > 0:
             for ev in key_events:
@@ -314,16 +359,10 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     p_player_out = p_out if p_out else None
 
                 summary_data["events"].append({
-                    "time": clock_text.replace("'", ""),
-                    "team_id": team_id,
-                    "type": ev_type,
-                    "detail": ev_text,
-                    "player": p_player,
-                    "player_out": p_player_out,
-                    "assist": p_out if ev_type == "Goal" else None
+                    "time": clock_text.replace("'", ""), "team_id": team_id, "type": ev_type,
+                    "detail": ev_text, "player": p_player, "player_out": p_player_out, "assist": p_out if ev_type == "Goal" else None
                 })
 
-        # 4. Parse Odds
         pickcenter = data.get('pickcenter', []) or data.get('odds', [])
         if isinstance(pickcenter, list) and len(pickcenter) > 0:
             odds_item = pickcenter[0]
@@ -336,25 +375,19 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 "home": f"+{h_ml}" if h_ml and int(h_ml) > 0 else str(h_ml or 'TBD'),
                 "draw": f"+{d_ml}" if d_ml and int(d_ml) > 0 else str(d_ml or 'TBD'),
                 "away": f"+{a_ml}" if a_ml and int(a_ml) > 0 else str(a_ml or 'TBD'),
-                "total": str(ou_line),
-                "over": str(odds_item.get('overOdds', 'TBD')),
-                "under": str(odds_item.get('underOdds', 'TBD'))
+                "total": str(ou_line), "over": str(odds_item.get('overOdds', 'TBD')), "under": str(odds_item.get('underOdds', 'TBD'))
             }
 
-        # 5. Parse Injuries
         injuries_raw = data.get('injuries', [])
         if isinstance(injuries_raw, list) and len(injuries_raw) == 2:
             for idx, key in [(0, "home"), (1, "away")]:
                 inj_list = [item.get('athlete', {}).get('displayName', '') for item in injuries_raw[idx].get('injuries', []) if item.get('athlete', {}).get('displayName')]
                 summary_data["injuries"][key] = inj_list
 
-    except Exception as e:
-        print(f"    ❌ EXCEPTION in parse_espn_summary for event {event_id}: {e}")
-        
+    except Exception as e: print(f"    ❌ EXCEPTION in parse_espn_summary for event {event_id}: {e}")
     return summary_data
 
 def fetch_espn_scores_for_date(date_str):
-    """Queries ESPN's master '/soccer/all/scoreboard' with pagination."""
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
     seen_ids = set()
@@ -370,13 +403,11 @@ def fetch_espn_scores_for_date(date_str):
         url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=1000&page={page}"
         try:
             res = requests.get(url, headers=headers, timeout=10)
-            if res.status_code != 200:
-                break
+            if res.status_code != 200: break
             
             data = res.json()
             events = data.get('events', [])
-            if not events:
-                break
+            if not events: break
 
             added_this_page = 0
             for ev in events:
@@ -387,9 +418,7 @@ def fetch_espn_scores_for_date(date_str):
                     added_this_page += 1
 
             print(f"  ├─ Page {page}: fetched {len(events)} events ({added_this_page} new)")
-            if added_this_page == 0:
-                break
-
+            if added_this_page == 0: break
             page += 1
         except Exception as e:
             print(f"  ❌ Error fetching page {page} for {date_str}: {e}")
@@ -404,8 +433,7 @@ def fetch_espn_scores_for_date(date_str):
         try:
             event_id = str(event['id'])
             competitions = event.get('competitions', [])
-            if not competitions:
-                continue
+            if not competitions: continue
 
             comp = competitions[0]
             competitors = comp.get('competitors', [])
@@ -413,65 +441,52 @@ def fetch_espn_scores_for_date(date_str):
             home = next((c for c in competitors if c.get('homeAway') == 'home'), None)
             away = next((c for c in competitors if c.get('homeAway') == 'away'), None)
 
-            if not home or not away:
-                continue
+            if not home or not away: continue
 
             home_name = home['team']['displayName']
             away_name = away['team']['displayName']
             match_label = f"{home_name} vs {away_name}"
 
-            # League extraction
             alt_note = comp.get('altGameNote')
-
             league_obj = (
-                event.get('league') or 
-                comp.get('league') or 
+                event.get('league') or comp.get('league') or 
                 (event.get('leagues', [{}])[0] if isinstance(event.get('leagues'), list) and event.get('leagues') else {}) or
                 (comp.get('leagues', [{}])[0] if isinstance(comp.get('leagues'), list) and comp.get('leagues') else {})
             )
 
-            fallback_name = (
-                league_obj.get('name') or 
-                league_obj.get('displayName') or 
-                league_obj.get('midsizeName') or 
-                "Global Football"
-            )
-
+            fallback_name = league_obj.get('name') or league_obj.get('displayName') or league_obj.get('midsizeName') or "Global Football"
             final_league_name = alt_note if alt_note else fallback_name
             final_league_name = re.sub(r'^\d{4}-\d{4}\s+', '', final_league_name)
 
-            espn_league_slug = (
-                league_obj.get('slug') or 
-                event.get('league', {}).get('slug') or 
-                comp.get('league', {}).get('slug') or 
-                'all'
-            )
+            espn_league_slug = (league_obj.get('slug') or event.get('league', {}).get('slug') or comp.get('league', {}).get('slug') or 'all')
 
             league_abbrev = generate_league_abbrev(final_league_name)
             league_slug = create_slug(final_league_name)
             
-            # Extract League Logo / Flag
-            league_logos = league_obj.get('logos', [])
-            league_flag = ""
-            if isinstance(league_logos, list) and len(league_logos) > 0:
-                league_flag = league_logos[0].get('href', '')
-            elif isinstance(league_obj.get('logo'), str):
-                league_flag = league_obj.get('logo')
+            # Resolve League Flag using our pristine mapping dictionary
+            league_flag = LEAGUE_FLAGS.get(espn_league_slug, "")
+            
+            if not league_flag:
+                league_logos = league_obj.get('logos', [])
+                if isinstance(league_logos, list) and len(league_logos) > 0:
+                    href = league_logos[0].get('href', '')
+                    if href and 'default-team-logo' not in href:
+                        league_flag = href
+                elif isinstance(league_obj.get('logo'), str):
+                    logo = league_obj.get('logo')
+                    if logo and 'default-team-logo' not in logo:
+                        league_flag = logo
 
             status_obj = event.get('status', {})
             status_type = status_obj.get('type', {})
             state = status_type.get('state', 'pre')
             short_detail = status_type.get('shortDetail', '')
 
-            if state == 'pre':
-                status_short = 'NS'
-            elif state == 'post':
-                status_short = 'FT'
-            else:
-                status_short = short_detail if short_detail else 'LIVE'
+            if state == 'pre': status_short = 'NS'
+            elif state == 'post': status_short = 'FT'
+            else: status_short = short_detail if short_detail else 'LIVE'
 
             elapsed = status_obj.get('period', 0)
-
             should_fetch, fetch_reason = should_fetch_summary(event)
 
             if should_fetch:
@@ -479,62 +494,28 @@ def fetch_espn_scores_for_date(date_str):
                 summary_calls += 1
             else:
                 summary = {
-                    "team_stats": None,
-                    "homeLineup": None,
-                    "awayLineup": None,
-                    "events": [],
+                    "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [],
                     "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
                     "injuries": {"home": [], "away": []}
                 }
 
             matches.append({
-                "fixture": {
-                    "id": event_id,
-                    "date": event['date'],
-                    "status": {"short": status_short, "elapsed": elapsed}
-                },
-                "league": {
-                    "id": event_id,
-                    "name": final_league_name,
-                    "abbrev": league_abbrev,
-                    "slug": league_slug,
-                    "flag": league_flag
-                },
+                "fixture": {"id": event_id, "date": event['date'], "status": {"short": status_short, "elapsed": elapsed}},
+                "league": {"id": event_id, "name": final_league_name, "abbrev": league_abbrev, "slug": league_slug, "flag": league_flag},
                 "teams": {
-                    "home": {
-                        "id": str(home['team']['id']),
-                        "name": home_name,
-                        "logo": home['team'].get('logo', ''),
-                        "rank": home.get('curatedRank', {}).get('current', ''),
-                        "record": home.get('records', [{}])[0].get('summary', '') if home.get('records') else ''
-                    },
-                    "away": {
-                        "id": str(away['team']['id']),
-                        "name": away_name,
-                        "logo": away['team'].get('logo', ''),
-                        "rank": away.get('curatedRank', {}).get('current', ''),
-                        "record": away.get('records', [{}])[0].get('summary', '') if away.get('records') else ''
-                    }
+                    "home": {"id": str(home['team']['id']), "name": home_name, "logo": home['team'].get('logo', ''), "rank": home.get('curatedRank', {}).get('current', ''), "record": home.get('records', [{}])[0].get('summary', '') if home.get('records') else ''},
+                    "away": {"id": str(away['team']['id']), "name": away_name, "logo": away['team'].get('logo', ''), "rank": away.get('curatedRank', {}).get('current', ''), "record": away.get('records', [{}])[0].get('summary', '') if away.get('records') else ''}
                 },
-                "goals": {
-                    "home": int(home.get('score', 0)),
-                    "away": int(away.get('score', 0))
-                },
-                "team_stats": summary["team_stats"],
-                "homeLineup": summary["homeLineup"],
-                "awayLineup": summary["awayLineup"],
-                "events": summary["events"],
-                "odds": summary["odds"],
-                "injuries": summary["injuries"],
-                "isFallback": summary["homeLineup"] is None
+                "goals": {"home": int(home.get('score', 0)), "away": int(away.get('score', 0))},
+                "team_stats": summary["team_stats"], "homeLineup": summary["homeLineup"], "awayLineup": summary["awayLineup"],
+                "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"], "isFallback": summary["homeLineup"] is None
             })
-        except Exception as e:
-            print(f"❌ ERROR parsing match item {event.get('id', 'unknown')}: {e}")
+        except Exception as e: print(f"❌ ERROR parsing match item {event.get('id', 'unknown')}: {e}")
 
     print(f"📊 Deep summary fetches completed for {date_str}: {summary_calls}/{len(raw_events)}")
     return matches
 
-# Complete Frontend Engine with League Flag Support
+# Complete Frontend Engine matching V1 structure exactly
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -559,9 +540,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             background-clip: text; filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6));
         }
 
-        .day-tab-btn {
-            font-size: 0.85rem; font-weight: 700; border-radius: 20px; padding: 6px 18px; transition: all 0.2s;
-        }
+        .day-tab-btn { font-size: 0.85rem; font-weight: 700; border-radius: 20px; padding: 6px 18px; transition: all 0.2s; }
         
         .lineup-card { 
             background: #fff; border: 1px solid #dee2e6; border-radius: 12px; 
@@ -598,21 +577,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); }
         }
 
-        .stat-bar-container {
-            display: flex; width: 100%; height: 14px; background-color: #e9ecef;
-            border-radius: 4px; overflow: hidden; margin-top: 2px;
-        }
-        .stat-bar-segment {
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.60rem; font-weight: 800; padding: 0 4px; transition: width 0.5s ease-in-out;
-        }
-        .stat-label-tiny {
-            font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px;
-        }
-        .lineup-tab {
-            font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd;
-            cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase;
-        }
+        .stat-bar-container { display: flex; width: 100%; height: 14px; background-color: #e9ecef; border-radius: 4px; overflow: hidden; margin-top: 2px; }
+        .stat-bar-segment { display: flex; align-items: center; justify-content: center; font-size: 0.60rem; font-weight: 800; padding: 0 4px; transition: width 0.5s ease-in-out; }
+        .stat-label-tiny { font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px; }
+        .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
         .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
     </style>
 </head>
@@ -620,12 +588,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-0" style="background-color: #212529; z-index: 1050;">
     <div class="container d-flex justify-content-between align-items-center">
-        <div class="header-brand">
-            <a href="/" class="text-decoration-none">Futbol Starting <span>Eleven</span></a>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <input type="text" id="team-search" class="form-control form-control-sm" placeholder="🔍 Search...">
-        </div>
+        <div class="header-brand"><a href="/" class="text-decoration-none">Futbol Starting <span>Eleven</span></a></div>
+        <div class="d-flex align-items-center gap-2"><input type="text" id="team-search" class="form-control form-control-sm" placeholder="🔍 Search..."></div>
     </div>
 </nav>
 
@@ -634,30 +598,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <p class="text-muted mb-2" style="font-size: 0.85rem;">Real-time starting XIs, match injuries, goalscorers, and betting odds for global football.</p>
     
     <div class="d-flex justify-content-center gap-2 my-3" id="day-selector">
-        <button class="btn btn-outline-dark day-tab-btn" data-day="yesterday">
-            Yesterday<br><small style="font-size: 0.65rem;">{{ display_dates.yesterday }}</small>
-        </button>
-        <button class="btn btn-dark day-tab-btn active" data-day="today">
-            Today<br><small style="font-size: 0.65rem;">{{ display_dates.today }}</small>
-        </button>
-        <button class="btn btn-outline-dark day-tab-btn" data-day="tomorrow">
-            Tomorrow<br><small style="font-size: 0.65rem;">{{ display_dates.tomorrow }}</small>
-        </button>
+        <button class="btn btn-outline-dark day-tab-btn" data-day="yesterday">Yesterday<br><small style="font-size: 0.65rem;">{{ display_dates.yesterday }}</small></button>
+        <button class="btn btn-dark day-tab-btn active" data-day="today">Today<br><small style="font-size: 0.65rem;">{{ display_dates.today }}</small></button>
+        <button class="btn btn-outline-dark day-tab-btn" data-day="tomorrow">Tomorrow<br><small style="font-size: 0.65rem;">{{ display_dates.tomorrow }}</small></button>
     </div>
 
     <div class="text-center mt-2">
-        <button id="toggle-all-cards" class="btn btn-sm btn-dark text-white shadow-sm px-3 py-1 me-2" style="font-size: 0.70rem; font-weight: 700; border-radius: 20px;">
-            🔽 COMPACT SCOREBOARD
-        </button>
-        <button id="toggle-all-lineups" class="btn btn-sm btn-dark text-white shadow-sm px-3 py-1 d-none" style="font-size: 0.70rem; font-weight: 700; border-radius: 20px;">
-            🔼 COLLAPSE ALL LINEUPS
-        </button>
+        <button id="toggle-all-cards" class="btn btn-sm btn-dark text-white shadow-sm px-3 py-1 me-2" style="font-size: 0.70rem; font-weight: 700; border-radius: 20px;">🔽 COMPACT SCOREBOARD</button>
+        <button id="toggle-all-lineups" class="btn btn-sm btn-dark text-white shadow-sm px-3 py-1 d-none" style="font-size: 0.70rem; font-weight: 700; border-radius: 20px;">🔼 COLLAPSE ALL LINEUPS</button>
     </div>
 </div>
 
-<div class="container pb-5">
-    <div id="games-container" class="row justify-content-center"></div>
-</div>
+<div class="container pb-5"><div id="games-container" class="row justify-content-center"></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -677,9 +629,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     function getContrastColor(hexColor) {
         if (!hexColor) return '#ffffff';
         hexColor = hexColor.replace('#', '');
-        const r = parseInt(hexColor.substr(0, 2), 16);
-        const g = parseInt(hexColor.substr(2, 2), 16);
-        const b = parseInt(hexColor.substr(4, 2), 16);
+        const r = parseInt(hexColor.substr(0, 2), 16), g = parseInt(hexColor.substr(2, 2), 16), b = parseInt(hexColor.substr(4, 2), 16);
         const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
         return (yiq >= 128) ? '#000000' : '#ffffff';
     }
@@ -698,41 +648,30 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     function getTimeBadgeHtml(data) {
         const status = data.fixture.status.short;
         const dateObj = new Date(data.fixture.date);
-        
         const timeString = dateObj.toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'}).replace(' ', '');
         const matchTime = `${dateObj.toLocaleDateString([], {weekday: 'short'})} ${timeString}`;
-
         const isFinished = ['FT', 'AET', 'PEN'].includes(status);
         const isPreGame = ['NS', 'TBD'].includes(status);
         const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
 
-        if (isDelayed) {
-            return `<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
-        } else if (isFinished) {
-            return `<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
-        } else if (!isPreGame) {
+        if (isDelayed) return `<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
+        else if (isFinished) return `<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
+        else if (!isPreGame) {
             let displayMin = data.fixture.status.elapsed || 'LIVE';
             if (status === 'HT') displayMin = 'HT';
             return `<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${displayMin}'</span>`;
-        } else {
-            return `<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${matchTime}</span>`;
-        }
+        } else return `<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${matchTime}</span>`;
     }
 
     function getLatestEventHtml(data, isRibbon = false) {
-        if (!data.events || data.events.length === 0) {
-            return isRibbon ? `<div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div>` : '';
-        }
-
+        if (!data.events || data.events.length === 0) return isRibbon ? `<div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div>` : '';
         const lastEv = data.events[data.events.length - 1];
         const isHomeTeam = lastEv.team_id === data.teams.home.id;
         const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
         const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo;
 
         if (lastEv.type === 'subst') {
-            let pOut = shortenPlayerName(lastEv.player);     
-            let pIn = shortenPlayerName(lastEv.player_out);  
-
+            let pOut = shortenPlayerName(lastEv.player), pIn = shortenPlayerName(lastEv.player_out);  
             if (isRibbon) {
                 return `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;">
                             <div class="text-truncate">🔄 <img src="${teamLogo}" style="width: 12px; height: 12px;" class="me-1">${lastEv.time}'</div>
@@ -740,37 +679,27 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                             <div class="text-muted text-truncate">🔴 ${pOut}</div>
                         </div>`;
             } else {
-                return `<span class="ms-2 text-dark fw-bold text-truncate" style="font-size: 0.65rem;">
-                            🔄 ${lastEv.time}' <img src="${teamLogo}" style="width: 12px; height: 12px;" class="me-1"> 🟢 ${pIn} <span class="text-muted">🔴 ${pOut}</span>
-                        </span>`;
+                return `<span class="ms-2 text-dark fw-bold text-truncate" style="font-size: 0.65rem;">🔄 ${lastEv.time}' <img src="${teamLogo}" style="width: 12px; height: 12px;" class="me-1"> 🟢 ${pIn} <span class="text-muted">🔴 ${pOut}</span></span>`;
             }
         } else {
             let icon = lastEv.type === 'Goal' ? '⚽' : '🟨';
             let playerName = shortenPlayerName(lastEv.player || teamName);
             let textColor = lastEv.type === 'Goal' ? 'text-success' : 'text-warning';
-
             if (isRibbon) {
                 let assistHtml = (lastEv.type === 'Goal' && lastEv.assist) ? `<div class="text-muted text-truncate" style="font-size: 0.55rem;">👟 ${shortenPlayerName(lastEv.assist)}</div>` : '';
                 return `<div class="${textColor} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;">
                             <div class="text-truncate"><img src="${teamLogo}" style="width: 12px; height: 12px;" class="me-1">${lastEv.time}'</div>
-                            <div class="text-truncate">${icon} ${playerName}</div>
-                            ${assistHtml}
+                            <div class="text-truncate">${icon} ${playerName}</div>${assistHtml}
                         </div>`;
             } else {
-                return `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.65rem;">
-                            ${icon} ${lastEv.time}' <img src="${teamLogo}" style="width: 12px; height: 12px;" class="me-1">${playerName}
-                        </span>`;
+                return `<span class="ms-2 ${textColor} fw-bold text-truncate" style="font-size: 0.65rem;">${icon} ${lastEv.time}' <img src="${teamLogo}" style="width: 12px; height: 12px;" class="me-1">${playerName}</span>`;
             }
         }
     }
 
     function getRibbonHtml(data) {
-        const home = data.teams.home;
-        const away = data.teams.away;
-        const status = data.fixture.status.short;
-        const isPreGame = ['NS', 'TBD'].includes(status);
-        const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
-        
+        const home = data.teams.home, away = data.teams.away, status = data.fixture.status.short;
+        const isPreGame = ['NS', 'TBD'].includes(status), isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
         const homeScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals?.home ?? 0) : '-';
         const awayScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals?.away ?? 0) : '-';
         
@@ -788,69 +717,35 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </div>
             <div class="col-5 px-2">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;">
-                        <img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}
-                    </span>
-                    <div class="text-end" style="min-width: fit-content; white-space: nowrap;">
-                        <span class="fw-bold text-dark" style="font-size: 0.85rem;">${homeScore}</span>
-                    </div>
+                    <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}</span>
+                    <div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${homeScore}</span></div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;">
-                        <img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}
-                    </span>
-                    <div class="text-end" style="min-width: fit-content; white-space: nowrap;">
-                        <span class="fw-bold text-dark" style="font-size: 0.85rem;">${awayScore}</span>
-                    </div>
+                    <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}</span>
+                    <div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${awayScore}</span></div>
                 </div>
             </div>
-            <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">
-                ${getLatestEventHtml(data, true)}
-            </div>
+            <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">${getLatestEventHtml(data, true)}</div>
         </div>`;
     }
 
     function getCenterColumnHtml(data) {
-        const status = data.fixture.status.short;
-        const isPreGame = ['NS', 'TBD'].includes(status);
-        const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
+        const status = data.fixture.status.short, isPreGame = ['NS', 'TBD'].includes(status), isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
         const showScore = !isPreGame && !isDelayed && !data.isFallback;
 
-        if (!showScore || !data.team_stats) {
-            const scoreText = showScore ? `${data.goals?.home ?? 0} - ${data.goals?.away ?? 0}` : `vs`;
-            return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${scoreText}</div>`;
-        }
+        if (!showScore || !data.team_stats) return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${showScore ? `${data.goals?.home ?? 0} - ${data.goals?.away ?? 0}` : `vs`}</div>`;
 
         const tStats = data.team_stats;
         let hColor = data.homeLineup?.team?.colors?.player?.primary ? `#${data.homeLineup.team.colors.player.primary}` : '#0d6efd';
         let aColor = data.awayLineup?.team?.colors?.player?.primary ? `#${data.awayLineup.team.colors.player.primary}` : '#dc3545';
         if (colorDistance(hColor, aColor) < 60) aColor = '#343a40';
 
-        const hText = getContrastColor(hColor);
-        const aText = getContrastColor(aColor);
-
         const buildBar = (label, hVal, aVal, isPercentage = false) => {
             const total = hVal + aVal;
             let hPct = 50, aPct = 50;
-            if (total > 0) {
-                hPct = (hVal / total) * 100;
-                aPct = (aVal / total) * 100;
-            }
-            const displayH = isPercentage ? `${hVal}%` : hVal;
-            const displayA = isPercentage ? `${aVal}%` : aVal;
-
-            return `
-                <div class="text-center w-100 px-1">
-                    <div class="stat-label-tiny">${label}</div>
-                    <div class="stat-bar-container">
-                        <div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${hColor}; color: ${hText};">${displayH}</div>
-                        <div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${aColor}; color: ${aText};">${displayA}</div>
-                    </div>
-                </div>`;
+            if (total > 0) { hPct = (hVal / total) * 100; aPct = (aVal / total) * 100; }
+            return `<div class="text-center w-100 px-1"><div class="stat-label-tiny">${label}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${hColor}; color: ${getContrastColor(hColor)};">${isPercentage ? `${hVal}%` : hVal}</div><div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${aColor}; color: ${getContrastColor(aColor)};">${isPercentage ? `${aVal}%` : aVal}</div></div></div>`;
         };
-
-        const cardsHome = `🟨 ${tStats.home?.yellow_cards ?? 0} 🟥 ${tStats.home?.red_cards ?? 0}`;
-        const cardsAway = `🟨 ${tStats.away?.yellow_cards ?? 0} 🟥 ${tStats.away?.red_cards ?? 0}`;
 
         return `
             <div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals?.home ?? 0} - ${data.goals?.away ?? 0}</div>
@@ -858,386 +753,146 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             ${buildBar("Total Shots", tStats.home?.total_shots ?? 0, tStats.away?.total_shots ?? 0)}
             ${buildBar("Shots on Target", tStats.home?.shots_on_target ?? 0, tStats.away?.shots_on_target ?? 0)}
             ${buildBar("Corners", tStats.home?.corners ?? 0, tStats.away?.corners ?? 0)}
-            
-            <div class="text-center w-100 px-1 mt-1">
-                <div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div>
-                <div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;">
-                    <span>${cardsHome}</span>
-                    <span>${cardsAway}</span>
-                </div>
-            </div>`;
+            <div class="text-center w-100 px-1 mt-1"><div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div><div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;"><span>🟨 ${tStats.home?.yellow_cards ?? 0} 🟥 ${tStats.home?.red_cards ?? 0}</span><span>🟨 ${tStats.away?.yellow_cards ?? 0} 🟥 ${tStats.away?.red_cards ?? 0}</span></div></div>`;
     }
 
     function getEventsHtml(data) {
         if (!data.events || data.events.length === 0) return '';
-        const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id);
-        const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
+        const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id), awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
 
         const formatSingleEvent = (e, teamName) => {
-            if (e.type === 'subst') {
-                let pOut = shortenPlayerName(e.player);
-                let pIn = shortenPlayerName(e.player_out);
-                return `
-                    <div class="d-flex align-items-start mb-1" style="line-height: 1.1;">
-                        <div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div>
-                        <div style="width: 16px; text-align: center;" class="me-1">🔄</div>
-                        <div class="text-truncate">
-                            <span class="text-dark fw-bold">${pIn}</span> IN<br>
-                            <span class="text-muted" style="font-size: 0.55rem;">(${pOut} OUT)</span>
-                        </div>
-                    </div>`;
-            }
-
-            let icon = e.type === 'Goal' ? '⚽' : '🟨';
-            let playerName = shortenPlayerName(e.player || teamName);
-            let assistHtml = (e.type === 'Goal' && e.assist) ? `<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>` : '';
-
-            return `
-                <div class="d-flex align-items-start mb-1" style="line-height: 1.1;">
-                    <div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div>
-                    <div style="width: 16px; text-align: center;" class="me-1">${icon}</div>
-                    <div class="text-truncate">
-                        <span class="text-dark fw-bold">${playerName}</span>${assistHtml}
-                    </div>
-                </div>`;
+            if (e.type === 'subst') return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">🔄</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player_out)}</span> IN<br><span class="text-muted" style="font-size: 0.55rem;">(${shortenPlayerName(e.player)} OUT)</span></div></div>`;
+            return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">${e.type === 'Goal' ? '⚽' : '🟨'}</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player || teamName)}</span>${(e.type === 'Goal' && e.assist) ? `<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>` : ''}</div></div>`;
         };
 
-        const homeReversed = [...homeEvents].reverse();
-        const awayReversed = [...awayEvents].reverse();
-
-        const firstHome = homeReversed.length > 0 ? formatSingleEvent(homeReversed[0], data.teams.home.name) : '';
-        const firstAway = awayReversed.length > 0 ? formatSingleEvent(awayReversed[0], data.teams.away.name) : '';
-
-        const allHome = homeReversed.map(e => formatSingleEvent(e, data.teams.home.name)).join('');
-        const allAway = awayReversed.map(e => formatSingleEvent(e, data.teams.away.name)).join('');
-
+        const homeReversed = [...homeEvents].reverse(), awayReversed = [...awayEvents].reverse();
         const needsCollapse = Math.max(homeReversed.length, awayReversed.length) > 1;
 
-        return `
-        <div class="w-100 px-2 pt-1 mt-1 border-top text-muted" 
-             style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" 
-             onclick="if(${needsCollapse}) { const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp); }"
-             title="${needsCollapse ? 'Click to expand/collapse match timeline' : ''}">
-            
-            <div class="event-collapsed">
-                <div class="d-flex justify-content-between">
-                    <div class="text-start" style="flex: 1; min-width: 0;">${firstHome}</div>
-                    <div class="text-start" style="flex: 1; min-width: 0;">${firstAway}</div>
-                </div>
-                ${needsCollapse ? `<div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▼</div>` : ''}
-            </div>
-            
-            <div class="event-expanded d-none">
-                <div class="d-flex justify-content-between">
-                    <div class="text-start" style="flex: 1; min-width: 0;">${allHome}</div>
-                    <div class="text-start" style="flex: 1; min-width: 0;">${allAway}</div>
-                </div>
-                <div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▲</div>
-            </div>
-        </div>`;
+        return `<div class="w-100 px-2 pt-1 mt-1 border-top text-muted" style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" onclick="if(${needsCollapse}) { const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp); }" title="${needsCollapse ? 'Click to expand/collapse match timeline' : ''}"><div class="event-collapsed"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${homeReversed.length > 0 ? formatSingleEvent(homeReversed[0], data.teams.home.name) : ''}</div><div class="text-start" style="flex: 1; min-width: 0;">${awayReversed.length > 0 ? formatSingleEvent(awayReversed[0], data.teams.away.name) : ''}</div></div>${needsCollapse ? `<div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▼</div>` : ''}</div><div class="event-expanded d-none"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${homeReversed.map(e => formatSingleEvent(e, data.teams.home.name)).join('')}</div><div class="text-start" style="flex: 1; min-width: 0;">${awayReversed.map(e => formatSingleEvent(e, data.teams.away.name)).join('')}</div></div><div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▲</div></div></div>`;
     }
 
     function getOddsHtml(data) {
         if (!data.odds || (data.odds.home === "TBD" && data.odds.over === "TBD")) return '';
-        return `
-            <div class="d-flex justify-content-between text-center bg-white border-top border-bottom py-1" style="font-size: 0.70rem;">
-                <div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">1 (HOME)</div><div class="fw-bold text-dark">${data.odds.home}</div></div>
-                <div class="w-25 border-start border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">X (DRAW)</div><div class="fw-bold text-dark">${data.odds.draw}</div></div>
-                <div class="w-25 border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">2 (AWAY)</div><div class="fw-bold text-dark">${data.odds.away}</div></div>
-                <div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">O/U ${data.odds.total}</div><div class="fw-bold text-dark"><span class="text-success">O</span> ${data.odds.over} <span class="text-danger">U</span> ${data.odds.under}</div></div>
-            </div>`;
+        return `<div class="d-flex justify-content-between text-center bg-white border-top border-bottom py-1" style="font-size: 0.70rem;"><div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">1 (HOME)</div><div class="fw-bold text-dark">${data.odds.home}</div></div><div class="w-25 border-start border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">X (DRAW)</div><div class="fw-bold text-dark">${data.odds.draw}</div></div><div class="w-25 border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">2 (AWAY)</div><div class="fw-bold text-dark">${data.odds.away}</div></div><div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">O/U ${data.odds.total}</div><div class="fw-bold text-dark"><span class="text-success">O</span> ${data.odds.over} <span class="text-danger">U</span> ${data.odds.under}</div></div></div>`;
     }
 
     function getInjuriesHtml(data) {
-        const hInj = data.injuries?.home?.map(shortenPlayerName).join(', ');
-        const aInj = data.injuries?.away?.map(shortenPlayerName).join(', ');
+        const hInj = data.injuries?.home?.map(shortenPlayerName).join(', '), aInj = data.injuries?.away?.map(shortenPlayerName).join(', ');
         if (!hInj && !aInj) return '';
-        return `
-            <div class="border-bottom px-2 py-1 text-truncate" style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545;">
-                <strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj || 'None'} | <b>A:</b> ${aInj || 'None'}</span>
-            </div>`;
+        return `<div class="border-bottom px-2 py-1 text-truncate" style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545;"><strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj || 'None'} | <b>A:</b> ${aInj || 'None'}</span></div>`;
     }
 
     function buildLiveStatsGrid(lineupData, teamColorHex) {
-        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) {
-            return `<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
-        }
-
-        const groups = {
-            'F': { title: 'FWD', stats: ['G', 'A', 'SOT', 'SH'], keys: ['goals', 'assists', 'shots_on_target', 'total_shots'] },
-            'M': { title: 'MID', stats: ['G', 'A', 'KP', 'TK'], keys: ['goals', 'assists', 'key_passes', 'tackles'] },
-            'D': { title: 'DEF', stats: ['G', 'A', 'TK', 'IN'], keys: ['goals', 'assists', 'tackles', 'interceptions'] },
-            'G': { title: 'GK',  stats: ['SV', 'GC', 'PA', 'YC'], keys: ['saves', 'conceded', 'passes', 'yellow_cards'] }
-        };
-
+        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
+        const groups = { 'F': { title: 'FWD', stats: ['G', 'A', 'SOT', 'SH'], keys: ['goals', 'assists', 'shots_on_target', 'total_shots'] }, 'M': { title: 'MID', stats: ['G', 'A', 'KP', 'TK'], keys: ['goals', 'assists', 'key_passes', 'tackles'] }, 'D': { title: 'DEF', stats: ['G', 'A', 'TK', 'IN'], keys: ['goals', 'assists', 'tackles', 'interceptions'] }, 'G': { title: 'GK',  stats: ['SV', 'GC', 'PA', 'YC'], keys: ['saves', 'conceded', 'passes', 'yellow_cards'] } };
         const groupedPlayers = { 'F': [], 'M': [], 'D': [], 'G': [] };
+        
         let flatPlayers = [];
+        lineupData.startXI.forEach(slot => flatPlayers.push({ ...slot.player }));
+        if (lineupData.substitutes) lineupData.substitutes.forEach(sub => flatPlayers.push({ ...sub.player }));
+        flatPlayers.forEach(p => groupedPlayers[p.pos || 'M'] ? groupedPlayers[p.pos || 'M'].push(p) : groupedPlayers['M'].push(p));
 
-        lineupData.startXI.forEach(slot => {
-            flatPlayers.push({ ...slot.player });
-        });
-
-        if (lineupData.substitutes) {
-            lineupData.substitutes.forEach(sub => {
-                flatPlayers.push({ ...sub.player });
-            });
-        }
-
-        flatPlayers.forEach(p => {
-            const pos = p.pos || 'M';
-            if (groupedPlayers[pos]) groupedPlayers[pos].push(p);
-            else groupedPlayers['M'].push(p);
-        });
-
-        let html = '';
-        let tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
-
+        let html = '', tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
         ['F', 'M', 'D', 'G'].forEach(posKey => {
             const players = groupedPlayers[posKey];
             if (players.length === 0) return;
-
             const gConf = groups[posKey];
-
-            html += `
-                <div class="d-flex w-100 px-2 py-1 align-items-center bg-light border-bottom" style="font-size: 0.6rem; font-weight: 700;">
-                    <div style="flex: 1; color: ${tColor};">${gConf.title}</div>
-                    <div style="width: 14px; text-align: center;">${gConf.stats[0]}</div>
-                    <div style="width: 14px; text-align: center;">${gConf.stats[1]}</div>
-                    <div style="width: 26px; text-align: center;">${gConf.stats[2]}</div>
-                    <div style="width: 22px; text-align: center;">${gConf.stats[3]}</div>
-                </div>`;
-
+            html += `<div class="d-flex w-100 px-2 py-1 align-items-center bg-light border-bottom" style="font-size: 0.6rem; font-weight: 700;"><div style="flex: 1; color: ${tColor};">${gConf.title}</div><div style="width: 14px; text-align: center;">${gConf.stats[0]}</div><div style="width: 14px; text-align: center;">${gConf.stats[1]}</div><div style="width: 26px; text-align: center;">${gConf.stats[2]}</div><div style="width: 22px; text-align: center;">${gConf.stats[3]}</div></div>`;
             players.forEach(p => {
-                const lStats = p.live_stats || {};
-                const name = shortenPlayerName(p.name || 'Unknown');
-                
-                const v1 = lStats[gConf.keys[0]] || 0;
-                const v2 = lStats[gConf.keys[1]] || 0;
-                const v3 = lStats[gConf.keys[2]] || 0;
-                const v4 = lStats[gConf.keys[3]] || 0;
-
-                let prefix = '';
-                if (p.isSubbedIn) prefix = `<span class="text-success fw-bold me-1">▲</span>`;
-                else if (p.isSubbedOut) prefix = `<span class="text-primary fw-bold me-1">↻</span>`;
-
-                html += `
-                    <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;">
-                        <div class="text-start text-truncate" style="flex: 1;">
-                            ${prefix}${name}
-                        </div>
-                        <div class="text-muted" style="width: 14px; text-align: center; font-weight: 600;">${v1}</div>
-                        <div class="text-muted" style="width: 14px; text-align: center; font-weight: 600;">${v2}</div>
-                        <div class="text-muted" style="width: 26px; text-align: center; font-weight: 600;">${v3}</div>
-                        <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${v4}</div>
-                    </div>`;
+                let prefix = p.isSubbedIn ? `<span class="text-success fw-bold me-1">▲</span>` : (p.isSubbedOut ? `<span class="text-primary fw-bold me-1">↻</span>` : '');
+                html += `<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;"><div class="text-start text-truncate" style="flex: 1;">${prefix}${shortenPlayerName(p.name || 'Unknown')}</div><div class="text-muted" style="width: 14px; text-align: center; font-weight: 600;">${(p.live_stats || {})[gConf.keys[0]] || 0}</div><div class="text-muted" style="width: 14px; text-align: center; font-weight: 600;">${(p.live_stats || {})[gConf.keys[1]] || 0}</div><div class="text-muted" style="width: 26px; text-align: center; font-weight: 600;">${(p.live_stats || {})[gConf.keys[2]] || 0}</div><div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${(p.live_stats || {})[gConf.keys[3]] || 0}</div></div>`;
             });
         });
-
         return html;
     }
 
     function buildLineupList(lineupData) {
-        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) {
-            return `<div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div>`;
-        }
-        const formationHeader = `<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ ${lineupData.formation || '4-3-3'}</div>`;
-        const listItems = lineupData.startXI.map(slot => {
-            const p = slot.player;
-            const originalName = p.name || 'Unknown';
-            const displaySafeName = shortenPlayerName(originalName);
-            const photoHtml = p.photo ? `<img src="${p.photo}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2">` : `<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>`;
-            
-            let prefix = '';
-            if (p.isSubbedOut) prefix = `<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>`;
-
-            return `
-                <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;">
-                    <span class="text-muted fw-bold me-2" style="font-size: 0.65rem; width: 12px;">${p.pos || 'M'}</span>
-                    ${photoHtml}
-                    <span class="batter-name text-dark text-truncate">${prefix}${displaySafeName}</span>
-                    <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${p.number || ''}</span>
-                </li>`;
-        }).join('');
-        return `${formationHeader}<ul class="batting-order w-100 m-0 p-0">${listItems}</ul>`;
+        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div>`;
+        const listItems = lineupData.startXI.map(slot => `<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; width: 12px;">${slot.player.pos || 'M'}</span>${slot.player.photo ? `<img src="${slot.player.photo}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2">` : `<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>`}<span class="batter-name text-dark text-truncate">${slot.player.isSubbedOut ? `<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>` : ''}${shortenPlayerName(slot.player.name || 'Unknown')}</span><span class="ms-auto text-muted" style="font-size: 0.65rem;">#${slot.player.number || ''}</span></li>`).join('');
+        return `<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ ${lineupData.formation || '4-3-3'}</div><ul class="batting-order w-100 m-0 p-0">${listItems}</ul>`;
     }
 
     function createGameCard(data) {
         const gameCard = document.createElement('div');
         gameCard.className = 'col-md-6 col-lg-6 col-xl-4 mb-3';
-        const home = data.teams.home;
-        const away = data.teams.away;
-        const fixId = data.fixture.id;
-
-        const homeScore = data.goals ? data.goals.home : 0;
-        const awayScore = data.goals ? data.goals.away : 0;
-        const statusShort = data.fixture.status.short;
-        const isPreGame = ['NS', 'TBD'].includes(statusShort);
-
-        const hColor = data.homeLineup?.team?.colors?.player?.primary;
-        const aColor = data.awayLineup?.team?.colors?.player?.primary;
-
-        const fullHtml = `
-            <div class="p-2 pb-1" style="background-color: #fcfcfc;">
-                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('${fixId}')">
-                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-${fixId}" style="white-space: nowrap;">
-                        ${getTimeBadgeHtml(data)} ${getLatestEventHtml(data)}
-                    </div>
-                    <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem; min-width: 0;" title="${data.league.name}">
-                        ${data.league.name}
-                    </a>
-                </div>
-                <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
-                    <div class="text-center" style="width: 30%;">
-                        <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1">
-                        <div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${home.name}</div>
-                    </div>
-                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;">
-                        ${getCenterColumnHtml(data)}
-                    </div>
-                    <div class="text-center" style="width: 30%;">
-                        <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
-                        <div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${away.name}</div>
-                    </div>
-                </div>
-                <div class="w-100">${getEventsHtml(data)}</div>
-            </div>
-            <div class="w-100">${getOddsHtml(data)}</div>
-            <div class="w-100">${getInjuriesHtml(data)}</div>
-
-            <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
-                <div class="d-flex gap-4 w-100">
-                    <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" 
-                         id="tab-xi-${fixId}" 
-                         onclick="switchLineupTab('${fixId}', 'xi')"
-                         style="flex: 1; text-align: center;">
-                        ${isPreGame ? 'STARTING XI' : 'FINAL XI'}
-                    </div>
-                    <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" 
-                         id="tab-stats-${fixId}" 
-                         onclick="switchLineupTab('${fixId}', 'stats')"
-                         style="flex: 1; text-align: center;">
-                        LIVE STATS
-                    </div>
-                </div>
-            </div>
-
-            <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
-                <div id="view-xi-${fixId}" class="${(data.team_stats && !isPreGame) ? 'd-none' : ''}">
-                    <div class="row g-0 bg-white border-top">
-                        <div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div>
-                        <div class="col-6">${buildLineupList(data.awayLineup)}</div>
-                    </div>
-                </div>
-                <div id="view-stats-${fixId}" class="${(!data.team_stats || isPreGame) ? 'd-none' : ''}">
-                    <div class="row g-0 bg-white border-top">
-                        <div class="col-6 border-end">${buildLiveStatsGrid(data.homeLineup, hColor)}</div>
-                        <div class="col-6">${buildLiveStatsGrid(data.awayLineup, aColor)}</div>
-                    </div>
-                </div>
-            </div>`;
+        const fixId = data.fixture.id, isPreGame = ['NS', 'TBD'].includes(data.fixture.status.short);
 
         gameCard.innerHTML = `
             <div class="lineup-card shadow-sm" id="card-${fixId}">
-                <div class="ribbon-view ${globalScoreboardMode ? '' : 'd-none'}" id="ribbon-${fixId}" onclick="toggleSingleCard('${fixId}')">
-                    ${getRibbonHtml(data)}
-                </div>
+                <div class="ribbon-view ${globalScoreboardMode ? '' : 'd-none'}" id="ribbon-${fixId}" onclick="toggleSingleCard('${fixId}')">${getRibbonHtml(data)}</div>
                 <div class="full-view ${globalScoreboardMode ? 'd-none' : ''}" id="full-${fixId}">
-                    ${fullHtml}
+                    <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+                        <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('${fixId}')">
+                            <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-${fixId}" style="white-space: nowrap;">${getTimeBadgeHtml(data)} ${getLatestEventHtml(data)}</div>
+                            <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem; min-width: 0;" title="${data.league.name}">${data.league.name}</a>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
+                            <div class="text-center" style="width: 30%;"><img src="${data.teams.home.logo}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${data.teams.home.name}</div></div>
+                            <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;">${getCenterColumnHtml(data)}</div>
+                            <div class="text-center" style="width: 30%;"><img src="${data.teams.away.logo}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${data.teams.away.name}</div></div>
+                        </div>
+                        <div class="w-100">${getEventsHtml(data)}</div>
+                    </div>
+                    <div class="w-100">${getOddsHtml(data)}</div><div class="w-100">${getInjuriesHtml(data)}</div>
+                    <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
+                        <div class="d-flex gap-4 w-100">
+                            <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" id="tab-xi-${fixId}" onclick="switchLineupTab('${fixId}', 'xi')" style="flex: 1; text-align: center;">${isPreGame ? 'STARTING XI' : 'FINAL XI'}</div>
+                            <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" id="tab-stats-${fixId}" onclick="switchLineupTab('${fixId}', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                        </div>
+                    </div>
+                    <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
+                        <div id="view-xi-${fixId}" class="${(data.team_stats && !isPreGame) ? 'd-none' : ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div><div class="col-6">${buildLineupList(data.awayLineup)}</div></div></div>
+                        <div id="view-stats-${fixId}" class="${(!data.team_stats || isPreGame) ? 'd-none' : ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">${buildLiveStatsGrid(data.homeLineup, data.homeLineup?.team?.colors?.player?.primary)}</div><div class="col-6">${buildLiveStatsGrid(data.awayLineup, data.awayLineup?.team?.colors?.player?.primary)}</div></div></div>
+                    </div>
                 </div>
             </div>`;
         return gameCard;
     }
 
     window.toggleSingleCard = function(fixId) {
-        const ribbon = document.getElementById(`ribbon-${fixId}`);
-        const full = document.getElementById(`full-${fixId}`);
-        if (ribbon && full) {
-            ribbon.classList.toggle('d-none');
-            full.classList.toggle('d-none');
-        }
+        document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
+        document.getElementById(`full-${fixId}`)?.classList.toggle('d-none');
     };
 
     window.switchLineupTab = function(fixId, tabName) {
-        const xiTab = document.getElementById(`tab-xi-${fixId}`);
-        const statsTab = document.getElementById(`tab-stats-${fixId}`);
-        const xiView = document.getElementById(`view-xi-${fixId}`);
-        const statsView = document.getElementById(`view-stats-${fixId}`);
-
-        if (!xiTab || !statsTab || !xiView || !statsView) return;
-
         if (tabName === 'xi') {
-            xiTab.classList.add('active');
-            statsTab.classList.remove('active');
-            xiView.classList.remove('d-none');
-            statsView.classList.add('d-none');
+            document.getElementById(`tab-xi-${fixId}`)?.classList.add('active'); document.getElementById(`tab-stats-${fixId}`)?.classList.remove('active');
+            document.getElementById(`view-xi-${fixId}`)?.classList.remove('d-none'); document.getElementById(`view-stats-${fixId}`)?.classList.add('d-none');
         } else {
-            statsTab.classList.add('active');
-            xiTab.classList.remove('active');
-            statsView.classList.remove('d-none');
-            xiView.classList.add('d-none');
+            document.getElementById(`tab-stats-${fixId}`)?.classList.add('active'); document.getElementById(`tab-xi-${fixId}`)?.classList.remove('active');
+            document.getElementById(`view-stats-${fixId}`)?.classList.remove('d-none'); document.getElementById(`view-xi-${fixId}`)?.classList.add('d-none');
         }
     };
 
     function renderGames() {
         const container = document.getElementById('games-container');
         container.innerHTML = '';
-        const searchInput = document.getElementById('team-search');
-        const searchText = searchInput ? searchInput.value.toLowerCase() : '';
-        const dayMatches = STATIC_MATCHES[ACTIVE_DAY] || [];
+        const searchText = (document.getElementById('team-search')?.value || '').toLowerCase();
+        const filtered = (STATIC_MATCHES[ACTIVE_DAY] || []).filter(m => (m.teams.home.name + " " + m.teams.away.name + " " + m.league.name + " " + m.league.abbrev).toLowerCase().includes(searchText));
 
-        let filtered = dayMatches.filter(m => {
-            const matchStr = (m.teams.home.name + " " + m.teams.away.name + " " + m.league.name + " " + m.league.abbrev).toLowerCase();
-            return matchStr.includes(searchText);
-        });
-
-        if (filtered.length === 0) {
-            container.innerHTML = `
-                <div class="col-12 text-center mt-5">
-                    <div class="card p-4 shadow-sm border-0">
-                        <div class="h4 text-muted">🏟️ No matches scheduled for this partition.</div>
-                        <p class="text-muted">Select another day button above.</p>
-                    </div>
-                </div>`;
-            return;
-        }
-
-        filtered.forEach(item => container.appendChild(createGameCard(item)));
+        if (filtered.length === 0) container.innerHTML = `<div class="col-12 text-center mt-5"><div class="card p-4 shadow-sm border-0"><div class="h4 text-muted">🏟️ No matches scheduled for this partition.</div><p class="text-muted">Select another day button above.</p></div></div>`;
+        else filtered.forEach(item => container.appendChild(createGameCard(item)));
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         renderGames();
-
         document.querySelectorAll('.day-tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.day-tab-btn').forEach(b => {
-                    b.classList.remove('btn-dark', 'active');
-                    b.classList.add('btn-outline-dark');
-                });
-                const targetBtn = e.target.closest('.day-tab-btn');
-                targetBtn.classList.remove('btn-outline-dark');
-                targetBtn.classList.add('btn-dark', 'active');
-
-                ACTIVE_DAY = targetBtn.getAttribute('data-day');
+                document.querySelectorAll('.day-tab-btn').forEach(b => { b.classList.remove('btn-dark', 'active'); b.classList.add('btn-outline-dark'); });
+                e.target.closest('.day-tab-btn').classList.remove('btn-outline-dark'); e.target.closest('.day-tab-btn').classList.add('btn-dark', 'active');
+                ACTIVE_DAY = e.target.closest('.day-tab-btn').getAttribute('data-day');
                 renderGames();
             });
         });
 
-        const searchInput = document.getElementById('team-search');
-        if (searchInput) searchInput.addEventListener('input', renderGames);
-
-        const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
-        const toggleAllBtn = document.getElementById('toggle-all-lineups');
-
-        if (toggleScoreboardBtn) {
-            toggleScoreboardBtn.addEventListener('click', () => {
-                globalScoreboardMode = !globalScoreboardMode;
-                toggleScoreboardBtn.innerHTML = globalScoreboardMode ? '🔼 EXPAND ALL CARDS' : '🔽 COMPACT SCOREBOARD';
-                
-                document.querySelectorAll('.ribbon-view').forEach(el => el.classList.toggle('d-none', !globalScoreboardMode));
-                document.querySelectorAll('.full-view').forEach(el => el.classList.toggle('d-none', globalScoreboardMode));
-                if (toggleAllBtn) toggleAllBtn.classList.toggle('d-none', globalScoreboardMode);
-            });
-        }
+        document.getElementById('team-search')?.addEventListener('input', renderGames);
+        document.getElementById('toggle-all-cards')?.addEventListener('click', (e) => {
+            globalScoreboardMode = !globalScoreboardMode;
+            e.target.innerHTML = globalScoreboardMode ? '🔼 EXPAND ALL CARDS' : '🔽 COMPACT SCOREBOARD';
+            document.querySelectorAll('.ribbon-view').forEach(el => el.classList.toggle('d-none', !globalScoreboardMode));
+            document.querySelectorAll('.full-view').forEach(el => el.classList.toggle('d-none', globalScoreboardMode));
+            document.getElementById('toggle-all-lineups')?.classList.toggle('d-none', globalScoreboardMode);
+        });
     });
 </script>
 </body>
