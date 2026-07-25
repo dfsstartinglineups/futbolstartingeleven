@@ -514,16 +514,21 @@ def fetch_espn_scores_for_date(date_str):
                     if logo and 'default-team-logo' not in logo:
                         league_flag = logo
 
-            # SMART FALLBACK RULES (Country -> Africa -> Continental -> Friendlies -> Cups)
+            # SMART FALLBACK RULES (Mexico Slug -> Country -> Africa -> Continental -> Friendlies -> Cups)
             if not league_flag:
                 name_lower = clean_league_name
                 
-                # Rule 1: Country Flags (Highest Priority so 'Scottish Cup' gets Scottish Flag instead of Trophy)
-                for country, code in COUNTRY_FLAG_URLS.items():
-                    if re.search(rf'\b{country}\b', name_lower):
-                        league_flag = f"https://flagcdn.com/w40/{code}.png"
-                        break
-                        
+                # Rule 0: Specific ESPN slug check for Mexico (-mx or mex.)
+                if "-mx" in espn_league_slug.lower() or "mex." in espn_league_slug.lower():
+                    league_flag = "https://flagcdn.com/w40/mx.png"
+                
+                # Rule 1: Country Flags
+                if not league_flag:
+                    for country, code in COUNTRY_FLAG_URLS.items():
+                        if re.search(rf'\b{country}\b', name_lower):
+                            league_flag = f"https://flagcdn.com/w40/{code}.png"
+                            break
+                            
                 # Rule 2: Africa
                 if not league_flag and re.search(r'\b(africa|african|caf)\b', name_lower):
                     league_flag = "🌍"
@@ -896,7 +901,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             document.getElementById(`view-xi-${fixId}`)?.classList.remove('d-none'); document.getElementById(`view-stats-${fixId}`)?.classList.add('d-none');
         } else {
             document.getElementById(`tab-stats-${fixId}`)?.classList.add('active'); document.getElementById(`tab-xi-${fixId}`)?.classList.remove('active');
-            document.getElementById(`view-stats-${fixId}`)?.classList.remove('d-none'); document.getElementById(`view-xi-${fixId}`)?.classList.add('d-none');
+            document.getElementById(`view-stats-${fixId}`)?.classList.remove('d-none'); document.getElementById(`view-stats-${fixId}`)?.classList.add('d-none');
         }
     };
 
