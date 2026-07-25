@@ -7,7 +7,7 @@ import pytz
 from jinja2 import Template
 
 def create_slug(name):
-    """Generates clean URL slugs directly from ESPN league display names."""
+    """Generates clean URL slugs dynamically from ESPN league names."""
     if not name:
         return ""
     slug = name.lower()
@@ -17,7 +17,7 @@ def create_slug(name):
     return slug.strip('-')
 
 def get_3day_dates():
-    """Calculates Yesterday, Today, and Tomorrow using a strict 3:00 AM EST cutoff."""
+    """Calculates Yesterday, Today, and Tomorrow using a 3:00 AM EST cutoff."""
     est = pytz.timezone('America/New_York')
     now = datetime.now(est)
     
@@ -42,32 +42,201 @@ def get_3day_dates():
         }
     }
 
-def fetch_espn_scores_for_date(date_str):
-    """Fetches ALL soccer matches from ESPN across all leagues for a specific date."""
-    # CRITICAL: limit=500 prevents ESPN from capping the payload at 25/50 matches
-    urls = [
-        f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=500",
-        f"https://site.api.espn.com/apis/site/v2/sports/soccer/scoreboard?dates={date_str}&limit=500"
-    ]
-    
-    raw_events = []
-    headers = {'User-Agent': 'Mozilla/5.0'}
+def should_fetch_summary(event):
+    """
+    Performance Guard: Only fetches summary endpoint if:
+    1. Match is Live ('in')
+    2. Match is Finished ('post') for final stats
+    3. Match starts within 60 minutes
+    """
+    status_obj = event.get('status', {})
+    status_type = status_obj.get('type', {})
+    state = status_type.get('state', 'pre')
 
-    for url in urls:
+    # Always fetch deep summary for Live or Completed matches
+    if state in ['in', 'post']:
+        return True
+
+    # For upcoming matches ('pre'), only fetch if within 60 minutes of kickoff
+    if state == 'pre':
+        event_date_str = event.get('date')
+        if event_date_str:
+            try:
+                # Parse ISO UTC timestamp
+                event_dt = datetime.fromisoformat(event_date_str.replace('Z', '+00:00'))
+                now_utc = datetime.now(pytz.utc)
+                minutes_until_kickoff = (event_dt - now_utc).total_seconds() / 60.0
+                
+                # Fetch if kickoff is <= 60 minutes away
+                if minutes_until_kickoff <= 60:
+                    return True
+            except Exception:
+                pass
+
+    return False
+
+def parse_espn_summary(event_id):
+    """Deep dives into ESPN's match summary endpoint for lineups, stats, events, odds, and injuries."""
+    url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/summary?event={event_id}"
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    
+    summary_data = {
+        "team_stats": None,
+        "homeLineup": None,
+        "awayLineup": None,
+        "events": [],
+        "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
+        "injuries": {"home": [], "away": []}
+    }
+    
+    try:
+        res = requests.get(url, headers=headers, timeout=5)
+        if res.status_code != 200:
+            return summary_data
+        
+        data = res.json()
+        
+        # 1. Parse Team Statistics
+        boxscore = data.get('boxscore', {})
+        teams_box = boxscore.get('teams', [])
+        if len(teams_box) == 2:
+            def extract_stat_dict(stats_list):
+                return {s.get('name'): s.get('displayValue', '0') for s in stats_list}
+
+            h_raw = extract_stat_dict(teams_box[0].get('statistics', []))
+            a_raw = extract_stat_dict(teams_box[1].get('statistics', []))
+
+            def clean_num(val_str):
+                cleaned = re.sub(r'[^0-9.]', '', str(val_str))
+                return int(float(cleaned)) if cleaned else 0
+
+            summary_data["team_stats"] = {
+                "home": {
+                    "possession": clean_num(h_raw.get('possessionPct', 50)),
+                    "total_shots": clean_num(h_raw.get('totalShots', 0)),
+                    "shots_on_target": clean_num(h_raw.get('shotsOnTarget', 0)),
+                    "corners": clean_num(h_raw.get('cornerKicks', 0)),
+                    "yellow_cards": clean_num(h_raw.get('yellowCards', 0)),
+                    "red_cards": clean_num(h_raw.get('redCards', 0))
+                },
+                "away": {
+                    "possession": clean_num(a_raw.get('possessionPct', 50)),
+                    "total_shots": clean_num(a_raw.get('totalShots', 0)),
+                    "shots_on_target": clean_num(a_raw.get('shotsOnTarget', 0)),
+                    "corners": clean_num(a_raw.get('cornerKicks', 0)),
+                    "yellow_cards": clean_num(a_raw.get('yellowCards', 0)),
+                    "red_cards": clean_num(a_raw.get('redCards', 0))
+                }
+            }
+
+        # 2. Parse Rosters / Lineups
+        rosters = data.get('rosters', [])
+        if len(rosters) == 2:
+            for idx, key in [(0, "homeLineup"), (1, "awayLineup")]:
+                r_data = rosters[idx]
+                formation = r_data.get('formation', '4-3-3')
+                start_xi, subs = [], []
+                
+                for entry in r_data.get('roster', []):
+                    ath = entry.get('athlete', {})
+                    pos_abbr = entry.get('position', {}).get('abbreviation', 'M')
+                    
+                    player_obj = {
+                        "id": str(ath.get('id', '')),
+                        "name": ath.get('displayName', 'Unknown'),
+                        "pos": pos_abbr,
+                        "number": str(entry.get('jersey', '')),
+                        "photo": ath.get('headshot', {}).get('href', '')
+                    }
+                    
+                    if entry.get('starter', False):
+                        start_xi.append({"player": player_obj, "sub_history": []})
+                    else:
+                        subs.append({"player": player_obj})
+
+                if start_xi:
+                    summary_data[key] = {
+                        "formation": formation,
+                        "startXI": start_xi,
+                        "substitutes": subs
+                    }
+
+        # 3. Parse Timeline Events
+        for ev in data.get('keyEvents', []):
+            ev_text = ev.get('type', {}).get('text', '')
+            clock_text = ev.get('clock', {}).get('displayValue', "0'")
+            team_id = str(ev.get('team', {}).get('id', ''))
+            
+            participants = ev.get('participants', [])
+            p_name = participants[0].get('athlete', {}).get('displayName', '') if len(participants) > 0 else ''
+            p_out = participants[1].get('athlete', {}).get('displayName', '') if len(participants) > 1 else ''
+
+            ev_type = "Goal" if "Goal" in ev_text else ("subst" if "Substitution" in ev_text or "Sub" in ev_text else "Card")
+
+            summary_data["events"].append({
+                "time": clock_text.replace("'", ""),
+                "team_id": team_id,
+                "type": ev_type,
+                "detail": ev_text,
+                "player": p_name,
+                "player_out": p_out if ev_type == "subst" else None,
+                "assist": p_out if ev_type == "Goal" else None
+            })
+
+        # 4. Parse Odds
+        pickcenter = data.get('pickcenter', [])
+        if pickcenter:
+            odds_item = pickcenter[0]
+            summary_data["odds"] = {
+                "home": str(odds_item.get('homeTeamOdds', {}).get('summary', '-')),
+                "draw": str(odds_item.get('drawOdds', {}).get('summary', '-')),
+                "away": str(odds_item.get('awayTeamOdds', {}).get('summary', '-')),
+                "total": str(odds_item.get('overUnder', '-')),
+                "over": str(odds_item.get('overOdds', '-')),
+                "under": str(odds_item.get('underOdds', '-'))
+            }
+
+        # 5. Parse Injuries
+        injuries_raw = data.get('injuries', [])
+        if len(injuries_raw) == 2:
+            for idx, key in [(0, "home"), (1, "away")]:
+                inj_list = [item.get('athlete', {}).get('displayName', '') for item in injuries_raw[idx].get('injuries', []) if item.get('athlete', {}).get('displayName')]
+                summary_data["injuries"][key] = inj_list
+
+    except Exception as e:
+        print(f"⚠️ Summary fetch note for match {event_id}: {e}")
+        
+    return summary_data
+
+def fetch_espn_scores_for_date(date_str):
+    """Directly queries ESPN's master daily schedule endpoint for a specific date."""
+    url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=500"
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    raw_events = []
+
+    try:
+        res = requests.get(url, headers=headers, timeout=10)
+        if res.status_code == 200:
+            raw_events = res.json().get('events', [])
+    except Exception as e:
+        print(f"⚠️ Schedule query error for {date_str}: {e}")
+
+    # Fallback to standard endpoint if /all/ is empty
+    if not raw_events:
         try:
-            res = requests.get(url, headers=headers, timeout=12)
+            res = requests.get(f"https://site.api.espn.com/apis/site/v2/sports/soccer/scoreboard?dates={date_str}&limit=500", headers=headers, timeout=10)
             if res.status_code == 200:
-                data = res.json()
-                events = data.get('events', [])
-                if events:
-                    raw_events = events
-                    break
-        except Exception as e:
-            print(f"⚠️ Warning fetching endpoint {url}: {e}")
+                raw_events = res.json().get('events', [])
+        except Exception:
+            pass
 
     matches = []
+    summary_calls = 0
+    print(f"--> Processing {len(raw_events)} matches from schedule for date {date_str}...")
+
     for event in raw_events:
         try:
+            event_id = str(event['id'])
             competitions = event.get('competitions', [])
             if not competitions:
                 continue
@@ -81,121 +250,90 @@ def fetch_espn_scores_for_date(date_str):
             if not home or not away:
                 continue
 
-            # Robust multi-path extraction for ESPN league display name
-            league_obj = (
-                event.get('league') or 
-                comp.get('league') or 
-                (event.get('leagues', [{}])[0] if event.get('leagues') else {})
-            )
-            league_name = (
-                league_obj.get('name') or 
-                league_obj.get('displayName') or 
-                league_obj.get('midsizeName') or 
-                "Soccer"
-            )
+            league_obj = event.get('league') or comp.get('league') or (event.get('leagues', [{}])[0] if event.get('leagues') else {})
+            league_name = league_obj.get('name') or league_obj.get('displayName') or league_obj.get('midsizeName') or "Soccer"
             league_slug = create_slug(league_name)
 
-            status_type = event.get('status', {}).get('type', {})
-            status_short = status_type.get('shortDetail', 'NS')
-            elapsed = event.get('status', {}).get('period', 0)
+            # Fix status state so scheduled matches are marked 'NS' rather than 'LIVE'
+            status_obj = event.get('status', {})
+            status_type = status_obj.get('type', {})
+            state = status_type.get('state', 'pre') # 'pre', 'in', 'post'
+            short_detail = status_type.get('shortDetail', '')
 
-            # Extract Goals, Cards, and Substitutions
-            events_list = []
-            for detail in comp.get('details', []):
-                det_text = detail.get('type', {}).get('text', '')
-                team_id = detail.get('team', {}).get('id', '')
-                clock = detail.get('clock', {}).get('displayValue', "0'")
-                participants = detail.get('participants', [])
-                p_name = participants[0].get('athlete', {}).get('displayName', 'Unknown') if participants else 'Unknown'
+            if state == 'pre':
+                status_short = 'NS'
+            elif state == 'post':
+                status_short = 'FT'
+            else:
+                status_short = short_detail if short_detail else 'LIVE'
 
-                events_list.append({
-                    "time": clock.replace("'", ""),
-                    "team_id": team_id,
-                    "type": "Goal" if "Goal" in det_text else ("subst" if "Substitution" in det_text else "Card"),
-                    "detail": det_text,
-                    "player": p_name
-                })
+            elapsed = status_obj.get('period', 0)
 
-            # Extract Betting Odds
-            odds_data = {"home": "TBD", "draw": "TBD", "away": "TBD"}
-            if comp.get('odds'):
-                raw_odds = comp['odds'][0]
-                odds_data["home"] = str(raw_odds.get('homeTeamOdds', {}).get('summary', '-'))
-                odds_data["draw"] = str(raw_odds.get('drawOdds', {}).get('summary', '-'))
-                odds_data["away"] = str(raw_odds.get('awayTeamOdds', {}).get('summary', '-'))
-
-            # Extract Starting XI Rosters
-            home_lineup = {"formation": home.get('form', '4-3-3'), "startXI": []}
-            away_lineup = {"formation": away.get('form', '4-3-3'), "startXI": []}
-
-            for athlete in home.get('roster', []):
-                home_lineup["startXI"].append({
-                    "player": {
-                        "id": athlete.get('athlete', {}).get('id', ''),
-                        "name": athlete.get('athlete', {}).get('displayName', ''),
-                        "pos": athlete.get('position', {}).get('abbreviation', 'M'),
-                        "number": athlete.get('jersey', ''),
-                        "photo": athlete.get('athlete', {}).get('headshot', {}).get('href', '')
-                    }
-                })
-
-            for athlete in away.get('roster', []):
-                away_lineup["startXI"].append({
-                    "player": {
-                        "id": athlete.get('athlete', {}).get('id', ''),
-                        "name": athlete.get('athlete', {}).get('displayName', ''),
-                        "pos": athlete.get('position', {}).get('abbreviation', 'M'),
-                        "number": athlete.get('jersey', ''),
-                        "photo": athlete.get('athlete', {}).get('headshot', {}).get('href', '')
-                    }
-                })
+            # SMART FETCH: Only call summary endpoint if match is live, finished, or starts in <= 60 mins
+            if should_fetch_summary(event):
+                summary = parse_espn_summary(event_id)
+                summary_calls += 1
+            else:
+                summary = {
+                    "team_stats": None,
+                    "homeLineup": None,
+                    "awayLineup": None,
+                    "events": [],
+                    "odds": {"home": "TBD", "draw": "TBD", "away": "TBD"},
+                    "injuries": {"home": [], "away": []}
+                }
 
             matches.append({
                 "fixture": {
-                    "id": event['id'],
-                    "date": event['date'],
+                    "id": event_id,
+                    "date": event['date'], # ISO UTC
                     "status": {"short": status_short, "elapsed": elapsed}
                 },
                 "league": {
+                    "id": event_id,
                     "name": league_name,
                     "slug": league_slug
                 },
                 "teams": {
                     "home": {
-                        "id": home['team']['id'],
+                        "id": str(home['team']['id']),
                         "name": home['team']['displayName'],
                         "logo": home['team'].get('logo', ''),
                         "rank": home.get('curatedRank', {}).get('current', '')
                     },
                     "away": {
-                        "id": away['team']['id'],
+                        "id": str(away['team']['id']),
                         "name": away['team']['displayName'],
                         "logo": away['team'].get('logo', ''),
                         "rank": away.get('curatedRank', {}).get('current', '')
                     }
                 },
                 "goals": {
-                    "home": home.get('score', 0),
-                    "away": away.get('score', 0)
+                    "home": int(home.get('score', 0)),
+                    "away": int(away.get('score', 0))
                 },
-                "homeLineup": home_lineup if home_lineup["startXI"] else None,
-                "awayLineup": away_lineup if away_lineup["startXI"] else None,
-                "events": events_list,
-                "odds": odds_data
+                "team_stats": summary["team_stats"],
+                "homeLineup": summary["homeLineup"],
+                "awayLineup": summary["awayLineup"],
+                "events": summary["events"],
+                "odds": summary["odds"],
+                "injuries": summary["injuries"],
+                "isFallback": summary["homeLineup"] is None
             })
         except Exception as e:
-            print(f"⚠️ Error parsing match {event.get('id', 'unknown')}: {e}")
+            print(f"⚠️ Error parsing match item {event.get('id', 'unknown')}: {e}")
 
+    print(f"    └─ Deep summary calls made: {summary_calls}/{len(raw_events)}")
     return matches
 
-# Complete Version 1 HTML, CSS, and JS Skeleton embedded directly
+# Version 1 HTML, CSS, and JS Skeleton embedded directly
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#212529">
-    <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores & Odds</title>
+    <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores, Injuries & Odds</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
@@ -219,7 +357,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         
         .lineup-card { 
             background: #fff; border: 1px solid #dee2e6; border-radius: 12px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 12px; overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px; overflow: hidden;
         }
 
         .team-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1)); }
@@ -251,6 +389,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); }
         }
+
+        .stat-bar-container {
+            display: flex; width: 100%; height: 14px; background-color: #e9ecef;
+            border-radius: 4px; overflow: hidden; margin-top: 2px;
+        }
+        .stat-bar-segment {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.60rem; font-weight: 800; padding: 0 4px; transition: width 0.5s ease-in-out;
+        }
+        .stat-label-tiny {
+            font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -270,7 +420,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <h1 class="h5 fw-bold text-dark mb-1">Futbol Starting Eleven: Live Soccer Starting Lineups, Scores & Odds</h1>
     <p class="text-muted mb-2" style="font-size: 0.85rem;">Real-time starting XIs, match injuries, goalscorers, and betting odds for global football.</p>
     
-    <!-- 3-Day Window Navigation Buttons -->
+    <!-- 3-Day Window Partition Buttons -->
     <div class="d-flex justify-content-center gap-2 my-3" id="day-selector">
         <button class="btn btn-outline-dark day-tab-btn" data-day="yesterday">
             Yesterday<br><small style="font-size: 0.65rem;">{{ display_dates.yesterday }}</small>
@@ -300,7 +450,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Embedded Data Payload
     const STATIC_MATCHES = {{ matches_json | safe }};
     let ACTIVE_DAY = "today";
     let globalScoreboardMode = true;
@@ -315,14 +464,65 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
     function getTimeBadgeHtml(data) {
         const status = data.fixture.status.short;
-        if (['FT', 'AET', 'PEN'].includes(status)) {
-            return `<span class="badge bg-dark text-white border px-2 py-1">FT</span>`;
-        } else if (status === 'HT') {
-            return `<span class="badge bg-success text-white border px-2 py-1"><span class="live-dot"></span>HT</span>`;
-        } else if (!['NS', 'TBD'].includes(status)) {
-            return `<span class="badge bg-success text-white border px-2 py-1"><span class="live-dot"></span>LIVE</span>`;
+        const dateObj = new Date(data.fixture.date);
+        
+        const timeString = dateObj.toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'}).replace(' ', '');
+        const matchTime = `${dateObj.toLocaleDateString([], {weekday: 'short'})} ${timeString}`;
+
+        const isFinished = ['FT', 'AET', 'PEN'].includes(status);
+        const isPreGame = ['NS', 'TBD'].includes(status);
+        const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
+
+        if (isDelayed) {
+            return `<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
+        } else if (isFinished) {
+            return `<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
+        } else if (!isPreGame) {
+            let displayMin = data.fixture.status.elapsed || 'LIVE';
+            if (status === 'HT') displayMin = 'HT';
+            return `<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${displayMin}'</span>`;
+        } else {
+            return `<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${matchTime}</span>`;
         }
-        return `<span class="badge bg-white text-dark border px-2 py-1">${status}</span>`;
+    }
+
+    function getCenterColumnHtml(data) {
+        const status = data.fixture.status.short;
+        const isPreGame = ['NS', 'TBD'].includes(status);
+        const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
+        const showScore = !isPreGame && !isDelayed;
+
+        if (!showScore || !data.team_stats) {
+            const scoreText = showScore ? `${data.goals?.home ?? 0} - ${data.goals?.away ?? 0}` : `vs`;
+            return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${scoreText}</div>`;
+        }
+
+        const tStats = data.team_stats;
+        const buildBar = (label, hVal, aVal, isPercentage = false) => {
+            const total = hVal + aVal;
+            let hPct = 50, aPct = 50;
+            if (total > 0) {
+                hPct = (hVal / total) * 100;
+                aPct = (aVal / total) * 100;
+            }
+            const displayH = isPercentage ? `${hVal}%` : hVal;
+            const displayA = isPercentage ? `${aVal}%` : aVal;
+
+            return `
+                <div class="text-center w-100 px-1">
+                    <div class="stat-label-tiny">${label}</div>
+                    <div class="stat-bar-container">
+                        <div class="stat-bar-segment text-white" style="width: ${hPct}%; background-color: #0d6efd;">${displayH}</div>
+                        <div class="stat-bar-segment text-white" style="width: ${aPct}%; background-color: #dc3545;">${displayA}</div>
+                    </div>
+                </div>`;
+        };
+
+        return `
+            <div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals?.home ?? 0} - ${data.goals?.away ?? 0}</div>
+            ${buildBar("Possession", tStats.home?.possession ?? 0, tStats.away?.possession ?? 0, true)}
+            ${buildBar("Total Shots", tStats.home?.total_shots ?? 0, tStats.away?.total_shots ?? 0)}
+            ${buildBar("Corners", tStats.home?.corners ?? 0, tStats.away?.corners ?? 0)}`;
     }
 
     function buildLineupList(lineupData) {
@@ -360,19 +560,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <div class="p-2 pb-1" style="background-color: #fcfcfc;">
                 <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('${fixId}')">
                     <div class="pe-2">${getTimeBadgeHtml(data)}</div>
-                    <div class="text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;">
+                    <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;">
                         ${data.league.name}
-                    </div>
+                    </a>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
-                    <div class="text-center" style="width: 35%;">
+                    <div class="text-center" style="width: 30%;">
                         <img src="${home.logo}" alt="${home.name}" class="team-logo mb-1">
                         <div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${home.name}</div>
                     </div>
-                    <div class="text-center fw-bold text-dark" style="font-size: 1.2rem; width: 30%;">
-                        ${homeScore} - ${awayScore}
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;">
+                        ${getCenterColumnHtml(data)}
                     </div>
-                    <div class="text-center" style="width: 35%;">
+                    <div class="text-center" style="width: 30%;">
                         <img src="${away.logo}" alt="${away.name}" class="team-logo mb-1">
                         <div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${away.name}</div>
                     </div>
@@ -436,8 +636,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             container.innerHTML = `
                 <div class="col-12 text-center mt-5">
                     <div class="card p-4 shadow-sm border-0">
-                        <div class="h4 text-muted">🏟️ No matches found.</div>
-                        <p class="text-muted">Pick another date tab above.</p>
+                        <div class="h4 text-muted">🏟️ No matches scheduled for this partition.</div>
+                        <p class="text-muted">Select another day button above.</p>
                     </div>
                 </div>`;
             return;
@@ -449,7 +649,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     document.addEventListener('DOMContentLoaded', () => {
         renderGames();
 
-        // 3-Day Navigation Event Listeners
         document.querySelectorAll('.day-tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.day-tab-btn').forEach(b => {
@@ -465,11 +664,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             });
         });
 
-        // Search Filter Listener
         const searchInput = document.getElementById('team-search');
         if (searchInput) searchInput.addEventListener('input', renderGames);
 
-        // Scoreboard Display Mode Toggle
         const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
         const toggleAllBtn = document.getElementById('toggle-all-lineups');
 
@@ -490,20 +687,21 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 """
 
 def generate_v2_index():
-    """Main build execution."""
-    print("⏳ Calculating 3-day dates with 3:00 AM EST cutoff...")
+    """Main build execution pipeline."""
+    print("⏳ Calculating 3-day window using 3:00 AM EST cutoff...")
     day_info = get_3day_dates()
     
-    print("🚀 Fetching all ESPN soccer scores for Yesterday, Today, and Tomorrow...")
+    print("🚀 Fetching daily match schedules from ESPN...")
     matches_by_day = {
         "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"]),
         "today": fetch_espn_scores_for_date(day_info["dates"]["today"]),
         "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"])
     }
     
-    print(f"✅ Yesterday ({day_info['dates']['yesterday']}): {len(matches_by_day['yesterday'])} matches")
-    print(f"✅ Today ({day_info['dates']['today']}):     {len(matches_by_day['today'])} matches")
-    print(f"✅ Tomorrow ({day_info['dates']['tomorrow']}):  {len(matches_by_day['tomorrow'])} matches")
+    print(f"\n📊 Match Fetch Summary:")
+    print(f"  ├─ Yesterday ({day_info['dates']['yesterday']}): {len(matches_by_day['yesterday'])} matches")
+    print(f"  ├─ Today     ({day_info['dates']['today']}):     {len(matches_by_day['today'])} matches")
+    print(f"  └─ Tomorrow  ({day_info['dates']['tomorrow']}):  {len(matches_by_day['tomorrow'])} matches")
     
     template = Template(HTML_TEMPLATE)
     output_html = template.render(
@@ -517,7 +715,7 @@ def generate_v2_index():
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(output_html)
     
-    print(f"🎉 Successfully built static frontend at {file_path}")
+    print(f"\n🎉 Successfully compiled static frontend at {file_path}")
 
 if __name__ == "__main__":
     generate_v2_index()
