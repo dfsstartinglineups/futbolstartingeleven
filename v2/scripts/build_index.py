@@ -3,6 +3,7 @@ import re
 import json
 import requests
 import traceback
+import unicodedata
 from datetime import datetime, timedelta
 import pytz
 from jinja2 import Template
@@ -142,6 +143,16 @@ COUNTRY_FLAG_URLS = {
     "spanish": "es", "danish": "dk", "indian": "in", "uruguay": "uy", 
     "peruvian": "pe", "peru": "pe", "salvadoran": "sv", "el salvador": "sv",
     "costa rican": "cr", "costa rica": "cr", "fpd": "cr"
+}
+
+def normalize_text(text):
+    if not text: return ""
+    nfkd_form = unicodedata.normalize('NFD', text)
+    return "".join([c for c in nfkd_form if unicodedata.category(c) != 'Mn']).lower().strip()
+
+# Normalize dictionary keys automatically on startup
+NORMALIZED_HUMAN_LEAGUE_FLAGS = {
+    normalize_text(key): val for key, val in HUMAN_LEAGUE_FLAGS.items()
 }
 
 # The Smart Fallback: Map our text abbreviations to ESPN Slugs
@@ -483,13 +494,14 @@ def fetch_espn_scores_for_date(date_str):
             league_abbrev = generate_league_abbrev(final_league_name)
             league_slug = create_slug(final_league_name)
             
-            # RESOLVE LEAGUE FLAG (Direct mapping via human-readable name)
-            league_flag = HUMAN_LEAGUE_FLAGS.get(final_league_name.lower(), "")
+            # RESOLVE LEAGUE FLAG (Direct accent-insensitive mapping)
+            clean_league_name = normalize_text(final_league_name)
+            league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(clean_league_name, "")
             
-            # --- NEW PARENT STRIPPER RULE ---
+            # PARENT STRIPPER RULE
             if not league_flag:
-                base_name = re.sub(r'\s+(qualifying|qualifiers|playoffs?)\b', '', final_league_name.lower())
-                league_flag = HUMAN_LEAGUE_FLAGS.get(base_name, "")
+                base_name = re.sub(r'\s+(qualifying|qualifiers|playoffs?)\b', '', clean_league_name)
+                league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(base_name, "")
                 
             if not league_flag:
                 league_logos = league_obj.get('logos', [])
@@ -502,9 +514,9 @@ def fetch_espn_scores_for_date(date_str):
                     if logo and 'default-team-logo' not in logo:
                         league_flag = logo
 
-            # --- NEW SMART IMAGE FALLBACK RULES (REORDERED) ---
+            # SMART FALLBACK RULES (Country -> Africa -> Continental -> Friendlies -> Cups)
             if not league_flag:
-                name_lower = final_league_name.lower()
+                name_lower = clean_league_name
                 
                 # Rule 1: Country Flags (Highest Priority so 'Scottish Cup' gets Scottish Flag instead of Trophy)
                 for country, code in COUNTRY_FLAG_URLS.items():
@@ -517,7 +529,7 @@ def fetch_espn_scores_for_date(date_str):
                     league_flag = "🌍"
                 
                 # Rule 3: International / Continental
-                if not league_flag and re.search(r'\b(international|concacaf|conmebol|uefa|olympic|nations|saff|améric)\b', name_lower):
+                if not league_flag and re.search(r'\b(international|concacaf|conmebol|uefa|olympic|nations|saff|americ)\b', name_lower):
                     league_flag = "🌎"
                     
                 # Rule 4: Friendlies
