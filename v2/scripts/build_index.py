@@ -96,7 +96,7 @@ HUMAN_LEAGUE_FLAGS = {
     "mexican liga de expansión mx": "https://a.espncdn.com/i/leaguelogos/soccer/500/2306.png",
     "ncaa men's soccer": "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/sports-soccer-solid.png",
     "ncaa women's soccer": "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/sports-soccer-solid.png",
-    "northern super league": "🇨🇦",
+    "northern super league": "https://flagcdn.com/w40/ca.png",
     "nwsl": "https://a.espncdn.com/i/leaguelogos/soccer/500/2323.png",
     "nwsl challenge cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/2445.png",
     "paraguayan primera división": "https://a.espncdn.com/i/leaguelogos/soccer/500/1892.png",
@@ -127,21 +127,19 @@ HUMAN_LEAGUE_FLAGS = {
     "uefa women's european championship": "https://a.espncdn.com/i/leaguelogos/soccer/500/2381.png",
     "usl championship": "https://a.espncdn.com/i/leaguelogos/soccer/500/2292.png",
     "usl league one": "https://a.espncdn.com/i/leaguelogos/soccer/500/2452.png",
-    "usl super league": "🇺🇸",
+    "usl super league": "https://flagcdn.com/w40/us.png",
     "venezuelan primera división": "https://a.espncdn.com/i/leaguelogos/soccer/500/1947.png",
     "women's international friendly": "https://a.espncdn.com/i/leaguelogos/soccer/500/70.png",
     "women's olympic soccer tournament": "https://a.espncdn.com/i/leaguelogos/soccer/500/84.png",
 }
 
-COUNTRY_EMOJI_MAP = {
-    "belgian": "🇧🇪", "chilean": "🇨🇱", "chinese": "🇨🇳", "dutch": "🇳🇱",
-    "english": "\U0001f3f4\U000e0067\U000e0062\U000e0065\U000e006e\U000e0067\U000e007f", 
-    "french": "🇫🇷", "german": "🇩🇪", "bolivian": "🇧🇴", "bolivia": "🇧🇴",
-    "norwegian": "🇳🇴", "russian": "🇷🇺", "portuguese": "🇵🇹", "portugal": "🇵🇹",
-    "scottish": "\U0001f3f4\U000e0067\U000e0062\U000e0073\U000e0063\U000e0074\U000e007f", 
-    "swedish": "🇸🇪", "argentine": "🇦🇷", "brazilian": "🇧🇷",
-    "italian": "🇮🇹", "mexican": "🇲🇽", "paraguayan": "🇵🇾", "japanese": "🇯🇵",
-    "spanish": "🇪🇸", "danish": "🇩🇰", "indian": "🇮🇳", "uruguay": "🇺🇾"
+COUNTRY_FLAG_URLS = {
+    "belgian": "be", "chilean": "cl", "chinese": "cn", "dutch": "nl",
+    "english": "gb-eng", "french": "fr", "german": "de", "bolivian": "bo", "bolivia": "bo",
+    "norwegian": "no", "russian": "ru", "portuguese": "pt", "portugal": "pt",
+    "scottish": "gb-sct", "swedish": "se", "argentine": "ar", "brazilian": "br",
+    "italian": "it", "mexican": "mx", "paraguayan": "py", "japanese": "jp",
+    "spanish": "es", "danish": "dk", "indian": "in", "uruguay": "uy"
 }
 
 # The Smart Fallback: Map our text abbreviations to ESPN Slugs
@@ -502,28 +500,31 @@ def fetch_espn_scores_for_date(date_str):
                     if logo and 'default-team-logo' not in logo:
                         league_flag = logo
 
-            # --- NEW SMART EMOJI FALLBACK RULES ---
+            # --- NEW SMART IMAGE FALLBACK RULES (REORDERED) ---
             if not league_flag:
                 name_lower = final_league_name.lower()
                 
-                # Rule 1: Africa
-                if re.search(r'\b(africa|african|caf)\b', name_lower):
+                # Rule 1: Country Flags (Highest Priority so 'Scottish Cup' gets Scottish Flag instead of Trophy)
+                for country, code in COUNTRY_FLAG_URLS.items():
+                    if re.search(rf'\b{country}\b', name_lower):
+                        league_flag = f"https://flagcdn.com/w40/{code}.png"
+                        break
+                        
+                # Rule 2: Africa
+                if not league_flag and re.search(r'\b(africa|african|caf)\b', name_lower):
                     league_flag = "🌍"
-                # Rule 2: Cups
-                elif 'cup' in name_lower:
-                    league_flag = "🏆"
-                # Rule 3: Friendlies
-                elif 'friendly' in name_lower:
-                    league_flag = "🤝"
-                # Rule 4: International / Continental
-                elif re.search(r'\b(international|concacaf|conmebol|uefa|olympic|nations|saff|améric)\b', name_lower):
+                
+                # Rule 3: International / Continental
+                if not league_flag and re.search(r'\b(international|concacaf|conmebol|uefa|olympic|nations|saff|améric)\b', name_lower):
                     league_flag = "🌎"
-                # Rule 5: Country Flags
-                else:
-                    for country, emoji in COUNTRY_EMOJI_MAP.items():
-                        if re.search(rf'\b{country}\b', name_lower):
-                            league_flag = emoji
-                            break
+                    
+                # Rule 4: Friendlies
+                if not league_flag and 'friendly' in name_lower:
+                    league_flag = "🤝"
+                    
+                # Rule 5: Cups (Lowest Priority catch-all)
+                if not league_flag and 'cup' in name_lower:
+                    league_flag = "🏆"
 
             status_obj = event.get('status', {})
             status_type = status_obj.get('type', {})
