@@ -137,9 +137,11 @@ COUNTRY_FLAG_URLS = {
     "belgian": "be", "chilean": "cl", "chinese": "cn", "dutch": "nl",
     "english": "gb-eng", "french": "fr", "german": "de", "bolivian": "bo", "bolivia": "bo",
     "norwegian": "no", "russian": "ru", "portuguese": "pt", "portugal": "pt",
-    "scottish": "gb-sct", "swedish": "se", "argentine": "ar", "brazilian": "br",
+    "scottish": "gb-sct", "swedish": "se", "argentine": "ar", "brazilian": "br", "brazil": "br",
     "italian": "it", "mexican": "mx", "paraguayan": "py", "japanese": "jp",
-    "spanish": "es", "danish": "dk", "indian": "in", "uruguay": "uy"
+    "spanish": "es", "danish": "dk", "indian": "in", "uruguay": "uy", 
+    "peruvian": "pe", "peru": "pe", "salvadoran": "sv", "el salvador": "sv",
+    "costa rican": "cr", "costa rica": "cr", "fpd": "cr"
 }
 
 # The Smart Fallback: Map our text abbreviations to ESPN Slugs
