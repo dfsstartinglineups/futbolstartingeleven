@@ -8,7 +8,7 @@ import pytz
 from jinja2 import Template
 
 def create_slug(name):
-    """Generates clean URL slugs dynamically from ESPN league names."""
+    """Generates clean URL slugs dynamically from team or league names."""
     if not name:
         return ""
     slug = name.lower()
@@ -70,7 +70,7 @@ def should_fetch_summary(event):
                 minutes_until_kickoff = (event_dt - now_utc).total_seconds() / 60.0
                 if minutes_until_kickoff <= 60:
                     return True, f"Pre-game, starting in {int(minutes_until_kickoff)} mins"
-                return False, f"Pre-game, kickoff in {int(minutes_until_kickoff)} mins (>60m)"
+                return False, f"Pre-game (>60m)"
             except Exception as e:
                 return False, f"Date parse error: {e}"
 
@@ -89,7 +89,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
         "injuries": {"home": [], "away": []}
     }
 
-    # Build fallback URL list
     urls_to_try = []
     if league_code and league_code not in ["all", "soccer", ""]:
         urls_to_try.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/summary?event={event_id}")
@@ -107,7 +106,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
             continue
 
     if not res or res.status_code != 200:
-        print(f"    ❌ Summary HTTP Error for ID {event_id} ({match_label})")
         return summary_data
 
     try:
@@ -152,7 +150,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     }
                 }
 
-        # 2. Parse Rosters / Lineups / Player Live Stats
+        # 2. Parse Rosters / Lineups / Player Substitution Flags & Live Stats
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
             for r_data in rosters:
@@ -161,7 +159,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 
                 formation = r_data.get('formation', '4-3-3')
                 team_obj = r_data.get('team', {})
-                
                 start_xi, subs = [], []
                 
                 player_entries = r_data.get('roster', [])
@@ -170,7 +167,11 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         ath = entry.get('athlete', {})
                         pos_abbr = entry.get('position', {}).get('abbreviation', 'M')
                         
-                        # Extract and snake-case map individual player live stats
+                        is_starter = entry.get('starter', False)
+                        subbed_in = entry.get('subbedIn', False) or bool(entry.get('subbedInMinute'))
+                        subbed_out = entry.get('subbedOut', False) or bool(entry.get('subbedOutMinute'))
+                        did_play = entry.get('didPlay', False) or entry.get('played', False) or subbed_in
+
                         stats_raw = entry.get('stats', [])
                         live_stats = {}
                         if isinstance(stats_raw, list):
@@ -187,7 +188,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                                     snake_k = to_snake_case(raw_k)
                                     live_stats[snake_k] = num_v
 
-                                    # Explicit key aliases for script.js
                                     if raw_k == 'goalsConceded':
                                         live_stats['conceded'] = num_v
                                     elif raw_k == 'shotsOnTarget':
@@ -206,13 +206,17 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                             "number": str(entry.get('jersey', '')),
                             "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
                             "live_stats": live_stats,
-                            "subMinute": entry.get('subbedInMinute', entry.get('subbedOutMinute', ''))
+                            "isSubbedIn": subbed_in,
+                            "isSubbedOut": subbed_out,
+                            "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                         }
                         
-                        if entry.get('starter', False):
+                        if is_starter:
                             start_xi.append({"player": player_obj, "sub_history": []})
                         else:
-                            subs.append({"player": player_obj})
+                            # Only include substitutes who actually came on or registered live stats
+                            if did_play or live_stats:
+                                subs.append({"player": player_obj})
 
                 if start_xi:
                     summary_data[key] = {
@@ -228,7 +232,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         "substitutes": subs
                     }
 
-        # 3. Parse Timeline Events (Goals, Cards, Substitutions)
+        # 3. Parse Timeline Events
         key_events = data.get('keyEvents', [])
         if isinstance(key_events, list) and len(key_events) > 0:
             for ev in key_events:
@@ -236,7 +240,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 clock_text = ev.get('clock', {}).get('displayValue', "0'")
                 team_id = str(ev.get('team', {}).get('id', ''))
                 
-                # Participants[0] = Player IN, Participants[1] = Player OUT
+                # ESPN participants mapping: Index 0 = IN, Index 1 = OUT
                 participants = ev.get('participants', [])
                 p_in = participants[0].get('athlete', {}).get('displayName', '') if len(participants) > 0 else ''
                 p_out = participants[1].get('athlete', {}).get('displayName', '') if len(participants) > 1 else ''
@@ -245,8 +249,8 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 ev_type = "Goal" if "goal" in ev_text.lower() else ("subst" if is_sub else "Card")
 
                 if ev_type == "subst":
-                    p_player = p_out if p_out else "Unknown" # Out player
-                    p_player_out = p_in if p_in else "Unknown" # In player
+                    p_player = p_out if p_out else "Unknown"      # Subbed OUT
+                    p_player_out = p_in if p_in else "Unknown"    # Subbed IN
                 else:
                     p_player = p_in if p_in else "Unknown"
                     p_player_out = p_out if p_out else None
@@ -256,16 +260,15 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     "team_id": team_id,
                     "type": ev_type,
                     "detail": ev_text,
-                    "player": p_player,        # Subbed out / Scorer
-                    "player_out": p_player_out, # Subbed in
+                    "player": p_player,
+                    "player_out": p_player_out,
                     "assist": p_out if ev_type == "Goal" else None
                 })
 
-        # 4. Parse Betting Odds
+        # 4. Parse Odds
         pickcenter = data.get('pickcenter', []) or data.get('odds', [])
         if isinstance(pickcenter, list) and len(pickcenter) > 0:
             odds_item = pickcenter[0]
-            
             h_ml = odds_item.get('homeTeamOdds', {}).get('moneyLine')
             a_ml = odds_item.get('awayTeamOdds', {}).get('moneyLine')
             d_ml = odds_item.get('drawOdds', {}).get('moneyLine')
@@ -280,7 +283,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 "under": str(odds_item.get('underOdds', 'TBD'))
             }
 
-        # 5. Parse Match Injuries
+        # 5. Parse Injuries
         injuries_raw = data.get('injuries', [])
         if isinstance(injuries_raw, list) and len(injuries_raw) == 2:
             for idx, key in [(0, "home"), (1, "away")]:
@@ -289,35 +292,52 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
     except Exception as e:
         print(f"    ❌ EXCEPTION in parse_espn_summary for event {event_id}: {e}")
-        traceback.print_exc()
         
     return summary_data
 
 def fetch_espn_scores_for_date(date_str):
-    """Queries ESPN's master daily schedule endpoint for a specific date."""
-    url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=500"
+    """Queries ESPN's master '/soccer/all/scoreboard' with pagination (page=1, page=2...)."""
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
+    seen_ids = set()
 
     print(f"\n==================================================")
-    print(f"📅 FETCHING DAILY SCHEDULE FOR DATE: {date_str}")
+    print(f"📅 FETCHING MASTER SCOREBOARD FOR DATE: {date_str}")
     print(f"==================================================")
 
-    try:
-        res = requests.get(url, headers=headers, timeout=10)
-        if res.status_code == 200:
-            raw_events = res.json().get('events', [])
-            print(f"✅ Master endpoint returned {len(raw_events)} events")
-    except Exception as e:
-        print(f"⚠️ Master query failed for {date_str}: {e}")
+    page = 1
+    max_pages = 10
 
-    if not raw_events:
+    while page <= max_pages:
+        url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=1000&page={page}"
         try:
-            res = requests.get(f"https://site.api.espn.com/apis/site/v2/sports/soccer/scoreboard?dates={date_str}&limit=500", headers=headers, timeout=10)
-            if res.status_code == 200:
-                raw_events = res.json().get('events', [])
-        except Exception:
-            pass
+            res = requests.get(url, headers=headers, timeout=10)
+            if res.status_code != 200:
+                break
+            
+            data = res.json()
+            events = data.get('events', [])
+            if not events:
+                break
+
+            added_this_page = 0
+            for ev in events:
+                ev_id = str(ev.get('id', ''))
+                if ev_id and ev_id not in seen_ids:
+                    seen_ids.add(ev_id)
+                    raw_events.append(ev)
+                    added_this_page += 1
+
+            print(f"  ├─ Page {page}: fetched {len(events)} events ({added_this_page} new)")
+            if added_this_page == 0:
+                break
+
+            page += 1
+        except Exception as e:
+            print(f"  ❌ Error fetching page {page} for {date_str}: {e}")
+            break
+
+    print(f"✅ Total unique matches retrieved for {date_str}: {len(raw_events)}")
 
     matches = []
     summary_calls = 0
@@ -342,9 +362,21 @@ def fetch_espn_scores_for_date(date_str):
             away_name = away['team']['displayName']
             match_label = f"{home_name} vs {away_name}"
 
-            league_obj = event.get('league') or comp.get('league') or (event.get('leagues', [{}])[0] if event.get('leagues') else {})
-            league_name = league_obj.get('name') or league_obj.get('displayName') or league_obj.get('midsizeName') or "Soccer"
+            league_obj = (
+                event.get('league') or 
+                comp.get('league') or 
+                (event.get('leagues', [{}])[0] if isinstance(event.get('leagues'), list) and event.get('leagues') else {}) or
+                (comp.get('leagues', [{}])[0] if isinstance(comp.get('leagues'), list) and comp.get('leagues') else {})
+            )
             
+            league_name = (
+                league_obj.get('name') or 
+                league_obj.get('displayName') or 
+                league_obj.get('midsizeName') or 
+                league_obj.get('abbreviation') or 
+                "Global Football"
+            )
+
             espn_league_code = (
                 league_obj.get('slug') or 
                 event.get('league', {}).get('slug') or 
@@ -368,7 +400,6 @@ def fetch_espn_scores_for_date(date_str):
             elapsed = status_obj.get('period', 0)
 
             should_fetch, fetch_reason = should_fetch_summary(event)
-            print(f"▶ {match_label} (ID: {event_id}, Status: {status_short}) -> Fetch Summary: {should_fetch}")
 
             if should_fetch:
                 summary = parse_espn_summary(event_id, league_code=espn_league_code, match_label=match_label)
@@ -425,10 +456,10 @@ def fetch_espn_scores_for_date(date_str):
         except Exception as e:
             print(f"❌ ERROR parsing match item {event.get('id', 'unknown')}: {e}")
 
-    print(f"📊 Summary calls succeeded for {date_str}: {summary_calls}/{len(raw_events)}")
+    print(f"📊 Deep summary fetches completed for {date_str}: {summary_calls}/{len(raw_events)}")
     return matches
 
-# Complete Restored V1 Frontend Engine
+# Complete Restored V1 Frontend Engine matching live site (Image 2)
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -568,6 +599,27 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         return `${parts[0].charAt(0).toUpperCase()}. ${parts.slice(1).join(' ')}`;
     }
 
+    function getContrastColor(hexColor) {
+        if (!hexColor) return '#ffffff';
+        hexColor = hexColor.replace('#', '');
+        const r = parseInt(hexColor.substr(0, 2), 16);
+        const g = parseInt(hexColor.substr(2, 2), 16);
+        const b = parseInt(hexColor.substr(4, 2), 16);
+        const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        return (yiq >= 128) ? '#000000' : '#ffffff';
+    }
+
+    function colorDistance(hex1, hex2) {
+        if (!hex1 || !hex2) return 100;
+        const getRgb = (hex) => {
+            let h = hex.replace('#', '');
+            if (h.length === 3) h = h.split('').map(x => x + x).join('');
+            return { r: parseInt(h.substr(0, 2), 16), g: parseInt(h.substr(2, 2), 16), b: parseInt(h.substr(4, 2), 16) };
+        };
+        const c1 = getRgb(hex1), c2 = getRgb(hex2);
+        return Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2));
+    }
+
     function getTimeBadgeHtml(data) {
         const status = data.fixture.status.short;
         const dateObj = new Date(data.fixture.date);
@@ -592,7 +644,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         }
     }
 
-    // Exact RESTORED Last Event Renderer for Ribbon & Full Header
     function getLatestEventHtml(data, isRibbon = false) {
         if (!data.events || data.events.length === 0) {
             return isRibbon ? `<div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div>` : '';
@@ -694,6 +745,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const tStats = data.team_stats;
         let hColor = data.homeLineup?.team?.colors?.player?.primary ? `#${data.homeLineup.team.colors.player.primary}` : '#0d6efd';
         let aColor = data.awayLineup?.team?.colors?.player?.primary ? `#${data.awayLineup.team.colors.player.primary}` : '#dc3545';
+        if (colorDistance(hColor, aColor) < 60) aColor = '#343a40';
+
+        const hText = getContrastColor(hColor);
+        const aText = getContrastColor(aColor);
 
         const buildBar = (label, hVal, aVal, isPercentage = false) => {
             const total = hVal + aVal;
@@ -709,20 +764,31 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <div class="text-center w-100 px-1">
                     <div class="stat-label-tiny">${label}</div>
                     <div class="stat-bar-container">
-                        <div class="stat-bar-segment text-white" style="width: ${hPct}%; background-color: ${hColor};">${displayH}</div>
-                        <div class="stat-bar-segment text-white" style="width: ${aPct}%; background-color: ${aColor};">${displayA}</div>
+                        <div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${hColor}; color: ${hText};">${displayH}</div>
+                        <div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${aColor}; color: ${aText};">${displayA}</div>
                     </div>
                 </div>`;
         };
+
+        const cardsHome = `🟨 ${tStats.home?.yellow_cards ?? 0} 🟥 ${tStats.home?.red_cards ?? 0}`;
+        const cardsAway = `🟨 ${tStats.away?.yellow_cards ?? 0} 🟥 ${tStats.away?.red_cards ?? 0}`;
 
         return `
             <div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals?.home ?? 0} - ${data.goals?.away ?? 0}</div>
             ${buildBar("Possession", tStats.home?.possession ?? 0, tStats.away?.possession ?? 0, true)}
             ${buildBar("Total Shots", tStats.home?.total_shots ?? 0, tStats.away?.total_shots ?? 0)}
-            ${buildBar("Corners", tStats.home?.corners ?? 0, tStats.away?.corners ?? 0)}`;
+            ${buildBar("Shots on Target", tStats.home?.shots_on_target ?? 0, tStats.away?.shots_on_target ?? 0)}
+            ${buildBar("Corners", tStats.home?.corners ?? 0, tStats.away?.corners ?? 0)}
+            
+            <div class="text-center w-100 px-1 mt-1">
+                <div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div>
+                <div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;">
+                    <span>${cardsHome}</span>
+                    <span>${cardsAway}</span>
+                </div>
+            </div>`;
     }
 
-    // Collapsible Match Events Log
     function getEventsHtml(data) {
         if (!data.events || data.events.length === 0) return '';
         const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id);
@@ -813,7 +879,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </div>`;
     }
 
-    // Complete Position-Grouped Live Player Stats Grid
     function buildLiveStatsGrid(lineupData, teamColorHex) {
         if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) {
             return `<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
@@ -830,14 +895,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         let flatPlayers = [];
 
         lineupData.startXI.forEach(slot => {
-            flatPlayers.push({ ...slot.player, _isSubbedOut: false });
+            flatPlayers.push({ ...slot.player });
         });
 
         if (lineupData.substitutes) {
             lineupData.substitutes.forEach(sub => {
-                if (sub.player.live_stats && Object.keys(sub.player.live_stats).length > 0) {
-                    flatPlayers.push({ ...sub.player, _isSubbedIn: true });
-                }
+                flatPlayers.push({ ...sub.player });
             });
         }
 
@@ -874,7 +937,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 const v3 = lStats[gConf.keys[2]] || 0;
                 const v4 = lStats[gConf.keys[3]] || 0;
 
-                let prefix = p._isSubbedIn ? `<span class="text-primary me-1">↻</span>` : '';
+                let prefix = '';
+                if (p.isSubbedIn) prefix = `<span class="text-success fw-bold me-1">▲</span>`;
+                else if (p.isSubbedOut) prefix = `<span class="text-primary fw-bold me-1">↻</span>`;
 
                 html += `
                     <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;">
@@ -902,11 +967,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const originalName = p.name || 'Unknown';
             const displaySafeName = shortenPlayerName(originalName);
             const photoHtml = p.photo ? `<img src="${p.photo}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2">` : `<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>`;
+            
+            let prefix = '';
+            if (p.isSubbedOut) prefix = `<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>`;
+
             return `
                 <li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;">
                     <span class="text-muted fw-bold me-2" style="font-size: 0.65rem; width: 12px;">${p.pos || 'M'}</span>
                     ${photoHtml}
-                    <span class="batter-name text-dark text-truncate">${displaySafeName}</span>
+                    <span class="batter-name text-dark text-truncate">${prefix}${displaySafeName}</span>
                     <span class="ms-auto text-muted" style="font-size: 0.65rem;">#${p.number || ''}</span>
                 </li>`;
         }).join('');
