@@ -182,6 +182,11 @@ def get_position_category(raw_pos):
         return 'D'
     return 'M'
 
+def is_valid_sub_minute(minute_val):
+    if not minute_val: return False
+    cleaned = re.sub(r'[^0-9]', '', str(minute_val))
+    return int(cleaned) > 0 if cleaned else False
+
 def generate_league_abbrev(name):
     if not name or name == "Global Football": return "GLB"
     name_upper = name.upper()
@@ -277,6 +282,13 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
     try:
         data = res.json()
+        
+        # 1. Determine Match Game State ('pre', 'in', 'post')
+        header = data.get('header', {})
+        competitions = header.get('competitions', [{}])
+        status_type = competitions[0].get('status', {}).get('type', {}) if isinstance(competitions, list) and competitions else {}
+        game_state = status_type.get('state', 'pre')
+
         boxscore = data.get('boxscore', {})
         teams_box = boxscore.get('teams', [])
         if len(teams_box) == 2:
@@ -313,8 +325,11 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     }
                 }
 
-        # Sub-to-starter tracking map
+        # 2. Extract actual substitutions from match keyEvents log
         sub_to_starter_map = {}
+        subbed_in_names = set()
+        subbed_out_names = set()
+
         key_events = data.get('keyEvents', [])
         if isinstance(key_events, list):
             for ev in key_events:
@@ -322,12 +337,24 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 if "substitution" in ev_text.lower() or "sub" in ev_text.lower():
                     participants = ev.get('participants', [])
                     if len(participants) >= 2:
-                        p_in = participants[0].get('athlete', {}).get('displayName', '')
-                        p_out = participants[1].get('athlete', {}).get('displayName', '')
-                        if p_in and p_out:
-                            sub_to_starter_map[p_in.lower()] = p_out.lower()
+                        p_in_ath = participants[0].get('athlete', {})
+                        p_out_ath = participants[1].get('athlete', {})
 
-        # ADVANCED STATS EXTRACTION FROM data['leaders']
+                        p_in_id = str(p_in_ath.get('id', ''))
+                        p_in_name = p_in_ath.get('displayName', '').lower()
+
+                        p_out_id = str(p_out_ath.get('id', ''))
+                        p_out_name = p_out_ath.get('displayName', '').lower()
+
+                        if p_in_name and p_out_name:
+                            sub_to_starter_map[p_in_name] = p_out_name
+
+                        if p_in_id: subbed_in_names.add(p_in_id)
+                        if p_in_name: subbed_in_names.add(p_in_name)
+                        if p_out_id: subbed_out_names.add(p_out_id)
+                        if p_out_name: subbed_out_names.add(p_out_name)
+
+        # 3. Extract Advanced Leader Stats (xG, xA, DINT, DUELW)
         leader_stats_by_athlete = {}
         leaders_groups = data.get('leaders', [])
         if isinstance(leaders_groups, list):
@@ -376,6 +403,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 
                 player_entries = r_data.get('roster', [])
                 if isinstance(player_entries, list):
+                    # Pass 1: Parse Starters
                     for entry in player_entries:
                         if not entry.get('starter', False): continue
                         ath = entry.get('athlete', {})
@@ -386,8 +414,15 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         pos_display = raw_pos_code.strip().upper() if raw_pos_code else 'M'
                         pos_category = get_position_category(pos_display)
 
-                        subbed_in = entry.get('subbedIn', False) or bool(entry.get('subbedInMinute'))
-                        subbed_out = entry.get('subbedOut', False) or bool(entry.get('subbedOutMinute'))
+                        # Strict Substitution Flag Evaluation
+                        if game_state == 'pre':
+                            subbed_in = False
+                            subbed_out = False
+                        else:
+                            in_min = entry.get('subbedInMinute')
+                            out_min = entry.get('subbedOutMinute')
+                            subbed_in = (p_id in subbed_in_names or p_name.lower() in subbed_in_names or is_valid_sub_minute(in_min))
+                            subbed_out = (p_id in subbed_out_names or p_name.lower() in subbed_out_names or is_valid_sub_minute(out_min))
 
                         stats_raw = entry.get('stats', [])
                         live_stats = {}
@@ -413,11 +448,10 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                                     elif raw_k in ['yellowCards']: live_stats['yellow_cards'] = num_v
                                     elif raw_k in ['redCards']: live_stats['red_cards'] = num_v
 
-                        # MERGE ADVANCED LEADER STATS (xG, xA, DINT, DUELW, accuratePasses, effectiveTackles)
+                        # MERGE ADVANCED LEADER STATS
                         adv_stats = leader_stats_by_athlete.get(p_id) or leader_stats_by_athlete.get(p_name.lower()) or {}
                         live_stats.update(adv_stats)
 
-                        # Explicit aliases for UI grid keys
                         if 'expectedGoals' in live_stats or 'XG' in live_stats:
                             live_stats['xg'] = live_stats.get('expectedGoals', live_stats.get('XG', 0))
                         if 'expectedAssists' in live_stats or 'XA' in live_stats:
@@ -443,6 +477,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         start_xi.append({"player": player_obj, "sub_history": []})
                         starters_lookup[p_name.lower()] = player_obj
 
+                    # Pass 2: Parse Substitutes
                     for entry in player_entries:
                         if entry.get('starter', False): continue
                         ath = entry.get('athlete', {})
@@ -463,8 +498,16 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         else:
                             pos_category = get_position_category(pos_display)
 
-                        subbed_in = entry.get('subbedIn', False) or bool(entry.get('subbedInMinute'))
-                        subbed_out = entry.get('subbedOut', False) or bool(entry.get('subbedOutMinute'))
+                        # Strict Substitution Flag Evaluation
+                        if game_state == 'pre':
+                            subbed_in = False
+                            subbed_out = False
+                        else:
+                            in_min = entry.get('subbedInMinute')
+                            out_min = entry.get('subbedOutMinute')
+                            subbed_in = (p_id in subbed_in_names or p_name.lower() in subbed_in_names or is_valid_sub_minute(in_min))
+                            subbed_out = (p_id in subbed_out_names or p_name.lower() in subbed_out_names or is_valid_sub_minute(out_min))
+
                         did_play = entry.get('didPlay', False) or entry.get('played', False) or subbed_in
 
                         stats_raw = entry.get('stats', [])
@@ -943,7 +986,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     function buildLiveStatsGrid(lineupData, teamColorHex) {
         if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
         
-        // Advanced Opta Stat Grouping
         const groups = { 
             'F': { title: 'FWD', stats: ['G', 'A', 'xG', 'SOG'], keys: ['goals', 'assists', 'xg', 'shots_on_target'] }, 
             'M': { title: 'MID', stats: ['G', 'A', 'PAS', 'DUEL'], keys: ['goals', 'assists', 'accurate_passes', 'duels_won'] }, 
@@ -1006,7 +1048,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     <div class="p-2 pb-1" style="background-color: #fcfcfc;">
                         <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('${fixId}')">
                             <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-${fixId}" style="white-space: nowrap;">${getTimeBadgeHtml(data)} ${getLatestEventHtml(data)}</div>
-                            <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-content-end" style="font-size: 0.75rem; min-width: 0;" title="${data.league.name}">
+                            <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="${data.league.name}">
                                 ${fullFlagHtml} <span class="text-truncate">${data.league.name}</span>
                             </a>
                         </div>
