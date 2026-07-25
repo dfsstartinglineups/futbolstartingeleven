@@ -96,6 +96,7 @@ HUMAN_LEAGUE_FLAGS = {
     "mexican liga de expansión mx": "https://a.espncdn.com/i/leaguelogos/soccer/500/2306.png",
     "ncaa men's soccer": "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/sports-soccer-solid.png",
     "ncaa women's soccer": "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/sports-soccer-solid.png",
+    "northern super league": "🇨🇦",
     "nwsl": "https://a.espncdn.com/i/leaguelogos/soccer/500/2323.png",
     "nwsl challenge cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/2445.png",
     "paraguayan primera división": "https://a.espncdn.com/i/leaguelogos/soccer/500/1892.png",
@@ -110,6 +111,7 @@ HUMAN_LEAGUE_FLAGS = {
     "spanish laliga 2": "https://a.espncdn.com/i/leaguelogos/soccer/500/107.png",
     "spanish supercopa": "https://a.espncdn.com/i/leaguelogos/soccer/500/431.png",
     "swedish allsvenskan": "https://a.espncdn.com/i/leaguelogos/soccer/500/16.png",
+    "trofeo joan gamper": "🏆",
     "turkish super lig": "https://a.espncdn.com/i/leaguelogos/soccer/500/18.png",
     "u.s. open cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/69.png",
     "uefa champions league": "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png",
@@ -125,9 +127,34 @@ HUMAN_LEAGUE_FLAGS = {
     "uefa women's european championship": "https://a.espncdn.com/i/leaguelogos/soccer/500/2381.png",
     "usl championship": "https://a.espncdn.com/i/leaguelogos/soccer/500/2292.png",
     "usl league one": "https://a.espncdn.com/i/leaguelogos/soccer/500/2452.png",
+    "usl super league": "🇺🇸",
     "venezuelan primera división": "https://a.espncdn.com/i/leaguelogos/soccer/500/1947.png",
     "women's international friendly": "https://a.espncdn.com/i/leaguelogos/soccer/500/70.png",
-    "women's olympic soccer tournament": "https://a.espncdn.com/i/leaguelogos/soccer/500/84.png"
+    "women's olympic soccer tournament": "https://a.espncdn.com/i/leaguelogos/soccer/500/84.png",
+}
+
+COUNTRY_EMOJI_MAP = {
+    "belgian": "🇧🇪", "chilean": "🇨🇱", "chinese": "🇨🇳", "dutch": "🇳🇱",
+    "english": "\U0001f3f4\U000e0067\U000e0062\U000e0065\U000e006e\U000e0067\U000e007f", 
+    "french": "🇫🇷", "german": "🇩🇪", "bolivian": "🇧🇴", "bolivia": "🇧🇴",
+    "norwegian": "🇳🇴", "russian": "🇷🇺", "portuguese": "🇵🇹", "portugal": "🇵🇹",
+    "scottish": "\U0001f3f4\U000e0067\U000e0062\U000e0073\U000e0063\U000e0074\U000e007f", 
+    "swedish": "🇸🇪", "argentine": "🇦🇷", "brazilian": "🇧🇷",
+    "italian": "🇮🇹", "mexican": "🇲🇽", "paraguayan": "🇵🇾", "japanese": "🇯🇵",
+    "spanish": "🇪🇸", "danish": "🇩🇰", "indian": "🇮🇳", "uruguay": "🇺🇾"
+}
+
+# The Smart Fallback: Map our text abbreviations to ESPN Slugs
+ABBREV_TO_SLUG = {
+    "EPL": "eng.1", "MLS": "usa.1", "UCL": "uefa.champions",
+    "UEL": "uefa.europa", "UECL": "uefa.europa.conf", "LIGA": "esp.1",
+    "SERA": "ita.1", "BUND": "ger.1", "LIG1": "fra.1",
+    "LMX": "mex.1", "EXP": "mex.2", "NWSL": "usa.nwsl",
+    "DEN": "den.1", "SWE": "swe.1", "LPF": "arg.1",
+    "RUS": "rus.1", "USL": "usa.usl.1", "SCO": "sco.1",
+    "ERED": "ned.1", "POR": "por.1", "BSA": "bra.1", "ECU": "ecu.1",
+    "CDR": "esp.copa_del_rey", "FA": "eng.fa", "EFL": "eng.league_cup",
+    "DFB": "ger.dfb_pokal", "COPPA": "ita.coppa_italia", "ASEAN": "aff.championship"
 }
 
 def create_slug(name):
@@ -458,6 +485,11 @@ def fetch_espn_scores_for_date(date_str):
             
             # RESOLVE LEAGUE FLAG (Direct mapping via human-readable name)
             league_flag = HUMAN_LEAGUE_FLAGS.get(final_league_name.lower(), "")
+            
+            # --- NEW PARENT STRIPPER RULE ---
+            if not league_flag:
+                base_name = re.sub(r'\s+(qualifying|qualifiers|playoffs?)\b', '', final_league_name.lower())
+                league_flag = HUMAN_LEAGUE_FLAGS.get(base_name, "")
                 
             if not league_flag:
                 league_logos = league_obj.get('logos', [])
@@ -469,6 +501,29 @@ def fetch_espn_scores_for_date(date_str):
                     logo = league_obj.get('logo')
                     if logo and 'default-team-logo' not in logo:
                         league_flag = logo
+
+            # --- NEW SMART EMOJI FALLBACK RULES ---
+            if not league_flag:
+                name_lower = final_league_name.lower()
+                
+                # Rule 1: Africa
+                if re.search(r'\b(africa|african|caf)\b', name_lower):
+                    league_flag = "🌍"
+                # Rule 2: Cups
+                elif 'cup' in name_lower:
+                    league_flag = "🏆"
+                # Rule 3: Friendlies
+                elif 'friendly' in name_lower:
+                    league_flag = "🤝"
+                # Rule 4: International / Continental
+                elif re.search(r'\b(international|concacaf|conmebol|uefa|olympic|nations|saff|améric)\b', name_lower):
+                    league_flag = "🌎"
+                # Rule 5: Country Flags
+                else:
+                    for country, emoji in COUNTRY_EMOJI_MAP.items():
+                        if re.search(rf'\b{country}\b', name_lower):
+                            league_flag = emoji
+                            break
 
             status_obj = event.get('status', {})
             status_type = status_obj.get('type', {})
@@ -660,7 +715,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const awayScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals?.away ?? 0) : '-';
         
         const flagHtml = data.league.flag 
-            ? `<img src="${data.league.flag}" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">` 
+            ? (data.league.flag.startsWith('http') 
+                ? `<img src="${data.league.flag}" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">`
+                : `<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${data.league.flag}</span>`)
             : `<span style="font-size: 0.85rem; margin-right: 6px; vertical-align: middle;">🏆</span>`;
 
         return `
@@ -774,7 +831,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const fixId = data.fixture.id, isPreGame = ['NS', 'TBD'].includes(data.fixture.status.short);
         
         const fullFlagHtml = data.league.flag 
-            ? `<img src="${data.league.flag}" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">` 
+            ? (data.league.flag.startsWith('http')
+                ? `<img src="${data.league.flag}" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">`
+                : `<span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${data.league.flag}</span>`)
             : `<span style="font-size: 1rem; margin-right: 6px; vertical-align: middle;">🏆</span>`;
 
         gameCard.innerHTML = `
