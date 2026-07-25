@@ -71,7 +71,7 @@ def should_fetch_summary(event):
     return False
 
 def parse_espn_summary(event_id):
-    """Deep dives into ESPN's match summary using verified schema paths."""
+    """Deep dives into ESPN's match summary endpoint for rosters, stats, events, odds, and injuries."""
     url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/summary?event={event_id}"
     headers = {'User-Agent': 'Mozilla/5.0'}
     
@@ -80,7 +80,7 @@ def parse_espn_summary(event_id):
         "homeLineup": None,
         "awayLineup": None,
         "events": [],
-        "odds": {"home": "-", "draw": "-", "away": "-", "total": "-", "over": "-", "under": "-"},
+        "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
         "injuries": {"home": [], "away": []}
     }
     
@@ -91,7 +91,7 @@ def parse_espn_summary(event_id):
         
         data = res.json()
         
-        # 1. Parse Team Statistics (boxscore -> teams -> statistics)
+        # 1. Parse Team Statistics
         boxscore = data.get('boxscore', {})
         teams_box = boxscore.get('teams', [])
         if len(teams_box) == 2:
@@ -100,7 +100,6 @@ def parse_espn_summary(event_id):
                     return {}
                 return {s.get('name'): s.get('displayValue', '0') for s in stats_list if isinstance(s, dict)}
 
-            # Align home vs away based on homeAway key or array index
             home_idx = 0 if teams_box[0].get('homeAway') == 'home' else 1
             away_idx = 1 if home_idx == 0 else 0
 
@@ -131,7 +130,7 @@ def parse_espn_summary(event_id):
                     }
                 }
 
-        # 2. Parse Rosters / Lineups (rosters -> roster)
+        # 2. Parse Rosters, Formations, and Live Player Stats
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
             for r_data in rosters:
@@ -139,6 +138,8 @@ def parse_espn_summary(event_id):
                 key = "homeLineup" if home_away == 'home' else "awayLineup"
                 
                 formation = r_data.get('formation', '4-3-3')
+                team_obj = r_data.get('team', {})
+                
                 start_xi, subs = [], []
                 
                 player_entries = r_data.get('roster', [])
@@ -147,12 +148,22 @@ def parse_espn_summary(event_id):
                         ath = entry.get('athlete', {})
                         pos_abbr = entry.get('position', {}).get('abbreviation', 'M')
                         
+                        # Extract individual live stats if match is live/post
+                        stats_raw = entry.get('stats', [])
+                        live_stats = {}
+                        if isinstance(stats_raw, list):
+                            for st in stats_raw:
+                                if isinstance(st, dict):
+                                    live_stats[st.get('name', '')] = st.get('displayValue', 0)
+
                         player_obj = {
                             "id": str(ath.get('id', '')),
                             "name": ath.get('displayName', 'Unknown'),
                             "pos": pos_abbr,
                             "number": str(entry.get('jersey', '')),
-                            "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else ''
+                            "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
+                            "live_stats": live_stats,
+                            "subMinute": entry.get('subbedInMinute', entry.get('subbedOutMinute', ''))
                         }
                         
                         if entry.get('starter', False):
@@ -163,11 +174,18 @@ def parse_espn_summary(event_id):
                 if start_xi:
                     summary_data[key] = {
                         "formation": formation,
+                        "team": {
+                            "colors": {
+                                "player": {
+                                    "primary": team_obj.get('color', '0d6efd')
+                                }
+                            }
+                        },
                         "startXI": start_xi,
                         "substitutes": subs
                     }
 
-        # 3. Parse Timeline Events (keyEvents)
+        # 3. Parse Timeline Events (Goals, Cards, Substitutions)
         key_events = data.get('keyEvents', [])
         if isinstance(key_events, list):
             for ev in key_events:
@@ -196,22 +214,27 @@ def parse_espn_summary(event_id):
         if isinstance(pickcenter, list) and len(pickcenter) > 0:
             odds_item = pickcenter[0]
             
-            # Moneyline parsing
             h_ml = odds_item.get('homeTeamOdds', {}).get('moneyLine')
             a_ml = odds_item.get('awayTeamOdds', {}).get('moneyLine')
             d_ml = odds_item.get('drawOdds', {}).get('moneyLine')
             
-            # Over/Under total line
-            ou_line = odds_item.get('overUnder', odds_item.get('total', {}).get('displayName', '-'))
+            ou_line = odds_item.get('overUnder', odds_item.get('total', {}).get('displayName', 'TBD'))
 
             summary_data["odds"] = {
-                "home": f"+{h_ml}" if h_ml and int(h_ml) > 0 else str(h_ml or '-'),
-                "draw": f"+{d_ml}" if d_ml and int(d_ml) > 0 else str(d_ml or '-'),
-                "away": f"+{a_ml}" if a_ml and int(a_ml) > 0 else str(a_ml or '-'),
+                "home": f"+{h_ml}" if h_ml and int(h_ml) > 0 else str(h_ml or 'TBD'),
+                "draw": f"+{d_ml}" if d_ml and int(d_ml) > 0 else str(d_ml or 'TBD'),
+                "away": f"+{a_ml}" if a_ml and int(a_ml) > 0 else str(a_ml or 'TBD'),
                 "total": str(ou_line),
-                "over": str(odds_item.get('overOdds', '-')),
-                "under": str(odds_item.get('underOdds', '-'))
+                "over": str(odds_item.get('overOdds', 'TBD')),
+                "under": str(odds_item.get('underOdds', 'TBD'))
             }
+
+        # 5. Parse Match Injuries
+        injuries_raw = data.get('injuries', [])
+        if isinstance(injuries_raw, list) and len(injuries_raw) == 2:
+            for idx, key in [(0, "home"), (1, "away")]:
+                inj_list = [item.get('athlete', {}).get('displayName', '') for item in injuries_raw[idx].get('injuries', []) if item.get('athlete', {}).get('displayName')]
+                summary_data["injuries"][key] = inj_list
 
     except Exception as e:
         print(f"⚠️ Summary fetch note for match {event_id}: {e}")
@@ -287,7 +310,7 @@ def fetch_espn_scores_for_date(date_str):
                     "homeLineup": None,
                     "awayLineup": None,
                     "events": [],
-                    "odds": {"home": "-", "draw": "-", "away": "-"},
+                    "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
                     "injuries": {"home": [], "away": []}
                 }
 
@@ -307,13 +330,15 @@ def fetch_espn_scores_for_date(date_str):
                         "id": str(home['team']['id']),
                         "name": home['team']['displayName'],
                         "logo": home['team'].get('logo', ''),
-                        "rank": home.get('curatedRank', {}).get('current', '')
+                        "rank": home.get('curatedRank', {}).get('current', ''),
+                        "record": home.get('records', [{}])[0].get('summary', '') if home.get('records') else ''
                     },
                     "away": {
                         "id": str(away['team']['id']),
                         "name": away['team']['displayName'],
                         "logo": away['team'].get('logo', ''),
-                        "rank": away.get('curatedRank', {}).get('current', '')
+                        "rank": away.get('curatedRank', {}).get('current', ''),
+                        "record": away.get('records', [{}])[0].get('summary', '') if away.get('records') else ''
                     }
                 },
                 "goals": {
@@ -334,7 +359,7 @@ def fetch_espn_scores_for_date(date_str):
     print(f"    └─ Deep summary calls made: {summary_calls}/{len(raw_events)}")
     return matches
 
-# Complete V1 UI Template
+# Complete Restored HTML/CSS/JS UI Engine from V1
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -409,6 +434,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .stat-label-tiny {
             font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px;
         }
+        .lineup-tab {
+            font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd;
+            cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase;
+        }
+        .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
     </style>
 </head>
 <body>
@@ -428,6 +458,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <h1 class="h5 fw-bold text-dark mb-1">Futbol Starting Eleven: Live Soccer Starting Lineups, Scores & Odds</h1>
     <p class="text-muted mb-2" style="font-size: 0.85rem;">Real-time starting XIs, match injuries, goalscorers, and betting odds for global football.</p>
     
+    <!-- 3-Day Window Partition Buttons -->
     <div class="d-flex justify-content-center gap-2 my-3" id="day-selector">
         <button class="btn btn-outline-dark day-tab-btn" data-day="yesterday">
             Yesterday<br><small style="font-size: 0.65rem;">{{ display_dates.yesterday }}</small>
@@ -469,6 +500,27 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         return `${parts[0].charAt(0).toUpperCase()}. ${parts.slice(1).join(' ')}`;
     }
 
+    function getContrastColor(hexColor) {
+        if (!hexColor) return '#ffffff';
+        hexColor = hexColor.replace('#', '');
+        const r = parseInt(hexColor.substr(0, 2), 16);
+        const g = parseInt(hexColor.substr(2, 2), 16);
+        const b = parseInt(hexColor.substr(4, 2), 16);
+        const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        return (yiq >= 128) ? '#000000' : '#ffffff';
+    }
+
+    function colorDistance(hex1, hex2) {
+        if (!hex1 || !hex2) return 100;
+        const getRgb = (hex) => {
+            let h = hex.replace('#', '');
+            if (h.length === 3) h = h.split('').map(x => x + x).join('');
+            return { r: parseInt(h.substr(0, 2), 16), g: parseInt(h.substr(2, 2), 16), b: parseInt(h.substr(4, 2), 16) };
+        };
+        const c1 = getRgb(hex1), c2 = getRgb(hex2);
+        return Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2));
+    }
+
     function getTimeBadgeHtml(data) {
         const status = data.fixture.status.short;
         const dateObj = new Date(data.fixture.date);
@@ -493,11 +545,31 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         }
     }
 
+    function getLatestEventHtml(data, isRibbon = false) {
+        if (!data.events || data.events.length === 0) {
+            return isRibbon ? `<div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div>` : '';
+        }
+        const lastEv = data.events[data.events.length - 1];
+        const isHomeTeam = lastEv.team_id === data.teams.home.id;
+        const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
+        const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo;
+
+        if (lastEv.type === 'subst') {
+            let pOut = shortenPlayerName(lastEv.player);
+            let pIn = shortenPlayerName(lastEv.player_out);
+            return `<span class="ms-2 text-dark fw-bold" style="font-size: 0.65rem;">🔄 ${lastEv.time}' 🟢 ${pIn} 🔴 ${pOut}</span>`;
+        } else {
+            let icon = lastEv.type === 'Goal' ? '⚽' : '🟨';
+            let playerName = shortenPlayerName(lastEv.player || teamName);
+            return `<span class="ms-2 fw-bold text-truncate" style="font-size: 0.65rem;">${icon} ${lastEv.time}' ${playerName}</span>`;
+        }
+    }
+
     function getCenterColumnHtml(data) {
         const status = data.fixture.status.short;
         const isPreGame = ['NS', 'TBD'].includes(status);
         const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
-        const showScore = !isPreGame && !isDelayed;
+        const showScore = !isPreGame && !isDelayed && !data.isFallback;
 
         if (!showScore || !data.team_stats) {
             const scoreText = showScore ? `${data.goals?.home ?? 0} - ${data.goals?.away ?? 0}` : `vs`;
@@ -505,6 +577,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         }
 
         const tStats = data.team_stats;
+        let hColor = data.homeLineup?.team?.colors?.player?.primary ? `#${data.homeLineup.team.colors.player.primary}` : '#0d6efd';
+        let aColor = data.awayLineup?.team?.colors?.player?.primary ? `#${data.awayLineup.team.colors.player.primary}` : '#dc3545';
+        if (colorDistance(hColor, aColor) < 60) aColor = '#343a40';
+
         const buildBar = (label, hVal, aVal, isPercentage = false) => {
             const total = hVal + aVal;
             let hPct = 50, aPct = 50;
@@ -519,8 +595,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <div class="text-center w-100 px-1">
                     <div class="stat-label-tiny">${label}</div>
                     <div class="stat-bar-container">
-                        <div class="stat-bar-segment text-white" style="width: ${hPct}%; background-color: #0d6efd;">${displayH}</div>
-                        <div class="stat-bar-segment text-white" style="width: ${aPct}%; background-color: #dc3545;">${displayA}</div>
+                        <div class="stat-bar-segment text-white" style="width: ${hPct}%; background-color: ${hColor};">${displayH}</div>
+                        <div class="stat-bar-segment text-white" style="width: ${aPct}%; background-color: ${aColor};">${displayA}</div>
                     </div>
                 </div>`;
         };
@@ -530,6 +606,85 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             ${buildBar("Possession", tStats.home?.possession ?? 0, tStats.away?.possession ?? 0, true)}
             ${buildBar("Total Shots", tStats.home?.total_shots ?? 0, tStats.away?.total_shots ?? 0)}
             ${buildBar("Corners", tStats.home?.corners ?? 0, tStats.away?.corners ?? 0)}`;
+    }
+
+    function getEventsHtml(data) {
+        if (!data.events || data.events.length === 0) return '';
+        const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id);
+        const awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
+
+        const formatEvent = (e) => {
+            let icon = e.type === 'Goal' ? '⚽' : (e.type === 'subst' ? '🔄' : '🟨');
+            let pName = shortenPlayerName(e.player);
+            return `<div style="font-size: 0.65rem;">${e.time}' ${icon} ${pName}</div>`;
+        };
+
+        return `
+            <div class="w-100 px-2 pt-1 border-top d-flex justify-content-between text-muted">
+                <div class="text-start">${homeEvents.map(formatEvent).join('')}</div>
+                <div class="text-end">${awayEvents.map(formatEvent).join('')}</div>
+            </div>`;
+    }
+
+    function getOddsHtml(data) {
+        if (!data.odds || (data.odds.home === "TBD" && data.odds.over === "TBD")) return '';
+        return `
+            <div class="d-flex justify-content-between text-center bg-white border-top border-bottom py-1" style="font-size: 0.70rem;">
+                <div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">1 (HOME)</div><div class="fw-bold text-dark">${data.odds.home}</div></div>
+                <div class="w-25 border-start border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">X (DRAW)</div><div class="fw-bold text-dark">${data.odds.draw}</div></div>
+                <div class="w-25 border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">2 (AWAY)</div><div class="fw-bold text-dark">${data.odds.away}</div></div>
+                <div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">O/U ${data.odds.total}</div><div class="fw-bold text-dark"><span class="text-success">O</span> ${data.odds.over} <span class="text-danger">U</span> ${data.odds.under}</div></div>
+            </div>`;
+    }
+
+    function getInjuriesHtml(data) {
+        const hInj = data.injuries?.home?.map(shortenPlayerName).join(', ');
+        const aInj = data.injuries?.away?.map(shortenPlayerName).join(', ');
+        if (!hInj && !aInj) return '';
+        return `
+            <div class="border-bottom px-2 py-1 text-truncate" style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545;">
+                <strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj || 'None'} | <b>A:</b> ${aInj || 'None'}</span>
+            </div>`;
+    }
+
+    function buildLiveStatsGrid(lineupData, teamColorHex) {
+        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) {
+            return `<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
+        }
+
+        const groupedPlayers = { 'F': [], 'M': [], 'D': [], 'G': [] };
+        lineupData.startXI.forEach(slot => {
+            const p = slot.player;
+            const pos = p.pos || 'M';
+            if (groupedPlayers[pos]) groupedPlayers[pos].push(p);
+            else groupedPlayers['M'].push(p);
+        });
+
+        let html = '';
+        ['F', 'M', 'D', 'G'].forEach(posKey => {
+            const players = groupedPlayers[posKey];
+            if (players.length === 0) return;
+
+            html += `
+                <div class="d-flex w-100 px-2 py-1 align-items-center bg-light border-bottom" style="font-size: 0.6rem; font-weight: 700;">
+                    <div style="flex: 1;">${posKey === 'F' ? 'FWD' : posKey === 'M' ? 'MID' : posKey === 'D' ? 'DEF' : 'GK'}</div>
+                    <div style="width: 18px; text-align: center;">G</div>
+                    <div style="width: 18px; text-align: center;">A</div>
+                    <div style="width: 24px; text-align: center;">SH</div>
+                </div>`;
+
+            players.forEach(p => {
+                const stats = p.live_stats || {};
+                html += `
+                    <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;">
+                        <div class="text-truncate" style="flex: 1;">${shortenPlayerName(p.name)}</div>
+                        <div style="width: 18px; text-align: center;">${stats.goals || 0}</div>
+                        <div style="width: 18px; text-align: center;">${stats.assists || 0}</div>
+                        <div style="width: 24px; text-align: center;">${stats.shots || 0}</div>
+                    </div>`;
+            });
+        });
+        return html;
     }
 
     function buildLineupList(lineupData) {
@@ -562,6 +717,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         const homeScore = data.goals ? data.goals.home : 0;
         const awayScore = data.goals ? data.goals.away : 0;
+        const statusShort = data.fixture.status.short;
+        const isPreGame = ['NS', 'TBD'].includes(statusShort);
 
         const fullHtml = `
             <div class="p-2 pb-1" style="background-color: #fcfcfc;">
@@ -584,11 +741,40 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         <div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${away.name}</div>
                     </div>
                 </div>
+                <div class="w-100">${getEventsHtml(data)}</div>
             </div>
+            <div class="w-100">${getOddsHtml(data)}</div>
+            <div class="w-100">${getInjuriesHtml(data)}</div>
+
+            <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
+                <div class="d-flex gap-4 w-100">
+                    <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" 
+                         id="tab-xi-${fixId}" 
+                         onclick="switchLineupTab('${fixId}', 'xi')"
+                         style="flex: 1; text-align: center;">
+                        ${isPreGame ? 'STARTING XI' : 'FINAL XI'}
+                    </div>
+                    <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" 
+                         id="tab-stats-${fixId}" 
+                         onclick="switchLineupTab('${fixId}', 'stats')"
+                         style="flex: 1; text-align: center;">
+                        LIVE STATS
+                    </div>
+                </div>
+            </div>
+
             <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
-                <div class="row g-0 bg-white border-top">
-                    <div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div>
-                    <div class="col-6">${buildLineupList(data.awayLineup)}</div>
+                <div id="view-xi-${fixId}" class="${(data.team_stats && !isPreGame) ? 'd-none' : ''}">
+                    <div class="row g-0 bg-white border-top">
+                        <div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div>
+                        <div class="col-6">${buildLineupList(data.awayLineup)}</div>
+                    </div>
+                </div>
+                <div id="view-stats-${fixId}" class="${(!data.team_stats || isPreGame) ? 'd-none' : ''}">
+                    <div class="row g-0 bg-white border-top">
+                        <div class="col-6 border-end">${buildLiveStatsGrid(data.homeLineup)}</div>
+                        <div class="col-6">${buildLiveStatsGrid(data.awayLineup)}</div>
+                    </div>
                 </div>
             </div>`;
 
@@ -624,6 +810,27 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         if (ribbon && full) {
             ribbon.classList.toggle('d-none');
             full.classList.toggle('d-none');
+        }
+    };
+
+    window.switchLineupTab = function(fixId, tabName) {
+        const xiTab = document.getElementById(`tab-xi-${fixId}`);
+        const statsTab = document.getElementById(`tab-stats-${fixId}`);
+        const xiView = document.getElementById(`view-xi-${fixId}`);
+        const statsView = document.getElementById(`view-stats-${fixId}`);
+
+        if (!xiTab || !statsTab || !xiView || !statsView) return;
+
+        if (tabName === 'xi') {
+            xiTab.classList.add('active');
+            statsTab.classList.remove('active');
+            xiView.classList.remove('d-none');
+            statsView.classList.add('d-none');
+        } else {
+            statsTab.classList.add('active');
+            xiTab.classList.remove('active');
+            statsView.classList.remove('d-none');
+            xiView.classList.add('d-none');
         }
     };
 
