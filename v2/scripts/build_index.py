@@ -94,8 +94,6 @@ LEAGUE_FLAGS = {
     "fifa.olympics": "https://a.espncdn.com/i/leaguelogos/soccer/500/71.png",
     "mex.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/22.png",
     "mex.2": "https://a.espncdn.com/i/leaguelogos/soccer/500/2306.png",
-    "usa.ncaa.m.1": "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/sports-soccer-solid.png",
-    "usa.ncaa.w.1": "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/sports-soccer-solid.png",
     "usa.nwsl": "https://a.espncdn.com/i/leaguelogos/soccer/500/2323.png",
     "usa.nwsl.cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/2445.png",
     "par.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1892.png",
@@ -125,14 +123,42 @@ LEAGUE_FLAGS = {
     "uefa.weuro": "https://a.espncdn.com/i/leaguelogos/soccer/500/2381.png",
     "usa.usl.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2292.png",
     "usa.usl.l1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2452.png",
-    "ven.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1947.png",
-    "fifa.friendly.w": "https://a.espncdn.com/i/leaguelogos/soccer/500/70.png",
-    "fifa.w.olympics": "https://a.espncdn.com/i/leaguelogos/soccer/500/84.png"
+    "ven.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1947.png"
+}
+
+# The Smart Fallback: Map our text abbreviations to ESPN Slugs
+ABBREV_TO_SLUG = {
+    "EPL": "eng.1",
+    "MLS": "usa.1",
+    "UCL": "uefa.champions",
+    "UEL": "uefa.europa",
+    "UECL": "uefa.europa.conf",
+    "LIGA": "esp.1",
+    "SERA": "ita.1",
+    "BUND": "ger.1",
+    "LIG1": "fra.1",
+    "LMX": "mex.1",
+    "EXP": "mex.2",
+    "NWSL": "usa.nwsl",
+    "DEN": "den.1",
+    "SWE": "swe.1",
+    "LPF": "arg.1",
+    "RUS": "rus.1",
+    "USL": "usa.usl.1",
+    "SCO": "sco.1",
+    "ERED": "ned.1",
+    "POR": "por.1",
+    "BSA": "bra.1",
+    "CDR": "esp.copa_del_rey",
+    "FA": "eng.fa",
+    "EFL": "eng.league_cup",
+    "DFB": "ger.dfb_pokal",
+    "COPPA": "ita.coppa_italia",
+    "ASEAN": "aff.championship"
 }
 
 def create_slug(name):
-    if not name:
-        return ""
+    if not name: return ""
     slug = name.lower()
     slug = re.sub(r'[\/]', '-', slug)
     slug = re.sub(r'[^a-z0-9\s-]', '', slug)
@@ -144,9 +170,7 @@ def to_snake_case(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s).lower()
 
 def generate_league_abbrev(name):
-    if not name or name == "Global Football":
-        return "GLB"
-        
+    if not name or name == "Global Football": return "GLB"
     name_upper = name.upper()
     overrides = {
         "ENGLISH PREMIER LEAGUE": "EPL", "PREMIER LEAGUE": "EPL",
@@ -171,8 +195,7 @@ def generate_league_abbrev(name):
     }
     
     for k, v in overrides.items():
-        if k in name_upper:
-            return v
+        if k in name_upper: return v
             
     clean_name = re.sub(r'\b(THE|OF|AND|FOR|MEN|WOMEN|MENS|WOMENS|DEL|LA)\b', '', name_upper).strip()
     words = clean_name.split()
@@ -186,11 +209,9 @@ def get_3day_dates():
     est = pytz.timezone('America/New_York')
     now = datetime.now(est)
     if now.hour < 3: now -= timedelta(days=1)
-    
     y_dt = now - timedelta(days=1)
     t_dt = now
     tm_dt = now + timedelta(days=1)
-    
     return {
         "dates": {"yesterday": y_dt.strftime('%Y%m%d'), "today": t_dt.strftime('%Y%m%d'), "tomorrow": tm_dt.strftime('%Y%m%d')},
         "display": {"yesterday": y_dt.strftime('%a, %b %d'), "today": t_dt.strftime('%a, %b %d'), "tomorrow": tm_dt.strftime('%a, %b %d')}
@@ -242,7 +263,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
     try:
         data = res.json()
-        
         boxscore = data.get('boxscore', {})
         teams_box = boxscore.get('teams', [])
         if len(teams_box) == 2:
@@ -332,8 +352,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
                 if start_xi:
                     summary_data[key] = {
-                        "formation": formation,
-                        "team": {"colors": {"player": {"primary": team_obj.get('color', '0d6efd')}}},
+                        "formation": formation, "team": {"colors": {"player": {"primary": team_obj.get('color', '0d6efd')}}},
                         "startXI": start_xi, "substitutes": subs
                     }
 
@@ -440,7 +459,6 @@ def fetch_espn_scores_for_date(date_str):
             
             home = next((c for c in competitors if c.get('homeAway') == 'home'), None)
             away = next((c for c in competitors if c.get('homeAway') == 'away'), None)
-
             if not home or not away: continue
 
             home_name = home['team']['displayName']
@@ -463,9 +481,13 @@ def fetch_espn_scores_for_date(date_str):
             league_abbrev = generate_league_abbrev(final_league_name)
             league_slug = create_slug(final_league_name)
             
-            # Resolve League Flag using our pristine mapping dictionary
+            # RESOLVE LEAGUE FLAG
             league_flag = LEAGUE_FLAGS.get(espn_league_slug, "")
             
+            # Smart Fallback: If ESPN dropped the slug entirely, use our text abbreviation as a bridge
+            if not league_flag and league_abbrev in ABBREV_TO_SLUG:
+                league_flag = LEAGUE_FLAGS.get(ABBREV_TO_SLUG[league_abbrev], "")
+                
             if not league_flag:
                 league_logos = league_obj.get('logos', [])
                 if isinstance(league_logos, list) and len(league_logos) > 0:
@@ -515,7 +537,7 @@ def fetch_espn_scores_for_date(date_str):
     print(f"📊 Deep summary fetches completed for {date_str}: {summary_calls}/{len(raw_events)}")
     return matches
 
-# Complete Frontend Engine matching V1 structure exactly
+# Complete Frontend Engine matches live
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -527,56 +549,20 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     
     <style>
         body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        
-        .header-brand { 
-            font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; 
-            font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); 
-        }
+        .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .header-brand a { color: inherit; }
-        .header-brand span { 
-            text-shadow: none !important;
-            background: linear-gradient(to bottom, #20c997 0%, #198754 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text; filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6));
-        }
-
+        .header-brand span { text-shadow: none !important; background: linear-gradient(to bottom, #20c997 0%, #198754 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6)); }
         .day-tab-btn { font-size: 0.85rem; font-weight: 700; border-radius: 20px; padding: 6px 18px; transition: all 0.2s; }
-        
-        .lineup-card { 
-            background: #fff; border: 1px solid #dee2e6; border-radius: 12px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px; overflow: hidden;
-        }
-
+        .lineup-card { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px; overflow: hidden; }
         .team-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1)); }
-        
         .batting-order { padding-left: 0; list-style-type: none; margin-bottom: 0; }
-        .batting-order li {
-            padding: 6px 12px; font-size: 0.85rem; border-bottom: 1px solid #f1f3f5;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .batting-order li { padding: 6px 12px; font-size: 0.85rem; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; align-items: center; }
         .batting-order li:last-child { border-bottom: none; }
         .batter-name { font-weight: 600; color: #495057; }
-
-        #team-search { 
-            color: #ffffff !important; color-scheme: dark; width: 45px;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background-color: #343a40; border: 1px solid #495057; cursor: pointer;
-        }
-        #team-search:focus { 
-            width: 160px; background-color: #495057 !important; border-color: #20c997 !important; 
-            box-shadow: 0 0 0 0.2rem rgba(32, 201, 151, 0.25) !important; cursor: text;
-        }
-
-        .live-dot {
-            display: inline-block; width: 7px; height: 7px; background-color: #fff;
-            border-radius: 50%; margin-right: 5px; margin-bottom: 1px; animation: pulse-green 2s infinite;
-        }
-        @keyframes pulse-green {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); }
-        }
-
+        #team-search { color: #ffffff !important; color-scheme: dark; width: 45px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); background-color: #343a40; border: 1px solid #495057; cursor: pointer; }
+        #team-search:focus { width: 160px; background-color: #495057 !important; border-color: #20c997 !important; box-shadow: 0 0 0 0.2rem rgba(32, 201, 151, 0.25) !important; cursor: text; }
+        .live-dot { display: inline-block; width: 7px; height: 7px; background-color: #fff; border-radius: 50%; margin-right: 5px; margin-bottom: 1px; animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); } }
         .stat-bar-container { display: flex; width: 100%; height: 14px; background-color: #e9ecef; border-radius: 4px; overflow: hidden; margin-top: 2px; }
         .stat-bar-segment { display: flex; align-items: center; justify-content: center; font-size: 0.60rem; font-weight: 800; padding: 0 4px; transition: width 0.5s ease-in-out; }
         .stat-label-tiny { font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px; }
