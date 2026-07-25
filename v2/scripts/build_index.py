@@ -420,7 +420,7 @@ def fetch_espn_scores_for_date(date_str):
             away_name = away['team']['displayName']
             match_label = f"{home_name} vs {away_name}"
 
-            # 🎯 DIRECT LEAGUE NAME EXTRACTION FROM altGameNote
+            # League extraction
             alt_note = comp.get('altGameNote')
 
             league_obj = (
@@ -449,6 +449,14 @@ def fetch_espn_scores_for_date(date_str):
 
             league_abbrev = generate_league_abbrev(final_league_name)
             league_slug = create_slug(final_league_name)
+            
+            # Extract League Logo / Flag
+            league_logos = league_obj.get('logos', [])
+            league_flag = ""
+            if isinstance(league_logos, list) and len(league_logos) > 0:
+                league_flag = league_logos[0].get('href', '')
+            elif isinstance(league_obj.get('logo'), str):
+                league_flag = league_obj.get('logo')
 
             status_obj = event.get('status', {})
             status_type = status_obj.get('type', {})
@@ -489,7 +497,8 @@ def fetch_espn_scores_for_date(date_str):
                     "id": event_id,
                     "name": final_league_name,
                     "abbrev": league_abbrev,
-                    "slug": league_slug
+                    "slug": league_slug,
+                    "flag": league_flag
                 },
                 "teams": {
                     "home": {
@@ -525,7 +534,7 @@ def fetch_espn_scores_for_date(date_str):
     print(f"📊 Deep summary fetches completed for {date_str}: {summary_calls}/{len(raw_events)}")
     return matches
 
-# Complete Frontend Engine
+# Complete Frontend Engine with League Flag Support
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -764,13 +773,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         
         const homeScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals?.home ?? 0) : '-';
         const awayScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals?.away ?? 0) : '-';
+        
+        const flagHtml = data.league.flag 
+            ? `<img src="${data.league.flag}" style="width: 14px; height: 14px; object-fit: contain; margin-right: 4px; vertical-align: middle; border-radius: 2px;">` 
+            : `<span style="font-size: 0.65rem; margin-right: 4px; vertical-align: middle;">🏆</span>`;
 
         return `
         <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
             <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1">
                 <div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div>
                 <a href="/leagues/${data.league.slug}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">
-                    ${data.league.abbrev}
+                    ${flagHtml}${data.league.abbrev}
                 </a>
             </div>
             <div class="col-5 px-2">
