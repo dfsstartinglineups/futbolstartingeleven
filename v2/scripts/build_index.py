@@ -9,6 +9,9 @@ from concurrent.futures import ThreadPoolExecutor
 import pytz
 from jinja2 import Template
 
+CACHE_DIR = "data"
+CACHE_FILE = os.path.join(CACHE_DIR, "completed_matches_cache.json")
+
 HUMAN_LEAGUE_FLAGS = {
     "afc asian cup": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/2243.png",
     "afc asian cup qualifiers": "https://a.espncdn.com/i/leaguelogos/soccer/500/2246.png",
@@ -150,6 +153,25 @@ COUNTRY_FLAG_URLS = {
     "costa rican": "cr", "costa rica": "cr", "fpd": "cr"
 }
 
+def load_cache():
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"⚠️ Warning: Could not load cache file: {e}")
+            return {}
+    return {}
+
+def save_cache(cache):
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    try:
+        with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(cache, f)
+    except Exception as e:
+        print(f"⚠️ Warning: Could not save cache file: {e}")
+
 def normalize_text(text):
     if not text: return ""
     nfkd_form = unicodedata.normalize('NFD', text)
@@ -198,9 +220,16 @@ def extract_match_clock(status_obj):
     if status_type.get('name') == 'STATUS_HALFTIME' or status_type.get('shortDetail') == 'HT': return "HT"
 
     short_detail = status_type.get('shortDetail', '')
-    if short_detail and any(c.isdigit() for c in short_detail):
-        match = re.search(r"(\d+[\'\+\d\']*)", short_detail)
-        if match: return match.group(1).rstrip("'")
+    if short_detail:
+        tick_match = re.search(r"(\d+\+?\d*)\'", short_detail)
+        if tick_match: 
+            return tick_match.group(1)
+        
+        nums = re.findall(r"\d+", short_detail)
+        if len(nums) > 1:
+            return nums[-1]
+        elif len(nums) == 1 and "Half" not in short_detail:
+            return nums[0]
 
     display_clock = status_obj.get('displayClock', '')
     if display_clock:
@@ -308,7 +337,6 @@ def extract_player_live_stats(entry_obj, core_raw_stats=None):
     stats_raw = (entry_obj.get('stats') or []) + (entry_obj.get('statistics') or [])
     live_stats = {}
     
-    # 1. Base Summary API Stats
     for st in stats_raw:
         if not isinstance(st, dict): continue
         raw_k = st.get('name', '')
@@ -325,7 +353,6 @@ def extract_player_live_stats(entry_obj, core_raw_stats=None):
             live_stats[raw_abbr] = num_v
             live_stats[raw_abbr.lower()] = num_v
 
-        # Explicit key mapping
         if raw_k in ['touches', 'totalTouches'] or raw_abbr == 'TCH': live_stats['touches'] = num_v
         elif raw_k in ['expectedGoals', 'xg'] or raw_abbr == 'XG': live_stats['xg'] = num_v
         elif raw_k in ['expectedAssists', 'xa'] or raw_abbr == 'XA': live_stats['xa'] = num_v
@@ -344,7 +371,6 @@ def extract_player_live_stats(entry_obj, core_raw_stats=None):
         elif raw_k in ['shotsFaced'] or raw_abbr == 'SHF': live_stats['shots_faced'] = num_v
         elif raw_k in ['foulsCommitted'] or raw_abbr == 'FC': live_stats['fouls_committed'] = num_v
 
-    # 2. Advanced Opta Core REST API Overrides
     if core_raw_stats:
         if 'touches' in core_raw_stats: live_stats['touches'] = int(core_raw_stats['touches'])
         if 'expectedGoals' in core_raw_stats: live_stats['xg'] = round(float(core_raw_stats['expectedGoals']), 2)
@@ -475,7 +501,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
-            # Concurrent Core API Pre-Fetcher for Live/Post Matches
             core_stats_cache = {}
             if game_state in ['in', 'post']:
                 player_fetch_list = []
@@ -514,7 +539,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 
                 player_entries = r_data.get('roster', [])
                 if isinstance(player_entries, list):
-                    # Pass 1: Starters
                     for entry in player_entries:
                         if not entry.get('starter', False): continue
                         ath = entry.get('athlete', {})
@@ -544,7 +568,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         start_xi.append({"player": player_obj, "sub_history": []})
                         starters_lookup[p_name.lower()] = player_obj
 
-                    # Pass 2: Substitutes
                     for entry in player_entries:
                         if entry.get('starter', False): continue
                         ath = entry.get('athlete', {})
@@ -633,7 +656,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
     except Exception as e: print(f"    ❌ EXCEPTION in parse_espn_summary for event {event_id}: {e}")
     return summary_data
 
-def fetch_espn_scores_for_date(date_str):
+def fetch_espn_scores_for_date(date_str, cache):
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
     seen_ids = set()
@@ -678,6 +701,16 @@ def fetch_espn_scores_for_date(date_str):
     for event in raw_events:
         try:
             event_id = str(event['id'])
+            
+            status_obj = event.get('status', {})
+            status_type = status_obj.get('type', {})
+            state = status_type.get('state', 'pre')
+
+            if state == 'post' and event_id in cache:
+                print(f"  ⚡ Match {event_id} is final. Loaded entirely from cache!")
+                matches.append(cache[event_id])
+                continue
+
             competitions = event.get('competitions', [])
             if not competitions: continue
 
@@ -735,10 +768,6 @@ def fetch_espn_scores_for_date(date_str):
                 if not league_flag and 'friendly' in name_lower: league_flag = "🤝"
                 if not league_flag and 'cup' in name_lower: league_flag = "🏆"
 
-            status_obj = event.get('status', {})
-            status_type = status_obj.get('type', {})
-            state = status_type.get('state', 'pre')
-
             if state == 'pre': status_short = 'NS'
             elif state == 'post': status_short = 'FT'
             else: status_short = status_type.get('shortDetail', 'LIVE')
@@ -760,7 +789,7 @@ def fetch_espn_scores_for_date(date_str):
             h_score = summary.get('live_score', {}).get('home') if summary.get('live_score') else home.get('score')
             a_score = summary.get('live_score', {}).get('away') if summary.get('live_score') else away.get('score')
 
-            matches.append({
+            match_entry = {
                 "fixture": {"id": event_id, "date": event['date'], "status": {"short": status_short, "elapsed": elapsed_clock}},
                 "league": {"id": event_id, "name": final_league_name, "abbrev": league_abbrev, "slug": league_slug, "flag": league_flag},
                 "teams": {
@@ -770,7 +799,13 @@ def fetch_espn_scores_for_date(date_str):
                 "goals": {"home": int(h_score or 0), "away": int(a_score or 0)},
                 "team_stats": summary["team_stats"], "homeLineup": summary["homeLineup"], "awayLineup": summary["awayLineup"],
                 "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"], "isFallback": summary["homeLineup"] is None
-            })
+            }
+
+            matches.append(match_entry)
+
+            if state == 'post':
+                cache[event_id] = match_entry
+
         except Exception as e: print(f"❌ ERROR parsing match item {event.get('id', 'unknown')}: {e}")
 
     print(f"📊 Deep summary fetches completed for {date_str}: {summary_calls}/{len(raw_events)}")
@@ -1014,7 +1049,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             return `<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
         }
         
-        // Advanced Opta Stat Groupings matching ESPN web tables
         const groups = { 
             'F': { title: 'FWD', stats: ['G', 'A', 'xG', 'SOG'], keys: ['goals', 'assists', 'xg', 'shots_on_target'] }, 
             'M': { title: 'MID', stats: ['G', 'A', 'PAS', 'DUEL'], keys: ['goals', 'assists', 'accurate_passes', 'duels_won'] }, 
@@ -1185,13 +1219,17 @@ def generate_v2_index():
     print("\n==================================================")
     print("⏳ STARTING SSG BUILD PIPELINE")
     print("==================================================")
+    
+    cache = load_cache()
     day_info = get_3day_dates()
     
     matches_by_day = {
-        "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"]),
-        "today": fetch_espn_scores_for_date(day_info["dates"]["today"]),
-        "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"])
+        "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"], cache),
+        "today": fetch_espn_scores_for_date(day_info["dates"]["today"], cache),
+        "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], cache)
     }
+    
+    save_cache(cache)
     
     print(f"\n==================================================")
     print(f"📊 SSG BUILD SUMMARY:")
