@@ -7,7 +7,7 @@ import pytz
 from jinja2 import Template
 
 def create_slug(name):
-    """Generates dynamic URL slugs directly from ESPN league display names."""
+    """Generates clean URL slugs directly from ESPN league display names."""
     if not name:
         return ""
     slug = name.lower()
@@ -17,10 +17,11 @@ def create_slug(name):
     return slug.strip('-')
 
 def get_3day_dates():
-    """Calculates Yesterday, Today, and Tomorrow using a 3:00 AM EST cutoff."""
+    """Calculates Yesterday, Today, and Tomorrow using a strict 3:00 AM EST cutoff."""
     est = pytz.timezone('America/New_York')
     now = datetime.now(est)
     
+    # 3:00 AM EST Cutoff Shift
     if now.hour < 3:
         now -= timedelta(days=1)
         
@@ -35,65 +36,70 @@ def get_3day_dates():
             "tomorrow": tm_dt.strftime('%Y%m%d')
         },
         "display": {
-            "yesterday": y_dt.strftime('%A, %b %d'),
-            "today": t_dt.strftime('%A, %b %d'),
-            "tomorrow": tm_dt.strftime('%A, %b %d')
+            "yesterday": y_dt.strftime('%a, %b %d'),
+            "today": t_dt.strftime('%a, %b %d'),
+            "tomorrow": tm_dt.strftime('%a, %b %d')
         }
     }
 
 def fetch_espn_scores_for_date(date_str):
-    """Fetches ESPN's soccer schedule endpoint directly for the given date."""
+    """Fetches ALL soccer matches from ESPN across all leagues for a specific date."""
+    # CRITICAL: limit=500 prevents ESPN from capping the payload at 25/50 matches
     urls = [
-        f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}",
-        f"https://site.api.espn.com/apis/site/v2/sports/soccer/scoreboard?dates={date_str}"
+        f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=500",
+        f"https://site.api.espn.com/apis/site/v2/sports/soccer/scoreboard?dates={date_str}&limit=500"
     ]
     
     raw_events = []
+    headers = {'User-Agent': 'Mozilla/5.0'}
+
     for url in urls:
         try:
-            res = requests.get(url, timeout=10)
+            res = requests.get(url, headers=headers, timeout=12)
             if res.status_code == 200:
                 data = res.json()
-                if 'events' in data and data['events']:
-                    raw_events = data['events']
+                events = data.get('events', [])
+                if events:
+                    raw_events = events
                     break
         except Exception as e:
-            print(f"Error fetching from {url}: {e}")
-
-    # Fallback to major ESPN soccer codes if the global feed returns empty
-    if not raw_events:
-        fallback_leagues = ["eng.1", "esp.1", "ita.1", "ger.1", "fra.1", "usa.1", "mex.1", "uefa.champions"]
-        for league_code in fallback_leagues:
-            url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/scoreboard?dates={date_str}"
-            try:
-                res = requests.get(url, timeout=5)
-                if res.status_code == 200:
-                    data = res.json()
-                    if 'events' in data:
-                        raw_events.extend(data['events'])
-            except Exception:
-                continue
+            print(f"⚠️ Warning fetching endpoint {url}: {e}")
 
     matches = []
     for event in raw_events:
         try:
-            comp = event['competitions'][0]
-            home = next((c for c in comp['competitors'] if c.get('homeAway') == 'home'), None)
-            away = next((c for c in comp['competitors'] if c.get('homeAway') == 'away'), None)
+            competitions = event.get('competitions', [])
+            if not competitions:
+                continue
+
+            comp = competitions[0]
+            competitors = comp.get('competitors', [])
+            
+            home = next((c for c in competitors if c.get('homeAway') == 'home'), None)
+            away = next((c for c in competitors if c.get('homeAway') == 'away'), None)
 
             if not home or not away:
                 continue
 
-            # Dynamically extract league display name and slug from ESPN payload
-            league_info = event.get('league') or (event.get('leagues', [{}])[0] if 'leagues' in event else {})
-            league_name = league_info.get('name') or league_info.get('displayName') or "Soccer"
+            # Robust multi-path extraction for ESPN league display name
+            league_obj = (
+                event.get('league') or 
+                comp.get('league') or 
+                (event.get('leagues', [{}])[0] if event.get('leagues') else {})
+            )
+            league_name = (
+                league_obj.get('name') or 
+                league_obj.get('displayName') or 
+                league_obj.get('midsizeName') or 
+                "Soccer"
+            )
             league_slug = create_slug(league_name)
 
             status_type = event.get('status', {}).get('type', {})
             status_short = status_type.get('shortDetail', 'NS')
             elapsed = event.get('status', {}).get('period', 0)
 
-            # Match events (Goals, Cards, Substitutions)
+            # Extract Goals, Cards, and Substitutions
             events_list = []
             for detail in comp.get('details', []):
                 det_text = detail.get('type', {}).get('text', '')
@@ -110,15 +116,15 @@ def fetch_espn_scores_for_date(date_str):
                     "player": p_name
                 })
 
-            # Match Betting Odds
-            odds_data = {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}
+            # Extract Betting Odds
+            odds_data = {"home": "TBD", "draw": "TBD", "away": "TBD"}
             if comp.get('odds'):
                 raw_odds = comp['odds'][0]
                 odds_data["home"] = str(raw_odds.get('homeTeamOdds', {}).get('summary', '-'))
                 odds_data["draw"] = str(raw_odds.get('drawOdds', {}).get('summary', '-'))
                 odds_data["away"] = str(raw_odds.get('awayTeamOdds', {}).get('summary', '-'))
 
-            # Match Rosters / Starting XI
+            # Extract Starting XI Rosters
             home_lineup = {"formation": home.get('form', '4-3-3'), "startXI": []}
             away_lineup = {"formation": away.get('form', '4-3-3'), "startXI": []}
 
@@ -159,15 +165,13 @@ def fetch_espn_scores_for_date(date_str):
                         "id": home['team']['id'],
                         "name": home['team']['displayName'],
                         "logo": home['team'].get('logo', ''),
-                        "rank": home.get('curatedRank', {}).get('current', ''),
-                        "record": home.get('records', [{}])[0].get('summary', '') if home.get('records') else ''
+                        "rank": home.get('curatedRank', {}).get('current', '')
                     },
                     "away": {
                         "id": away['team']['id'],
                         "name": away['team']['displayName'],
                         "logo": away['team'].get('logo', ''),
-                        "rank": away.get('curatedRank', {}).get('current', ''),
-                        "record": away.get('records', [{}])[0].get('summary', '') if away.get('records') else ''
+                        "rank": away.get('curatedRank', {}).get('current', '')
                     }
                 },
                 "goals": {
@@ -180,7 +184,7 @@ def fetch_espn_scores_for_date(date_str):
                 "odds": odds_data
             })
         except Exception as e:
-            print(f"Error parsing event {event.get('id')}: {e}")
+            print(f"⚠️ Error parsing match {event.get('id', 'unknown')}: {e}")
 
     return matches
 
@@ -191,7 +195,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#212529">
-    <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores, Injuries & Odds</title>
+    <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores & Odds</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
@@ -210,7 +214,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         }
 
         .day-tab-btn {
-            font-size: 0.85rem; font-weight: 700; border-radius: 20px; padding: 6px 20px; transition: all 0.2s;
+            font-size: 0.85rem; font-weight: 700; border-radius: 20px; padding: 6px 18px; transition: all 0.2s;
         }
         
         .lineup-card { 
@@ -234,7 +238,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             background-color: #343a40; border: 1px solid #495057; cursor: pointer;
         }
         #team-search:focus { 
-            width: 150px; background-color: #495057 !important; border-color: #20c997 !important; 
+            width: 160px; background-color: #495057 !important; border-color: #20c997 !important; 
             box-shadow: 0 0 0 0.2rem rgba(32, 201, 151, 0.25) !important; cursor: text;
         }
 
@@ -257,7 +261,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <a href="/" class="text-decoration-none">Futbol Starting <span>Eleven</span></a>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <input type="text" id="team-search" class="form-control form-control-sm" placeholder="🔍">
+            <input type="text" id="team-search" class="form-control form-control-sm" placeholder="🔍 Search...">
         </div>
     </div>
 </nav>
@@ -296,7 +300,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Embedded Data Payload from Python Script
+    // Embedded Data Payload
     const STATIC_MATCHES = {{ matches_json | safe }};
     let ACTIVE_DAY = "today";
     let globalScoreboardMode = true;
@@ -356,9 +360,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <div class="p-2 pb-1" style="background-color: #fcfcfc;">
                 <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('${fixId}')">
                     <div class="pe-2">${getTimeBadgeHtml(data)}</div>
-                    <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;">
+                    <div class="text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;">
                         ${data.league.name}
-                    </a>
+                    </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
                     <div class="text-center" style="width: 35%;">
@@ -445,7 +449,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     document.addEventListener('DOMContentLoaded', () => {
         renderGames();
 
-        // 3-Day Window Navigation Event Listeners
+        // 3-Day Navigation Event Listeners
         document.querySelectorAll('.day-tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.day-tab-btn').forEach(b => {
@@ -461,11 +465,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             });
         });
 
-        // Search Listener
+        // Search Filter Listener
         const searchInput = document.getElementById('team-search');
         if (searchInput) searchInput.addEventListener('input', renderGames);
 
-        // Compact vs Expanded Toggle Listeners
+        // Scoreboard Display Mode Toggle
         const toggleScoreboardBtn = document.getElementById('toggle-all-cards');
         const toggleAllBtn = document.getElementById('toggle-all-lineups');
 
@@ -487,18 +491,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 def generate_v2_index():
     """Main build execution."""
-    print("Fetching 3-Day soccer schedules from ESPN...")
+    print("⏳ Calculating 3-day dates with 3:00 AM EST cutoff...")
     day_info = get_3day_dates()
     
+    print("🚀 Fetching all ESPN soccer scores for Yesterday, Today, and Tomorrow...")
     matches_by_day = {
         "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"]),
         "today": fetch_espn_scores_for_date(day_info["dates"]["today"]),
         "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"])
     }
     
-    print(f"Yesterday matches fetched: {len(matches_by_day['yesterday'])}")
-    print(f"Today matches fetched:     {len(matches_by_day['today'])}")
-    print(f"Tomorrow matches fetched:  {len(matches_by_day['tomorrow'])}")
+    print(f"✅ Yesterday ({day_info['dates']['yesterday']}): {len(matches_by_day['yesterday'])} matches")
+    print(f"✅ Today ({day_info['dates']['today']}):     {len(matches_by_day['today'])} matches")
+    print(f"✅ Tomorrow ({day_info['dates']['tomorrow']}):  {len(matches_by_day['tomorrow'])} matches")
     
     template = Template(HTML_TEMPLATE)
     output_html = template.render(
@@ -512,7 +517,7 @@ def generate_v2_index():
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(output_html)
     
-    print(f"Successfully generated static HTML at {file_path}")
+    print(f"🎉 Successfully built static frontend at {file_path}")
 
 if __name__ == "__main__":
     generate_v2_index()
