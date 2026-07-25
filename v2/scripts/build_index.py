@@ -348,11 +348,29 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                                     snake_k = to_snake_case(raw_k)
                                     live_stats[snake_k] = num_v
 
-                                    if raw_k == 'goalsConceded': live_stats['conceded'] = num_v
-                                    elif raw_k == 'shotsOnTarget': live_stats['shots_on_target'] = num_v
-                                    elif raw_k == 'totalShots': live_stats['total_shots'] = num_v
-                                    elif raw_k == 'keyPasses': live_stats['key_passes'] = num_v
-                                    elif raw_k == 'yellowCards': live_stats['yellow_cards'] = num_v
+                                    # Direct Key Mapping for Frontend JS Expectations
+                                    if raw_k in ['totalGoals', 'goals', 'goal', 'goalsScored']:
+                                        live_stats['goals'] = num_v
+                                    elif raw_k in ['goalAssists', 'assists', 'assist']:
+                                        live_stats['assists'] = num_v
+                                    elif raw_k in ['goalsConceded', 'goalsAgainst']:
+                                        live_stats['conceded'] = num_v
+                                    elif raw_k in ['shotsOnTarget', 'shotsOnGoal']:
+                                        live_stats['shots_on_target'] = num_v
+                                    elif raw_k in ['totalShots', 'shots']:
+                                        live_stats['total_shots'] = num_v
+                                    elif raw_k in ['keyPasses', 'chancesCreated']:
+                                        live_stats['key_passes'] = num_v
+                                    elif raw_k in ['tackles', 'totalTackles']:
+                                        live_stats['tackles'] = num_v
+                                    elif raw_k in ['interceptions']:
+                                        live_stats['interceptions'] = num_v
+                                    elif raw_k in ['saves']:
+                                        live_stats['saves'] = num_v
+                                    elif raw_k in ['passes', 'totalPasses']:
+                                        live_stats['passes'] = num_v
+                                    elif raw_k in ['yellowCards']:
+                                        live_stats['yellow_cards'] = num_v
 
                         player_obj = {
                             "id": str(ath.get('id', '')), "name": ath.get('displayName', 'Unknown'),
