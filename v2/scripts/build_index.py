@@ -185,20 +185,20 @@ def to_snake_case(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s).lower()
 
 def get_position_category(raw_pos):
-    """Categorizes granular position tags (e.g., CD-L, CF-R) into F, M, D, G for the stats table."""
+    """Categorizes granular position tags (e.g., CD-L, CF-R, AM-L, AM-R) into F, M, D, G for the stats table."""
     if not raw_pos: return 'M'
     p = str(raw_pos).strip().upper()
     
     # Goalkeeper
     if p in ['G', 'GK', 'GOALKEEPER']:
         return 'G'
-    # Forwards / Attackers
-    if any(term in p for term in ['CF', 'ST', 'FW', 'LW', 'RW', 'WF', 'SS', 'ATT', 'STR']) or p == 'F':
+    # Forwards & Attacking Midfielders (CF, ST, FW, LW, RW, AM, CAM, etc.)
+    if any(term in p for term in ['CF', 'ST', 'FW', 'LW', 'RW', 'WF', 'SS', 'ATT', 'STR', 'AM', 'CAM']) or p == 'F':
         return 'F'
-    # Defenders
+    # Defenders & Wingbacks (CD, CB, LB, RB, WB, SW, DF, etc.)
     if any(term in p for term in ['CD', 'CB', 'LB', 'RB', 'WB', 'SW', 'DF', 'DEF']) or p == 'D':
         return 'D'
-    # Midfielders & Default Fallback
+    # Central / Defensive Midfielders & Default Fallback (CM, DM, CDM, LM, RM, MF)
     return 'M'
 
 def generate_league_abbrev(name):
@@ -922,8 +922,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     <div class="w-100">${getOddsHtml(data)}</div><div class="w-100">${getInjuriesHtml(data)}</div>
                     <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
                         <div class="d-flex gap-4 w-100">
-                            <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" id="tab-xi-${fixId}" onclick="switchLineupTab('${fixId}', 'xi')" style="flex: 1; text-align: center;">${isPreGame ? 'STARTING XI' : 'FINAL XI'}</div>
-                            <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" id="tab-stats-${fixId}" onclick="switchLineupTab('${fixId}', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                            <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" id="tab-xi-${fixId}" onclick="switchLineupTab(event, '${fixId}', 'xi')" style="flex: 1; text-align: center;">${isPreGame ? 'STARTING XI' : 'FINAL XI'}</div>
+                            <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" id="tab-stats-${fixId}" onclick="switchLineupTab(event, '${fixId}', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
                         </div>
                     </div>
                     <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
@@ -940,13 +940,24 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         document.getElementById(`full-${fixId}`)?.classList.toggle('d-none');
     };
 
-    window.switchLineupTab = function(fixId, tabName) {
+    window.switchLineupTab = function(event, fixId, tabName) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        
+        const xiTab = document.getElementById(`tab-xi-${fixId}`);
+        const statsTab = document.getElementById(`tab-stats-${fixId}`);
+        const xiView = document.getElementById(`view-xi-${fixId}`);
+        const statsView = document.getElementById(`view-stats-${fixId}`);
+
         if (tabName === 'xi') {
-            document.getElementById(`tab-xi-${fixId}`)?.classList.add('active'); document.getElementById(`tab-stats-${fixId}`)?.classList.remove('active');
-            document.getElementById(`view-xi-${fixId}`)?.classList.remove('d-none'); document.getElementById(`view-stats-${fixId}`)?.classList.add('d-none');
-        } else {
-            document.getElementById(`tab-stats-${fixId}`)?.classList.add('active'); document.getElementById(`tab-xi-${fixId}`)?.classList.remove('active');
-            document.getElementById(`view-stats-${fixId}`)?.classList.remove('d-none'); document.getElementById(`view-stats-${fixId}`)?.classList.add('d-none');
+            xiTab?.classList.add('active');
+            statsTab?.classList.remove('active');
+            xiView?.classList.remove('d-none');
+            statsView?.classList.add('d-none');
+        } else if (tabName === 'stats') {
+            statsTab?.classList.add('active');
+            xiTab?.classList.remove('active');
+            statsView?.classList.remove('d-none');
+            xiView?.classList.add('d-none');
         }
     };
 
