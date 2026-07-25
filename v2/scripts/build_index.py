@@ -71,9 +71,8 @@ def should_fetch_summary(event):
 
     return False, f"State '{state}' not eligible"
 
-def parse_espn_summary(event_id, match_label="Match"):
-    """Deep dives into ESPN's match summary endpoint with diagnostic logs."""
-    url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/summary?event={event_id}"
+def parse_espn_summary(event_id, league_code="all", match_label="Match"):
+    """Deep dives into ESPN's match summary endpoint using multi-URL candidate fallback."""
     headers = {'User-Agent': 'Mozilla/5.0'}
     
     summary_data = {
@@ -84,15 +83,35 @@ def parse_espn_summary(event_id, match_label="Match"):
         "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
         "injuries": {"home": [], "away": []}
     }
-    
-    print(f"    🔍 Querying summary API for ID {event_id} ({match_label})...")
-    
+
+    # FIX: Build URL candidates including league_code and /all/ to prevent 404 errors
+    urls_to_try = []
+    if league_code and league_code not in ["all", "soccer", ""]:
+        urls_to_try.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/summary?event={event_id}")
+    urls_to_try.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/summary?event={event_id}")
+    urls_to_try.append(f"https://site.web.api.espn.com/apis/site/v2/sports/soccer/all/summary?event={event_id}")
+    if league_code and league_code not in ["all", "soccer", ""]:
+        urls_to_try.append(f"https://site.web.api.espn.com/apis/site/v2/sports/soccer/{league_code}/summary?event={event_id}")
+
+    res = None
+    successful_url = None
+    for url in urls_to_try:
+        try:
+            r = requests.get(url, headers=headers, timeout=6)
+            if r.status_code == 200:
+                res = r
+                successful_url = url
+                break
+        except Exception:
+            continue
+
+    if not res or res.status_code != 200:
+        print(f"    ❌ Summary HTTP Error (404/Failed across candidates) for ID {event_id} ({match_label})")
+        return summary_data
+
+    print(f"    ✅ Summary API hit success: {successful_url}")
+
     try:
-        res = requests.get(url, headers=headers, timeout=6)
-        if res.status_code != 200:
-            print(f"    ❌ Summary HTTP Error {res.status_code} for event {event_id}")
-            return summary_data
-        
         data = res.json()
         
         # 1. Parse Team Statistics
@@ -133,11 +152,9 @@ def parse_espn_summary(event_id, match_label="Match"):
                         "red_cards": clean_num(a_raw.get('redCards', 0))
                     }
                 }
-                print(f"       ✅ Team Stats parsed: Home poss {summary_data['team_stats']['home']['possession']}%, Away poss {summary_data['team_stats']['away']['possession']}%")
-            else:
-                print("       ⚠️ Team Stats array was empty in boxscore")
+                print(f"       📊 Team Stats: Home {summary_data['team_stats']['home']['possession']}% - Away {summary_data['team_stats']['away']['possession']}%")
 
-        # 2. Parse Rosters / Lineups
+        # 2. Parse Rosters / Lineups / Player Live Stats
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
             for r_data in rosters:
@@ -190,7 +207,7 @@ def parse_espn_summary(event_id, match_label="Match"):
                         "startXI": start_xi,
                         "substitutes": subs
                     }
-                    print(f"       ✅ Lineup parsed ({key}): Formation {formation}, {len(start_xi)} Starters, {len(subs)} Subs")
+                    print(f"       📋 Rosters ({key}): {formation}, {len(start_xi)} Starters")
 
         # 3. Parse Timeline Events
         key_events = data.get('keyEvents', [])
@@ -215,9 +232,9 @@ def parse_espn_summary(event_id, match_label="Match"):
                     "player_out": p_out if ev_type == "subst" else None,
                     "assist": p_out if ev_type == "Goal" else None
                 })
-            print(f"       ✅ Parsed {len(summary_data['events'])} match timeline events")
+            print(f"       ⚽ Events: {len(summary_data['events'])} key timeline events")
 
-        # 4. Parse Betting Odds
+        # 4. Parse Odds
         pickcenter = data.get('pickcenter', []) or data.get('odds', [])
         if isinstance(pickcenter, list) and len(pickcenter) > 0:
             odds_item = pickcenter[0]
@@ -235,16 +252,13 @@ def parse_espn_summary(event_id, match_label="Match"):
                 "over": str(odds_item.get('overOdds', 'TBD')),
                 "under": str(odds_item.get('underOdds', 'TBD'))
             }
-            print(f"       ✅ Parsed Odds: Home ({summary_data['odds']['home']}), Draw ({summary_data['odds']['draw']}), Away ({summary_data['odds']['away']})")
 
-        # 5. Parse Match Injuries
+        # 5. Parse Injuries
         injuries_raw = data.get('injuries', [])
         if isinstance(injuries_raw, list) and len(injuries_raw) == 2:
             for idx, key in [(0, "home"), (1, "away")]:
                 inj_list = [item.get('athlete', {}).get('displayName', '') for item in injuries_raw[idx].get('injuries', []) if item.get('athlete', {}).get('displayName')]
                 summary_data["injuries"][key] = inj_list
-            if summary_data["injuries"]["home"] or summary_data["injuries"]["away"]:
-                print(f"       ✅ Parsed Injuries: Home ({len(summary_data['injuries']['home'])}), Away ({len(summary_data['injuries']['away'])})")
 
     except Exception as e:
         print(f"    ❌ EXCEPTION in parse_espn_summary for event {event_id}: {e}")
@@ -266,19 +280,17 @@ def fetch_espn_scores_for_date(date_str):
         res = requests.get(url, headers=headers, timeout=10)
         if res.status_code == 200:
             raw_events = res.json().get('events', [])
-            print(f"✅ Primary endpoint returned {len(raw_events)} events")
+            print(f"✅ Master endpoint returned {len(raw_events)} events")
     except Exception as e:
-        print(f"⚠️ Primary schedule query failed for {date_str}: {e}")
+        print(f"⚠️ Master query failed for {date_str}: {e}")
 
     if not raw_events:
-        print("⚠️ Trying fallback schedule endpoint...")
         try:
             res = requests.get(f"https://site.api.espn.com/apis/site/v2/sports/soccer/scoreboard?dates={date_str}&limit=500", headers=headers, timeout=10)
             if res.status_code == 200:
                 raw_events = res.json().get('events', [])
-                print(f"✅ Fallback endpoint returned {len(raw_events)} events")
-        except Exception as e:
-            print(f"❌ Fallback endpoint failed: {e}")
+        except Exception:
+            pass
 
     matches = []
     summary_calls = 0
@@ -305,6 +317,14 @@ def fetch_espn_scores_for_date(date_str):
 
             league_obj = event.get('league') or comp.get('league') or (event.get('leagues', [{}])[0] if event.get('leagues') else {})
             league_name = league_obj.get('name') or league_obj.get('displayName') or league_obj.get('midsizeName') or "Soccer"
+            
+            # Extract league slug / code for API pathing (e.g. usa.1, usa.nwsl, eng.1)
+            espn_league_code = (
+                league_obj.get('slug') or 
+                event.get('league', {}).get('slug') or 
+                comp.get('league', {}).get('slug') or 
+                'all'
+            )
             league_slug = create_slug(league_name)
 
             status_obj = event.get('status', {})
@@ -322,10 +342,10 @@ def fetch_espn_scores_for_date(date_str):
             elapsed = status_obj.get('period', 0)
 
             should_fetch, fetch_reason = should_fetch_summary(event)
-            print(f"▶ Match: {match_label} (ID: {event_id}, Status: {status_short}) -> Summary: {should_fetch} ({fetch_reason})")
+            print(f"▶ {match_label} (ID: {event_id}, Status: {status_short}) -> Fetch Summary: {should_fetch}")
 
             if should_fetch:
-                summary = parse_espn_summary(event_id, match_label)
+                summary = parse_espn_summary(event_id, league_code=espn_league_code, match_label=match_label)
                 summary_calls += 1
             else:
                 summary = {
@@ -378,12 +398,11 @@ def fetch_espn_scores_for_date(date_str):
             })
         except Exception as e:
             print(f"❌ ERROR parsing match item {event.get('id', 'unknown')}: {e}")
-            traceback.print_exc()
 
-    print(f"📊 Summary calls made for {date_str}: {summary_calls}/{len(raw_events)}")
+    print(f"📊 Summary calls succeeded for {date_str}: {summary_calls}/{len(raw_events)}")
     return matches
 
-# Complete Restored HTML/CSS/JS UI Engine
+# Full Restored V1 UI Template
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -482,7 +501,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <h1 class="h5 fw-bold text-dark mb-1">Futbol Starting Eleven: Live Soccer Starting Lineups, Scores & Odds</h1>
     <p class="text-muted mb-2" style="font-size: 0.85rem;">Real-time starting XIs, match injuries, goalscorers, and betting odds for global football.</p>
     
-    <!-- 3-Day Window Partition Buttons -->
     <div class="d-flex justify-content-center gap-2 my-3" id="day-selector">
         <button class="btn btn-outline-dark day-tab-btn" data-day="yesterday">
             Yesterday<br><small style="font-size: 0.65rem;">{{ display_dates.yesterday }}</small>
@@ -566,25 +584,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             return `<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${displayMin}'</span>`;
         } else {
             return `<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${matchTime}</span>`;
-        }
-    }
-
-    function getLatestEventHtml(data, isRibbon = false) {
-        if (!data.events || data.events.length === 0) {
-            return isRibbon ? `<div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div>` : '';
-        }
-        const lastEv = data.events[data.events.length - 1];
-        const isHomeTeam = lastEv.team_id === data.teams.home.id;
-        const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
-
-        if (lastEv.type === 'subst') {
-            let pOut = shortenPlayerName(lastEv.player);
-            let pIn = shortenPlayerName(lastEv.player_out);
-            return `<span class="ms-2 text-dark fw-bold" style="font-size: 0.65rem;">🔄 ${lastEv.time}' 🟢 ${pIn} 🔴 ${pOut}</span>`;
-        } else {
-            let icon = lastEv.type === 'Goal' ? '⚽' : '🟨';
-            let playerName = shortenPlayerName(lastEv.player || teamName);
-            return `<span class="ms-2 fw-bold text-truncate" style="font-size: 0.65rem;">${icon} ${lastEv.time}' ${playerName}</span>`;
         }
     }
 
@@ -698,12 +697,16 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
             players.forEach(p => {
                 const stats = p.live_stats || {};
+                const gVal = stats.goals || stats.G || 0;
+                const aVal = stats.assists || stats.A || 0;
+                const sVal = stats.shotsOnTarget || stats.totalShots || stats.shots || 0;
+
                 html += `
                     <div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;">
                         <div class="text-truncate" style="flex: 1;">${shortenPlayerName(p.name)}</div>
-                        <div style="width: 18px; text-align: center;">${stats.goals || 0}</div>
-                        <div style="width: 18px; text-align: center;">${stats.assists || 0}</div>
-                        <div style="width: 24px; text-align: center;">${stats.shots || 0}</div>
+                        <div style="width: 18px; text-align: center;">${gVal}</div>
+                        <div style="width: 18px; text-align: center;">${aVal}</div>
+                        <div style="width: 24px; text-align: center;">${sVal}</div>
                     </div>`;
             });
         });
