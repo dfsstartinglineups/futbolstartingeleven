@@ -7,7 +7,7 @@ jobs:
   build-v2:
     runs-on: ubuntu-latest
 
-    # Grants permissions required to commit built static files back to the repository
+    # Grants permissions required to commit built static files and cache back to the repository
     permissions:
       contents: write
 
@@ -29,18 +29,19 @@ jobs:
         run: |
           python v2/scripts/build_index.py
 
-      - name: Commit and Push Changes to v2
+      - name: Commit and Push Changes to v2 and Data Cache
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # Stage ONLY changes inside the v2/ folder
-          git add v2/
+          # Stage both the v2/ build output and the data/ cache folder
+          git add v2/ data/
           
-          # Commit only if files in v2/ were modified or created
+          # Commit only if modifications were made, using [skip ci] to prevent infinite workflow loops
           if ! git diff --cached --quiet; then
-            git commit -m "chore(v2): manual build update"
+            git commit -m "chore(v2): manual build update and match cache sync [skip ci]"
             git push
           else
-            echo "No changes detected inside v2/ to commit."
+            echo "No changes detected inside v2/ or data/ to commit."
           fi
+```[cite: 2]
