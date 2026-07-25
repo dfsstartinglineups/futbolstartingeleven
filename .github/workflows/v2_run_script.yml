@@ -33,15 +33,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          # Stage both the v2/ build output and the data/ cache folder
           git add v2/ data/
-          
-          # Commit only if modifications were made, using [skip ci] to prevent infinite workflow loops
-          if ! git diff --cached --quiet; then
-            git commit -m "chore(v2): manual build update and match cache sync [skip ci]"
-            git push
-          else
-            echo "No changes detected inside v2/ or data/ to commit."
-          fi
-```[cite: 2]
+          git commit -m "chore(v2): manual build update and match cache sync [skip ci]" || echo "No changes detected to commit."
+          git push
