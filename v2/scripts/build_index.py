@@ -89,6 +89,10 @@ HUMAN_LEAGUE_FLAGS = {
     "italian serie b": "https://a.espncdn.com/i/leaguelogos/soccer/500/99.png",
     "japanese j.league": "https://a.espncdn.com/i/leaguelogos/soccer/500/2199.png",
     "leagues cup": "https://a.espncdn.com/i/leaguelogos/soccer/500/2410.png",
+    "liga mx": "https://a.espncdn.com/i/leaguelogos/soccer/500/22.png",
+    "liga bbva mx": "https://a.espncdn.com/i/leaguelogos/soccer/500/22.png",
+    "liga expansion mx": "https://a.espncdn.com/i/leaguelogos/soccer/500/2306.png",
+    "liga de expansion mx": "https://a.espncdn.com/i/leaguelogos/soccer/500/2306.png",
     "liga auf uruguaya": "https://a.espncdn.com/i/leaguelogos/soccer/500/1592.png",
     "ligapro ecuador": "https://a.espncdn.com/i/leaguelogos/soccer/500/1944.png",
     "mls": "https://a.espncdn.com/i/leaguelogos/soccer/500/19.png",
@@ -139,7 +143,7 @@ COUNTRY_FLAG_URLS = {
     "english": "gb-eng", "french": "fr", "german": "de", "bolivian": "bo", "bolivia": "bo",
     "norwegian": "no", "russian": "ru", "portuguese": "pt", "portugal": "pt",
     "scottish": "gb-sct", "swedish": "se", "argentine": "ar", "brazilian": "br", "brazil": "br",
-    "italian": "it", "mexican": "mx", "paraguayan": "py", "japanese": "jp",
+    "italian": "it", "mexican": "mx", "mexico": "mx", "mx": "mx", "paraguayan": "py", "japanese": "jp",
     "spanish": "es", "danish": "dk", "indian": "in", "uruguay": "uy", 
     "peruvian": "pe", "peru": "pe", "salvadoran": "sv", "el salvador": "sv",
     "costa rican": "cr", "costa rica": "cr", "fpd": "cr"
@@ -150,12 +154,12 @@ def normalize_text(text):
     nfkd_form = unicodedata.normalize('NFD', text)
     return "".join([c for c in nfkd_form if unicodedata.category(c) != 'Mn']).lower().strip()
 
-# Normalize dictionary keys automatically on startup
+# Pre-normalize dictionary keys on startup
 NORMALIZED_HUMAN_LEAGUE_FLAGS = {
     normalize_text(key): val for key, val in HUMAN_LEAGUE_FLAGS.items()
 }
 
-# The Smart Fallback: Map our text abbreviations to ESPN Slugs
+# Map text abbreviations to ESPN Slugs
 ABBREV_TO_SLUG = {
     "EPL": "eng.1", "MLS": "usa.1", "UCL": "uefa.champions",
     "UEL": "uefa.europa", "UECL": "uefa.europa.conf", "LIGA": "esp.1",
@@ -184,7 +188,6 @@ def generate_league_abbrev(name):
     if not name or name == "Global Football": return "GLB"
     name_upper = name.upper()
     
-    # Specific overrides first, generic fallbacks last
     overrides = {
         "ENGLISH PREMIER LEAGUE": "EPL", "SCOTTISH PREMIERSHIP": "SCO",
         "RUSSIAN PREMIER": "RUS", "PREMIER LEAGUE": "EPL", 
@@ -514,21 +517,16 @@ def fetch_espn_scores_for_date(date_str):
                     if logo and 'default-team-logo' not in logo:
                         league_flag = logo
 
-            # SMART FALLBACK RULES (Mexico Slug -> Country -> Africa -> Continental -> Friendlies -> Cups)
+            # SMART FALLBACK RULES (Country -> Africa -> Continental -> Friendlies -> Cups)
             if not league_flag:
                 name_lower = clean_league_name
                 
-                # Rule 0: Specific ESPN slug check for Mexico (-mx or mex.)
-                if "-mx" in espn_league_slug.lower() or "mex." in espn_league_slug.lower():
-                    league_flag = "https://flagcdn.com/w40/mx.png"
-                
                 # Rule 1: Country Flags
-                if not league_flag:
-                    for country, code in COUNTRY_FLAG_URLS.items():
-                        if re.search(rf'\b{country}\b', name_lower):
-                            league_flag = f"https://flagcdn.com/w40/{code}.png"
-                            break
-                            
+                for country, code in COUNTRY_FLAG_URLS.items():
+                    if re.search(rf'\b{country}\b', name_lower):
+                        league_flag = f"https://flagcdn.com/w40/{code}.png"
+                        break
+                        
                 # Rule 2: Africa
                 if not league_flag and re.search(r'\b(africa|african|caf)\b', name_lower):
                     league_flag = "🌍"
