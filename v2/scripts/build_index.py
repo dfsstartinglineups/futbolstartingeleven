@@ -188,7 +188,6 @@ def is_valid_sub_minute(minute_val):
     return int(cleaned) > 0 if cleaned else False
 
 def extract_match_clock(status_obj):
-    """Accurately extracts live game clock minute instead of period/half."""
     if not status_obj: return "LIVE"
     status_type = status_obj.get('type', {})
     state = status_type.get('state', 'pre')
@@ -197,13 +196,11 @@ def extract_match_clock(status_obj):
     if state == 'post': return "FT"
     if status_type.get('name') == 'STATUS_HALFTIME' or status_type.get('shortDetail') == 'HT': return "HT"
 
-    # 1. Look for explicit shortDetail (e.g. "24'", "45+2'")
     short_detail = status_type.get('shortDetail', '')
     if short_detail and any(c.isdigit() for c in short_detail):
         match = re.search(r"(\d+[\'\+\d\']*)", short_detail)
         if match: return match.group(1).rstrip("'")
 
-    # 2. Look for displayClock (e.g. "23:45" or "24'")
     display_clock = status_obj.get('displayClock', '')
     if display_clock:
         if ':' in str(display_clock):
@@ -214,7 +211,6 @@ def extract_match_clock(status_obj):
             except: pass
         return str(display_clock).replace("'", "")
 
-    # 3. Look for raw seconds clock
     raw_clock = status_obj.get('clock', 0)
     if raw_clock > 0:
         return str(int(raw_clock // 60) + 1)
@@ -294,8 +290,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
     summary_data = {
         "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [],
         "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
-        "injuries": {"home": [], "away": []},
-        "live_score": None
+        "injuries": {"home": [], "away": []}, "live_score": None
     }
 
     urls_to_try = []
@@ -318,7 +313,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
     try:
         data = res.json()
         
-        # 1. Read live match state and score directly from Header
         header = data.get('header', {})
         header_comps = header.get('competitions', [{}])
         comp_head = header_comps[0] if isinstance(header_comps, list) and header_comps else {}
@@ -371,7 +365,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     }
                 }
 
-        # 2. Extract actual substitutions from match keyEvents log
         sub_to_starter_map = {}
         subbed_in_names = set()
         subbed_out_names = set()
@@ -400,43 +393,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         if p_out_id: subbed_out_names.add(p_out_id)
                         if p_out_name: subbed_out_names.add(p_out_name)
 
-        # 3. Extract Advanced Leader Stats (xG, xA, DINT, DUELW)
-        leader_stats_by_athlete = {}
-        leaders_groups = data.get('leaders', [])
-        if isinstance(leaders_groups, list):
-            for team_leader_group in leaders_groups:
-                if not isinstance(team_leader_group, dict): continue
-                for cat_obj in team_leader_group.get('leaders', []):
-                    if not isinstance(cat_obj, dict): continue
-                    for ath_leader in cat_obj.get('leaders', []):
-                        if not isinstance(ath_leader, dict): continue
-                        ath_info = ath_leader.get('athlete', {})
-                        ath_id = str(ath_info.get('id', ''))
-                        ath_name = ath_info.get('displayName', '').lower()
-
-                        keys_to_index = [k for k in [ath_id, ath_name] if k]
-                        if not keys_to_index: continue
-
-                        for k in keys_to_index:
-                            if k not in leader_stats_by_athlete:
-                                leader_stats_by_athlete[k] = {}
-
-                        for st in ath_leader.get('statistics', []):
-                            if not isinstance(st, dict): continue
-                            st_name = st.get('name', '')
-                            st_abbr = st.get('abbreviation', '')
-                            st_val = st.get('displayValue', st.get('value', 0))
-                            try: num_val = float(str(st_val)) if '.' in str(st_val) else int(float(str(st_val)))
-                            except: num_val = st_val
-
-                            for k in keys_to_index:
-                                if st_name:
-                                    leader_stats_by_athlete[k][st_name] = num_val
-                                    leader_stats_by_athlete[k][to_snake_case(st_name)] = num_val
-                                if st_abbr:
-                                    leader_stats_by_athlete[k][st_abbr.upper()] = num_val
-                                    leader_stats_by_athlete[k][st_abbr.lower()] = num_val
-
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
             for r_data in rosters:
@@ -449,7 +405,46 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 
                 player_entries = r_data.get('roster', [])
                 if isinstance(player_entries, list):
-                    # Pass 1: Parse Starters
+                    # Helper function to extract stats from both 'stats' AND 'statistics' arrays
+                    def extract_player_live_stats(entry_obj):
+                        stats_raw = (entry_obj.get('stats') or []) + (entry_obj.get('statistics') or [])
+                        live_stats = {}
+                        for st in stats_raw:
+                            if not isinstance(st, dict): continue
+                            raw_k = st.get('name', '')
+                            raw_abbr = str(st.get('abbreviation', '')).upper()
+                            raw_v = st.get('displayValue', st.get('value', 0))
+                            try:
+                                num_v = float(str(raw_v)) if '.' in str(raw_v) else int(float(str(raw_v)))
+                            except (ValueError, TypeError): num_v = raw_v
+
+                            if raw_k:
+                                live_stats[raw_k] = num_v
+                                live_stats[to_snake_case(raw_k)] = num_v
+                            if raw_abbr:
+                                live_stats[raw_abbr] = num_v
+                                live_stats[raw_abbr.lower()] = num_v
+
+                            # Direct explicit key mapping for Opta web table headers
+                            if raw_k in ['touches', 'totalTouches'] or raw_abbr == 'TCH': live_stats['touches'] = num_v
+                            elif raw_k in ['expectedGoals', 'xg'] or raw_abbr == 'XG': live_stats['xg'] = num_v
+                            elif raw_k in ['expectedAssists', 'xa'] or raw_abbr == 'XA': live_stats['xa'] = num_v
+                            elif raw_k in ['shotsOnTarget', 'shotsOnGoal'] or raw_abbr == 'SOG': live_stats['shots_on_target'] = num_v
+                            elif raw_k in ['totalShots', 'shots'] or raw_abbr == 'SHOT': live_stats['total_shots'] = num_v
+                            elif raw_k in ['chancesCreated', 'bigChancesCreated'] or raw_abbr == 'BCC': live_stats['bcc'] = num_v
+                            elif raw_k in ['interceptions', 'dint'] or raw_abbr == 'DINT': live_stats['dint'] = num_v
+                            elif raw_k in ['duelsWon', 'duelw'] or raw_abbr == 'DUELW': live_stats['duels_won'] = num_v
+                            elif raw_k in ['accuratePasses', 'passes'] or raw_abbr in ['PAS', 'PASS']: live_stats['accurate_passes'] = num_v
+                            elif raw_k in ['effectiveTackles', 'tackles'] or raw_abbr in ['TK', 'TCKL']: live_stats['tackles'] = num_v
+                            elif raw_k in ['totalGoals', 'goals', 'goal'] or raw_abbr == 'G': live_stats['goals'] = num_v
+                            elif raw_k in ['goalAssists', 'assists', 'assist'] or raw_abbr == 'A': live_stats['assists'] = num_v
+                            elif raw_k in ['goalsConceded', 'goalsAgainst'] or raw_abbr == 'GA': live_stats['conceded'] = num_v
+                            elif raw_k in ['saves'] or raw_abbr == 'SV': live_stats['saves'] = num_v
+                            elif raw_k in ['shotsFaced'] or raw_abbr == 'SHF': live_stats['shots_faced'] = num_v
+                            elif raw_k in ['foulsCommitted'] or raw_abbr == 'FC': live_stats['fouls_committed'] = num_v
+                        return live_stats
+
+                    # Pass 1: Starters
                     for entry in player_entries:
                         if not entry.get('starter', False): continue
                         ath = entry.get('athlete', {})
@@ -467,48 +462,18 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                             subbed_in = (p_id in subbed_in_names or p_name.lower() in subbed_in_names or is_valid_sub_minute(in_min))
                             subbed_out = (p_id in subbed_out_names or p_name.lower() in subbed_out_names or is_valid_sub_minute(out_min))
 
-                        stats_raw = entry.get('stats', [])
-                        live_stats = {}
-                        if isinstance(stats_raw, list):
-                            for st in stats_raw:
-                                if isinstance(st, dict):
-                                    raw_k, raw_v = st.get('name', ''), st.get('displayValue', st.get('value', 0))
-                                    try: num_v = int(float(str(raw_v)))
-                                    except (ValueError, TypeError): num_v = raw_v
-                                    live_stats[raw_k] = num_v
-                                    live_stats[to_snake_case(raw_k)] = num_v
-
-                                    if raw_k in ['totalGoals', 'goals', 'goal', 'goalsScored']: live_stats['goals'] = num_v
-                                    elif raw_k in ['goalAssists', 'assists', 'assist']: live_stats['assists'] = num_v
-                                    elif raw_k in ['goalsConceded', 'goalsAgainst']: live_stats['conceded'] = num_v
-                                    elif raw_k in ['shotsOnTarget', 'shotsOnGoal']: live_stats['shots_on_target'] = num_v
-                                    elif raw_k in ['totalShots', 'shots']: live_stats['total_shots'] = num_v
-                                    elif raw_k in ['saves']: live_stats['saves'] = num_v
-                                    elif raw_k in ['shotsFaced']: live_stats['shots_faced'] = num_v
-
-                        # MERGE ADVANCED LEADER STATS
-                        adv_stats = leader_stats_by_athlete.get(p_id) or leader_stats_by_athlete.get(p_name.lower()) or {}
-                        live_stats.update(adv_stats)
-
-                        if 'expectedGoals' in live_stats or 'XG' in live_stats: live_stats['xg'] = live_stats.get('expectedGoals', live_stats.get('XG', 0))
-                        if 'expectedAssists' in live_stats or 'XA' in live_stats: live_stats['xa'] = live_stats.get('expectedAssists', live_stats.get('XA', 0))
-                        if 'accuratePasses' in live_stats: live_stats['accurate_passes'] = live_stats.get('accuratePasses', 0)
-                        if 'effectiveTackles' in live_stats: live_stats['tackles'] = live_stats.get('effectiveTackles', 0)
-                        if 'duelsWon' in live_stats or 'DUELW' in live_stats: live_stats['duels_won'] = live_stats.get('duelsWon', live_stats.get('DUELW', 0))
-                        if 'DINT' in live_stats or 'interceptions' in live_stats: live_stats['dint'] = live_stats.get('DINT', live_stats.get('interceptions', 0))
-                        if 'expectedGoalsConceded' in live_stats or 'XGA' in live_stats: live_stats['xga'] = live_stats.get('expectedGoalsConceded', live_stats.get('XGA', 0))
-
                         player_obj = {
                             "id": p_id, "name": p_name,
                             "pos": pos_display, "category": pos_category, "number": str(entry.get('jersey', '')),
                             "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
-                            "live_stats": live_stats, "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
+                            "live_stats": extract_player_live_stats(entry),
+                            "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
                             "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                         }
                         start_xi.append({"player": player_obj, "sub_history": []})
                         starters_lookup[p_name.lower()] = player_obj
 
-                    # Pass 2: Parse Substitutes
+                    # Pass 2: Substitutes
                     for entry in player_entries:
                         if entry.get('starter', False): continue
                         ath = entry.get('athlete', {})
@@ -535,46 +500,17 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                             subbed_out = (p_id in subbed_out_names or p_name.lower() in subbed_out_names or is_valid_sub_minute(out_min))
 
                         did_play = entry.get('didPlay', False) or entry.get('played', False) or subbed_in
-
-                        stats_raw = entry.get('stats', [])
-                        live_stats = {}
-                        if isinstance(stats_raw, list):
-                            for st in stats_raw:
-                                if isinstance(st, dict):
-                                    raw_k, raw_v = st.get('name', ''), st.get('displayValue', st.get('value', 0))
-                                    try: num_v = int(float(str(raw_v)))
-                                    except (ValueError, TypeError): num_v = raw_v
-                                    live_stats[raw_k] = num_v
-                                    live_stats[to_snake_case(raw_k)] = num_v
-
-                                    if raw_k in ['totalGoals', 'goals', 'goal', 'goalsScored']: live_stats['goals'] = num_v
-                                    elif raw_k in ['goalAssists', 'assists', 'assist']: live_stats['assists'] = num_v
-                                    elif raw_k in ['goalsConceded', 'goalsAgainst']: live_stats['conceded'] = num_v
-                                    elif raw_k in ['shotsOnTarget', 'shotsOnGoal']: live_stats['shots_on_target'] = num_v
-                                    elif raw_k in ['totalShots', 'shots']: live_stats['total_shots'] = num_v
-                                    elif raw_k in ['saves']: live_stats['saves'] = num_v
-                                    elif raw_k in ['shotsFaced']: live_stats['shots_faced'] = num_v
-
-                        # MERGE ADVANCED LEADER STATS
-                        adv_stats = leader_stats_by_athlete.get(p_id) or leader_stats_by_athlete.get(p_name.lower()) or {}
-                        live_stats.update(adv_stats)
-
-                        if 'expectedGoals' in live_stats or 'XG' in live_stats: live_stats['xg'] = live_stats.get('expectedGoals', live_stats.get('XG', 0))
-                        if 'expectedAssists' in live_stats or 'XA' in live_stats: live_stats['xa'] = live_stats.get('expectedAssists', live_stats.get('XA', 0))
-                        if 'accuratePasses' in live_stats: live_stats['accurate_passes'] = live_stats.get('accuratePasses', 0)
-                        if 'effectiveTackles' in live_stats: live_stats['tackles'] = live_stats.get('effectiveTackles', 0)
-                        if 'duelsWon' in live_stats or 'DUELW' in live_stats: live_stats['duels_won'] = live_stats.get('duelsWon', live_stats.get('DUELW', 0))
-                        if 'DINT' in live_stats or 'interceptions' in live_stats: live_stats['dint'] = live_stats.get('DINT', live_stats.get('interceptions', 0))
-                        if 'expectedGoalsConceded' in live_stats or 'XGA' in live_stats: live_stats['xga'] = live_stats.get('expectedGoalsConceded', live_stats.get('XGA', 0))
+                        player_live_stats = extract_player_live_stats(entry)
 
                         player_obj = {
                             "id": p_id, "name": p_name,
                             "pos": pos_display, "category": pos_category, "number": str(entry.get('jersey', '')),
                             "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
-                            "live_stats": live_stats, "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
+                            "live_stats": player_live_stats,
+                            "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
                             "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                         }
-                        if did_play or live_stats: subs.append({"player": player_obj})
+                        if did_play or player_live_stats: subs.append({"player": player_obj})
 
                 if start_xi:
                     summary_data[key] = {
@@ -735,7 +671,6 @@ def fetch_espn_scores_for_date(date_str):
             elif state == 'post': status_short = 'FT'
             else: status_short = status_type.get('shortDetail', 'LIVE')
 
-            # FIX: Pull actual live game clock minute instead of period (half)
             elapsed_clock = extract_match_clock(status_obj)
 
             should_fetch, fetch_reason = should_fetch_summary(event)
@@ -750,7 +685,6 @@ def fetch_espn_scores_for_date(date_str):
                     "injuries": {"home": [], "away": []}, "live_score": None
                 }
 
-            # Live score优先: Check summary header score -> fallback to scoreboard event score
             h_score = summary.get('live_score', {}).get('home') if summary.get('live_score') else home.get('score')
             a_score = summary.get('live_score', {}).get('away') if summary.get('live_score') else away.get('score')
 
@@ -1004,14 +938,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     }
 
     function buildLiveStatsGrid(lineupData, teamColorHex) {
-        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
+        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) {
+            return `<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
+        }
         
+        // Advanced Opta Stat Groupings matching ESPN web tables
         const groups = { 
             'F': { title: 'FWD', stats: ['G', 'A', 'xG', 'SOG'], keys: ['goals', 'assists', 'xg', 'shots_on_target'] }, 
             'M': { title: 'MID', stats: ['G', 'A', 'PAS', 'DUEL'], keys: ['goals', 'assists', 'accurate_passes', 'duels_won'] }, 
             'D': { title: 'DEF', stats: ['G', 'DINT', 'TK', 'DUEL'], keys: ['goals', 'dint', 'tackles', 'duels_won'] }, 
             'G': { title: 'GK',  stats: ['SV', 'GA', 'xGA', 'SHF'], keys: ['saves', 'conceded', 'xga', 'shots_faced'] } 
         };
+
         const groupedPlayers = { 'F': [], 'M': [], 'D': [], 'G': [] };
         
         let flatPlayers = [];
@@ -1029,16 +967,31 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const players = groupedPlayers[posKey];
             if (players.length === 0) return;
             const gConf = groups[posKey];
-            html += `<div class="d-flex w-100 px-2 py-1 align-items-center bg-light border-bottom" style="font-size: 0.6rem; font-weight: 700;"><div style="flex: 1; color: ${tColor};">${gConf.title}</div><div style="width: 16px; text-align: center;">${gConf.stats[0]}</div><div style="width: 22px; text-align: center;">${gConf.stats[1]}</div><div style="width: 28px; text-align: center;">${gConf.stats[2]}</div><div style="width: 24px; text-align: center;">${gConf.stats[3]}</div></div>`;
+
+            html += `<div class="d-flex w-100 px-2 py-1 align-items-center bg-light border-bottom" style="font-size: 0.6rem; font-weight: 700;">
+                        <div style="flex: 1; color: ${tColor};">${gConf.title}</div>
+                        <div style="width: 18px; text-align: center;">${gConf.stats[0]}</div>
+                        <div style="width: 22px; text-align: center;">${gConf.stats[1]}</div>
+                        <div style="width: 28px; text-align: center;">${gConf.stats[2]}</div>
+                        <div style="width: 24px; text-align: center;">${gConf.stats[3]}</div>
+                     </div>`;
+
             players.forEach(p => {
                 let prefix = p.isSubbedIn ? `<span class="text-success fw-bold me-1">▲</span>` : (p.isSubbedOut ? `<span class="text-primary fw-bold me-1">↻</span>` : '');
-                
-                const val0 = (p.live_stats || {})[gConf.keys[0]] ?? 0;
-                const val1 = (p.live_stats || {})[gConf.keys[1]] ?? 0;
-                const val2 = (p.live_stats || {})[gConf.keys[2]] ?? 0;
-                const val3 = (p.live_stats || {})[gConf.keys[3]] ?? 0;
+                const stats = p.live_stats || {};
 
-                html += `<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;"><div class="text-start text-truncate" style="flex: 1;">${prefix}${shortenPlayerName(p.name || 'Unknown')}</div><div class="text-muted" style="width: 16px; text-align: center; font-weight: 600;">${val0}</div><div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${val1}</div><div class="text-muted" style="width: 28px; text-align: center; font-weight: 600;">${val2}</div><div class="text-muted" style="width: 24px; text-align: center; font-weight: 600;">${val3}</div></div>`;
+                const val0 = stats[gConf.keys[0]] ?? 0;
+                const val1 = stats[gConf.keys[1]] ?? 0;
+                const val2 = stats[gConf.keys[2]] ?? 0;
+                const val3 = stats[gConf.keys[3]] ?? 0;
+
+                html += `<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;">
+                            <div class="text-start text-truncate" style="flex: 1;">${prefix}${shortenPlayerName(p.name || 'Unknown')}</div>
+                            <div class="text-muted" style="width: 18px; text-align: center; font-weight: 600;">${val0}</div>
+                            <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${val1}</div>
+                            <div class="text-muted" style="width: 28px; text-align: center; font-weight: 600;">${val2}</div>
+                            <div class="text-muted" style="width: 24px; text-align: center; font-weight: 600;">${val3}</div>
+                         </div>`;
             });
         });
         return html;
@@ -1068,7 +1021,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     <div class="p-2 pb-1" style="background-color: #fcfcfc;">
                         <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('${fixId}')">
                             <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-${fixId}" style="white-space: nowrap;">${getTimeBadgeHtml(data)} ${getLatestEventHtml(data)}</div>
-                            <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-content-end" style="font-size: 0.75rem; min-width: 0;" title="${data.league.name}">
+                            <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="${data.league.name}">
                                 ${fullFlagHtml} <span class="text-truncate">${data.league.name}</span>
                             </a>
                         </div>
