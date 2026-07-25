@@ -1,0 +1,46 @@
+name: V2 Manual Build Generator
+
+on:
+  workflow_dispatch: # Triggers strictly on demand from the Actions tab
+
+jobs:
+  build-v2:
+    runs-on: ubuntu-latest
+
+    # Grants permissions required to commit built static files back to the repository
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pytz jinja2
+
+      - name: Run V2 Build Script
+        run: |
+          python v2/scripts/build_index.py
+
+      - name: Commit and Push Changes to v2
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Stage ONLY changes inside the v2/ folder
+          git add v2/
+          
+          # Commit only if files in v2/ were modified or created
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(v2): manual build update"
+            git push
+          else
+            echo "No changes detected inside v2/ to commit."
+          fi
