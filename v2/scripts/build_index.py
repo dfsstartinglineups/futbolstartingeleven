@@ -8,7 +8,7 @@ import pytz
 from jinja2 import Template
 
 def create_slug(name):
-    """Generates clean URL slugs dynamically from team or league names."""
+    """Generates clean URL slugs dynamically."""
     if not name:
         return ""
     slug = name.lower()
@@ -18,12 +18,79 @@ def create_slug(name):
     return slug.strip('-')
 
 def to_snake_case(name):
-    """Converts camelCase keys (e.g., shotsOnTarget) to snake_case (shots_on_target)."""
+    """Converts camelCase keys (e.g., shotsOnTarget) to snake_case."""
     s = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s).lower()
 
+def generate_league_abbrev(name):
+    """Dynamically generates a 3-4 letter abbreviation for compact ribbons."""
+    if not name or name == "Global Football":
+        return "GLB"
+        
+    name_upper = name.upper()
+    
+    # Direct Overrides for common ESPN altGameNote strings & global leagues
+    overrides = {
+        "ENGLISH PREMIER LEAGUE": "EPL",
+        "PREMIER LEAGUE": "EPL",
+        "MAJOR LEAGUE SOCCER": "MLS",
+        "MLS": "MLS",
+        "UEFA CHAMPIONS LEAGUE": "UCL",
+        "UEFA EUROPA LEAGUE": "UEL",
+        "UEFA EUROPA CONFERENCE LEAGUE": "UECL",
+        "SPANISH LALIGA": "LIGA",
+        "LALIGA": "LIGA",
+        "ITALIAN SERIE A": "SERA",
+        "SERIE A": "SERA",
+        "GERMAN BUNDESLIGA": "BUND",
+        "BUNDESLIGA": "BUND",
+        "FRENCH LIGUE 1": "LIG1",
+        "LIGUE 1": "LIG1",
+        "MEXICAN LIGA BBVA MX": "LMX",
+        "LIGA MX": "LMX",
+        "LIGA DE EXPANSIÓN MX": "EXP",
+        "LIGA DE EXPANSION MX": "EXP",
+        "NWSL": "NWSL",
+        "DANISH SUPERLIGA": "DEN",
+        "DENMARK SUPERLIGA": "DEN",
+        "SWEDISH ALLSVENSKAN": "SWE",
+        "ALLSVENSKAN": "ALLS",
+        "ARGENTINE LPF": "LPF",
+        "ARGENTINA LPF": "LPF",
+        "RUSSIAN PREMIER": "RUS",
+        "USL CHAMPIONSHIP": "USL",
+        "CLUB FRIENDLY": "FRND",
+        "FRIENDLY": "FRND",
+        "ASEAN CHAMP": "ASEAN",
+        "SCOTTISH PREMIERSHIP": "SCO",
+        "DUTCH EREDIVISIE": "ERED",
+        "PORTUGUESE LIGA": "POR",
+        "BRAZILIAN SERIE A": "BSA",
+        "COPA DEL REY": "CDR",
+        "FA CUP": "FA",
+        "EFL CUP": "EFL",
+        "DFB POKAL": "DFB",
+        "COPPA ITALIA": "COPPA",
+    }
+    
+    for k, v in overrides.items():
+        if k in name_upper:
+            return v
+            
+    # Clean filler words for dynamic fallback generation
+    clean_name = re.sub(r'\b(THE|OF|AND|FOR|MEN|WOMEN|MENS|WOMENS|DEL|LA)\b', '', name_upper).strip()
+    words = clean_name.split()
+    
+    if len(words) >= 3:
+        return "".join([w[0] for w in words[:3]])  # First letter of first 3 words
+    elif len(words) == 2:
+        return words[0][:3]  # First 3 letters of first word
+    elif len(words) == 1:
+        return words[0][:4]  # First 4 letters of single word
+        
+    return name[:4].upper()
+
 def get_3day_dates():
-    """Calculates Yesterday, Today, and Tomorrow using a 3:00 AM EST cutoff."""
     est = pytz.timezone('America/New_York')
     now = datetime.now(est)
     
@@ -48,12 +115,6 @@ def get_3day_dates():
     }
 
 def should_fetch_summary(event):
-    """
-    Performance Guard: Only fetches summary endpoint if:
-    1. Match is Live ('in')
-    2. Match is Finished ('post')
-    3. Match starts within 60 minutes
-    """
     status_obj = event.get('status', {})
     status_type = status_obj.get('type', {})
     state = status_type.get('state', 'pre')
@@ -77,7 +138,6 @@ def should_fetch_summary(event):
     return False, f"State '{state}' not eligible"
 
 def parse_espn_summary(event_id, league_code="all", match_label="Match"):
-    """Deep dives into ESPN's match summary endpoint with fallback URL candidates."""
     headers = {'User-Agent': 'Mozilla/5.0'}
     
     summary_data = {
@@ -150,7 +210,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     }
                 }
 
-        # 2. Parse Rosters / Lineups / Player Substitution Flags & Live Stats
+        # 2. Parse Rosters & Live Stats
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
             for r_data in rosters:
@@ -214,7 +274,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         if is_starter:
                             start_xi.append({"player": player_obj, "sub_history": []})
                         else:
-                            # Only include substitutes who actually came on or registered live stats
                             if did_play or live_stats:
                                 subs.append({"player": player_obj})
 
@@ -240,7 +299,6 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 clock_text = ev.get('clock', {}).get('displayValue', "0'")
                 team_id = str(ev.get('team', {}).get('id', ''))
                 
-                # ESPN participants mapping: Index 0 = IN, Index 1 = OUT
                 participants = ev.get('participants', [])
                 p_in = participants[0].get('athlete', {}).get('displayName', '') if len(participants) > 0 else ''
                 p_out = participants[1].get('athlete', {}).get('displayName', '') if len(participants) > 1 else ''
@@ -249,8 +307,8 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 ev_type = "Goal" if "goal" in ev_text.lower() else ("subst" if is_sub else "Card")
 
                 if ev_type == "subst":
-                    p_player = p_out if p_out else "Unknown"      # Subbed OUT
-                    p_player_out = p_in if p_in else "Unknown"    # Subbed IN
+                    p_player = p_out if p_out else "Unknown"
+                    p_player_out = p_in if p_in else "Unknown"
                 else:
                     p_player = p_in if p_in else "Unknown"
                     p_player_out = p_out if p_out else None
@@ -296,7 +354,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
     return summary_data
 
 def fetch_espn_scores_for_date(date_str):
-    """Queries ESPN's master '/soccer/all/scoreboard' with pagination (page=1, page=2...)."""
+    """Queries ESPN's master '/soccer/all/scoreboard' with pagination."""
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
     seen_ids = set()
@@ -362,28 +420,35 @@ def fetch_espn_scores_for_date(date_str):
             away_name = away['team']['displayName']
             match_label = f"{home_name} vs {away_name}"
 
+            # 🎯 DIRECT LEAGUE NAME EXTRACTION FROM altGameNote
+            alt_note = comp.get('altGameNote')
+
             league_obj = (
                 event.get('league') or 
                 comp.get('league') or 
                 (event.get('leagues', [{}])[0] if isinstance(event.get('leagues'), list) and event.get('leagues') else {}) or
                 (comp.get('leagues', [{}])[0] if isinstance(comp.get('leagues'), list) and comp.get('leagues') else {})
             )
-            
-            league_name = (
+
+            fallback_name = (
                 league_obj.get('name') or 
                 league_obj.get('displayName') or 
                 league_obj.get('midsizeName') or 
-                league_obj.get('abbreviation') or 
                 "Global Football"
             )
 
-            espn_league_code = (
+            final_league_name = alt_note if alt_note else fallback_name
+            final_league_name = re.sub(r'^\d{4}-\d{4}\s+', '', final_league_name)
+
+            espn_league_slug = (
                 league_obj.get('slug') or 
                 event.get('league', {}).get('slug') or 
                 comp.get('league', {}).get('slug') or 
                 'all'
             )
-            league_slug = create_slug(league_name)
+
+            league_abbrev = generate_league_abbrev(final_league_name)
+            league_slug = create_slug(final_league_name)
 
             status_obj = event.get('status', {})
             status_type = status_obj.get('type', {})
@@ -402,7 +467,7 @@ def fetch_espn_scores_for_date(date_str):
             should_fetch, fetch_reason = should_fetch_summary(event)
 
             if should_fetch:
-                summary = parse_espn_summary(event_id, league_code=espn_league_code, match_label=match_label)
+                summary = parse_espn_summary(event_id, league_code=espn_league_slug, match_label=match_label)
                 summary_calls += 1
             else:
                 summary = {
@@ -422,7 +487,8 @@ def fetch_espn_scores_for_date(date_str):
                 },
                 "league": {
                     "id": event_id,
-                    "name": league_name,
+                    "name": final_league_name,
+                    "abbrev": league_abbrev,
                     "slug": league_slug
                 },
                 "teams": {
@@ -459,7 +525,7 @@ def fetch_espn_scores_for_date(date_str):
     print(f"📊 Deep summary fetches completed for {date_str}: {summary_calls}/{len(raw_events)}")
     return matches
 
-# Complete Restored V1 Frontend Engine matching live site (Image 2)
+# Complete Frontend Engine
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -655,8 +721,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo;
 
         if (lastEv.type === 'subst') {
-            let pOut = shortenPlayerName(lastEv.player);     // Subbed Out
-            let pIn = shortenPlayerName(lastEv.player_out);  // Subbed In
+            let pOut = shortenPlayerName(lastEv.player);     
+            let pIn = shortenPlayerName(lastEv.player_out);  
 
             if (isRibbon) {
                 return `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;">
@@ -703,8 +769,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
             <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1">
                 <div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div>
-                <a href="/leagues/${data.league.slug}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;">
-                    ${data.league.name}
+                <a href="/leagues/${data.league.slug}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">
+                    ${data.league.abbrev}
                 </a>
             </div>
             <div class="col-5 px-2">
@@ -1000,10 +1066,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const fullHtml = `
             <div class="p-2 pb-1" style="background-color: #fcfcfc;">
                 <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('${fixId}')">
-                    <div class="pe-2" id="time-${fixId}">
+                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-${fixId}" style="white-space: nowrap;">
                         ${getTimeBadgeHtml(data)} ${getLatestEventHtml(data)}
                     </div>
-                    <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem;">
+                    <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem; min-width: 0;" title="${data.league.name}">
                         ${data.league.name}
                     </a>
                 </div>
@@ -1107,7 +1173,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const dayMatches = STATIC_MATCHES[ACTIVE_DAY] || [];
 
         let filtered = dayMatches.filter(m => {
-            const matchStr = (m.teams.home.name + " " + m.teams.away.name + " " + m.league.name).toLowerCase();
+            const matchStr = (m.teams.home.name + " " + m.teams.away.name + " " + m.league.name + " " + m.league.abbrev).toLowerCase();
             return matchStr.includes(searchText);
         });
 
@@ -1170,11 +1236,6 @@ def generate_v2_index():
     print("⏳ STARTING SSG BUILD PIPELINE")
     print("==================================================")
     day_info = get_3day_dates()
-    
-    print(f"Calendar Boundaries (3:00 AM EST cutoff):")
-    print(f"  Yesterday: {day_info['dates']['yesterday']} ({day_info['display']['yesterday']})")
-    print(f"  Today:     {day_info['dates']['today']} ({day_info['display']['today']})")
-    print(f"  Tomorrow:  {day_info['dates']['tomorrow']} ({day_info['display']['tomorrow']})")
     
     matches_by_day = {
         "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"]),
