@@ -184,6 +184,23 @@ def to_snake_case(name):
     s = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s).lower()
 
+def get_position_category(raw_pos):
+    """Categorizes granular position tags (e.g., CD-L, CF-R) into F, M, D, G for the stats table."""
+    if not raw_pos: return 'M'
+    p = str(raw_pos).strip().upper()
+    
+    # Goalkeeper
+    if p in ['G', 'GK', 'GOALKEEPER']:
+        return 'G'
+    # Forwards / Attackers
+    if any(term in p for term in ['CF', 'ST', 'FW', 'LW', 'RW', 'WF', 'SS', 'ATT', 'STR']) or p == 'F':
+        return 'F'
+    # Defenders
+    if any(term in p for term in ['CD', 'CB', 'LB', 'RB', 'WB', 'SW', 'DF', 'DEF']) or p == 'D':
+        return 'D'
+    # Midfielders & Default Fallback
+    return 'M'
+
 def generate_league_abbrev(name):
     if not name or name == "Global Football": return "GLB"
     name_upper = name.upper()
@@ -328,7 +345,14 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 if isinstance(player_entries, list):
                     for entry in player_entries:
                         ath = entry.get('athlete', {})
-                        pos_abbr = entry.get('position', {}).get('abbreviation', 'M')
+                        
+                        # Preserve exact positional tag (e.g. CD-L, CF-R) for UI display
+                        raw_pos_code = entry.get('position', {}).get('abbreviation') or entry.get('position', {}).get('displayName', 'M')
+                        pos_display = raw_pos_code.strip().upper() if raw_pos_code else 'M'
+                        
+                        # Map to core category (F, M, D, G) for Live Stats grouping
+                        pos_category = get_position_category(pos_display)
+                        
                         is_starter = entry.get('starter', False)
                         subbed_in = entry.get('subbedIn', False) or bool(entry.get('subbedInMinute'))
                         subbed_out = entry.get('subbedOut', False) or bool(entry.get('subbedOutMinute'))
@@ -374,7 +398,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
                         player_obj = {
                             "id": str(ath.get('id', '')), "name": ath.get('displayName', 'Unknown'),
-                            "pos": pos_abbr, "number": str(entry.get('jersey', '')),
+                            "pos": pos_display, "category": pos_category, "number": str(entry.get('jersey', '')),
                             "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
                             "live_stats": live_stats, "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
                             "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
@@ -839,7 +863,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         let flatPlayers = [];
         lineupData.startXI.forEach(slot => flatPlayers.push({ ...slot.player }));
         if (lineupData.substitutes) lineupData.substitutes.forEach(sub => flatPlayers.push({ ...sub.player }));
-        flatPlayers.forEach(p => groupedPlayers[p.pos || 'M'] ? groupedPlayers[p.pos || 'M'].push(p) : groupedPlayers['M'].push(p));
+        
+        flatPlayers.forEach(p => {
+            const cat = p.category || 'M';
+            if (groupedPlayers[cat]) groupedPlayers[cat].push(p);
+            else groupedPlayers['M'].push(p);
+        });
 
         let html = '', tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
         ['F', 'M', 'D', 'G'].forEach(posKey => {
@@ -857,7 +886,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
     function buildLineupList(lineupData) {
         if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div>`;
-        const listItems = lineupData.startXI.map(slot => `<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; width: 12px;">${slot.player.pos || 'M'}</span>${slot.player.photo ? `<img src="${slot.player.photo}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2">` : `<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>`}<span class="batter-name text-dark text-truncate">${slot.player.isSubbedOut ? `<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>` : ''}${shortenPlayerName(slot.player.name || 'Unknown')}</span><span class="ms-auto text-muted" style="font-size: 0.65rem;">#${slot.player.number || ''}</span></li>`).join('');
+        const listItems = lineupData.startXI.map(slot => `<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">${slot.player.pos || 'M'}</span>${slot.player.photo ? `<img src="${slot.player.photo}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2">` : `<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>`}<span class="batter-name text-dark text-truncate">${slot.player.isSubbedOut ? `<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>` : ''}${shortenPlayerName(slot.player.name || 'Unknown')}</span><span class="ms-auto text-muted" style="font-size: 0.65rem;">#${slot.player.number || ''}</span></li>`).join('');
         return `<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ ${lineupData.formation || '4-3-3'}</div><ul class="batting-order w-100 m-0 p-0">${listItems}</ul>`;
     }
 
