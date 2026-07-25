@@ -123,38 +123,22 @@ LEAGUE_FLAGS = {
     "uefa.weuro": "https://a.espncdn.com/i/leaguelogos/soccer/500/2381.png",
     "usa.usl.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2292.png",
     "usa.usl.l1": "https://a.espncdn.com/i/leaguelogos/soccer/500/2452.png",
-    "ven.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1947.png"
+    "ven.1": "https://a.espncdn.com/i/leaguelogos/soccer/500/1947.png",
+    "fifa.friendly.w": "https://a.espncdn.com/i/leaguelogos/soccer/500/70.png",
+    "fifa.w.olympics": "https://a.espncdn.com/i/leaguelogos/soccer/500/84.png",
 }
 
 # The Smart Fallback: Map our text abbreviations to ESPN Slugs
 ABBREV_TO_SLUG = {
-    "EPL": "eng.1",
-    "MLS": "usa.1",
-    "UCL": "uefa.champions",
-    "UEL": "uefa.europa",
-    "UECL": "uefa.europa.conf",
-    "LIGA": "esp.1",
-    "SERA": "ita.1",
-    "BUND": "ger.1",
-    "LIG1": "fra.1",
-    "LMX": "mex.1",
-    "EXP": "mex.2",
-    "NWSL": "usa.nwsl",
-    "DEN": "den.1",
-    "SWE": "swe.1",
-    "LPF": "arg.1",
-    "RUS": "rus.1",
-    "USL": "usa.usl.1",
-    "SCO": "sco.1",
-    "ERED": "ned.1",
-    "POR": "por.1",
-    "BSA": "bra.1",
-    "CDR": "esp.copa_del_rey",
-    "FA": "eng.fa",
-    "EFL": "eng.league_cup",
-    "DFB": "ger.dfb_pokal",
-    "COPPA": "ita.coppa_italia",
-    "ASEAN": "aff.championship"
+    "EPL": "eng.1", "MLS": "usa.1", "UCL": "uefa.champions",
+    "UEL": "uefa.europa", "UECL": "uefa.europa.conf", "LIGA": "esp.1",
+    "SERA": "ita.1", "BUND": "ger.1", "LIG1": "fra.1",
+    "LMX": "mex.1", "EXP": "mex.2", "NWSL": "usa.nwsl",
+    "DEN": "den.1", "SWE": "swe.1", "LPF": "arg.1",
+    "RUS": "rus.1", "USL": "usa.usl.1", "SCO": "sco.1",
+    "ERED": "ned.1", "POR": "por.1", "BSA": "bra.1",
+    "CDR": "esp.copa_del_rey", "FA": "eng.fa", "EFL": "eng.league_cup",
+    "DFB": "ger.dfb_pokal", "COPPA": "ita.coppa_italia", "ASEAN": "aff.championship"
 }
 
 def create_slug(name):
@@ -483,8 +467,6 @@ def fetch_espn_scores_for_date(date_str):
             
             # RESOLVE LEAGUE FLAG
             league_flag = LEAGUE_FLAGS.get(espn_league_slug, "")
-            
-            # Smart Fallback: If ESPN dropped the slug entirely, use our text abbreviation as a bridge
             if not league_flag and league_abbrev in ABBREV_TO_SLUG:
                 league_flag = LEAGUE_FLAGS.get(ABBREV_TO_SLUG[league_abbrev], "")
                 
@@ -537,7 +519,6 @@ def fetch_espn_scores_for_date(date_str):
     print(f"📊 Deep summary fetches completed for {date_str}: {summary_calls}/{len(raw_events)}")
     return matches
 
-# Complete Frontend Engine matches live
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -690,8 +671,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const awayScore = (!isPreGame && !isDelayed && !data.isFallback) ? (data.goals?.away ?? 0) : '-';
         
         const flagHtml = data.league.flag 
-            ? `<img src="${data.league.flag}" style="width: 14px; height: 14px; object-fit: contain; margin-right: 4px; vertical-align: middle; border-radius: 2px;">` 
-            : `<span style="font-size: 0.65rem; margin-right: 4px; vertical-align: middle;">🏆</span>`;
+            ? `<img src="${data.league.flag}" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">` 
+            : `<span style="font-size: 0.85rem; margin-right: 6px; vertical-align: middle;">🏆</span>`;
 
         return `
         <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
@@ -802,6 +783,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const gameCard = document.createElement('div');
         gameCard.className = 'col-md-6 col-lg-6 col-xl-4 mb-3';
         const fixId = data.fixture.id, isPreGame = ['NS', 'TBD'].includes(data.fixture.status.short);
+        
+        const fullFlagHtml = data.league.flag 
+            ? `<img src="${data.league.flag}" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">` 
+            : `<span style="font-size: 1rem; margin-right: 6px; vertical-align: middle;">🏆</span>`;
 
         gameCard.innerHTML = `
             <div class="lineup-card shadow-sm" id="card-${fixId}">
@@ -810,7 +795,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     <div class="p-2 pb-1" style="background-color: #fcfcfc;">
                         <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('${fixId}')">
                             <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-${fixId}" style="white-space: nowrap;">${getTimeBadgeHtml(data)} ${getLatestEventHtml(data)}</div>
-                            <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate" style="font-size: 0.70rem; min-width: 0;" title="${data.league.name}">${data.league.name}</a>
+                            <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-content-end" style="font-size: 0.75rem; min-width: 0;" title="${data.league.name}">
+                                ${fullFlagHtml} <span class="text-truncate">${data.league.name}</span>
+                            </a>
                         </div>
                         <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
                             <div class="text-center" style="width: 30%;"><img src="${data.teams.home.logo}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${data.teams.home.name}</div></div>
