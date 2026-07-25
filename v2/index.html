@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Futbol Starting Eleven | Live Soccer Starting Lineups & Scores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; }
+        .header-brand span { color: #20c997; }
+        .nav-btn { font-size: 0.85rem; font-weight: 700; border-radius: 20px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-0" style="background-color: #212529;">
+    <div class="container d-flex justify-content-center">
+        <div class="header-brand">
+            Futbol Starting <span>Eleven</span>
+        </div>
+    </div>
+</nav>
+
+<!-- Dynamic Navigation Menu -->
+<div class="container mt-4 mb-3 text-center" id="day-navigation">
+    <button class="btn btn-outline-dark mx-1 px-4 py-1 nav-btn" data-target="yesterday">Yesterday</button>
+    <button class="btn btn-dark mx-1 px-4 py-1 nav-btn active" data-target="today">Today</button>
+    <button class="btn btn-outline-dark mx-1 px-4 py-1 nav-btn" data-target="tomorrow">Tomorrow</button>
+</div>
+
+<div class="container pb-5">
+    
+    <!-- YESTERDAY PARTITION -->
+    <div id="view-yesterday" class="day-partition d-none">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+                
+                    <div class="text-center text-muted mt-4">No priority matches scheduled.</div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- TODAY PARTITION (Visible by Default) -->
+    <div id="view-today" class="day-partition">
+        <h6 class="text-center text-muted mb-3 fw-bold">Saturday, Jul 25</h6>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Charlotte FC at Red Bull New York</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">FC Cincinnati at Columbus Crew</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Inter Miami CF at CF Montréal</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Toronto FC at D.C. United</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Atlanta United FC at New England Revolution</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Chicago Fire FC at New York City FC</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Nashville SC at Orlando City SC</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Seattle Sounders FC at Philadelphia Union</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Austin FC at Houston Dynamo FC</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Vancouver Whitecaps at Minnesota United FC</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Colorado Rapids at St. Louis CITY SC</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">FC Dallas at San Diego FC</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Sporting Kansas City at LAFC</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">Real Salt Lake at Portland Timbers</div>
+                    </div>
+                
+                    <div class="card shadow-sm border-0 mb-2 p-3">
+                        <!-- Notice how it uses the dynamically mapped names -->
+                        <div class="text-muted text-uppercase fw-bold" style="font-size: 0.70rem;">
+                            <a href="/leagues/mls/" class="text-decoration-none text-muted">
+                                MLS
+                            </a>
+                        </div>
+                        <div class="fw-bold">LA Galaxy at San Jose Earthquakes</div>
+                    </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- TOMORROW PARTITION -->
+    <div id="view-tomorrow" class="day-partition d-none">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+                
+                    <div class="text-center text-muted mt-4">No priority matches scheduled.</div>
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Inline JavaScript for UI Toggles -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const partitions = document.querySelectorAll('.day-partition');
+
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetView = e.target.getAttribute('data-target');
+
+                partitions.forEach(p => p.classList.add('d-none'));
+                document.getElementById('view-' + targetView).classList.remove('d-none');
+
+                navButtons.forEach(b => {
+                    b.classList.remove('btn-dark', 'active');
+                    b.classList.add('btn-outline-dark');
+                });
+                e.target.classList.remove('btn-outline-dark');
+                e.target.classList.add('btn-dark', 'active');
+            });
+        });
+    });
+</script>
+</body>
+</html>
