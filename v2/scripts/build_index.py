@@ -46,28 +46,23 @@ def should_fetch_summary(event):
     """
     Performance Guard: Only fetches summary endpoint if:
     1. Match is Live ('in')
-    2. Match is Finished ('post') for final stats
+    2. Match is Finished ('post')
     3. Match starts within 60 minutes
     """
     status_obj = event.get('status', {})
     status_type = status_obj.get('type', {})
     state = status_type.get('state', 'pre')
 
-    # Always fetch deep summary for Live or Completed matches
     if state in ['in', 'post']:
         return True
 
-    # For upcoming matches ('pre'), only fetch if within 60 minutes of kickoff
     if state == 'pre':
         event_date_str = event.get('date')
         if event_date_str:
             try:
-                # Parse ISO UTC timestamp
                 event_dt = datetime.fromisoformat(event_date_str.replace('Z', '+00:00'))
                 now_utc = datetime.now(pytz.utc)
                 minutes_until_kickoff = (event_dt - now_utc).total_seconds() / 60.0
-                
-                # Fetch if kickoff is <= 60 minutes away
                 if minutes_until_kickoff <= 60:
                     return True
             except Exception:
@@ -76,7 +71,7 @@ def should_fetch_summary(event):
     return False
 
 def parse_espn_summary(event_id):
-    """Deep dives into ESPN's match summary endpoint for lineups, stats, events, odds, and injuries."""
+    """Deep dives into ESPN's match summary using verified schema paths."""
     url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/summary?event={event_id}"
     headers = {'User-Agent': 'Mozilla/5.0'}
     
@@ -85,74 +80,85 @@ def parse_espn_summary(event_id):
         "homeLineup": None,
         "awayLineup": None,
         "events": [],
-        "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
+        "odds": {"home": "-", "draw": "-", "away": "-", "total": "-", "over": "-", "under": "-"},
         "injuries": {"home": [], "away": []}
     }
     
     try:
-        res = requests.get(url, headers=headers, timeout=5)
+        res = requests.get(url, headers=headers, timeout=6)
         if res.status_code != 200:
             return summary_data
         
         data = res.json()
         
-        # 1. Parse Team Statistics
+        # 1. Parse Team Statistics (boxscore -> teams -> statistics)
         boxscore = data.get('boxscore', {})
         teams_box = boxscore.get('teams', [])
         if len(teams_box) == 2:
             def extract_stat_dict(stats_list):
-                return {s.get('name'): s.get('displayValue', '0') for s in stats_list}
+                if not isinstance(stats_list, list):
+                    return {}
+                return {s.get('name'): s.get('displayValue', '0') for s in stats_list if isinstance(s, dict)}
 
-            h_raw = extract_stat_dict(teams_box[0].get('statistics', []))
-            a_raw = extract_stat_dict(teams_box[1].get('statistics', []))
+            # Align home vs away based on homeAway key or array index
+            home_idx = 0 if teams_box[0].get('homeAway') == 'home' else 1
+            away_idx = 1 if home_idx == 0 else 0
+
+            h_raw = extract_stat_dict(teams_box[home_idx].get('statistics', []))
+            a_raw = extract_stat_dict(teams_box[away_idx].get('statistics', []))
 
             def clean_num(val_str):
                 cleaned = re.sub(r'[^0-9.]', '', str(val_str))
                 return int(float(cleaned)) if cleaned else 0
 
-            summary_data["team_stats"] = {
-                "home": {
-                    "possession": clean_num(h_raw.get('possessionPct', 50)),
-                    "total_shots": clean_num(h_raw.get('totalShots', 0)),
-                    "shots_on_target": clean_num(h_raw.get('shotsOnTarget', 0)),
-                    "corners": clean_num(h_raw.get('cornerKicks', 0)),
-                    "yellow_cards": clean_num(h_raw.get('yellowCards', 0)),
-                    "red_cards": clean_num(h_raw.get('redCards', 0))
-                },
-                "away": {
-                    "possession": clean_num(a_raw.get('possessionPct', 50)),
-                    "total_shots": clean_num(a_raw.get('totalShots', 0)),
-                    "shots_on_target": clean_num(a_raw.get('shotsOnTarget', 0)),
-                    "corners": clean_num(a_raw.get('cornerKicks', 0)),
-                    "yellow_cards": clean_num(a_raw.get('yellowCards', 0)),
-                    "red_cards": clean_num(a_raw.get('redCards', 0))
+            if h_raw or a_raw:
+                summary_data["team_stats"] = {
+                    "home": {
+                        "possession": clean_num(h_raw.get('possessionPct', 50)),
+                        "total_shots": clean_num(h_raw.get('totalShots', 0)),
+                        "shots_on_target": clean_num(h_raw.get('shotsOnTarget', 0)),
+                        "corners": clean_num(h_raw.get('cornerKicks', 0)),
+                        "yellow_cards": clean_num(h_raw.get('yellowCards', 0)),
+                        "red_cards": clean_num(h_raw.get('redCards', 0))
+                    },
+                    "away": {
+                        "possession": clean_num(a_raw.get('possessionPct', 50)),
+                        "total_shots": clean_num(a_raw.get('totalShots', 0)),
+                        "shots_on_target": clean_num(a_raw.get('shotsOnTarget', 0)),
+                        "corners": clean_num(a_raw.get('cornerKicks', 0)),
+                        "yellow_cards": clean_num(a_raw.get('yellowCards', 0)),
+                        "red_cards": clean_num(a_raw.get('redCards', 0))
+                    }
                 }
-            }
 
-        # 2. Parse Rosters / Lineups
+        # 2. Parse Rosters / Lineups (rosters -> roster)
         rosters = data.get('rosters', [])
-        if len(rosters) == 2:
-            for idx, key in [(0, "homeLineup"), (1, "awayLineup")]:
-                r_data = rosters[idx]
+        if isinstance(rosters, list) and len(rosters) >= 2:
+            for r_data in rosters:
+                home_away = r_data.get('homeAway', 'home')
+                key = "homeLineup" if home_away == 'home' else "awayLineup"
+                
                 formation = r_data.get('formation', '4-3-3')
                 start_xi, subs = [], []
                 
-                for entry in r_data.get('roster', []):
-                    ath = entry.get('athlete', {})
-                    pos_abbr = entry.get('position', {}).get('abbreviation', 'M')
-                    
-                    player_obj = {
-                        "id": str(ath.get('id', '')),
-                        "name": ath.get('displayName', 'Unknown'),
-                        "pos": pos_abbr,
-                        "number": str(entry.get('jersey', '')),
-                        "photo": ath.get('headshot', {}).get('href', '')
-                    }
-                    
-                    if entry.get('starter', False):
-                        start_xi.append({"player": player_obj, "sub_history": []})
-                    else:
-                        subs.append({"player": player_obj})
+                player_entries = r_data.get('roster', [])
+                if isinstance(player_entries, list):
+                    for entry in player_entries:
+                        ath = entry.get('athlete', {})
+                        pos_abbr = entry.get('position', {}).get('abbreviation', 'M')
+                        
+                        player_obj = {
+                            "id": str(ath.get('id', '')),
+                            "name": ath.get('displayName', 'Unknown'),
+                            "pos": pos_abbr,
+                            "number": str(entry.get('jersey', '')),
+                            "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else ''
+                        }
+                        
+                        if entry.get('starter', False):
+                            start_xi.append({"player": player_obj, "sub_history": []})
+                        else:
+                            subs.append({"player": player_obj})
 
                 if start_xi:
                     summary_data[key] = {
@@ -161,47 +167,51 @@ def parse_espn_summary(event_id):
                         "substitutes": subs
                     }
 
-        # 3. Parse Timeline Events
-        for ev in data.get('keyEvents', []):
-            ev_text = ev.get('type', {}).get('text', '')
-            clock_text = ev.get('clock', {}).get('displayValue', "0'")
-            team_id = str(ev.get('team', {}).get('id', ''))
-            
-            participants = ev.get('participants', [])
-            p_name = participants[0].get('athlete', {}).get('displayName', '') if len(participants) > 0 else ''
-            p_out = participants[1].get('athlete', {}).get('displayName', '') if len(participants) > 1 else ''
+        # 3. Parse Timeline Events (keyEvents)
+        key_events = data.get('keyEvents', [])
+        if isinstance(key_events, list):
+            for ev in key_events:
+                ev_text = ev.get('type', {}).get('text', '')
+                clock_text = ev.get('clock', {}).get('displayValue', "0'")
+                team_id = str(ev.get('team', {}).get('id', ''))
+                
+                participants = ev.get('participants', [])
+                p_name = participants[0].get('athlete', {}).get('displayName', '') if len(participants) > 0 else ''
+                p_out = participants[1].get('athlete', {}).get('displayName', '') if len(participants) > 1 else ''
 
-            ev_type = "Goal" if "Goal" in ev_text else ("subst" if "Substitution" in ev_text or "Sub" in ev_text else "Card")
+                ev_type = "Goal" if "Goal" in ev_text else ("subst" if "Substitution" in ev_text or "Sub" in ev_text else "Card")
 
-            summary_data["events"].append({
-                "time": clock_text.replace("'", ""),
-                "team_id": team_id,
-                "type": ev_type,
-                "detail": ev_text,
-                "player": p_name,
-                "player_out": p_out if ev_type == "subst" else None,
-                "assist": p_out if ev_type == "Goal" else None
-            })
+                summary_data["events"].append({
+                    "time": clock_text.replace("'", ""),
+                    "team_id": team_id,
+                    "type": ev_type,
+                    "detail": ev_text,
+                    "player": p_name,
+                    "player_out": p_out if ev_type == "subst" else None,
+                    "assist": p_out if ev_type == "Goal" else None
+                })
 
-        # 4. Parse Odds
-        pickcenter = data.get('pickcenter', [])
-        if pickcenter:
+        # 4. Parse Betting Odds (pickcenter / odds)
+        pickcenter = data.get('pickcenter', []) or data.get('odds', [])
+        if isinstance(pickcenter, list) and len(pickcenter) > 0:
             odds_item = pickcenter[0]
+            
+            # Moneyline parsing
+            h_ml = odds_item.get('homeTeamOdds', {}).get('moneyLine')
+            a_ml = odds_item.get('awayTeamOdds', {}).get('moneyLine')
+            d_ml = odds_item.get('drawOdds', {}).get('moneyLine')
+            
+            # Over/Under total line
+            ou_line = odds_item.get('overUnder', odds_item.get('total', {}).get('displayName', '-'))
+
             summary_data["odds"] = {
-                "home": str(odds_item.get('homeTeamOdds', {}).get('summary', '-')),
-                "draw": str(odds_item.get('drawOdds', {}).get('summary', '-')),
-                "away": str(odds_item.get('awayTeamOdds', {}).get('summary', '-')),
-                "total": str(odds_item.get('overUnder', '-')),
+                "home": f"+{h_ml}" if h_ml and int(h_ml) > 0 else str(h_ml or '-'),
+                "draw": f"+{d_ml}" if d_ml and int(d_ml) > 0 else str(d_ml or '-'),
+                "away": f"+{a_ml}" if a_ml and int(a_ml) > 0 else str(a_ml or '-'),
+                "total": str(ou_line),
                 "over": str(odds_item.get('overOdds', '-')),
                 "under": str(odds_item.get('underOdds', '-'))
             }
-
-        # 5. Parse Injuries
-        injuries_raw = data.get('injuries', [])
-        if len(injuries_raw) == 2:
-            for idx, key in [(0, "home"), (1, "away")]:
-                inj_list = [item.get('athlete', {}).get('displayName', '') for item in injuries_raw[idx].get('injuries', []) if item.get('athlete', {}).get('displayName')]
-                summary_data["injuries"][key] = inj_list
 
     except Exception as e:
         print(f"⚠️ Summary fetch note for match {event_id}: {e}")
@@ -209,7 +219,7 @@ def parse_espn_summary(event_id):
     return summary_data
 
 def fetch_espn_scores_for_date(date_str):
-    """Directly queries ESPN's master daily schedule endpoint for a specific date."""
+    """Queries ESPN's master daily schedule endpoint for a specific date."""
     url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=500"
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
@@ -221,7 +231,6 @@ def fetch_espn_scores_for_date(date_str):
     except Exception as e:
         print(f"⚠️ Schedule query error for {date_str}: {e}")
 
-    # Fallback to standard endpoint if /all/ is empty
     if not raw_events:
         try:
             res = requests.get(f"https://site.api.espn.com/apis/site/v2/sports/soccer/scoreboard?dates={date_str}&limit=500", headers=headers, timeout=10)
@@ -254,10 +263,9 @@ def fetch_espn_scores_for_date(date_str):
             league_name = league_obj.get('name') or league_obj.get('displayName') or league_obj.get('midsizeName') or "Soccer"
             league_slug = create_slug(league_name)
 
-            # Fix status state so scheduled matches are marked 'NS' rather than 'LIVE'
             status_obj = event.get('status', {})
             status_type = status_obj.get('type', {})
-            state = status_type.get('state', 'pre') # 'pre', 'in', 'post'
+            state = status_type.get('state', 'pre')
             short_detail = status_type.get('shortDetail', '')
 
             if state == 'pre':
@@ -269,7 +277,7 @@ def fetch_espn_scores_for_date(date_str):
 
             elapsed = status_obj.get('period', 0)
 
-            # SMART FETCH: Only call summary endpoint if match is live, finished, or starts in <= 60 mins
+            # SMART FETCH: Deep dive summary only when match is live, finished, or starting soon
             if should_fetch_summary(event):
                 summary = parse_espn_summary(event_id)
                 summary_calls += 1
@@ -279,14 +287,14 @@ def fetch_espn_scores_for_date(date_str):
                     "homeLineup": None,
                     "awayLineup": None,
                     "events": [],
-                    "odds": {"home": "TBD", "draw": "TBD", "away": "TBD"},
+                    "odds": {"home": "-", "draw": "-", "away": "-"},
                     "injuries": {"home": [], "away": []}
                 }
 
             matches.append({
                 "fixture": {
                     "id": event_id,
-                    "date": event['date'], # ISO UTC
+                    "date": event['date'],
                     "status": {"short": status_short, "elapsed": elapsed}
                 },
                 "league": {
@@ -326,7 +334,7 @@ def fetch_espn_scores_for_date(date_str):
     print(f"    └─ Deep summary calls made: {summary_calls}/{len(raw_events)}")
     return matches
 
-# Version 1 HTML, CSS, and JS Skeleton embedded directly
+# Complete V1 UI Template
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -420,7 +428,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <h1 class="h5 fw-bold text-dark mb-1">Futbol Starting Eleven: Live Soccer Starting Lineups, Scores & Odds</h1>
     <p class="text-muted mb-2" style="font-size: 0.85rem;">Real-time starting XIs, match injuries, goalscorers, and betting odds for global football.</p>
     
-    <!-- 3-Day Window Partition Buttons -->
     <div class="d-flex justify-content-center gap-2 my-3" id="day-selector">
         <button class="btn btn-outline-dark day-tab-btn" data-day="yesterday">
             Yesterday<br><small style="font-size: 0.65rem;">{{ display_dates.yesterday }}</small>
@@ -687,7 +694,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 """
 
 def generate_v2_index():
-    """Main build execution pipeline."""
     print("⏳ Calculating 3-day window using 3:00 AM EST cutoff...")
     day_info = get_3day_dates()
     
@@ -715,7 +721,7 @@ def generate_v2_index():
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(output_html)
     
-    print(f"\n🎉 Successfully compiled static frontend at {file_path}")
+    print(f"\n🎉 Successfully compiled static index at {file_path}")
 
 if __name__ == "__main__":
     generate_v2_index()
