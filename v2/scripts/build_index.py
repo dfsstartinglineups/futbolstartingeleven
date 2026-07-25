@@ -154,22 +154,8 @@ def normalize_text(text):
     nfkd_form = unicodedata.normalize('NFD', text)
     return "".join([c for c in nfkd_form if unicodedata.category(c) != 'Mn']).lower().strip()
 
-# Pre-normalize dictionary keys on startup
 NORMALIZED_HUMAN_LEAGUE_FLAGS = {
     normalize_text(key): val for key, val in HUMAN_LEAGUE_FLAGS.items()
-}
-
-# Map text abbreviations to ESPN Slugs
-ABBREV_TO_SLUG = {
-    "EPL": "eng.1", "MLS": "usa.1", "UCL": "uefa.champions",
-    "UEL": "uefa.europa", "UECL": "uefa.europa.conf", "LIGA": "esp.1",
-    "SERA": "ita.1", "BUND": "ger.1", "LIG1": "fra.1",
-    "LMX": "mex.1", "EXP": "mex.2", "NWSL": "usa.nwsl",
-    "DEN": "den.1", "SWE": "swe.1", "LPF": "arg.1",
-    "RUS": "rus.1", "USL": "usa.usl.1", "SCO": "sco.1",
-    "ERED": "ned.1", "POR": "por.1", "BSA": "bra.1", "ECU": "ecu.1",
-    "CDR": "esp.copa_del_rey", "FA": "eng.fa", "EFL": "eng.league_cup",
-    "DFB": "ger.dfb_pokal", "COPPA": "ita.coppa_italia", "ASEAN": "aff.championship"
 }
 
 def create_slug(name):
@@ -185,20 +171,16 @@ def to_snake_case(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s).lower()
 
 def get_position_category(raw_pos):
-    """Categorizes granular position tags (e.g., CD-L, CF-R, AM-L, AM-R) into F, M, D, G for the stats table."""
+    """Categorizes granular position tags (e.g., CD-L, CF-R, AM-L, AM-R) into F, M, D, G for stats tables."""
     if not raw_pos: return 'M'
     p = str(raw_pos).strip().upper()
     
-    # Goalkeeper
     if p in ['G', 'GK', 'GOALKEEPER']:
         return 'G'
-    # Forwards & Attacking Midfielders (CF, ST, FW, LW, RW, AM, CAM, etc.)
     if any(term in p for term in ['CF', 'ST', 'FW', 'LW', 'RW', 'WF', 'SS', 'ATT', 'STR', 'AM', 'CAM']) or p == 'F':
         return 'F'
-    # Defenders & Wingbacks (CD, CB, LB, RB, WB, SW, DF, etc.)
     if any(term in p for term in ['CD', 'CB', 'LB', 'RB', 'WB', 'SW', 'DF', 'DEF']) or p == 'D':
         return 'D'
-    # Central / Defensive Midfielders & Default Fallback (CM, DM, CDM, LM, RM, MF)
     return 'M'
 
 def generate_league_abbrev(name):
@@ -332,6 +314,20 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     }
                 }
 
+        # Build Substitution Map from Key Events (Sub In -> Replaced Starter Out)
+        sub_to_starter_map = {}
+        key_events = data.get('keyEvents', [])
+        if isinstance(key_events, list):
+            for ev in key_events:
+                ev_text = ev.get('type', {}).get('text', '')
+                if "substitution" in ev_text.lower() or "sub" in ev_text.lower():
+                    participants = ev.get('participants', [])
+                    if len(participants) >= 2:
+                        p_in = participants[0].get('athlete', {}).get('displayName', '')
+                        p_out = participants[1].get('athlete', {}).get('displayName', '')
+                        if p_in and p_out:
+                            sub_to_starter_map[p_in.lower()] = p_out.lower()
+
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
             for r_data in rosters:
@@ -340,20 +336,76 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 formation = r_data.get('formation', '4-3-3')
                 team_obj = r_data.get('team', {})
                 start_xi, subs = [], []
+                starters_lookup = {}
                 
                 player_entries = r_data.get('roster', [])
                 if isinstance(player_entries, list):
+                    # Pass 1: Parse starters and store position metadata
                     for entry in player_entries:
+                        if not entry.get('starter', False): continue
                         ath = entry.get('athlete', {})
-                        
-                        # Preserve exact positional tag (e.g. CD-L, CF-R) for UI display
-                        raw_pos_code = entry.get('position', {}).get('abbreviation') or entry.get('position', {}).get('displayName', 'M')
+                        raw_pos_code = entry.get('position', {}).get('abbreviation') or ath.get('position', {}).get('abbreviation') or 'M'
                         pos_display = raw_pos_code.strip().upper() if raw_pos_code else 'M'
-                        
-                        # Map to core category (F, M, D, G) for Live Stats grouping
                         pos_category = get_position_category(pos_display)
                         
-                        is_starter = entry.get('starter', False)
+                        subbed_in = entry.get('subbedIn', False) or bool(entry.get('subbedInMinute'))
+                        subbed_out = entry.get('subbedOut', False) or bool(entry.get('subbedOutMinute'))
+
+                        stats_raw = entry.get('stats', [])
+                        live_stats = {}
+                        if isinstance(stats_raw, list):
+                            for st in stats_raw:
+                                if isinstance(st, dict):
+                                    raw_k, raw_v = st.get('name', ''), st.get('displayValue', st.get('value', 0))
+                                    try: num_v = int(float(str(raw_v)))
+                                    except (ValueError, TypeError): num_v = raw_v
+                                    live_stats[raw_k] = num_v
+                                    live_stats[to_snake_case(raw_k)] = num_v
+
+                                    if raw_k in ['totalGoals', 'goals', 'goal', 'goalsScored']: live_stats['goals'] = num_v
+                                    elif raw_k in ['goalAssists', 'assists', 'assist']: live_stats['assists'] = num_v
+                                    elif raw_k in ['goalsConceded', 'goalsAgainst']: live_stats['conceded'] = num_v
+                                    elif raw_k in ['shotsOnTarget', 'shotsOnGoal']: live_stats['shots_on_target'] = num_v
+                                    elif raw_k in ['totalShots', 'shots']: live_stats['total_shots'] = num_v
+                                    elif raw_k in ['keyPasses', 'chancesCreated']: live_stats['key_passes'] = num_v
+                                    elif raw_k in ['tackles', 'totalTackles']: live_stats['tackles'] = num_v
+                                    elif raw_k in ['interceptions']: live_stats['interceptions'] = num_v
+                                    elif raw_k in ['saves']: live_stats['saves'] = num_v
+                                    elif raw_k in ['passes', 'totalPasses']: live_stats['passes'] = num_v
+                                    elif raw_k in ['yellowCards']: live_stats['yellow_cards'] = num_v
+
+                        p_name = ath.get('displayName', 'Unknown')
+                        player_obj = {
+                            "id": str(ath.get('id', '')), "name": p_name,
+                            "pos": pos_display, "category": pos_category, "number": str(entry.get('jersey', '')),
+                            "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
+                            "live_stats": live_stats, "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
+                            "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
+                        }
+                        start_xi.append({"player": player_obj, "sub_history": []})
+                        starters_lookup[p_name.lower()] = player_obj
+
+                    # Pass 2: Parse substitutes and inherit replaced starter's position if tagged 'SUB'
+                    for entry in player_entries:
+                        if entry.get('starter', False): continue
+                        ath = entry.get('athlete', {})
+                        p_name = ath.get('displayName', 'Unknown')
+                        
+                        raw_pos_code = ath.get('position', {}).get('abbreviation') or entry.get('position', {}).get('abbreviation') or 'M'
+                        pos_display = raw_pos_code.strip().upper() if raw_pos_code else 'M'
+                        
+                        # Fallback logic for generic sub tags
+                        if pos_display in ['SUB', 'S', 'SUBSTITUTE', '']:
+                            replaced_name = sub_to_starter_map.get(p_name.lower())
+                            if replaced_name and replaced_name in starters_lookup:
+                                starter = starters_lookup[replaced_name]
+                                pos_display = starter['pos']
+                                pos_category = starter['category']
+                            else:
+                                pos_category = 'M'
+                        else:
+                            pos_category = get_position_category(pos_display)
+
                         subbed_in = entry.get('subbedIn', False) or bool(entry.get('subbedInMinute'))
                         subbed_out = entry.get('subbedOut', False) or bool(entry.get('subbedOutMinute'))
                         did_play = entry.get('didPlay', False) or entry.get('played', False) or subbed_in
@@ -363,50 +415,32 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         if isinstance(stats_raw, list):
                             for st in stats_raw:
                                 if isinstance(st, dict):
-                                    raw_k = st.get('name', '')
-                                    raw_v = st.get('displayValue', st.get('value', 0))
+                                    raw_k, raw_v = st.get('name', ''), st.get('displayValue', st.get('value', 0))
                                     try: num_v = int(float(str(raw_v)))
                                     except (ValueError, TypeError): num_v = raw_v
-
                                     live_stats[raw_k] = num_v
-                                    snake_k = to_snake_case(raw_k)
-                                    live_stats[snake_k] = num_v
+                                    live_stats[to_snake_case(raw_k)] = num_v
 
-                                    # Direct Key Mapping for Frontend JS Expectations
-                                    if raw_k in ['totalGoals', 'goals', 'goal', 'goalsScored']:
-                                        live_stats['goals'] = num_v
-                                    elif raw_k in ['goalAssists', 'assists', 'assist']:
-                                        live_stats['assists'] = num_v
-                                    elif raw_k in ['goalsConceded', 'goalsAgainst']:
-                                        live_stats['conceded'] = num_v
-                                    elif raw_k in ['shotsOnTarget', 'shotsOnGoal']:
-                                        live_stats['shots_on_target'] = num_v
-                                    elif raw_k in ['totalShots', 'shots']:
-                                        live_stats['total_shots'] = num_v
-                                    elif raw_k in ['keyPasses', 'chancesCreated']:
-                                        live_stats['key_passes'] = num_v
-                                    elif raw_k in ['tackles', 'totalTackles']:
-                                        live_stats['tackles'] = num_v
-                                    elif raw_k in ['interceptions']:
-                                        live_stats['interceptions'] = num_v
-                                    elif raw_k in ['saves']:
-                                        live_stats['saves'] = num_v
-                                    elif raw_k in ['passes', 'totalPasses']:
-                                        live_stats['passes'] = num_v
-                                    elif raw_k in ['yellowCards']:
-                                        live_stats['yellow_cards'] = num_v
+                                    if raw_k in ['totalGoals', 'goals', 'goal', 'goalsScored']: live_stats['goals'] = num_v
+                                    elif raw_k in ['goalAssists', 'assists', 'assist']: live_stats['assists'] = num_v
+                                    elif raw_k in ['goalsConceded', 'goalsAgainst']: live_stats['conceded'] = num_v
+                                    elif raw_k in ['shotsOnTarget', 'shotsOnGoal']: live_stats['shots_on_target'] = num_v
+                                    elif raw_k in ['totalShots', 'shots']: live_stats['total_shots'] = num_v
+                                    elif raw_k in ['keyPasses', 'chancesCreated']: live_stats['key_passes'] = num_v
+                                    elif raw_k in ['tackles', 'totalTackles']: live_stats['tackles'] = num_v
+                                    elif raw_k in ['interceptions']: live_stats['interceptions'] = num_v
+                                    elif raw_k in ['saves']: live_stats['saves'] = num_v
+                                    elif raw_k in ['passes', 'totalPasses']: live_stats['passes'] = num_v
+                                    elif raw_k in ['yellowCards']: live_stats['yellow_cards'] = num_v
 
                         player_obj = {
-                            "id": str(ath.get('id', '')), "name": ath.get('displayName', 'Unknown'),
+                            "id": str(ath.get('id', '')), "name": p_name,
                             "pos": pos_display, "category": pos_category, "number": str(entry.get('jersey', '')),
                             "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
                             "live_stats": live_stats, "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
                             "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                         }
-                        
-                        if is_starter: start_xi.append({"player": player_obj, "sub_history": []})
-                        else:
-                            if did_play or live_stats: subs.append({"player": player_obj})
+                        if did_play or live_stats: subs.append({"player": player_obj})
 
                 if start_xi:
                     summary_data[key] = {
@@ -414,26 +448,19 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         "startXI": start_xi, "substitutes": subs
                     }
 
-        key_events = data.get('keyEvents', [])
         if isinstance(key_events, list) and len(key_events) > 0:
             for ev in key_events:
                 ev_text = ev.get('type', {}).get('text', '')
                 clock_text = ev.get('clock', {}).get('displayValue', "0'")
                 team_id = str(ev.get('team', {}).get('id', ''))
-                
                 participants = ev.get('participants', [])
                 p_in = participants[0].get('athlete', {}).get('displayName', '') if len(participants) > 0 else ''
                 p_out = participants[1].get('athlete', {}).get('displayName', '') if len(participants) > 1 else ''
-
                 is_sub = "substitution" in ev_text.lower() or "sub" in ev_text.lower()
                 ev_type = "Goal" if "goal" in ev_text.lower() else ("subst" if is_sub else "Card")
 
-                if ev_type == "subst":
-                    p_player = p_out if p_out else "Unknown"
-                    p_player_out = p_in if p_in else "Unknown"
-                else:
-                    p_player = p_in if p_in else "Unknown"
-                    p_player_out = p_out if p_out else None
+                p_player = p_out if ev_type == "subst" else (p_in if p_in else "Unknown")
+                p_player_out = p_in if ev_type == "subst" else (p_out if p_out else None)
 
                 summary_data["events"].append({
                     "time": clock_text.replace("'", ""), "team_id": team_id, "type": ev_type,
@@ -539,11 +566,9 @@ def fetch_espn_scores_for_date(date_str):
             league_abbrev = generate_league_abbrev(final_league_name)
             league_slug = create_slug(final_league_name)
             
-            # RESOLVE LEAGUE FLAG (Direct accent-insensitive mapping)
             clean_league_name = normalize_text(final_league_name)
             league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(clean_league_name, "")
             
-            # PARENT STRIPPER RULE
             if not league_flag:
                 base_name = re.sub(r'\s+(qualifying|qualifiers|playoffs?)\b', '', clean_league_name)
                 league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(base_name, "")
@@ -552,38 +577,21 @@ def fetch_espn_scores_for_date(date_str):
                 league_logos = league_obj.get('logos', [])
                 if isinstance(league_logos, list) and len(league_logos) > 0:
                     href = league_logos[0].get('href', '')
-                    if href and 'default-team-logo' not in href:
-                        league_flag = href
+                    if href and 'default-team-logo' not in href: league_flag = href
                 elif isinstance(league_obj.get('logo'), str):
                     logo = league_obj.get('logo')
-                    if logo and 'default-team-logo' not in logo:
-                        league_flag = logo
+                    if logo and 'default-team-logo' not in logo: league_flag = logo
 
-            # SMART FALLBACK RULES (Country -> Africa -> Continental -> Friendlies -> Cups)
             if not league_flag:
                 name_lower = clean_league_name
-                
-                # Rule 1: Country Flags
                 for country, code in COUNTRY_FLAG_URLS.items():
                     if re.search(rf'\b{country}\b', name_lower):
                         league_flag = f"https://flagcdn.com/w40/{code}.png"
                         break
-                        
-                # Rule 2: Africa
-                if not league_flag and re.search(r'\b(africa|african|caf)\b', name_lower):
-                    league_flag = "🌍"
-                
-                # Rule 3: International / Continental
-                if not league_flag and re.search(r'\b(international|concacaf|conmebol|uefa|olympic|nations|saff|americ)\b', name_lower):
-                    league_flag = "🌎"
-                    
-                # Rule 4: Friendlies
-                if not league_flag and 'friendly' in name_lower:
-                    league_flag = "🤝"
-                    
-                # Rule 5: Cups (Lowest Priority catch-all)
-                if not league_flag and 'cup' in name_lower:
-                    league_flag = "🏆"
+                if not league_flag and re.search(r'\b(africa|african|caf)\b', name_lower): league_flag = "🌍"
+                if not league_flag and re.search(r'\b(international|concacaf|conmebol|uefa|olympic|nations|saff|americ)\b', name_lower): league_flag = "🌎"
+                if not league_flag and 'friendly' in name_lower: league_flag = "🤝"
+                if not league_flag and 'cup' in name_lower: league_flag = "🏆"
 
             status_obj = event.get('status', {})
             status_type = status_obj.get('type', {})
