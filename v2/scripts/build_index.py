@@ -9,9 +9,6 @@ from datetime import datetime, timedelta
 import pytz
 from jinja2 import Template
 
-CACHE_DIR = "data"
-CACHE_FILE = os.path.join(CACHE_DIR, "completed_matches_cache.json")
-
 HUMAN_LEAGUE_FLAGS = {
     "afc asian cup": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/2243.png",
     "afc asian cup qualifiers": "https://a.espncdn.com/i/leaguelogos/soccer/500/2246.png",
@@ -152,25 +149,6 @@ COUNTRY_FLAG_URLS = {
     "peruvian": "pe", "peru": "pe", "salvadoran": "sv", "el salvador": "sv",
     "costa rican": "cr", "costa rica": "cr", "fpd": "cr"
 }
-
-def load_cache():
-    os.makedirs(CACHE_DIR, exist_ok=True)
-    if os.path.exists(CACHE_FILE):
-        try:
-            with open(CACHE_FILE, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"⚠️ Warning: Could not load cache file: {e}")
-            return {}
-    return {}
-
-def save_cache(cache):
-    os.makedirs(CACHE_DIR, exist_ok=True)
-    try:
-        with open(CACHE_FILE, 'w', encoding='utf-8') as f:
-            json.dump(cache, f)
-    except Exception as e:
-        print(f"⚠️ Warning: Could not save cache file: {e}")
 
 def normalize_text(text):
     if not text: return ""
@@ -448,8 +426,11 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     ath = entry.get('athlete', {})
                     p_name = ath.get('displayName', 'Unknown')
                     pos = entry.get('position', {}).get('abbreviation') or ath.get('position', {}).get('abbreviation') or 'M'
-                    sub_in = game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute')))
+                    
+                    sub_in_flag = entry.get('subbedIn', False)
+                    sub_in = sub_in_flag or (game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
                     sub_out = game_state != 'pre' and (str(ath.get('id')) in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
+                    
                     p_obj = {
                         "id": str(ath.get('id', '')), "name": p_name, "pos": pos.upper(), "category": get_position_category(pos),
                         "number": str(entry.get('jersey', '')), "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
@@ -469,8 +450,10 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                         pos_cat = starters_look[replaced]['category'] if replaced in starters_look else 'M'
                     else: pos_cat = get_position_category(pos)
                     
-                    sub_in = game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute')))
+                    sub_in_flag = entry.get('subbedIn', False)
+                    sub_in = sub_in_flag or (game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
                     sub_out = game_state != 'pre' and (str(ath.get('id')) in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
+                    
                     p_stats = extract_player_live_stats(entry, core_stats_cache.get((t_id, str(ath.get('id')))))
                     if entry.get('didPlay') or entry.get('played') or sub_in or p_stats:
                         subs.append({"player": {
@@ -707,7 +690,8 @@ def pre_render_game_card(data):
     h_col = get_team_color(data.get('homeLineup'), '#0d6efd')
     a_col = get_team_color(data.get('awayLineup'), '#dc3545')
 
-    return f'''
+    # THE MAGIC INJECTION: Wraps the Jinja HTML in a specific Match ID comment block
+    return f'''<!-- MATCH_{fix_id} -->
     <div class="lineup-card shadow-sm" id="card-{fix_id}">
         <div class="ribbon-view" id="ribbon-{fix_id}" onclick="toggleSingleCard('{fix_id}')">{get_ribbon_html(data)}</div>
         <div class="full-view d-none" id="full-{fix_id}">
@@ -736,9 +720,10 @@ def pre_render_game_card(data):
                 <div id="view-stats-{fix_id}" class="{'d-none' if (not has_stats or is_pre) else ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">{build_live_stats_grid(data.get('homeLineup'), h_col)}</div><div class="col-6">{build_live_stats_grid(data.get('awayLineup'), a_col)}</div></div></div>
             </div>
         </div>
-    </div>'''
+    </div>
+    <!-- END_MATCH_{fix_id} -->'''
 
-def fetch_espn_scores_for_date(date_str, cache):
+def fetch_espn_scores_for_date(date_str, old_html):
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
     seen_ids = set()
@@ -765,17 +750,6 @@ def fetch_espn_scores_for_date(date_str, cache):
         try:
             event_id = str(event.get('id', ''))
             state = event.get('status', {}).get('type', {}).get('state', 'pre')
-            
-            # CACHE HEALER: Restores missing yesterday HTML safely
-            if state == 'post' and event_id in cache:
-                cached_match = cache[event_id]
-                if "html_card" not in cached_match or not cached_match["html_card"]:
-                    try:
-                        cached_match["html_card"] = pre_render_game_card(cached_match)
-                    except Exception as e:
-                        cached_match["html_card"] = f"<div class='p-3 text-danger text-center'>Failed to load cached card</div>"
-                matches.append(cached_match)
-                continue
 
             comps = event.get('competitions', [])
             if not comps: continue
@@ -818,12 +792,28 @@ def fetch_espn_scores_for_date(date_str, cache):
 
             league_flag = str(league_flag or "")
 
+            # THE MAGIC CHECK: If the game is over and we have the old HTML, regex extract it and skip the ESPN Summary API entirely
+            if state == 'post' and old_html:
+                match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
+                saved_block = re.search(match_pattern, old_html, re.DOTALL)
+                
+                if saved_block:
+                    # Provide a skeleton dict so the frontend search box still works, but use the cached HTML card
+                    matches.append({
+                        "fixture": {"id": event_id, "status": {"short": "FT"}},
+                        "teams": {"home": {"name": home_name}, "away": {"name": away_name}},
+                        "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name)},
+                        "html_card": f"<!-- MATCH_{event_id} -->{saved_block.group(1)}<!-- END_MATCH_{event_id} -->"
+                    })
+                    continue
+
+            # If we reached this point, the game is LIVE, UPCOMING, or missing from the old index.html. We must fetch.
             should_fetch, _ = should_fetch_summary(event)
             summary = parse_espn_summary(event_id, league_code=(league_obj.get('slug') or 'all')) if should_fetch else {
                 "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [], 
                 "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}, 
                 "injuries": {"home": [], "away": []}, 
-                "live_score": {},  # <--- CRITICAL FIX: Stops the NoneType crash preventing tomorrow's games from rendering.
+                "live_score": {},
                 "status_obj": None
             }
 
@@ -847,11 +837,9 @@ def fetch_espn_scores_for_date(date_str, cache):
                 "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"]
             }
             
-            # PRE-RENDER HTML AT BUILD TIME!
+            # Pre-render the fresh HTML and attach it to the loop
             match_entry["html_card"] = pre_render_game_card(match_entry)
-            
             matches.append(match_entry)
-            if st == 'post': cache[event_id] = match_entry
 
         except Exception as e: 
             print(f"❌ ERROR parsing match item {event.get('id')}: {e}")
@@ -1137,19 +1125,25 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 def generate_v2_index():
     print("\n==================================================")
-    print("⏳ STARTING SSG BUILD PIPELINE")
+    print("⏳ STARTING SSG BUILD PIPELINE (NO JSON CACHE)")
     print("==================================================")
     
-    cache = load_cache()
+    os.makedirs('v2', exist_ok=True)
+    file_path = 'v2/index.html'
+
+    # 1. LOAD THE EXISTING HTML TO ACT AS OUR DATABASE
+    old_html = ""
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
+            old_html = f.read()
+
     day_info = get_3day_dates()
     
     matches_by_day = {
-        "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"], cache),
-        "today": fetch_espn_scores_for_date(day_info["dates"]["today"], cache),
-        "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], cache)
+        "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"], old_html),
+        "today": fetch_espn_scores_for_date(day_info["dates"]["today"], old_html),
+        "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], old_html)
     }
-    
-    save_cache(cache)
     
     print(f"\n==================================================")
     print(f"📊 SSG BUILD SUMMARY:")
@@ -1164,9 +1158,6 @@ def generate_v2_index():
         matches_json=json.dumps(matches_by_day),
         display_dates=day_info["display"]
     )
-    
-    os.makedirs('v2', exist_ok=True)
-    file_path = 'v2/index.html'
     
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(output_html)
