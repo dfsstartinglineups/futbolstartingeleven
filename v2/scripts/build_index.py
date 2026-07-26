@@ -243,7 +243,7 @@ def sync_player_state(matches):
                 pid = str(p.get('id', ''))
                 pname = p.get('name', '')
                 if pid and pname:
-                    slug = create_slug(pname)
+                    slug = f"{create_slug(pname)}-{pid}"
                     if slug not in player_state:
                         player_state[slug] = {
                             "id": pid,
@@ -734,7 +734,8 @@ def generate_pitch_html(lineup, default_hex):
         if not player: return ""
         name = shorten_player_name(player.get('name'))
         photo = player.get('photo', '')
-        p_slug = create_slug(player.get('name', ''))
+        p_id = str(player.get('id', ''))
+        p_slug = f"{create_slug(player.get('name', ''))}-{p_id}"
         
         if photo:
             avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 2px solid {bg_color}; background-color: #fff;">'
@@ -885,7 +886,8 @@ def build_lineup_list(lineup_data):
     items = ""
     for s in lineup_data['startXI']:
         p = s.get('player', {})
-        p_slug = create_slug(p.get('name', ''))
+        p_id = str(p.get('id', ''))
+        p_slug = f"{create_slug(p.get('name', ''))}-{p_id}"
         pho = f'''<img data-src="{p.get('photo', '')}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2 player-headshot">''' if p.get('photo') else '''<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>'''
         sub = '''<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>''' if p.get('isSubbedOut') else ''
         items += f'''<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">{p.get('pos','M')}</span>{pho}<a href="/v2/players/{p_slug}/index.html" class="batter-name text-dark text-decoration-none text-truncate">{sub}{shorten_player_name(p.get('name'))}</a><span class="ms-auto text-muted" style="font-size: 0.65rem;">#{p.get('number','')}</span></li>'''
@@ -905,7 +907,8 @@ def build_live_stats_grid(lineup_data, hex_color):
         g = grps[pk]
         html += f'''<div class="d-flex w-100 px-2 py-1 align-items-center bg-light border-bottom" style="font-size: 0.6rem; font-weight: 700;"><div style="flex: 1; color: {c};">{g['t']}</div><div style="width: 18px; text-align: center;">{g['s'][0]}</div><div style="width: 22px; text-align: center;">{g['s'][1]}</div><div style="width: 28px; text-align: center;">{g['s'][2]}</div><div style="width: 24px; text-align: center;">{g['s'][3]}</div></div>'''
         for p in grouped[pk]:
-            p_slug = create_slug(p.get('name', ''))
+            p_id = str(p.get('id', ''))
+            p_slug = f"{create_slug(p.get('name', ''))}-{p_id}"
             pre = '<span class="text-success fw-bold me-1">▲</span>' if p.get('isSubbedIn') else ('<span class="text-primary fw-bold me-1">↻</span>' if p.get('isSubbedOut') else '')
             st = p.get('live_stats', {})
             html += f'''<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;"><div class="text-start text-truncate" style="flex: 1;"><a href="/v2/players/{p_slug}/index.html" class="text-dark text-decoration-none text-truncate">{pre}{shorten_player_name(p.get('name'))}</a></div><div class="text-muted" style="width: 18px; text-align: center; font-weight: 600;">{st.get(g['k'][0],0)}</div><div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">{st.get(g['k'][1],0)}</div><div class="text-muted" style="width: 28px; text-align: center; font-weight: 600;">{st.get(g['k'][2],0)}</div><div class="text-muted" style="width: 24px; text-align: center; font-weight: 600;">{st.get(g['k'][3],0)}</div></div>'''
@@ -2227,21 +2230,24 @@ def generate_v2_index():
                 
                 for s_obj in roster:
                     p_info = s_obj.get('player', {})
-                    p_slug = create_slug(p_info.get('name', ''))
-                    
-                    if p_slug in player_state:
-                        p_data = player_state[p_slug]
+                    pid = str(p_info.get('id', ''))
+                    pname = p_info.get('name', '')
+                    if pid and pname:
+                        p_slug = f"{create_slug(pname)}-{pid}"
                         
-                        if not (p_data.get('last_match_id') == match_id and p_data.get('is_final')):
-                            build_single_player_page(
-                                p_slug, p_data, m, 
-                                is_home=(side=='home'), 
-                                nav_html=nav_html, 
-                                today_date_str=day_info["display"]["today"]
-                            )
-                            p_data['last_updated'] = datetime.now().timestamp()
-                            p_data['last_match_id'] = match_id
-                            p_data['is_final'] = (status_short in ['FT', 'AET', 'PEN'])
+                        if p_slug in player_state:
+                            p_data = player_state[p_slug]
+                            
+                            if not (p_data.get('last_match_id') == match_id and p_data.get('is_final')):
+                                build_single_player_page(
+                                    p_slug, p_data, m, 
+                                    is_home=(side=='home'), 
+                                    nav_html=nav_html, 
+                                    today_date_str=day_info["display"]["today"]
+                                )
+                                p_data['last_updated'] = datetime.now().timestamp()
+                                p_data['last_match_id'] = match_id
+                                p_data['is_final'] = (status_short in ['FT', 'AET', 'PEN'])
 
     # 5. Generate ONE Dormant League (14-Day Trickle Round Robin)
     dormant_leagues = [s for s, d in state.items() if s not in active_slugs and d.get('pill')]
