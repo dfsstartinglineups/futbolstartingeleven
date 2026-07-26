@@ -166,7 +166,9 @@ async def fetch_single_player_core_stats(session, internal_slug, event_id, team_
             if resp.status == 200:
                 data = await resp.json()
                 stats_dict = {}
-                for cat in data.get('splits', {}).get('categories', []):
+                # FIX: Handle potential nulls in splits/categories
+                categories = (data.get('splits') or {}).get('categories') or []
+                for cat in categories:
                     for stat in cat.get('stats', []):
                         stats_dict[stat.get('name')] = stat.get('value')
                 return str(player_id), stats_dict
@@ -210,7 +212,8 @@ def is_valid_sub_minute(minute_val):
 
 def extract_match_clock(status_obj):
     if not status_obj: return "LIVE"
-    status_type = status_obj.get('type', {})
+    # FIX: Safely fallback to dict if type is None
+    status_type = status_obj.get('type') or {}
     state = status_type.get('state', 'pre')
     if state == 'pre': return "NS"
     if state == 'post': return "FT"
@@ -234,7 +237,8 @@ def extract_match_clock(status_obj):
             except: pass
         return str(display_clock).replace("'", "")
 
-    raw_clock = status_obj.get('clock', 0)
+    # FIX: Safely grab clock, enforcing integer mathematically
+    raw_clock = status_obj.get('clock') if status_obj.get('clock') is not None else 0
     if raw_clock > 0:
         return str(int(raw_clock // 60) + 1)
     return "LIVE"
@@ -271,8 +275,8 @@ def get_3day_dates():
     }
 
 def should_fetch_summary(event):
-    status_obj = event.get('status', {})
-    status_type = status_obj.get('type', {})
+    status_obj = event.get('status') or {}
+    status_type = status_obj.get('type') or {}
     state = status_type.get('state', 'pre')
     if state in ['in', 'post']: return True, f"State is '{state}'"
     if state == 'pre':
@@ -348,11 +352,15 @@ def parse_espn_summary(event_id):
         return summary_data
 
     try:
-        comp_head = data.get('header', {}).get('competitions', [{}])[0]
-        summary_data["status_obj"] = comp_head.get('status', {})
-        game_state = comp_head.get('status', {}).get('type', {}).get('state', 'pre')
+        # FIX: Safe extraction from heavily nested dictionaries
+        header = data.get('header') or {}
+        comp_list = header.get('competitions') or [{}]
+        comp_head = comp_list[0] if comp_list else {}
+        
+        summary_data["status_obj"] = comp_head.get('status') or {}
+        game_state = ((comp_head.get('status') or {}).get('type') or {}).get('state', 'pre')
 
-        internal_slug = data.get('header', {}).get('league', {}).get('slug', '')
+        internal_slug = (header.get('league') or {}).get('slug', '')
 
         live_scores = {}
         for comp in comp_head.get('competitors', []):
@@ -361,7 +369,7 @@ def parse_espn_summary(event_id):
                 except: pass
         if live_scores: summary_data["live_score"] = live_scores
 
-        teams_box = data.get('boxscore', {}).get('teams', [])
+        teams_box = (data.get('boxscore') or {}).get('teams') or []
         if len(teams_box) == 2:
             def extract_stat_dict(stats_list): return {s.get('name'): s.get('displayValue', '0') for s in stats_list if isinstance(s, dict)}
             h_idx = 0 if teams_box[0].get('homeAway') == 'home' else 1
@@ -384,15 +392,16 @@ def parse_espn_summary(event_id):
         key_events = data.get('keyEvents', [])
         if isinstance(key_events, list):
             for ev in key_events:
-                ev_text = ev.get('type', {}).get('text', '').lower()
+                ev_text = (ev.get('type') or {}).get('text', '').lower()
                 if "substitution" in ev_text or "sub" in ev_text:
                     parts = ev.get('participants', [])
                     if len(parts) >= 2:
-                        p_in = parts[0].get('athlete', {}).get('displayName', '').lower()
-                        p_out = parts[1].get('athlete', {}).get('displayName', '').lower()
+                        # FIX: Defensive unwrapping
+                        p_in = (parts[0].get('athlete') or {}).get('displayName', '').lower()
+                        p_out = (parts[1].get('athlete') or {}).get('displayName', '').lower()
                         if p_in and p_out: sub_to_starter[p_in] = p_out
-                        subbed_in.add(p_in); subbed_in.add(str(parts[0].get('athlete', {}).get('id', '')))
-                        subbed_out.add(p_out); subbed_out.add(str(parts[1].get('athlete', {}).get('id', '')))
+                        subbed_in.add(p_in); subbed_in.add(str((parts[0].get('athlete') or {}).get('id', '')))
+                        subbed_out.add(p_out); subbed_out.add(str((parts[1].get('athlete') or {}).get('id', '')))
 
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
@@ -401,9 +410,9 @@ def parse_espn_summary(event_id):
             if game_state != 'pre' and internal_slug:
                 active_player_list = []
                 for r_data in rosters:
-                    t_id = str(r_data.get('team', {}).get('id', ''))
+                    t_id = str((r_data.get('team') or {}).get('id', ''))
                     for entry in r_data.get('roster', []):
-                        ath = entry.get('athlete', {})
+                        ath = entry.get('athlete') or {}
                         p_id = str(ath.get('id', ''))
                         p_name = ath.get('displayName', '')
                         if entry.get('starter') or entry.get('subbedIn') or entry.get('didPlay') or entry.get('played') or (p_id in subbed_in or p_name.lower() in subbed_in):
@@ -418,16 +427,16 @@ def parse_espn_summary(event_id):
 
             for r_data in rosters:
                 ha = r_data.get('homeAway', 'home')
-                team_obj = r_data.get('team', {})
+                team_obj = r_data.get('team') or {}
                 start_xi, subs = [], []
                 starters_look = {}
                 
                 for entry in r_data.get('roster', []):
                     if not entry.get('starter', False): continue
-                    ath = entry.get('athlete', {})
+                    ath = entry.get('athlete') or {}
                     p_id = str(ath.get('id', ''))
                     p_name = ath.get('displayName', 'Unknown')
-                    pos = entry.get('position', {}).get('abbreviation') or ath.get('position', {}).get('abbreviation') or 'M'
+                    pos = (entry.get('position') or {}).get('abbreviation') or (ath.get('position') or {}).get('abbreviation') or 'M'
                     
                     sub_in_flag = entry.get('subbedIn', False)
                     sub_in = sub_in_flag or (game_state != 'pre' and (p_id in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
@@ -437,7 +446,7 @@ def parse_espn_summary(event_id):
                     
                     p_obj = {
                         "id": p_id, "name": p_name, "pos": pos.upper(), "category": get_position_category(pos),
-                        "number": str(entry.get('jersey', '')), "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
+                        "number": str(entry.get('jersey', '')), "photo": (ath.get('headshot') or {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
                         "live_stats": p_stats,
                         "isSubbedIn": sub_in, "isSubbedOut": sub_out, "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                     }
@@ -446,10 +455,10 @@ def parse_espn_summary(event_id):
 
                 for entry in r_data.get('roster', []):
                     if entry.get('starter', False): continue
-                    ath = entry.get('athlete', {})
+                    ath = entry.get('athlete') or {}
                     p_id = str(ath.get('id', ''))
                     p_name = ath.get('displayName', 'Unknown')
-                    pos = ath.get('position', {}).get('abbreviation') or entry.get('position', {}).get('abbreviation') or 'M'
+                    pos = (ath.get('position') or {}).get('abbreviation') or (entry.get('position') or {}).get('abbreviation') or 'M'
                     if pos.upper() in ['SUB', 'S', 'SUBSTITUTE', '']:
                         replaced = sub_to_starter.get(p_name.lower())
                         pos_cat = starters_look[replaced]['category'] if replaced in starters_look else 'M'
@@ -464,7 +473,7 @@ def parse_espn_summary(event_id):
                     if entry.get('didPlay') or entry.get('played') or sub_in or p_stats:
                         subs.append({"player": {
                             "id": p_id, "name": p_name, "pos": pos.upper(), "category": pos_cat,
-                            "number": str(entry.get('jersey', '')), "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
+                            "number": str(entry.get('jersey', '')), "photo": (ath.get('headshot') or {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
                             "live_stats": p_stats, "isSubbedIn": sub_in, "isSubbedOut": sub_out, "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                         }})
                 
@@ -472,7 +481,7 @@ def parse_espn_summary(event_id):
 
         if isinstance(key_events, list) and key_events:
             for ev in key_events:
-                ev_text = ev.get('type', {}).get('text', '').lower()
+                ev_text = (ev.get('type') or {}).get('text', '').lower()
                 is_goal = "goal" in ev_text or "penalty - scored" in ev_text
                 is_sub = "substitution" in ev_text or "sub" in ev_text
                 is_card = "card" in ev_text
@@ -480,9 +489,9 @@ def parse_espn_summary(event_id):
                 
                 ev_type = "Goal" if is_goal else ("subst" if is_sub else ("Red Card" if "red" in ev_text else "Yellow Card"))
                 parts = ev.get('participants', [])
-                p_in = parts[0].get('athlete', {}).get('displayName', '') if parts else ''
-                if not p_in and parts: p_in = parts[0].get('coach', {}).get('displayName', '')
-                p_out = parts[1].get('athlete', {}).get('displayName', '') if len(parts) > 1 else ''
+                p_in = (parts[0].get('athlete') or {}).get('displayName', '') if parts else ''
+                if not p_in and parts: p_in = (parts[0].get('coach') or {}).get('displayName', '')
+                p_out = (parts[1].get('athlete') or {}).get('displayName', '') if len(parts) > 1 else ''
                 
                 p_player = p_out if ev_type == "subst" else p_in
                 if not p_player:
@@ -490,24 +499,30 @@ def parse_espn_summary(event_id):
                     p_player = raw_text.split(" - ")[-1].strip() if " - " in raw_text else (raw_text[:20]+'...' if len(raw_text)>20 else raw_text)
                 
                 summary_data["events"].append({
-                    "time": ev.get('clock', {}).get('displayValue', "0'").replace("'", ""), "team_id": str(ev.get('team', {}).get('id', '')),
-                    "type": ev_type, "detail": ev.get('type', {}).get('text', ''), "player": p_player,
+                    "time": (ev.get('clock') or {}).get('displayValue', "0'").replace("'", ""), "team_id": str((ev.get('team') or {}).get('id', '')),
+                    "type": ev_type, "detail": (ev.get('type') or {}).get('text', ''), "player": p_player,
                     "player_out": p_in if ev_type == "subst" else (p_out if p_out else None), "assist": p_out if ev_type == "Goal" else None
                 })
 
         pickcenter = data.get('pickcenter', []) or data.get('odds', [])
         if isinstance(pickcenter, list) and pickcenter:
             odds_item = pickcenter[0]
+            
+            # FIX: Ensure nested odd structures exist before accessing text properties
+            home_odds = odds_item.get('homeTeamOdds') or {}
+            draw_odds = odds_item.get('drawOdds') or {}
+            away_odds = odds_item.get('awayTeamOdds') or {}
+            
             summary_data["odds"] = {
-                "home": f"+{odds_item.get('homeTeamOdds', {}).get('moneyLine')}" if odds_item.get('homeTeamOdds', {}).get('moneyLine') and int(odds_item.get('homeTeamOdds', {}).get('moneyLine')) > 0 else str(odds_item.get('homeTeamOdds', {}).get('moneyLine') or 'TBD'),
-                "draw": f"+{odds_item.get('drawOdds', {}).get('moneyLine')}" if odds_item.get('drawOdds', {}).get('moneyLine') and int(odds_item.get('drawOdds', {}).get('moneyLine')) > 0 else str(odds_item.get('drawOdds', {}).get('moneyLine') or 'TBD'),
-                "away": f"+{odds_item.get('awayTeamOdds', {}).get('moneyLine')}" if odds_item.get('awayTeamOdds', {}).get('moneyLine') and int(odds_item.get('awayTeamOdds', {}).get('moneyLine')) > 0 else str(odds_item.get('awayTeamOdds', {}).get('moneyLine') or 'TBD'),
-                "total": str(odds_item.get('overUnder', odds_item.get('total', {}).get('displayName', 'TBD'))), "over": str(odds_item.get('overOdds', 'TBD')), "under": str(odds_item.get('underOdds', 'TBD'))
+                "home": f"+{home_odds.get('moneyLine')}" if home_odds.get('moneyLine') and int(home_odds.get('moneyLine')) > 0 else str(home_odds.get('moneyLine') or 'TBD'),
+                "draw": f"+{draw_odds.get('moneyLine')}" if draw_odds.get('moneyLine') and int(draw_odds.get('moneyLine')) > 0 else str(draw_odds.get('moneyLine') or 'TBD'),
+                "away": f"+{away_odds.get('moneyLine')}" if away_odds.get('moneyLine') and int(away_odds.get('moneyLine')) > 0 else str(away_odds.get('moneyLine') or 'TBD'),
+                "total": str(odds_item.get('overUnder', (odds_item.get('total') or {}).get('displayName', 'TBD'))), "over": str(odds_item.get('overOdds', 'TBD')), "under": str(odds_item.get('underOdds', 'TBD'))
             }
 
         inj_raw = data.get('injuries', [])
         if isinstance(inj_raw, list) and len(inj_raw) == 2:
-            summary_data["injuries"] = {"home": [i.get('athlete', {}).get('displayName', '') for i in inj_raw[0].get('injuries', [])], "away": [i.get('athlete', {}).get('displayName', '') for i in inj_raw[1].get('injuries', [])]}
+            summary_data["injuries"] = {"home": [(i.get('athlete') or {}).get('displayName', '') for i in inj_raw[0].get('injuries', [])], "away": [(i.get('athlete') or {}).get('displayName', '') for i in inj_raw[1].get('injuries', [])]}
 
     except Exception as e:
         print(f"    ❌ EXCEPTION in parse_espn_summary for event {event_id}: {e}")
@@ -533,14 +548,14 @@ def get_contrast_color(hex_color):
 def get_team_color(lineup, default_hex):
     if not lineup: return default_hex
     try:
-        c = lineup.get('team', {}).get('colors', {}).get('player', {}).get('primary')
+        c = (((lineup.get('team') or {}).get('colors') or {}).get('player') or {}).get('primary')
         return f"#{str(c).replace('#', '')}" if c else default_hex
     except:
         return default_hex
 
 def get_time_badge_html(data):
-    status = str(data['fixture']['status'].get('short', ''))
-    elapsed = data['fixture']['status'].get('elapsed')
+    status = str((data['fixture']['status'] or {}).get('short', ''))
+    elapsed = (data['fixture']['status'] or {}).get('elapsed')
     date_str = str(data['fixture'].get('date', ''))
     try:
         dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
@@ -561,9 +576,9 @@ def get_latest_event_html(data, is_ribbon=False):
     events = data.get('events', [])
     if not events: return '<div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div>' if is_ribbon else ''
     last_ev = events[-1]
-    is_home = str(last_ev.get('team_id')) == str(data['teams']['home'].get('id', ''))
-    team_name = str(data['teams']['home'].get('name', 'TBD')) if is_home else str(data['teams']['away'].get('name', 'TBD'))
-    team_logo = str(data['teams']['home'].get('logo', '')) if is_home else str(data['teams']['away'].get('logo', ''))
+    is_home = str(last_ev.get('team_id')) == str((data['teams']['home'] or {}).get('id', ''))
+    team_name = str((data['teams']['home'] or {}).get('name', 'TBD')) if is_home else str((data['teams']['away'] or {}).get('name', 'TBD'))
+    team_logo = str((data['teams']['home'] or {}).get('logo', '')) if is_home else str((data['teams']['away'] or {}).get('logo', ''))
 
     if last_ev.get('type') == 'subst':
         p_out = shorten_player_name(last_ev.get('player'))
@@ -585,9 +600,9 @@ def get_latest_event_html(data, is_ribbon=False):
             return f'''<div class="ms-2 d-flex flex-column text-start {text_color} fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="text-truncate">{icon} {last_ev.get('time', '')}' <img src="{team_logo}" loading="lazy" decoding="async" style="width: 12px; height: 12px;" class="mx-1">{p_name}</div>{ast_html_full}</div>'''
 
 def get_ribbon_html(data):
-    is_pre = data['fixture']['status']['short'] in ['NS', 'TBD', 'PST', 'CANC', 'ABD']
-    h_score = '-' if is_pre else data.get('goals', {}).get('home', 0)
-    a_score = '-' if is_pre else data.get('goals', {}).get('away', 0)
+    is_pre = (data['fixture']['status'] or {}).get('short') in ['NS', 'TBD', 'PST', 'CANC', 'ABD']
+    h_score = '-' if is_pre else (data.get('goals') or {}).get('home', 0)
+    a_score = '-' if is_pre else (data.get('goals') or {}).get('away', 0)
     
     l_flag = str(data["league"].get("flag") or "")
     flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">' if l_flag.startswith('http') or l_flag.startswith('images/') else f'<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
@@ -603,9 +618,9 @@ def get_ribbon_html(data):
     </div>'''
 
 def get_center_column_html(data):
-    is_pre = data['fixture']['status']['short'] in ['NS', 'TBD', 'PST', 'CANC', 'ABD']
-    h_score = data.get('goals', {}).get('home', 0)
-    a_score = data.get('goals', {}).get('away', 0)
+    is_pre = (data['fixture']['status'] or {}).get('short') in ['NS', 'TBD', 'PST', 'CANC', 'ABD']
+    h_score = (data.get('goals') or {}).get('home', 0)
+    a_score = (data.get('goals') or {}).get('away', 0)
     if is_pre or not data.get('team_stats'): 
         return f'<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">{"vs" if is_pre else f"{h_score} - {a_score}"}</div>'
     
@@ -684,7 +699,7 @@ def build_live_stats_grid(lineup_data, hex_color):
 
 def pre_render_game_card(data):
     fix_id = str(data['fixture'].get('id', ''))
-    is_pre = data['fixture']['status'].get('short', '') in ['NS', 'TBD']
+    is_pre = (data['fixture']['status'] or {}).get('short', '') in ['NS', 'TBD']
     has_stats = bool(data.get('team_stats'))
     
     l_flag = str(data['league'].get('flag') or "")
@@ -730,11 +745,11 @@ def group_and_sort_matches_by_league(matches):
         return []
     leagues_map = {}
     for m in matches:
-        l_info = m.get('league', {})
+        l_info = m.get('league') or {}
         l_slug = l_info.get('slug') or create_slug(l_info.get('name', 'other'))
         l_name = l_info.get('name', 'Global Football')
         l_flag = l_info.get('flag', '')
-        match_date = m.get('fixture', {}).get('date', '9999-99-99') or '9999-99-99'
+        match_date = (m.get('fixture') or {}).get('date', '9999-99-99') or '9999-99-99'
 
         if l_slug not in leagues_map:
             leagues_map[l_slug] = {
@@ -753,7 +768,7 @@ def group_and_sort_matches_by_league(matches):
     
     # Sort matches within each league chronologically
     for lg in league_list:
-        lg['matches'].sort(key=lambda x: x.get('fixture', {}).get('date', '9999-99-99') or '9999-99-99')
+        lg['matches'].sort(key=lambda x: (x.get('fixture') or {}).get('date', '9999-99-99') or '9999-99-99')
 
     # Sort leagues by earliest match date
     league_list.sort(key=lambda x: x['earliest_date'])
@@ -785,7 +800,7 @@ def fetch_espn_scores_for_date(date_str, old_html):
     for event in raw_events:
         try:
             event_id = str(event.get('id', ''))
-            state = event.get('status', {}).get('type', {}).get('state', 'pre')
+            state = ((event.get('status') or {}).get('type') or {}).get('state', 'pre')
 
             comps = event.get('competitions', [])
             if not comps: continue
@@ -795,8 +810,8 @@ def fetch_espn_scores_for_date(date_str, old_html):
             away_comp = next((c for c in comp.get('competitors', []) if c.get('homeAway') == 'away'), None)
             if not home_comp or not away_comp: continue
 
-            h_team = home_comp.get('team', {})
-            a_team = away_comp.get('team', {})
+            h_team = home_comp.get('team') or {}
+            a_team = away_comp.get('team') or {}
             
             # Localize Team Logos
             home_id = str(h_team.get('id', ''))
@@ -806,7 +821,8 @@ def fetch_espn_scores_for_date(date_str, old_html):
             home_logo = get_local_image_url(str(h_team.get('logo') or ""), subfolder="images/teams")
             away_logo = get_local_image_url(str(a_team.get('logo') or ""), subfolder="images/teams")
 
-            league_obj = event.get('league') or comp.get('league') or (event.get('leagues', [{}])[0] if event.get('leagues') else {})
+            league_list = event.get('leagues') or [{}]
+            league_obj = event.get('league') or comp.get('league') or league_list[0]
             raw_name = str(comp.get('altGameNote') or league_obj.get('name') or league_obj.get('displayName') or "Global Football")
             final_league_name = re.sub(r'^\d{4}-\d{4}\s+', '', raw_name).strip()
             league_slug = create_slug(final_league_name)
@@ -853,8 +869,8 @@ def fetch_espn_scores_for_date(date_str, old_html):
                 "status_obj": None
             }
 
-            fresh_status = summary.get("status_obj") or event.get('status', {})
-            fresh_type = fresh_status.get('type', {})
+            fresh_status = summary.get("status_obj") or event.get('status') or {}
+            fresh_type = fresh_status.get('type') or {}
             st = fresh_type.get('state', state)
             status_short = 'NS' if st == 'pre' else ('FT' if st == 'post' else fresh_type.get('shortDetail', 'LIVE'))
 
