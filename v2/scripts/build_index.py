@@ -1059,8 +1059,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const groupedPlayers = { 'F': [], 'M': [], 'D': [], 'G': [] };
         
         let flatPlayers = [];
+        
+        // 1. Always add starters
         lineupData.startXI.forEach(slot => flatPlayers.push({ ...slot.player }));
-        if (lineupData.substitutes) lineupData.substitutes.forEach(sub => flatPlayers.push({ ...sub.player }));
+        
+        // 2. Filter substitutes: ONLY add them if they actually subbed into the match
+        if (lineupData.substitutes) {
+            lineupData.substitutes.forEach(sub => {
+                if (sub.player.isSubbedIn) {
+                    flatPlayers.push({ ...sub.player });
+                }
+            });
+        }
         
         flatPlayers.forEach(p => {
             const cat = p.category || 'M';
