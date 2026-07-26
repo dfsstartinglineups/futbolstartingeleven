@@ -4,6 +4,7 @@ import json
 import requests
 import traceback
 import unicodedata
+import math
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
 import pytz
@@ -196,13 +197,9 @@ def to_snake_case(name):
 def get_position_category(raw_pos):
     if not raw_pos: return 'M'
     p = str(raw_pos).strip().upper()
-    
-    if p in ['G', 'GK', 'GOALKEEPER']:
-        return 'G'
-    if any(term in p for term in ['CF', 'ST', 'FW', 'LW', 'RW', 'WF', 'SS', 'ATT', 'STR', 'AM', 'CAM']) or p == 'F':
-        return 'F'
-    if any(term in p for term in ['CD', 'CB', 'LB', 'RB', 'WB', 'SW', 'DF', 'DEF']) or p == 'D':
-        return 'D'
+    if p in ['G', 'GK', 'GOALKEEPER']: return 'G'
+    if any(term in p for term in ['CF', 'ST', 'FW', 'LW', 'RW', 'WF', 'SS', 'ATT', 'STR', 'AM', 'CAM']) or p == 'F': return 'F'
+    if any(term in p for term in ['CD', 'CB', 'LB', 'RB', 'WB', 'SW', 'DF', 'DEF']) or p == 'D': return 'D'
     return 'M'
 
 def is_valid_sub_minute(minute_val):
@@ -214,7 +211,6 @@ def extract_match_clock(status_obj):
     if not status_obj: return "LIVE"
     status_type = status_obj.get('type', {})
     state = status_type.get('state', 'pre')
-    
     if state == 'pre': return "NS"
     if state == 'post': return "FT"
     if status_type.get('name') == 'STATUS_HALFTIME' or status_type.get('shortDetail') == 'HT': return "HT"
@@ -222,14 +218,10 @@ def extract_match_clock(status_obj):
     short_detail = status_type.get('shortDetail', '')
     if short_detail:
         tick_match = re.search(r"(\d+\+?\d*)\'", short_detail)
-        if tick_match: 
-            return tick_match.group(1)
-        
+        if tick_match: return tick_match.group(1)
         nums = re.findall(r"\d+", short_detail)
-        if len(nums) > 1:
-            return nums[-1]
-        elif len(nums) == 1 and "Half" not in short_detail:
-            return nums[0]
+        if len(nums) > 1: return nums[-1]
+        elif len(nums) == 1 and "Half" not in short_detail: return nums[0]
 
     display_clock = status_obj.get('displayClock', '')
     if display_clock:
@@ -244,41 +236,27 @@ def extract_match_clock(status_obj):
     raw_clock = status_obj.get('clock', 0)
     if raw_clock > 0:
         return str(int(raw_clock // 60) + 1)
-
     return "LIVE"
 
 def generate_league_abbrev(name):
     if not name or name == "Global Football": return "GLB"
     name_upper = name.upper()
-    
     overrides = {
-        "ENGLISH PREMIER LEAGUE": "EPL", "SCOTTISH PREMIERSHIP": "SCO",
-        "RUSSIAN PREMIER": "RUS", "PREMIER LEAGUE": "EPL", 
-        "BRAZILIAN SERIE A": "BSA", "ECUADORIAN SERIE A": "ECU",
-        "ITALIAN SERIE A": "SERA", "SERIE A": "SERA", 
-        "MEXICAN LIGA BBVA MX": "LMX", "LIGA DE EXPANSIÓN MX": "EXP",
-        "LIGA DE EXPANSION MX": "EXP", "LIGA MX": "LMX",
-        "SPANISH LALIGA": "LIGA", "LALIGA": "LIGA", "PORTUGUESE LIGA": "POR",
-        "GERMAN BUNDESLIGA": "BUND", "BUNDESLIGA": "BUND",
-        "FRENCH LIGUE 1": "LIG1", "LIGUE 1": "LIG1",
-        "DANISH SUPERLIGA": "DEN", "DENMARK SUPERLIGA": "DEN",
-        "SWEDISH ALLSVENSKAN": "SWE", "ALLSVENSKAN": "ALLS",
-        "ARGENTINE LPF": "LPF", "ARGENTINA LPF": "LPF",
-        "MAJOR LEAGUE SOCCER": "MLS", "MLS": "MLS", "NWSL": "NWSL",
-        "USL CHAMPIONSHIP": "USL", "UEFA EUROPA CONFERENCE LEAGUE": "UECL",
-        "UEFA CHAMPIONS LEAGUE": "UCL", "UEFA EUROPA LEAGUE": "UEL",
-        "CLUB FRIENDLY": "FRND", "FRIENDLY": "FRND",
-        "ASEAN CHAMP": "ASEAN", "DUTCH EREDIVISIE": "ERED",
-        "COPA DEL REY": "CDR", "FA CUP": "FA", "EFL CUP": "EFL",
+        "ENGLISH PREMIER LEAGUE": "EPL", "SCOTTISH PREMIERSHIP": "SCO", "RUSSIAN PREMIER": "RUS", "PREMIER LEAGUE": "EPL", 
+        "BRAZILIAN SERIE A": "BSA", "ECUADORIAN SERIE A": "ECU", "ITALIAN SERIE A": "SERA", "SERIE A": "SERA", 
+        "MEXICAN LIGA BBVA MX": "LMX", "LIGA DE EXPANSIÓN MX": "EXP", "LIGA DE EXPANSION MX": "EXP", "LIGA MX": "LMX",
+        "SPANISH LALIGA": "LIGA", "LALIGA": "LIGA", "PORTUGUESE LIGA": "POR", "GERMAN BUNDESLIGA": "BUND", "BUNDESLIGA": "BUND",
+        "FRENCH LIGUE 1": "LIG1", "LIGUE 1": "LIG1", "DANISH SUPERLIGA": "DEN", "DENMARK SUPERLIGA": "DEN",
+        "SWEDISH ALLSVENSKAN": "SWE", "ALLSVENSKAN": "ALLS", "ARGENTINE LPF": "LPF", "ARGENTINA LPF": "LPF",
+        "MAJOR LEAGUE SOCCER": "MLS", "MLS": "MLS", "NWSL": "NWSL", "USL CHAMPIONSHIP": "USL", "UEFA EUROPA CONFERENCE LEAGUE": "UECL",
+        "UEFA CHAMPIONS LEAGUE": "UCL", "UEFA EUROPA LEAGUE": "UEL", "CLUB FRIENDLY": "FRND", "FRIENDLY": "FRND",
+        "ASEAN CHAMP": "ASEAN", "DUTCH EREDIVISIE": "ERED", "COPA DEL REY": "CDR", "FA CUP": "FA", "EFL CUP": "EFL",
         "DFB POKAL": "DFB", "COPPA ITALIA": "COPPA"
     }
-    
     for k, v in overrides.items():
         if k in name_upper: return v
-            
     clean_name = re.sub(r'\b(THE|OF|AND|FOR|MEN|WOMEN|MENS|WOMENS|DEL|LA)\b', '', name_upper).strip()
     words = clean_name.split()
-    
     if len(words) >= 3: return "".join([w[0] for w in words[:3]])
     elif len(words) == 2: return words[0][:3]
     elif len(words) == 1: return words[0][:4]
@@ -300,9 +278,7 @@ def should_fetch_summary(event):
     status_obj = event.get('status', {})
     status_type = status_obj.get('type', {})
     state = status_type.get('state', 'pre')
-
     if state in ['in', 'post']: return True, f"State is '{state}'"
-
     if state == 'pre':
         event_date_str = event.get('date')
         if event_date_str:
@@ -316,12 +292,10 @@ def should_fetch_summary(event):
     return False, f"State '{state}' not eligible"
 
 def fetch_single_player_core_stats(league_slug, event_id, team_id, player_id):
-    if not league_slug or league_slug == 'all' or not team_id or not player_id:
-        return {}
+    if not league_slug or league_slug == 'all' or not team_id or not player_id: return {}
     url = f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{league_slug}/events/{event_id}/competitions/{event_id}/competitors/{team_id}/roster/{player_id}/statistics/0"
-    headers = {'User-Agent': 'Mozilla/5.0'}
     try:
-        r = requests.get(url, headers=headers, timeout=3)
+        r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=3)
         if r.status_code == 200:
             stats_data = r.json()
             raw_stats = {}
@@ -329,22 +303,19 @@ def fetch_single_player_core_stats(league_slug, event_id, team_id, player_id):
                 for stat in category.get('stats', []):
                     raw_stats[stat.get('name')] = stat.get('value', 0)
             return raw_stats
-    except Exception:
-        pass
+    except Exception: pass
     return {}
 
 def extract_player_live_stats(entry_obj, core_raw_stats=None):
     stats_raw = (entry_obj.get('stats') or []) + (entry_obj.get('statistics') or [])
     live_stats = {}
-    
     for st in stats_raw:
         if not isinstance(st, dict): continue
         raw_k = st.get('name', '')
         raw_abbr = str(st.get('abbreviation', '')).upper()
         raw_v = st.get('displayValue', st.get('value', 0))
-        try:
-            num_v = float(str(raw_v)) if '.' in str(raw_v) else int(float(str(raw_v)))
-        except (ValueError, TypeError): num_v = raw_v
+        try: num_v = float(str(raw_v)) if '.' in str(raw_v) else int(float(str(raw_v)))
+        except: num_v = raw_v
 
         if raw_k:
             live_stats[raw_k] = num_v
@@ -369,7 +340,6 @@ def extract_player_live_stats(entry_obj, core_raw_stats=None):
         elif raw_k in ['saves'] or raw_abbr == 'SV': live_stats['saves'] = num_v
         elif raw_k in ['expectedGoalsConceded'] or raw_abbr == 'XGA': live_stats['xga'] = num_v
         elif raw_k in ['shotsFaced'] or raw_abbr == 'SHF': live_stats['shots_faced'] = num_v
-        elif raw_k in ['foulsCommitted'] or raw_abbr == 'FC': live_stats['fouls_committed'] = num_v
 
     if core_raw_stats:
         if 'touches' in core_raw_stats: live_stats['touches'] = int(core_raw_stats['touches'])
@@ -398,10 +368,8 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
         "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
         "injuries": {"home": [], "away": []}, "live_score": None, "status_obj": None
     }
-
     urls_to_try = []
-    if league_code and league_code not in ["all", "soccer", ""]:
-        urls_to_try.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/summary?event={event_id}")
+    if league_code and league_code not in ["all", "soccer", ""]: urls_to_try.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/summary?event={event_id}")
     urls_to_try.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/summary?event={event_id}")
     urls_to_try.append(f"https://site.web.api.espn.com/apis/site/v2/sports/soccer/all/summary?event={event_id}")
 
@@ -412,41 +380,29 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
             if r.status_code == 200:
                 res = r
                 break
-        except Exception: continue
-
+        except: continue
     if not res or res.status_code != 200: return summary_data
 
     try:
         data = res.json()
-        
-        header = data.get('header', {})
-        header_comps = header.get('competitions', [{}])
-        comp_head = header_comps[0] if isinstance(header_comps, list) and header_comps else {}
+        comp_head = data.get('header', {}).get('competitions', [{}])[0]
         summary_data["status_obj"] = comp_head.get('status', {})
-        status_type = comp_head.get('status', {}).get('type', {})
-        game_state = status_type.get('state', 'pre')
+        game_state = comp_head.get('status', {}).get('type', {}).get('state', 'pre')
 
         live_scores = {}
         for comp in comp_head.get('competitors', []):
-            side = comp.get('homeAway')
-            score_val = comp.get('score')
-            if side in ['home', 'away'] and score_val is not None:
-                try: live_scores[side] = int(score_val)
+            if comp.get('homeAway') in ['home', 'away'] and comp.get('score') is not None:
+                try: live_scores[comp.get('homeAway')] = int(comp.get('score'))
                 except: pass
-        if live_scores:
-            summary_data["live_score"] = live_scores
+        if live_scores: summary_data["live_score"] = live_scores
 
-        boxscore = data.get('boxscore', {})
-        teams_box = boxscore.get('teams', [])
+        teams_box = data.get('boxscore', {}).get('teams', [])
         if len(teams_box) == 2:
-            def extract_stat_dict(stats_list):
-                if not isinstance(stats_list, list): return {}
-                return {s.get('name'): s.get('displayValue', '0') for s in stats_list if isinstance(s, dict)}
-
-            home_idx = 0 if teams_box[0].get('homeAway') == 'home' else 1
-            away_idx = 1 if home_idx == 0 else 0
-            h_raw = extract_stat_dict(teams_box[home_idx].get('statistics', []))
-            a_raw = extract_stat_dict(teams_box[away_idx].get('statistics', []))
+            def extract_stat_dict(stats_list): return {s.get('name'): s.get('displayValue', '0') for s in stats_list if isinstance(s, dict)}
+            h_idx = 0 if teams_box[0].get('homeAway') == 'home' else 1
+            a_idx = 1 if h_idx == 0 else 0
+            h_raw = extract_stat_dict(teams_box[h_idx].get('statistics', []))
+            a_raw = extract_stat_dict(teams_box[a_idx].get('statistics', []))
 
             def clean_num(val_str):
                 cleaned = re.sub(r'[^0-9.]', '', str(val_str))
@@ -454,51 +410,24 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
             if h_raw or a_raw:
                 summary_data["team_stats"] = {
-                    "home": {
-                        "possession": clean_num(h_raw.get('possessionPct', 50)),
-                        "total_shots": clean_num(h_raw.get('totalShots', 0)),
-                        "shots_on_target": clean_num(h_raw.get('shotsOnTarget', 0)),
-                        "corners": clean_num(h_raw.get('cornerKicks', 0)),
-                        "yellow_cards": clean_num(h_raw.get('yellowCards', 0)),
-                        "red_cards": clean_num(h_raw.get('redCards', 0))
-                    },
-                    "away": {
-                        "possession": clean_num(a_raw.get('possessionPct', 50)),
-                        "total_shots": clean_num(a_raw.get('totalShots', 0)),
-                        "shots_on_target": clean_num(a_raw.get('shotsOnTarget', 0)),
-                        "corners": clean_num(a_raw.get('cornerKicks', 0)),
-                        "yellow_cards": clean_num(a_raw.get('yellowCards', 0)),
-                        "red_cards": clean_num(a_raw.get('redCards', 0))
-                    }
+                    "home": {"possession": clean_num(h_raw.get('possessionPct', 50)), "total_shots": clean_num(h_raw.get('totalShots', 0)), "shots_on_target": clean_num(h_raw.get('shotsOnTarget', 0)), "corners": clean_num(h_raw.get('cornerKicks', 0)), "yellow_cards": clean_num(h_raw.get('yellowCards', 0)), "red_cards": clean_num(h_raw.get('redCards', 0))},
+                    "away": {"possession": clean_num(a_raw.get('possessionPct', 50)), "total_shots": clean_num(a_raw.get('totalShots', 0)), "shots_on_target": clean_num(a_raw.get('shotsOnTarget', 0)), "corners": clean_num(a_raw.get('cornerKicks', 0)), "yellow_cards": clean_num(a_raw.get('yellowCards', 0)), "red_cards": clean_num(a_raw.get('redCards', 0))}
                 }
 
-        sub_to_starter_map = {}
-        subbed_in_names = set()
-        subbed_out_names = set()
-
+        sub_to_starter = {}
+        subbed_in, subbed_out = set(), set()
         key_events = data.get('keyEvents', [])
         if isinstance(key_events, list):
             for ev in key_events:
-                ev_text = ev.get('type', {}).get('text', '')
-                if "substitution" in ev_text.lower() or "sub" in ev_text.lower():
-                    participants = ev.get('participants', [])
-                    if len(participants) >= 2:
-                        p_in_ath = participants[0].get('athlete', {})
-                        p_out_ath = participants[1].get('athlete', {})
-
-                        p_in_id = str(p_in_ath.get('id', ''))
-                        p_in_name = p_in_ath.get('displayName', '').lower()
-
-                        p_out_id = str(p_out_ath.get('id', ''))
-                        p_out_name = p_out_ath.get('displayName', '').lower()
-
-                        if p_in_name and p_out_name:
-                            sub_to_starter_map[p_in_name] = p_out_name
-
-                        if p_in_id: subbed_in_names.add(p_in_id)
-                        if p_in_name: subbed_in_names.add(p_in_name)
-                        if p_out_id: subbed_out_names.add(p_out_id)
-                        if p_out_name: subbed_out_names.add(p_out_name)
+                ev_text = ev.get('type', {}).get('text', '').lower()
+                if "substitution" in ev_text or "sub" in ev_text:
+                    parts = ev.get('participants', [])
+                    if len(parts) >= 2:
+                        p_in = parts[0].get('athlete', {}).get('displayName', '').lower()
+                        p_out = parts[1].get('athlete', {}).get('displayName', '').lower()
+                        if p_in and p_out: sub_to_starter[p_in] = p_out
+                        subbed_in.add(p_in); subbed_in.add(str(parts[0].get('athlete', {}).get('id', '')))
+                        subbed_out.add(p_out); subbed_out.add(str(parts[1].get('athlete', {}).get('id', '')))
 
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
@@ -506,357 +435,395 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
             if game_state in ['in', 'post']:
                 player_fetch_list = []
                 for r_data in rosters:
-                    team_id = str(r_data.get('team', {}).get('id', ''))
+                    t_id = str(r_data.get('team', {}).get('id', ''))
                     for entry in r_data.get('roster', []):
-                        ath = entry.get('athlete', {})
-                        p_id = str(ath.get('id', ''))
-                        if team_id and p_id:
-                            player_fetch_list.append((team_id, p_id))
-
-                actual_league_slug = league_code
-                if actual_league_slug == 'all':
-                    actual_league_slug = comp_head.get('league', {}).get('slug') or data.get('header', {}).get('league', {}).get('slug') or 'all'
-
-                if actual_league_slug and actual_league_slug != 'all' and player_fetch_list:
-                    def fetch_worker(item):
-                        t_id, p_id = item
-                        stats = fetch_single_player_core_stats(actual_league_slug, event_id, t_id, p_id)
-                        return (t_id, p_id), stats
-
-                    with ThreadPoolExecutor(max_workers=12) as executor:
-                        results = executor.map(fetch_worker, player_fetch_list)
-                        for key, stats in results:
-                            if stats:
-                                core_stats_cache[key] = stats
+                        if t_id and entry.get('athlete', {}).get('id'):
+                            player_fetch_list.append((t_id, str(entry['athlete']['id'])))
+                act_slug = league_code if league_code != 'all' else (comp_head.get('league', {}).get('slug') or 'all')
+                if act_slug != 'all' and player_fetch_list:
+                    def fw(item): return item, fetch_single_player_core_stats(act_slug, event_id, item[0], item[1])
+                    with ThreadPoolExecutor(max_workers=12) as ex:
+                        for k, stats in ex.map(fw, player_fetch_list):
+                            if stats: core_stats_cache[k] = stats
 
             for r_data in rosters:
-                home_away = r_data.get('homeAway', 'home')
-                key = "homeLineup" if home_away == 'home' else "awayLineup"
-                formation = r_data.get('formation', '4-3-3')
+                ha = r_data.get('homeAway', 'home')
                 team_obj = r_data.get('team', {})
-                team_id = str(team_obj.get('id', ''))
+                t_id = str(team_obj.get('id', ''))
                 start_xi, subs = [], []
-                starters_lookup = {}
+                starters_look = {}
                 
-                player_entries = r_data.get('roster', [])
-                if isinstance(player_entries, list):
-                    for entry in player_entries:
-                        if not entry.get('starter', False): continue
-                        ath = entry.get('athlete', {})
-                        p_id = str(ath.get('id', ''))
-                        p_name = ath.get('displayName', 'Unknown')
-
-                        raw_pos_code = entry.get('position', {}).get('abbreviation') or ath.get('position', {}).get('abbreviation') or 'M'
-                        pos_display = raw_pos_code.strip().upper() if raw_pos_code else 'M'
-                        pos_category = get_position_category(pos_display)
-
-                        if game_state == 'pre':
-                            subbed_in, subbed_out = False, False
-                        else:
-                            in_min, out_min = entry.get('subbedInMinute'), entry.get('subbedOutMinute')
-                            subbed_in = (p_id in subbed_in_names or p_name.lower() in subbed_in_names or is_valid_sub_minute(in_min))
-                            subbed_out = (p_id in subbed_out_names or p_name.lower() in subbed_out_names or is_valid_sub_minute(out_min))
-
-                        c_stats = core_stats_cache.get((team_id, p_id))
-                        player_obj = {
-                            "id": p_id, "name": p_name,
-                            "pos": pos_display, "category": pos_category, "number": str(entry.get('jersey', '')),
-                            "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
-                            "live_stats": extract_player_live_stats(entry, c_stats),
-                            "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
-                            "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
-                        }
-                        start_xi.append({"player": player_obj, "sub_history": []})
-                        starters_lookup[p_name.lower()] = player_obj
-
-                    for entry in player_entries:
-                        if entry.get('starter', False): continue
-                        ath = entry.get('athlete', {})
-                        p_id = str(ath.get('id', ''))
-                        p_name = ath.get('displayName', 'Unknown')
-
-                        raw_pos_code = ath.get('position', {}).get('abbreviation') or entry.get('position', {}).get('abbreviation') or 'M'
-                        pos_display = raw_pos_code.strip().upper() if raw_pos_code else 'M'
-
-                        if pos_display in ['SUB', 'S', 'SUBSTITUTE', '']:
-                            replaced_name = sub_to_starter_map.get(p_name.lower())
-                            if replaced_name and replaced_name in starters_lookup:
-                                starter = starters_lookup[replaced_name]
-                                pos_display = starter['pos']
-                                pos_category = starter['category']
-                            else: pos_category = 'M'
-                        else: pos_category = get_position_category(pos_display)
-
-                        if game_state == 'pre':
-                            subbed_in, subbed_out = False, False
-                        else:
-                            in_min, out_min = entry.get('subbedInMinute'), entry.get('subbedOutMinute')
-                            subbed_in = (p_id in subbed_in_names or p_name.lower() in subbed_in_names or is_valid_sub_minute(in_min))
-                            subbed_out = (p_id in subbed_out_names or p_name.lower() in subbed_out_names or is_valid_sub_minute(out_min))
-
-                        did_play = entry.get('didPlay', False) or entry.get('played', False) or subbed_in
-                        c_stats = core_stats_cache.get((team_id, p_id))
-                        player_live_stats = extract_player_live_stats(entry, c_stats)
-
-                        player_obj = {
-                            "id": p_id, "name": p_name,
-                            "pos": pos_display, "category": pos_category, "number": str(entry.get('jersey', '')),
-                            "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
-                            "live_stats": player_live_stats,
-                            "isSubbedIn": subbed_in, "isSubbedOut": subbed_out,
-                            "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
-                        }
-                        if did_play or player_live_stats: subs.append({"player": player_obj})
-
-                if start_xi:
-                    summary_data[key] = {
-                        "formation": formation, "team": {"colors": {"player": {"primary": team_obj.get('color', '0d6efd')}}},
-                        "startXI": start_xi, "substitutes": subs
+                for entry in r_data.get('roster', []):
+                    if not entry.get('starter', False): continue
+                    ath = entry.get('athlete', {})
+                    p_name = ath.get('displayName', 'Unknown')
+                    pos = entry.get('position', {}).get('abbreviation') or ath.get('position', {}).get('abbreviation') or 'M'
+                    sub_in = game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute')))
+                    sub_out = game_state != 'pre' and (str(ath.get('id')) in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
+                    p_obj = {
+                        "id": str(ath.get('id', '')), "name": p_name, "pos": pos.upper(), "category": get_position_category(pos),
+                        "number": str(entry.get('jersey', '')), "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
+                        "live_stats": extract_player_live_stats(entry, core_stats_cache.get((t_id, str(ath.get('id'))))),
+                        "isSubbedIn": sub_in, "isSubbedOut": sub_out, "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                     }
+                    start_xi.append({"player": p_obj})
+                    starters_look[p_name.lower()] = p_obj
 
-        if isinstance(key_events, list) and len(key_events) > 0:
-            for ev in key_events:
-                ev_type_info = ev.get('type', {})
-                ev_text = ev_type_info.get('text', '')
-                ev_text_lower = ev_text.lower()
-                
-                # 1. Explicitly check for valid event types
-                is_goal = "goal" in ev_text_lower or "penalty - scored" in ev_text_lower
-                is_sub = "substitution" in ev_text_lower or "sub" in ev_text_lower
-                is_card = "card" in ev_text_lower
-                
-                # 2. If it's a delay, kickoff, halftime, etc., skip it entirely!
-                if not (is_goal or is_sub or is_card):
-                    continue
-                
-                if is_goal:
-                    ev_type = "Goal"
-                elif is_sub:
-                    ev_type = "subst"
-                elif is_card:
-                    # Capture red cards (including "Yellowred Card" / second yellow)
-                    if "red" in ev_text_lower:
-                        ev_type = "Red Card"
-                    else:
-                        ev_type = "Yellow Card"
-
-                clock_text = ev.get('clock', {}).get('displayValue', "0'")
-                team_id = str(ev.get('team', {}).get('id', ''))
-                
-                participants = ev.get('participants', [])
-                p_in, p_out = '', ''
-                
-                if len(participants) > 0:
-                    p_in = participants[0].get('athlete', {}).get('displayName', '')
-                    # Check if the participant is a coach instead of an athlete
-                    if not p_in:
-                        p_in = participants[0].get('coach', {}).get('displayName', '')
-                        
-                if len(participants) > 1:
-                    p_out = participants[1].get('athlete', {}).get('displayName', '')
+                for entry in r_data.get('roster', []):
+                    if entry.get('starter', False): continue
+                    ath = entry.get('athlete', {})
+                    p_name = ath.get('displayName', 'Unknown')
+                    pos = ath.get('position', {}).get('abbreviation') or entry.get('position', {}).get('abbreviation') or 'M'
+                    if pos.upper() in ['SUB', 'S', 'SUBSTITUTE', '']:
+                        replaced = sub_to_starter.get(p_name.lower())
+                        pos_cat = starters_look[replaced]['category'] if replaced in starters_look else 'M'
+                    else: pos_cat = get_position_category(pos)
                     
-                p_player = p_out if ev_type == "subst" else p_in
+                    sub_in = game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute')))
+                    sub_out = game_state != 'pre' and (str(ath.get('id')) in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
+                    p_stats = extract_player_live_stats(entry, core_stats_cache.get((t_id, str(ath.get('id')))))
+                    if entry.get('didPlay') or entry.get('played') or sub_in or p_stats:
+                        subs.append({"player": {
+                            "id": str(ath.get('id', '')), "name": p_name, "pos": pos.upper(), "category": pos_cat,
+                            "number": str(entry.get('jersey', '')), "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
+                            "live_stats": p_stats, "isSubbedIn": sub_in, "isSubbedOut": sub_out, "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
+                        }})
                 
-                # Fallback if the structured participant data is missing (common for cards)
+                if start_xi: summary_data["homeLineup" if ha == 'home' else "awayLineup"] = {"formation": r_data.get('formation', '4-3-3'), "team": {"colors": {"player": {"primary": team_obj.get('color', '0d6efd')}}}, "startXI": start_xi, "substitutes": subs}
+
+        if isinstance(key_events, list) and key_events:
+            for ev in key_events:
+                ev_text = ev.get('type', {}).get('text', '').lower()
+                is_goal = "goal" in ev_text or "penalty - scored" in ev_text
+                is_sub = "substitution" in ev_text or "sub" in ev_text
+                is_card = "card" in ev_text
+                if not (is_goal or is_sub or is_card): continue
+                
+                ev_type = "Goal" if is_goal else ("subst" if is_sub else ("Red Card" if "red" in ev_text else "Yellow Card"))
+                parts = ev.get('participants', [])
+                p_in = parts[0].get('athlete', {}).get('displayName', '') if parts else ''
+                if not p_in and parts: p_in = parts[0].get('coach', {}).get('displayName', '')
+                p_out = parts[1].get('athlete', {}).get('displayName', '') if len(parts) > 1 else ''
+                
+                p_player = p_out if ev_type == "subst" else p_in
                 if not p_player:
                     raw_text = ev.get('shortText') or ev.get('text') or ''
-                    if " - " in raw_text:
-                        p_player = raw_text.split(" - ")[-1].strip()
-                    elif raw_text:
-                        # If no dash is present, just use the raw text up to a reasonable length
-                        p_player = raw_text[:20] + '...' if len(raw_text) > 20 else raw_text
-                    else:
-                        p_player = "Unknown"
-
-                p_player_out = p_in if ev_type == "subst" else (p_out if p_out else None)
-
+                    p_player = raw_text.split(" - ")[-1].strip() if " - " in raw_text else (raw_text[:20]+'...' if len(raw_text)>20 else raw_text)
+                
                 summary_data["events"].append({
-                    "time": clock_text.replace("'", ""), "team_id": team_id, "type": ev_type,
-                    "detail": ev_text, "player": p_player, "player_out": p_player_out, "assist": p_out if ev_type == "Goal" else None
+                    "time": ev.get('clock', {}).get('displayValue', "0'").replace("'", ""), "team_id": str(ev.get('team', {}).get('id', '')),
+                    "type": ev_type, "detail": ev.get('type', {}).get('text', ''), "player": p_player,
+                    "player_out": p_in if ev_type == "subst" else (p_out if p_out else None), "assist": p_out if ev_type == "Goal" else None
                 })
 
         pickcenter = data.get('pickcenter', []) or data.get('odds', [])
-        if isinstance(pickcenter, list) and len(pickcenter) > 0:
+        if isinstance(pickcenter, list) and pickcenter:
             odds_item = pickcenter[0]
-            h_ml = odds_item.get('homeTeamOdds', {}).get('moneyLine')
-            a_ml = odds_item.get('awayTeamOdds', {}).get('moneyLine')
-            d_ml = odds_item.get('drawOdds', {}).get('moneyLine')
-            ou_line = odds_item.get('overUnder', odds_item.get('total', {}).get('displayName', 'TBD'))
-
             summary_data["odds"] = {
-                "home": f"+{h_ml}" if h_ml and int(h_ml) > 0 else str(h_ml or 'TBD'),
-                "draw": f"+{d_ml}" if d_ml and int(d_ml) > 0 else str(d_ml or 'TBD'),
-                "away": f"+{a_ml}" if a_ml and int(a_ml) > 0 else str(a_ml or 'TBD'),
-                "total": str(ou_line), "over": str(odds_item.get('overOdds', 'TBD')), "under": str(odds_item.get('underOdds', 'TBD'))
+                "home": f"+{odds_item.get('homeTeamOdds', {}).get('moneyLine')}" if odds_item.get('homeTeamOdds', {}).get('moneyLine') and int(odds_item.get('homeTeamOdds', {}).get('moneyLine')) > 0 else str(odds_item.get('homeTeamOdds', {}).get('moneyLine') or 'TBD'),
+                "draw": f"+{odds_item.get('drawOdds', {}).get('moneyLine')}" if odds_item.get('drawOdds', {}).get('moneyLine') and int(odds_item.get('drawOdds', {}).get('moneyLine')) > 0 else str(odds_item.get('drawOdds', {}).get('moneyLine') or 'TBD'),
+                "away": f"+{odds_item.get('awayTeamOdds', {}).get('moneyLine')}" if odds_item.get('awayTeamOdds', {}).get('moneyLine') and int(odds_item.get('awayTeamOdds', {}).get('moneyLine')) > 0 else str(odds_item.get('awayTeamOdds', {}).get('moneyLine') or 'TBD'),
+                "total": str(odds_item.get('overUnder', odds_item.get('total', {}).get('displayName', 'TBD'))), "over": str(odds_item.get('overOdds', 'TBD')), "under": str(odds_item.get('underOdds', 'TBD'))
             }
 
-        injuries_raw = data.get('injuries', [])
-        if isinstance(injuries_raw, list) and len(injuries_raw) == 2:
-            for idx, key in [(0, "home"), (1, "away")]:
-                inj_list = [item.get('athlete', {}).get('displayName', '') for item in injuries_raw[idx].get('injuries', []) if item.get('athlete', {}).get('displayName')]
-                summary_data["injuries"][key] = inj_list
+        inj_raw = data.get('injuries', [])
+        if isinstance(inj_raw, list) and len(inj_raw) == 2:
+            summary_data["injuries"] = {"home": [i.get('athlete', {}).get('displayName', '') for i in inj_raw[0].get('injuries', [])], "away": [i.get('athlete', {}).get('displayName', '') for i in inj_raw[1].get('injuries', [])]}
 
     except Exception as e: print(f"    ❌ EXCEPTION in parse_espn_summary for event {event_id}: {e}")
     return summary_data
+
+# ====================================================================
+# PYTHON STATIC HTML GENERATORS (Translating exactly what JS used to do)
+# ====================================================================
+
+def shorten_player_name(full_name):
+    if not full_name: return "Unknown"
+    parts = str(full_name).strip().split(' ')
+    if len(parts) == 1: return parts[0]
+    return f"{parts[0][0].upper()}. {' '.join(parts[1:])}"
+
+def get_contrast_color(hex_color):
+    if not hex_color: return '#ffffff'
+    hex_color = hex_color.replace('#', '')
+    if len(hex_color) == 3: hex_color = "".join([c*2 for c in hex_color])
+    try:
+        r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+        yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
+        return '#000000' if yiq >= 128 else '#ffffff'
+    except: return '#ffffff'
+
+def get_time_badge_html(data):
+    status = data['fixture']['status']['short']
+    elapsed = data['fixture']['status']['elapsed']
+    date_str = data['fixture']['date']
+    try:
+        dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+        dt_local = dt.astimezone(pytz.timezone('America/New_York'))
+        time_str = dt_local.strftime("%I:%M%p").lstrip('0').lower()
+        match_time = f"{dt_local.strftime('%a')} {time_str}"
+    except: match_time = date_str
+
+    if status in ['PST', 'CANC', 'ABD']: return f'<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">{status}</span>'
+    elif status in ['FT', 'AET', 'PEN']: return f'<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>'
+    elif status not in ['NS', 'TBD']:
+        display_min = str(elapsed) if (elapsed and elapsed != 'LIVE' and str(elapsed).endswith("'")) else (f"{elapsed}'" if elapsed and elapsed != 'LIVE' else 'LIVE')
+        if status == 'HT': display_min = 'HT'
+        return f'<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>{display_min}</span>'
+    else: return f'<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">{match_time}</span>'
+
+def get_latest_event_html(data, is_ribbon=False):
+    events = data.get('events', [])
+    if not events: return '<div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div>' if is_ribbon else ''
+    last_ev = events[-1]
+    is_home = str(last_ev.get('team_id')) == str(data['teams']['home']['id'])
+    team_name = data['teams']['home']['name'] if is_home else data['teams']['away']['name']
+    team_logo = data['teams']['home']['logo'] if is_home else data['teams']['away']['logo']
+
+    if last_ev.get('type') == 'subst':
+        p_out = shorten_player_name(last_ev.get('player'))
+        p_in = shorten_player_name(last_ev.get('player_out'))
+        if is_ribbon:
+            return f'''<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate">🔄 <img src="{team_logo}" style="width: 12px; height: 12px;" class="me-1">{last_ev['time']}'</div><div class="text-truncate">🟢 <span class="text-success">{p_in}</span></div><div class="text-muted text-truncate">🔴 {p_out}</div></div>'''
+        else:
+            return f'''<div class="ms-2 d-flex align-items-center text-dark fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="d-flex align-items-center me-2"><span class="bg-primary text-white rounded d-flex justify-content-center align-items-center me-1" style="width: 14px; height: 14px; font-size: 0.55rem;">🔄</span><img src="{team_logo}" style="width: 14px; height: 14px; object-fit: contain;" class="me-1"><span>{last_ev['time']}'</span></div><div class="d-flex flex-column text-start" style="min-width: 0;"><div class="text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#20c997; margin-bottom:1px; margin-right:3px;"></span>{p_in}</div><div class="text-muted text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#dc3545; margin-bottom:1px; margin-right:3px;"></span>{p_out}</div></div></div>'''
+    else:
+        icon, text_color = '🟨', 'text-warning'
+        if last_ev.get('type') == 'Goal': icon, text_color = '⚽', 'text-success'
+        elif last_ev.get('type') == 'Red Card': icon, text_color = '🟥', 'text-danger'
+        p_name = shorten_player_name(last_ev.get('player') or team_name)
+        ast_html = f'<div class="text-muted text-truncate" style="font-size: 0.55rem;">👟 {shorten_player_name(last_ev.get("assist"))}</div>' if last_ev.get('type') == 'Goal' and last_ev.get('assist') else ''
+        ast_html_full = f'<div class="text-muted text-truncate fw-normal" style="font-size: 0.55rem;"><span style="display:inline-block; width:12px;"></span>👟 {shorten_player_name(last_ev.get("assist"))}</div>' if last_ev.get('type') == 'Goal' and last_ev.get('assist') else ''
+        if is_ribbon:
+            return f'''<div class="{text_color} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate"><img src="{team_logo}" style="width: 12px; height: 12px;" class="me-1">{last_ev['time']}'</div><div class="text-truncate">{icon} {p_name}</div>{ast_html}</div>'''
+        else:
+            return f'''<div class="ms-2 d-flex flex-column text-start {text_color} fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="text-truncate">{icon} {last_ev['time']}' <img src="{team_logo}" style="width: 12px; height: 12px;" class="mx-1">{p_name}</div>{ast_html_full}</div>'''
+
+def get_ribbon_html(data):
+    is_pre = data['fixture']['status']['short'] in ['NS', 'TBD', 'PST', 'CANC', 'ABD']
+    h_score = '-' if is_pre else data.get('goals', {}).get('home', 0)
+    a_score = '-' if is_pre else data.get('goals', {}).get('away', 0)
+    flag_html = f'<img src="{data["league"]["flag"]}" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">' if data['league'].get('flag','').startswith('http') else f'<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{data["league"].get("flag","🏆")}</span>'
+    return f'''
+    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">{get_time_badge_html(data)}</div><a href="/leagues/{data["league"]["slug"]}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="{data["league"]["name"]}">{flag_html}{data["league"]["abbrev"]}</a></div>
+        <div class="col-5 px-2">
+            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['home']['logo']}" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['home']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{h_score}</span></div></div>
+            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['away']['logo']}" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['away']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{a_score}</span></div></div>
+        </div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">{get_latest_event_html(data, True)}</div>
+    </div>'''
+
+def get_center_column_html(data):
+    is_pre = data['fixture']['status']['short'] in ['NS', 'TBD', 'PST', 'CANC', 'ABD']
+    h_score = data.get('goals', {}).get('home', 0)
+    a_score = data.get('goals', {}).get('away', 0)
+    if is_pre or not data.get('team_stats'): return f'<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">{"vs" if is_pre else f"{h_score} - {a_score}"}</div>'
+    
+    t_stats = data['team_stats']
+    try: h_color = '#' + data['homeLineup']['team']['colors']['player']['primary']
+    except: h_color = '#0d6efd'
+    try: a_color = '#' + data['awayLineup']['team']['colors']['player']['primary']
+    except: a_color = '#dc3545'
+
+    def build_bar(label, h_val, a_val, is_pct=False):
+        tot = h_val + a_val
+        h_pct = (h_val / tot * 100) if tot > 0 else 50
+        a_pct = (a_val / tot * 100) if tot > 0 else 50
+        return f'''<div class="text-center w-100 px-1"><div class="stat-label-tiny">{label}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: {h_pct}%; background-color: {h_color}; color: {get_contrast_color(h_color)};">{f"{h_val}%" if is_pct else h_val}</div><div class="stat-bar-segment" style="width: {a_pct}%; background-color: {a_color}; color: {get_contrast_color(a_color)};">{f"{a_val}%" if is_pct else a_val}</div></div></div>'''
+
+    return f'''<div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">{h_score} - {a_score}</div>{build_bar("Possession", t_stats['home'].get('possession',0), t_stats['away'].get('possession',0), True)}{build_bar("Total Shots", t_stats['home'].get('total_shots',0), t_stats['away'].get('total_shots',0))}{build_bar("Shots on Target", t_stats['home'].get('shots_on_target',0), t_stats['away'].get('shots_on_target',0))}{build_bar("Corners", t_stats['home'].get('corners',0), t_stats['away'].get('corners',0))}<div class="text-center w-100 px-1 mt-1"><div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div><div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;"><span>🟨 {t_stats['home'].get('yellow_cards',0)} 🟥 {t_stats['home'].get('red_cards',0)}</span><span>🟨 {t_stats['away'].get('yellow_cards',0)} 🟥 {t_stats['away'].get('red_cards',0)}</span></div></div>'''
+
+def get_events_html(data):
+    if not data.get('events'): return ''
+    h_id, a_id = str(data['teams']['home']['id']), str(data['teams']['away']['id'])
+    h_evs = list(reversed([e for e in data['events'] if str(e.get('team_id')) == h_id]))
+    a_evs = list(reversed([e for e in data['events'] if str(e.get('team_id')) == a_id]))
+    
+    def fmt_ev(e, team_name):
+        if e['type'] == 'subst': return f'''<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">{e['time']}'</div><div style="width: 16px; text-align: center;" class="me-1">🔄</div><div class="text-truncate"><span class="text-dark fw-bold">{shorten_player_name(e.get('player_out'))}</span> IN<br><span class="text-muted" style="font-size: 0.55rem;">({shorten_player_name(e.get('player'))} OUT)</span></div></div>'''
+        icon = '⚽' if e['type'] == 'Goal' else ('🟥' if e['type'] == 'Red Card' else '🟨')
+        ast = f'''<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 {shorten_player_name(e.get('assist'))}</span>''' if e['type'] == 'Goal' and e.get('assist') else ''
+        return f'''<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">{e['time']}'</div><div style="width: 16px; text-align: center;" class="me-1">{icon}</div><div class="text-truncate"><span class="text-dark fw-bold">{shorten_player_name(e.get('player') or team_name)}</span>{ast}</div></div>'''
+
+    needs_col = max(len(h_evs), len(a_evs)) > 1
+    h_first = fmt_ev(h_evs[0], data['teams']['home']['name']) if h_evs else ''
+    a_first = fmt_ev(a_evs[0], data['teams']['away']['name']) if a_evs else ''
+    h_all = "".join([fmt_ev(e, data['teams']['home']['name']) for e in h_evs])
+    a_all = "".join([fmt_ev(e, data['teams']['away']['name']) for e in a_evs])
+    toggle = "const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp);" if needs_col else ""
+    return f'''<div class="w-100 px-2 pt-1 mt-1 border-top text-muted" style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" onclick="{toggle}" title="{"Click to expand/collapse match timeline" if needs_col else ""}"><div class="event-collapsed"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">{h_first}</div><div class="text-start" style="flex: 1; min-width: 0;">{a_first}</div></div>{"<div class='text-center text-secondary w-100' style='font-size: 0.60rem;'>▼</div>" if needs_col else ""}</div><div class="event-expanded d-none"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">{h_all}</div><div class="text-start" style="flex: 1; min-width: 0;">{a_all}</div></div><div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▲</div></div></div>'''
+
+def get_odds_html(data):
+    odds = data.get('odds', {})
+    if not odds or (odds.get('home') == "TBD" and odds.get('over') == "TBD"): return ''
+    return f'''<div class="d-flex justify-content-between text-center bg-white border-top border-bottom py-1" style="font-size: 0.70rem;"><div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">1 (HOME)</div><div class="fw-bold text-dark">{odds.get('home','')}</div></div><div class="w-25 border-start border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">X (DRAW)</div><div class="fw-bold text-dark">{odds.get('draw','')}</div></div><div class="w-25 border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">2 (AWAY)</div><div class="fw-bold text-dark">{odds.get('away','')}</div></div><div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">O/U {odds.get('total','')}</div><div class="fw-bold text-dark"><span class="text-success">O</span> {odds.get('over','')} <span class="text-danger">U</span> {odds.get('under','')}</div></div></div>'''
+
+def get_injuries_html(data):
+    inj = data.get('injuries', {})
+    h_inj = ", ".join([shorten_player_name(p) for p in inj.get('home', [])])
+    a_inj = ", ".join([shorten_player_name(p) for p in inj.get('away', [])])
+    if not h_inj and not a_inj: return ''
+    return f'''<div class="border-bottom px-2 py-1 text-truncate" style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545;"><strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> {h_inj or 'None'} | <b>A:</b> {a_inj or 'None'}</span></div>'''
+
+def build_lineup_list(lineup_data):
+    if not lineup_data or not lineup_data.get('startXI'): return '<div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div>'
+    items = ""
+    for s in lineup_data['startXI']:
+        p = s['player']
+        pho = f'''<img src="{p['photo']}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2">''' if p.get('photo') else '''<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>'''
+        sub = '''<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>''' if p.get('isSubbedOut') else ''
+        items += f'''<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">{p.get('pos','M')}</span>{pho}<span class="batter-name text-dark text-truncate">{sub}{shorten_player_name(p.get('name'))}</span><span class="ms-auto text-muted" style="font-size: 0.65rem;">#{p.get('number','')}</span></li>'''
+    return f'''<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ {lineup_data.get('formation', '4-3-3')}</div><ul class="batting-order w-100 m-0 p-0">{items}</ul>'''
+
+def build_live_stats_grid(lineup_data, hex_color):
+    if not lineup_data or not lineup_data.get('startXI'): return '<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>'
+    grps = {'F': {'t': 'FWD', 's': ['G','A','xG','SOG'], 'k': ['goals','assists','xg','shots_on_target']}, 'M': {'t': 'MID', 's': ['G','A','PAS','DUEL'], 'k': ['goals','assists','accurate_passes','duels_won']}, 'D': {'t': 'DEF', 's': ['G','DINT','TK','DUEL'], 'k': ['goals','dint','tackles','duels_won']}, 'G': {'t': 'GK', 's': ['SV','GA','xGA','SHF'], 'k': ['saves','conceded','xga','shots_faced']}}
+    grouped = {'F': [], 'M': [], 'D': [], 'G': []}
+    players = [s['player'] for s in lineup_data['startXI']] + [s['player'] for s in lineup_data.get('substitutes', []) if s['player'].get('isSubbedIn')]
+    for p in players: grouped[p.get('category', 'M')].append(p)
+    
+    html = ''
+    c = f"#{hex_color.replace('#','')}" if hex_color else '#6c757d'
+    for pk in ['F', 'M', 'D', 'G']:
+        if not grouped[pk]: continue
+        g = grps[pk]
+        html += f'''<div class="d-flex w-100 px-2 py-1 align-items-center bg-light border-bottom" style="font-size: 0.6rem; font-weight: 700;"><div style="flex: 1; color: {c};">{g['t']}</div><div style="width: 18px; text-align: center;">{g['s'][0]}</div><div style="width: 22px; text-align: center;">{g['s'][1]}</div><div style="width: 28px; text-align: center;">{g['s'][2]}</div><div style="width: 24px; text-align: center;">{g['s'][3]}</div></div>'''
+        for p in grouped[pk]:
+            pre = '<span class="text-success fw-bold me-1">▲</span>' if p.get('isSubbedIn') else ('<span class="text-primary fw-bold me-1">↻</span>' if p.get('isSubbedOut') else '')
+            st = p.get('live_stats', {})
+            html += f'''<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;"><div class="text-start text-truncate" style="flex: 1;">{pre}{shorten_player_name(p.get('name'))}</div><div class="text-muted" style="width: 18px; text-align: center; font-weight: 600;">{st.get(g['k'][0],0)}</div><div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">{st.get(g['k'][1],0)}</div><div class="text-muted" style="width: 28px; text-align: center; font-weight: 600;">{st.get(g['k'][2],0)}</div><div class="text-muted" style="width: 24px; text-align: center; font-weight: 600;">{st.get(g['k'][3],0)}</div></div>'''
+    return html
+
+def pre_render_game_card(data):
+    fix_id = data['fixture']['id']
+    is_pre = data['fixture']['status']['short'] in ['NS', 'TBD']
+    flag_html = f'<img src="{data["league"]["flag"]}" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">' if data['league'].get('flag','').startswith('http') else f'<span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{data["league"].get("flag","🏆")}</span>'
+    has_stats = bool(data.get('team_stats'))
+    
+    try: h_col = data['homeLineup']['team']['colors']['player']['primary']
+    except: h_col = None
+    try: a_col = data['awayLineup']['team']['colors']['player']['primary']
+    except: a_col = None
+
+    return f'''
+    <div class="lineup-card shadow-sm" id="card-{fix_id}">
+        <div class="ribbon-view" id="ribbon-{fix_id}" onclick="toggleSingleCard('{fix_id}')">{get_ribbon_html(data)}</div>
+        <div class="full-view d-none" id="full-{fix_id}">
+            <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('{fix_id}')">
+                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-{fix_id}" style="white-space: nowrap;">{get_time_badge_html(data)} {get_latest_event_html(data)}</div>
+                    <a href="/leagues/{data['league']['slug']}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="{data['league']['name']}">{flag_html} <span class="text-truncate">{data['league']['name']}</span></a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
+                    <div class="text-center" style="width: 30%;"><img src="{data['teams']['home']['logo']}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['home']['name']}</div></div>
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-{fix_id}">{get_center_column_html(data)}</div>
+                    <div class="text-center" style="width: 30%;"><img src="{data['teams']['away']['logo']}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['away']['name']}</div></div>
+                </div>
+                <div class="w-100" id="events-{fix_id}">{get_events_html(data)}</div>
+            </div>
+            <div class="w-100" id="odds-{fix_id}">{get_odds_html(data)}</div>
+            <div class="w-100" id="injuries-{fix_id}">{get_injuries_html(data)}</div>
+            <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
+                <div class="d-flex gap-4 w-100">
+                    <div class="lineup-tab {'active' if (not has_stats or is_pre) else ''}" id="tab-xi-{fix_id}" onclick="switchLineupTab(event, '{fix_id}', 'xi')" style="flex: 1; text-align: center;">{'STARTING XI' if is_pre else 'FINAL XI'}</div>
+                    <div class="lineup-tab {'active' if (has_stats and not is_pre) else ''} {'d-none' if not has_stats else ''}" id="tab-stats-{fix_id}" onclick="switchLineupTab(event, '{fix_id}', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                </div>
+            </div>
+            <div class="collapse show lineup-container" id="lineup-collapse-{fix_id}">
+                <div id="view-xi-{fix_id}" class="{'d-none' if (has_stats and not is_pre) else ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">{build_lineup_list(data.get('homeLineup'))}</div><div class="col-6">{build_lineup_list(data.get('awayLineup'))}</div></div></div>
+                <div id="view-stats-{fix_id}" class="{'d-none' if (not has_stats or is_pre) else ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">{build_live_stats_grid(data.get('homeLineup'), h_col)}</div><div class="col-6">{build_live_stats_grid(data.get('awayLineup'), a_col)}</div></div></div>
+            </div>
+        </div>
+    </div>'''
 
 def fetch_espn_scores_for_date(date_str, cache):
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
     seen_ids = set()
-
-    print(f"\n==================================================")
-    print(f"📅 FETCHING MASTER SCOREBOARD FOR DATE: {date_str}")
-    print(f"==================================================")
-
-    page = 1
-    max_pages = 10
+    page, max_pages = 1, 10
 
     while page <= max_pages:
         url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=1000&page={page}"
         try:
             res = requests.get(url, headers=headers, timeout=10)
             if res.status_code != 200: break
-            
-            data = res.json()
-            events = data.get('events', [])
+            events = res.json().get('events', [])
             if not events: break
-
             added_this_page = 0
             for ev in events:
                 ev_id = str(ev.get('id', ''))
                 if ev_id and ev_id not in seen_ids:
-                    seen_ids.add(ev_id)
-                    raw_events.append(ev)
-                    added_this_page += 1
-
-            print(f"  ├─ Page {page}: fetched {len(events)} events ({added_this_page} new)")
+                    seen_ids.add(ev_id); raw_events.append(ev); added_this_page += 1
             if added_this_page == 0: break
             page += 1
-        except Exception as e:
-            print(f"  ❌ Error fetching page {page} for {date_str}: {e}")
-            break
-
-    print(f"✅ Total unique matches retrieved for {date_str}: {len(raw_events)}")
+        except: break
 
     matches = []
-    summary_calls = 0
-
     for event in raw_events:
         try:
             event_id = str(event['id'])
-            
-            status_obj = event.get('status', {})
-            status_type = status_obj.get('type', {})
-            state = status_type.get('state', 'pre')
-
+            state = event.get('status', {}).get('type', {}).get('state', 'pre')
             if state == 'post' and event_id in cache:
-                print(f"  ⚡ Match {event_id} is final. Loaded entirely from cache!")
                 matches.append(cache[event_id])
                 continue
 
-            competitions = event.get('competitions', [])
-            if not competitions: continue
-
-            comp = competitions[0]
-            competitors = comp.get('competitors', [])
-            
-            home = next((c for c in competitors if c.get('homeAway') == 'home'), None)
-            away = next((c for c in competitors if c.get('homeAway') == 'away'), None)
+            comps = event.get('competitions', [])
+            if not comps: continue
+            comp = comps[0]
+            home = next((c for c in comp.get('competitors', []) if c.get('homeAway') == 'home'), None)
+            away = next((c for c in comp.get('competitors', []) if c.get('homeAway') == 'away'), None)
             if not home or not away: continue
 
-            home_name = home['team']['displayName']
-            away_name = away['team']['displayName']
-            match_label = f"{home_name} vs {away_name}"
-
-            alt_note = comp.get('altGameNote')
-            league_obj = (
-                event.get('league') or comp.get('league') or 
-                (event.get('leagues', [{}])[0] if isinstance(event.get('leagues'), list) and event.get('leagues') else {}) or
-                (comp.get('leagues', [{}])[0] if isinstance(comp.get('leagues'), list) and comp.get('leagues') else {})
-            )
-
-            fallback_name = league_obj.get('name') or league_obj.get('displayName') or league_obj.get('midsizeName') or "Global Football"
-            final_league_name = alt_note if alt_note else fallback_name
-            final_league_name = re.sub(r'^\d{4}-\d{4}\s+', '', final_league_name).strip()
-
-            espn_league_slug = (league_obj.get('slug') or event.get('league', {}).get('slug') or comp.get('league', {}).get('slug') or 'all')
-
-            league_abbrev = generate_league_abbrev(final_league_name)
+            league_obj = event.get('league') or comp.get('league') or (event.get('leagues', [{}])[0] if event.get('leagues') else {})
+            raw_name = comp.get('altGameNote') or league_obj.get('name') or league_obj.get('displayName') or "Global Football"
+            final_league_name = re.sub(r'^\d{4}-\d{4}\s+', '', raw_name).strip()
             league_slug = create_slug(final_league_name)
             
-            clean_league_name = normalize_text(final_league_name)
-            league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(clean_league_name, "")
-            
+            clean_league = normalize_text(final_league_name)
+            league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(clean_league, "")
+            if not league_flag: league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(re.sub(r'\s+(qualifying|qualifiers|playoffs?)\b', '', clean_league), "")
             if not league_flag:
-                base_name = re.sub(r'\s+(qualifying|qualifiers|playoffs?)\b', '', clean_league_name)
-                league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(base_name, "")
-                
-            if not league_flag:
-                league_logos = league_obj.get('logos', [])
-                if isinstance(league_logos, list) and len(league_logos) > 0:
-                    href = league_logos[0].get('href', '')
-                    if href and 'default-team-logo' not in href: league_flag = href
-                elif isinstance(league_obj.get('logo'), str):
-                    logo = league_obj.get('logo')
-                    if logo and 'default-team-logo' not in logo: league_flag = logo
+                logos = league_obj.get('logos', [])
+                if logos: league_flag = logos[0].get('href', '')
+                elif isinstance(league_obj.get('logo'), str): league_flag = league_obj.get('logo')
 
-            if not league_flag:
-                name_lower = clean_league_name
-                for country, code in COUNTRY_FLAG_URLS.items():
-                    if re.search(rf'\b{country}\b', name_lower):
-                        league_flag = f"https://flagcdn.com/w40/{code}.png"
-                        break
-                if not league_flag and re.search(r'\b(africa|african|caf)\b', name_lower): league_flag = "🌍"
-                if not league_flag and re.search(r'\b(international|concacaf|conmebol|uefa|olympic|nations|saff|americ)\b', name_lower): league_flag = "🌎"
-                if not league_flag and 'friendly' in name_lower: league_flag = "🤝"
-                if not league_flag and 'cup' in name_lower: league_flag = "🏆"
+            if not league_flag or 'default-team-logo' in league_flag:
+                for ctry, code in COUNTRY_FLAG_URLS.items():
+                    if re.search(rf'\b{ctry}\b', clean_league): league_flag = f"https://flagcdn.com/w40/{code}.png"; break
+                if not league_flag and re.search(r'\b(africa|african|caf)\b', clean_league): league_flag = "🌍"
+                if not league_flag and re.search(r'\b(international|concacaf|conmebol|uefa|olympic|nations|saff|americ)\b', clean_league): league_flag = "🌎"
+                if not league_flag and 'friendly' in clean_league: league_flag = "🤝"
+                if not league_flag and 'cup' in clean_league: league_flag = "🏆"
 
-            should_fetch, fetch_reason = should_fetch_summary(event)
+            should_fetch, _ = should_fetch_summary(event)
+            summary = parse_espn_summary(event_id, league_code=(league_obj.get('slug') or 'all')) if should_fetch else {"team_stats": None, "homeLineup": None, "awayLineup": None, "events": [], "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}, "injuries": {"home": [], "away": []}, "live_score": None, "status_obj": None}
 
-            if should_fetch:
-                summary = parse_espn_summary(event_id, league_code=espn_league_slug, match_label=match_label)
-                summary_calls += 1
-            else:
-                summary = {
-                    "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [],
-                    "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
-                    "injuries": {"home": [], "away": []}, "live_score": None, "status_obj": None
-                }
-
-            # Prefer the fresh status_obj from summary endpoint over stale scoreboard status
-            fresh_status = summary.get("status_obj") or status_obj
+            fresh_status = summary.get("status_obj") or event.get('status', {})
             fresh_type = fresh_status.get('type', {})
-            state = fresh_type.get('state', state)
-
-            if state == 'pre': status_short = 'NS'
-            elif state == 'post': status_short = 'FT'
-            else: status_short = fresh_type.get('shortDetail', 'LIVE')
-
-            elapsed_clock = extract_match_clock(fresh_status)
-
-            h_score = summary.get('live_score', {}).get('home') if summary.get('live_score') else home.get('score')
-            a_score = summary.get('live_score', {}).get('away') if summary.get('live_score') else away.get('score')
+            st = fresh_type.get('state', state)
+            status_short = 'NS' if st == 'pre' else ('FT' if st == 'post' else fresh_type.get('shortDetail', 'LIVE'))
 
             match_entry = {
-                "fixture": {"id": event_id, "date": event['date'], "status": {"short": status_short, "elapsed": elapsed_clock}},
-                "league": {"id": event_id, "name": final_league_name, "abbrev": league_abbrev, "slug": league_slug, "flag": league_flag},
+                "fixture": {"id": event_id, "date": event['date'], "status": {"short": status_short, "elapsed": extract_match_clock(fresh_status)}},
+                "league": {"id": event_id, "name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag},
                 "teams": {
-                    "home": {"id": str(home['team']['id']), "name": home_name, "logo": home['team'].get('logo', ''), "rank": home.get('curatedRank', {}).get('current', ''), "record": home.get('records', [{}])[0].get('summary', '') if home.get('records') else ''},
-                    "away": {"id": str(away['team']['id']), "name": away_name, "logo": away['team'].get('logo', ''), "rank": away.get('curatedRank', {}).get('current', ''), "record": away.get('records', [{}])[0].get('summary', '') if away.get('records') else ''}
+                    "home": {"id": str(home['team']['id']), "name": home['team']['displayName'], "logo": home['team'].get('logo', '')},
+                    "away": {"id": str(away['team']['id']), "name": away['team']['displayName'], "logo": away['team'].get('logo', '')}
                 },
-                "goals": {"home": int(h_score or 0), "away": int(a_score or 0)},
+                "goals": {"home": int(summary.get('live_score', {}).get('home') or home.get('score') or 0), "away": int(summary.get('live_score', {}).get('away') or away.get('score') or 0)},
                 "team_stats": summary["team_stats"], "homeLineup": summary["homeLineup"], "awayLineup": summary["awayLineup"],
-                "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"], "isFallback": summary["homeLineup"] is None
+                "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"]
             }
-
+            
+            # PRE-RENDER HTML AT BUILD TIME!
+            match_entry["html_card"] = pre_render_game_card(match_entry)
+            
             matches.append(match_entry)
+            if st == 'post': cache[event_id] = match_entry
 
-            if state == 'post':
-                cache[event_id] = match_entry
+        except Exception as e: print(f"❌ ERROR parsing match item {event.get('id')}: {e}")
 
-        except Exception as e: print(f"❌ ERROR parsing match item {event.get('id', 'unknown')}: {e}")
-
-    print(f"📊 Deep summary fetches completed for {date_str}: {summary_calls}/{len(raw_events)}")
     return matches
 
 HTML_TEMPLATE = """<!DOCTYPE html>
@@ -867,7 +834,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <meta name="theme-color" content="#212529">
     <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores, Injuries & Odds</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <style>
         body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
@@ -937,501 +903,53 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     </div>
 </div>
 
-<div class="container pb-5"><div id="games-container" class="row justify-content-center"></div></div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<div class="container pb-5">
+    <!-- TRUE STATIC SSG HTML PRE-RENDERED IN PYTHON -->
+    <div id="games-container" class="row justify-content-center">
+        {% for day, matches in matches_by_day.items() %}
+            <div id="partition-{{ day }}" class="day-partition {{ '' if day == 'today' else 'd-none' }} row w-100 m-0">
+                {% if matches | length == 0 %}
+                    <div class="col-12 text-center mt-5 empty-state">
+                        <div class="card p-4 shadow-sm border-0"><div class="h4 text-muted">🏟️ No matches scheduled for this partition.</div></div>
+                    </div>
+                {% else %}
+                    <div class="col-12 text-center mt-5 empty-state d-none">
+                        <div class="card p-4 shadow-sm border-0"><div class="h4 text-muted">🏟️ No matches found.</div></div>
+                    </div>
+                    {% for match in matches %}
+                        <div class="col-md-6 col-lg-6 col-xl-4 mb-3 game-card-wrapper" data-search="{{ match.teams.home.name | lower }} {{ match.teams.away.name | lower }} {{ match.league.name | lower }} {{ match.league.abbrev | lower }}">
+                            {{ match.html_card | safe }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
 
 <script>
+    // Only used for background data updates, NOT for initial rendering!
     const STATIC_MATCHES = {{ matches_json | safe }};
     let ACTIVE_DAY = "today";
     let globalScoreboardMode = true;
     let globalLineupsExpanded = true;
 
-    function shortenPlayerName(fullName) {
-        if (!fullName) return "Unknown";
-        const parts = fullName.split(' ');
-        if (parts.length === 1) return fullName;
-        return `${parts[0].charAt(0).toUpperCase()}. ${parts.slice(1).join(' ')}`;
-    }
-
-    function getContrastColor(hexColor) {
-        if (!hexColor) return '#ffffff';
-        hexColor = hexColor.replace('#', '');
-        const r = parseInt(hexColor.substr(0, 2), 16), g = parseInt(hexColor.substr(2, 2), 16), b = parseInt(hexColor.substr(4, 2), 16);
-        const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-        return (yiq >= 128) ? '#000000' : '#ffffff';
-    }
-
-    function colorDistance(hex1, hex2) {
-        if (!hex1 || !hex2) return 100;
-        const getRgb = (hex) => {
-            let h = hex.replace('#', '');
-            if (h.length === 3) h = h.split('').map(x => x + x).join('');
-            return { r: parseInt(h.substr(0, 2), 16), g: parseInt(h.substr(2, 2), 16), b: parseInt(h.substr(4, 2), 16) };
-        };
-        const c1 = getRgb(hex1), c2 = getRgb(hex2);
-        return Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2));
-    }
-
-    function getTimeBadgeHtml(data) {
-        const status = data.fixture.status.short;
-        const elapsed = data.fixture.status.elapsed;
-        const dateObj = new Date(data.fixture.date);
-        const timeString = dateObj.toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'}).replace(' ', '');
-        const matchTime = `${dateObj.toLocaleDateString([], {weekday: 'short'})} ${timeString}`;
-        const isFinished = ['FT', 'AET', 'PEN'].includes(status);
-        const isPreGame = ['NS', 'TBD'].includes(status);
-        const isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
-
-        if (isDelayed) return `<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">${status}</span>`;
-        else if (isFinished) return `<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
-        else if (!isPreGame) {
-            let displayMin = elapsed && elapsed !== 'LIVE' ? (elapsed.endsWith("'") ? elapsed : `${elapsed}'`) : 'LIVE';
-            if (status === 'HT') displayMin = 'HT';
-            return `<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${displayMin}</span>`;
-        } else return `<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${matchTime}</span>`;
-    }
-
-    function getLatestEventHtml(data, isRibbon = false) {
-        if (!data.events || data.events.length === 0) return isRibbon ? `<div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div>` : '';
-        const lastEv = data.events[data.events.length - 1];
-        const isHomeTeam = lastEv.team_id === data.teams.home.id;
-        const teamName = isHomeTeam ? data.teams.home.name : data.teams.away.name;
-        const teamLogo = isHomeTeam ? data.teams.home.logo : data.teams.away.logo;
-
-        if (lastEv.type === 'subst') {
-            let pOut = shortenPlayerName(lastEv.player), pIn = shortenPlayerName(lastEv.player_out);  
-            if (isRibbon) {
-                return `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;">
-                            <div class="text-truncate">🔄 <img src="${teamLogo}" style="width: 12px; height: 12px;" class="me-1">${lastEv.time}'</div>
-                            <div class="text-truncate">🟢 <span class="text-success">${pIn}</span></div>
-                            <div class="text-muted text-truncate">🔴 ${pOut}</div>
-                        </div>`;
-            } else {
-                return `<div class="ms-2 d-flex align-items-center text-dark fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;">
-                            <div class="d-flex align-items-center me-2">
-                                <span class="bg-primary text-white rounded d-flex justify-content-center align-items-center me-1" style="width: 14px; height: 14px; font-size: 0.55rem;">🔄</span>
-                                <img src="${teamLogo}" style="width: 14px; height: 14px; object-fit: contain;" class="me-1">
-                                <span>${lastEv.time}'</span>
-                            </div>
-                            <div class="d-flex flex-column text-start" style="min-width: 0;">
-                                <div class="text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#20c997; margin-bottom:1px; margin-right:3px;"></span>${pIn}</div>
-                                <div class="text-muted text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#dc3545; margin-bottom:1px; margin-right:3px;"></span>${pOut}</div>
-                            </div>
-                        </div>`;
-            }
-        } else {
-            let icon = '🟨';
-            let textColor = 'text-warning';
-            
-            if (lastEv.type === 'Goal') {
-                icon = '⚽';
-                textColor = 'text-success';
-            } else if (lastEv.type === 'Red Card') {
-                icon = '🟥';
-                textColor = 'text-danger';
-            }
-            
-            let playerName = shortenPlayerName(lastEv.player || teamName);
-            if (isRibbon) {
-                let assistHtml = (lastEv.type === 'Goal' && lastEv.assist) ? `<div class="text-muted text-truncate" style="font-size: 0.55rem;">👟 ${shortenPlayerName(lastEv.assist)}</div>` : '';
-                return `<div class="${textColor} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;">
-                            <div class="text-truncate"><img src="${teamLogo}" style="width: 12px; height: 12px;" class="me-1">${lastEv.time}'</div>
-                            <div class="text-truncate">${icon} ${playerName}</div>${assistHtml}
-                        </div>`;
-            } else {
-                let assistHtml = (lastEv.type === 'Goal' && lastEv.assist) ? `<div class="text-muted text-truncate fw-normal" style="font-size: 0.55rem;"><span style="display:inline-block; width:12px;"></span>👟 ${shortenPlayerName(lastEv.assist)}</div>` : '';
-                return `<div class="ms-2 d-flex flex-column text-start ${textColor} fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;">
-                            <div class="text-truncate">${icon} ${lastEv.time}' <img src="${teamLogo}" style="width: 12px; height: 12px;" class="mx-1">${playerName}</div>
-                            ${assistHtml}
-                        </div>`;
-            }
-        }
-    }
-
-    function getRibbonHtml(data) {
-        const home = data.teams.home, away = data.teams.away, status = data.fixture.status.short;
-        const isPreGame = ['NS', 'TBD'].includes(status), isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
-        const homeScore = (!isPreGame && !isDelayed) ? (data.goals?.home ?? 0) : '-';
-        const awayScore = (!isPreGame && !isDelayed) ? (data.goals?.away ?? 0) : '-';
-        
-        const flagHtml = data.league.flag 
-            ? (data.league.flag.startsWith('http') 
-                ? `<img src="${data.league.flag}" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">`
-                : `<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${data.league.flag}</span>`)
-            : `<span style="font-size: 0.85rem; margin-right: 6px; vertical-align: middle;">🏆</span>`;
-
-        return `
-        <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
-            <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1">
-                <div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div>
-                <a href="/leagues/${data.league.slug}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">
-                    ${flagHtml}${data.league.abbrev}
-                </a>
-            </div>
-            <div class="col-5 px-2">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${home.name}</span>
-                    <div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${homeScore}</span></div>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${away.name}</span>
-                    <div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${awayScore}</span></div>
-                </div>
-            </div>
-            <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">${getLatestEventHtml(data, true)}</div>
-        </div>`;
-    }
-
-    function getCenterColumnHtml(data) {
-        const status = data.fixture.status.short, isPreGame = ['NS', 'TBD'].includes(status), isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
-        const showScore = !isPreGame && !isDelayed;
-
-        if (!showScore || !data.team_stats) return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${showScore ? `${data.goals?.home ?? 0} - ${data.goals?.away ?? 0}` : `vs`}</div>`;
-
-        const tStats = data.team_stats;
-        let hColor = data.homeLineup?.team?.colors?.player?.primary ? `#${data.homeLineup.team.colors.player.primary}` : '#0d6efd';
-        let aColor = data.awayLineup?.team?.colors?.player?.primary ? `#${data.awayLineup.team.colors.player.primary}` : '#dc3545';
-        if (colorDistance(hColor, aColor) < 60) aColor = '#343a40';
-
-        const buildBar = (label, hVal, aVal, isPercentage = false) => {
-            const total = hVal + aVal;
-            let hPct = 50, aPct = 50;
-            if (total > 0) { hPct = (hVal / total) * 100; aPct = (aVal / total) * 100; }
-            return `<div class="text-center w-100 px-1"><div class="stat-label-tiny">${label}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: ${hPct}%; background-color: ${hColor}; color: ${getContrastColor(hColor)};">${isPercentage ? `${hVal}%` : hVal}</div><div class="stat-bar-segment" style="width: ${aPct}%; background-color: ${aColor}; color: ${getContrastColor(aColor)};">${isPercentage ? `${aVal}%` : aVal}</div></div></div>`;
-        };
-
-        return `
-            <div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals?.home ?? 0} - ${data.goals?.away ?? 0}</div>
-            ${buildBar("Possession", tStats.home?.possession ?? 0, tStats.away?.possession ?? 0, true)}
-            ${buildBar("Total Shots", tStats.home?.total_shots ?? 0, tStats.away?.total_shots ?? 0)}
-            ${buildBar("Shots on Target", tStats.home?.shots_on_target ?? 0, tStats.away?.shots_on_target ?? 0)}
-            ${buildBar("Corners", tStats.home?.corners ?? 0, tStats.away?.corners ?? 0)}
-            <div class="text-center w-100 px-1 mt-1"><div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div><div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;"><span>🟨 ${tStats.home?.yellow_cards ?? 0} 🟥 ${tStats.home?.red_cards ?? 0}</span><span>🟨 ${tStats.away?.yellow_cards ?? 0} 🟥 ${tStats.away?.red_cards ?? 0}</span></div></div>`;
-    }
-
-    function getEventsHtml(data) {
-        if (!data.events || data.events.length === 0) return '';
-        const homeEvents = data.events.filter(e => e.team_id === data.teams.home.id), awayEvents = data.events.filter(e => e.team_id === data.teams.away.id);
-
-        const formatSingleEvent = (e, teamName) => {
-            if (e.type === 'subst') return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">🔄</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player_out)}</span> IN<br><span class="text-muted" style="font-size: 0.55rem;">(${shortenPlayerName(e.player)} OUT)</span></div></div>`;
-            
-            let icon = '🟨';
-            if (e.type === 'Goal') icon = '⚽';
-            else if (e.type === 'Red Card') icon = '🟥';
-            
-            return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">${icon}</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player || teamName)}</span>${(e.type === 'Goal' && e.assist) ? `<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>` : ''}</div></div>`;
-        };
-
-        const homeReversed = [...homeEvents].reverse(), awayReversed = [...awayEvents].reverse();
-        const needsCollapse = Math.max(homeReversed.length, awayReversed.length) > 1;
-
-        return `<div class="w-100 px-2 pt-1 mt-1 border-top text-muted" style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" onclick="if(${needsCollapse}) { const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp); }" title="${needsCollapse ? 'Click to expand/collapse match timeline' : ''}"><div class="event-collapsed"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${homeReversed.length > 0 ? formatSingleEvent(homeReversed[0], data.teams.home.name) : ''}</div><div class="text-start" style="flex: 1; min-width: 0;">${awayReversed.length > 0 ? formatSingleEvent(awayReversed[0], data.teams.away.name) : ''}</div></div>${needsCollapse ? `<div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▼</div>` : ''}</div><div class="event-expanded d-none"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${homeReversed.map(e => formatSingleEvent(e, data.teams.home.name)).join('')}</div><div class="text-start" style="flex: 1; min-width: 0;">${awayReversed.map(e => formatSingleEvent(e, data.teams.away.name)).join('')}</div></div><div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▲</div></div></div>`;
-    }
-
-    function getOddsHtml(data) {
-        if (!data.odds || (data.odds.home === "TBD" && data.odds.over === "TBD")) return '';
-        return `<div class="d-flex justify-content-between text-center bg-white border-top border-bottom py-1" style="font-size: 0.70rem;"><div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">1 (HOME)</div><div class="fw-bold text-dark">${data.odds.home}</div></div><div class="w-25 border-start border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">X (DRAW)</div><div class="fw-bold text-dark">${data.odds.draw}</div></div><div class="w-25 border-end"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">2 (AWAY)</div><div class="fw-bold text-dark">${data.odds.away}</div></div><div class="w-25"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700;">O/U ${data.odds.total}</div><div class="fw-bold text-dark"><span class="text-success">O</span> ${data.odds.over} <span class="text-danger">U</span> ${data.odds.under}</div></div></div>`;
-    }
-
-    function getInjuriesHtml(data) {
-        const hInj = data.injuries?.home?.map(shortenPlayerName).join(', '), aInj = data.injuries?.away?.map(shortenPlayerName).join(', ');
-        if (!hInj && !aInj) return '';
-        return `<div class="border-bottom px-2 py-1 text-truncate" style="font-size: 0.65rem; background-color: #fff5f5; color: #dc3545;"><strong>🤕 OUT:</strong> <span class="text-dark"><b>H:</b> ${hInj || 'None'} | <b>A:</b> ${aInj || 'None'}</span></div>`;
-    }
-
-    function buildLiveStatsGrid(lineupData, teamColorHex) {
-        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) {
-            return `<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>`;
-        }
-        
-        const groups = { 
-            'F': { title: 'FWD', stats: ['G', 'A', 'xG', 'SOG'], keys: ['goals', 'assists', 'xg', 'shots_on_target'] }, 
-            'M': { title: 'MID', stats: ['G', 'A', 'PAS', 'DUEL'], keys: ['goals', 'assists', 'accurate_passes', 'duels_won'] }, 
-            'D': { title: 'DEF', stats: ['G', 'DINT', 'TK', 'DUEL'], keys: ['goals', 'dint', 'tackles', 'duels_won'] }, 
-            'G': { title: 'GK',  stats: ['SV', 'GA', 'xGA', 'SHF'], keys: ['saves', 'conceded', 'xga', 'shots_faced'] } 
-        };
-
-        const groupedPlayers = { 'F': [], 'M': [], 'D': [], 'G': [] };
-        
-        let flatPlayers = [];
-        
-        // 1. Always add starters
-        lineupData.startXI.forEach(slot => flatPlayers.push({ ...slot.player }));
-        
-        // 2. Filter substitutes: ONLY add them if they actually subbed into the match
-        if (lineupData.substitutes) {
-            lineupData.substitutes.forEach(sub => {
-                if (sub.player.isSubbedIn) {
-                    flatPlayers.push({ ...sub.player });
-                }
-            });
-        }
-        
-        flatPlayers.forEach(p => {
-            const cat = p.category || 'M';
-            if (groupedPlayers[cat]) groupedPlayers[cat].push(p);
-            else groupedPlayers['M'].push(p);
-        });
-
-        let html = '', tColor = teamColorHex ? `#${teamColorHex.replace('#', '')}` : '#6c757d';
-        ['F', 'M', 'D', 'G'].forEach(posKey => {
-            const players = groupedPlayers[posKey];
-            if (players.length === 0) return;
-            const gConf = groups[posKey];
-
-            html += `<div class="d-flex w-100 px-2 py-1 align-items-center bg-light border-bottom" style="font-size: 0.6rem; font-weight: 700;">
-                        <div style="flex: 1; color: ${tColor};">${gConf.title}</div>
-                        <div style="width: 18px; text-align: center;">${gConf.stats[0]}</div>
-                        <div style="width: 22px; text-align: center;">${gConf.stats[1]}</div>
-                        <div style="width: 28px; text-align: center;">${gConf.stats[2]}</div>
-                        <div style="width: 24px; text-align: center;">${gConf.stats[3]}</div>
-                     </div>`;
-
-            players.forEach(p => {
-                let prefix = p.isSubbedIn ? `<span class="text-success fw-bold me-1">▲</span>` : (p.isSubbedOut ? `<span class="text-primary fw-bold me-1">↻</span>` : '');
-                const stats = p.live_stats || {};
-
-                const val0 = stats[gConf.keys[0]] ?? 0;
-                const val1 = stats[gConf.keys[1]] ?? 0;
-                const val2 = stats[gConf.keys[2]] ?? 0;
-                const val3 = stats[gConf.keys[3]] ?? 0;
-
-                html += `<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;">
-                            <div class="text-start text-truncate" style="flex: 1;">${prefix}${shortenPlayerName(p.name || 'Unknown')}</div>
-                            <div class="text-muted" style="width: 18px; text-align: center; font-weight: 600;">${val0}</div>
-                            <div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">${val1}</div>
-                            <div class="text-muted" style="width: 28px; text-align: center; font-weight: 600;">${val2}</div>
-                            <div class="text-muted" style="width: 24px; text-align: center; font-weight: 600;">${val3}</div>
-                         </div>`;
-            });
-        });
-        return html;
-    }
-
-    function buildLineupList(lineupData) {
-        if (!lineupData || !lineupData.startXI || lineupData.startXI.length === 0) return `<div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div>`;
-        const listItems = lineupData.startXI.map(slot => `<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">${slot.player.pos || 'M'}</span>${slot.player.photo ? `<img src="${slot.player.photo}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2">` : `<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>`}<span class="batter-name text-dark text-truncate">${slot.player.isSubbedOut ? `<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>` : ''}${shortenPlayerName(slot.player.name || 'Unknown')}</span><span class="ms-auto text-muted" style="font-size: 0.65rem;">#${slot.player.number || ''}</span></li>`).join('');
-        return `<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ ${lineupData.formation || '4-3-3'}</div><ul class="batting-order w-100 m-0 p-0">${listItems}</ul>`;
-    }
-
-    function createGameCard(data) {
-        const gameCard = document.createElement('div');
-        gameCard.className = 'col-md-6 col-lg-6 col-xl-4 mb-3';
-        const fixId = data.fixture.id, isPreGame = ['NS', 'TBD'].includes(data.fixture.status.short);
-        
-        const fullFlagHtml = data.league.flag 
-            ? (data.league.flag.startsWith('http')
-                ? `<img src="${data.league.flag}" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">`
-                : `<span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${data.league.flag}</span>`)
-            : `<span style="font-size: 1rem; margin-right: 6px; vertical-align: middle;">🏆</span>`;
-
-        gameCard.innerHTML = `
-            <div class="lineup-card shadow-sm" id="card-${fixId}">
-                <div class="ribbon-view ${globalScoreboardMode ? '' : 'd-none'}" id="ribbon-${fixId}" onclick="toggleSingleCard('${fixId}')">${getRibbonHtml(data)}</div>
-                <div class="full-view ${globalScoreboardMode ? 'd-none' : ''}" id="full-${fixId}">
-                    <div class="p-2 pb-1" style="background-color: #fcfcfc;">
-                        <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('${fixId}')">
-                            <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-${fixId}" style="white-space: nowrap;">${getTimeBadgeHtml(data)} ${getLatestEventHtml(data)}</div>
-                            <a href="/leagues/${data.league.slug}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="${data.league.name}">
-                                ${fullFlagHtml} <span class="text-truncate">${data.league.name}</span>
-                            </a>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
-                            <div class="text-center" style="width: 30%;"><img src="${data.teams.home.logo}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${data.teams.home.name}</div></div>
-                            <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-${fixId}">${getCenterColumnHtml(data)}</div>
-                            <div class="text-center" style="width: 30%;"><img src="${data.teams.away.logo}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${data.teams.away.name}</div></div>
-                        </div>
-                        <div class="w-100" id="events-${fixId}">${getEventsHtml(data)}</div>
-                    </div>
-                    <div class="w-100" id="odds-${fixId}">${getOddsHtml(data)}</div>
-                    <div class="w-100" id="injuries-${fixId}">${getInjuriesHtml(data)}</div>
-                    <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
-                        <div class="d-flex gap-4 w-100">
-                            <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" id="tab-xi-${fixId}" onclick="switchLineupTab(event, '${fixId}', 'xi')" style="flex: 1; text-align: center;">${isPreGame ? 'STARTING XI' : 'FINAL XI'}</div>
-                            <div class="lineup-tab ${(data.team_stats && !isPreGame) ? 'active' : ''} ${!data.team_stats ? 'd-none' : ''}" id="tab-stats-${fixId}" onclick="switchLineupTab(event, '${fixId}', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
-                        </div>
-                    </div>
-                    <div class="collapse ${globalLineupsExpanded ? 'show' : ''} lineup-container" id="lineup-collapse-${fixId}">
-                        <div id="view-xi-${fixId}" class="${(data.team_stats && !isPreGame) ? 'd-none' : ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">${buildLineupList(data.homeLineup)}</div><div class="col-6">${buildLineupList(data.awayLineup)}</div></div></div>
-                        <div id="view-stats-${fixId}" class="${(!data.team_stats || isPreGame) ? 'd-none' : ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">${buildLiveStatsGrid(data.homeLineup, data.homeLineup?.team?.colors?.player?.primary)}</div><div class="col-6">${buildLiveStatsGrid(data.awayLineup, data.awayLineup?.team?.colors?.player?.primary)}</div></div></div>
-                    </div>
-                </div>
-            </div>`;
-        return gameCard;
-    }
-
-    window.toggleSingleCard = function(fixId) {
-        document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
-        document.getElementById(`full-${fixId}`)?.classList.toggle('d-none');
-    };
-
-    window.switchLineupTab = function(event, fixId, tabName) {
-        if (event && event.stopPropagation) event.stopPropagation();
-        
-        const xiTab = document.getElementById(`tab-xi-${fixId}`);
-        const statsTab = document.getElementById(`tab-stats-${fixId}`);
-        const xiView = document.getElementById(`view-xi-${fixId}`);
-        const statsView = document.getElementById(`view-stats-${fixId}`);
-
-        if (tabName === 'xi') {
-            xiTab?.classList.add('active');
-            statsTab?.classList.remove('active');
-            xiView?.classList.remove('d-none');
-            statsView?.classList.add('d-none');
-        } else if (tabName === 'stats') {
-            statsTab?.classList.add('active');
-            xiTab?.classList.remove('active');
-            statsView?.classList.remove('d-none');
-            xiView?.classList.add('d-none');
-        }
-    };
-
-    function renderGames() {
-        const container = document.getElementById('games-container');
-        container.innerHTML = '';
-        const searchText = (document.getElementById('team-search')?.value || '').toLowerCase();
-        const filtered = (STATIC_MATCHES[ACTIVE_DAY] || []).filter(m => (m.teams.home.name + " " + m.teams.away.name + " " + m.league.name + " " + m.league.abbrev).toLowerCase().includes(searchText));
-
-        if (filtered.length === 0) container.innerHTML = `<div class="col-12 text-center mt-5"><div class="card p-4 shadow-sm border-0"><div class="h4 text-muted">🏟️ No matches scheduled for this partition.</div><p class="text-muted">Select another day button above.</p></div></div>`;
-        else filtered.forEach(item => container.appendChild(createGameCard(item)));
-    }
-
-    // Trigger glowing border & header animation on a card
-    function triggerCardGlow(fixId, eventType) {
-        const card = document.getElementById(`card-${fixId}`);
-        if (!card) return;
-
-        const typeLower = (eventType || '').toLowerCase();
-        let glowClass = 'glow-goal';
-        if (typeLower.includes('red')) glowClass = 'glow-red-card';
-        else if (typeLower.includes('yellow')) glowClass = 'glow-yellow-card';
-        else if (typeLower.includes('sub')) glowClass = 'glow-subst';
-        else if (typeLower.includes('goal')) glowClass = 'glow-goal';
-
-        card.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
-        void card.offsetWidth; // Force CSS reflow
-        card.classList.add(glowClass);
-
-        setTimeout(() => {
-            card.classList.remove(glowClass);
-        }, 4000);
-    }
-
-    // Compare old and new events to find fresh occurrences
-    function detectNewEventsAndGlow(oldEvents, newEvents, fixId) {
-        if (!newEvents || newEvents.length === 0) return;
-        
-        const knownKeys = new Set((oldEvents || []).map(e => `${e.time}_${e.type}_${e.player}_${e.player_out || ''}`));
-        const freshEvents = newEvents.filter(e => !knownKeys.has(`${e.time}_${e.type}_${e.player}_${e.player_out || ''}`));
-
-        if (freshEvents.length === 0) return;
-
-        // Always trigger glow for the newest event chronological in the log (last item)
-        const latestFreshEvent = freshEvents[freshEvents.length - 1];
-        triggerCardGlow(fixId, latestFreshEvent.type);
-    }
-
-    // Silent DOM Updater
-    async function pollAndUpdateDOM() {
-        try {
-            const res = await fetch(window.location.href, { cache: 'no-store' });
-            if (!res.ok) return;
-            const htmlText = await res.text();
-
-            const startStr = "const STATIC_MATCHES = ";
-            const startIndex = htmlText.indexOf(startStr);
-            if (startIndex === -1) return;
-
-           const jsonStart = startIndex + startStr.length;
-            const jsonEnd = htmlText.indexOf("let ACTIVE_DAY", jsonStart);
-            if (jsonEnd === -1) return;
-
-            // Trim whitespace and trailing semicolon cleanly before parsing
-            const rawJson = htmlText.substring(jsonStart, jsonEnd).trim().replace(/;$/, '');
-            const freshData = JSON.parse(rawJson);
-            const freshDayMatches = freshData[ACTIVE_DAY] || [];
-            const currentDayMatches = STATIC_MATCHES[ACTIVE_DAY] || [];
-
-            freshDayMatches.forEach(newMatch => {
-                const fixId = newMatch.fixture.id;
-                const oldMatch = currentDayMatches.find(m => m.fixture.id === fixId);
-
-                if (!oldMatch) return;
-
-                // 1. Check for event changes and trigger glow
-                detectNewEventsAndGlow(oldMatch.events, newMatch.events, fixId);
-
-                // 2. Silent DOM Replacement for changed sections
-                const timeEl = document.getElementById(`time-${fixId}`);
-                if (timeEl) {
-                    const newTimeHtml = `${getTimeBadgeHtml(newMatch)} ${getLatestEventHtml(newMatch)}`;
-                    if (timeEl.innerHTML.trim() !== newTimeHtml.trim()) timeEl.innerHTML = newTimeHtml;
-                }
-
-                const scoreEl = document.getElementById(`score-${fixId}`);
-                if (scoreEl) {
-                    const newScoreHtml = getCenterColumnHtml(newMatch);
-                    if (scoreEl.innerHTML.trim() !== newScoreHtml.trim()) scoreEl.innerHTML = newScoreHtml;
-                }
-
-                const eventsEl = document.getElementById(`events-${fixId}`);
-                if (eventsEl) {
-                    const newEventsHtml = getEventsHtml(newMatch);
-                    if (eventsEl.innerHTML.trim() !== newEventsHtml.trim()) eventsEl.innerHTML = newEventsHtml;
-                }
-
-                const oddsEl = document.getElementById(`odds-${fixId}`);
-                if (oddsEl) {
-                    const newOddsHtml = getOddsHtml(newMatch);
-                    if (oddsEl.innerHTML.trim() !== newOddsHtml.trim()) oddsEl.innerHTML = newOddsHtml;
-                }
-
-                const injuriesEl = document.getElementById(`injuries-${fixId}`);
-                if (injuriesEl) {
-                    const newInjuriesHtml = getInjuriesHtml(newMatch);
-                    if (injuriesEl.innerHTML.trim() !== newInjuriesHtml.trim()) injuriesEl.innerHTML = newInjuriesHtml;
-                }
-
-                const ribbonEl = document.getElementById(`ribbon-${fixId}`);
-                if (ribbonEl) {
-                    const newRibbonHtml = getRibbonHtml(newMatch);
-                    if (ribbonEl.innerHTML.trim() !== newRibbonHtml.trim()) ribbonEl.innerHTML = newRibbonHtml;
-                }
-
-                // Update lineups & stats
-                const viewXi = document.getElementById(`view-xi-${fixId}`);
-                if (viewXi && newMatch.homeLineup) {
-                    viewXi.innerHTML = `<div class="row g-0 bg-white border-top"><div class="col-6 border-end">${buildLineupList(newMatch.homeLineup)}</div><div class="col-6">${buildLineupList(newMatch.awayLineup)}</div></div>`;
-                }
-
-                const viewStats = document.getElementById(`view-stats-${fixId}`);
-                if (viewStats && newMatch.team_stats) {
-                    viewStats.innerHTML = `<div class="row g-0 bg-white border-top"><div class="col-6 border-end">${buildLiveStatsGrid(newMatch.homeLineup, newMatch.homeLineup?.team?.colors?.player?.primary)}</div><div class="col-6">${buildLiveStatsGrid(newMatch.awayLineup, newMatch.awayLineup?.team?.colors?.player?.primary)}</div></div>`;
-                }
-
-                // Update local memory so subsequent diffs compare against this payload
-                Object.assign(oldMatch, newMatch);
-            });
-
-        } catch (err) {
-            console.error("Silent update check failed:", err);
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
-        renderGames();
+        // Tab switching purely swaps CSS visibility on pre-rendered nodes
         document.querySelectorAll('.day-tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.day-tab-btn').forEach(b => { b.classList.remove('btn-dark', 'active'); b.classList.add('btn-outline-dark'); });
                 e.target.closest('.day-tab-btn').classList.remove('btn-outline-dark'); e.target.closest('.day-tab-btn').classList.add('btn-dark', 'active');
                 ACTIVE_DAY = e.target.closest('.day-tab-btn').getAttribute('data-day');
-                renderGames();
+                
+                document.querySelectorAll('.day-partition').forEach(p => p.classList.add('d-none'));
+                document.getElementById('partition-' + ACTIVE_DAY)?.classList.remove('d-none');
+                applySearchFilter();
             });
         });
 
-        document.getElementById('team-search')?.addEventListener('input', renderGames);
+        document.getElementById('team-search')?.addEventListener('input', applySearchFilter);
+
         document.getElementById('toggle-all-cards')?.addEventListener('click', (e) => {
             globalScoreboardMode = !globalScoreboardMode;
             e.target.innerHTML = globalScoreboardMode ? '🔼 EXPAND ALL CARDS' : '🔽 COMPACT SCOREBOARD';
@@ -1443,6 +961,147 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         // Start background polling every 30 seconds
         setInterval(pollAndUpdateDOM, 30000);
     });
+
+    function applySearchFilter() {
+        const searchText = (document.getElementById('team-search')?.value || '').toLowerCase();
+        const activePartition = document.getElementById('partition-' + ACTIVE_DAY);
+        if (!activePartition) return;
+        
+        let visibleCount = 0;
+        activePartition.querySelectorAll('.game-card-wrapper').forEach(card => {
+            const searchData = card.getAttribute('data-search') || '';
+            if (searchData.includes(searchText)) {
+                card.classList.remove('d-none');
+                visibleCount++;
+            } else {
+                card.classList.add('d-none');
+            }
+        });
+        
+        const emptyState = activePartition.querySelector('.empty-state');
+        if (emptyState) emptyState.classList.toggle('d-none', visibleCount > 0);
+    }
+
+    window.toggleSingleCard = function(fixId) {
+        document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
+        document.getElementById(`full-${fixId}`)?.classList.toggle('d-none');
+    };
+
+    window.switchLineupTab = function(event, fixId, tabName) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        const xiTab = document.getElementById(`tab-xi-${fixId}`), statsTab = document.getElementById(`tab-stats-${fixId}`);
+        const xiView = document.getElementById(`view-xi-${fixId}`), statsView = document.getElementById(`view-stats-${fixId}`);
+
+        if (tabName === 'xi') {
+            xiTab?.classList.add('active'); statsTab?.classList.remove('active');
+            xiView?.classList.remove('d-none'); statsView?.classList.add('d-none');
+        } else if (tabName === 'stats') {
+            statsTab?.classList.add('active'); xiTab?.classList.remove('active');
+            statsView?.classList.remove('d-none'); xiView?.classList.add('d-none');
+        }
+    };
+
+    // =========================================================================
+    // SILENT UPDATER ENGINE (Functions only executed on live DOM replacements)
+    // =========================================================================
+    function shortenPlayerName(fn) { if (!fn) return "Unknown"; const p = fn.split(' '); return p.length === 1 ? fn : `${p[0].charAt(0).toUpperCase()}. ${p.slice(1).join(' ')}`; }
+    function getContrastColor(h) { if (!h) return '#ffffff'; h = h.replace('#', ''); const y = ((parseInt(h.substr(0,2),16)*299) + (parseInt(h.substr(2,2),16)*587) + (parseInt(h.substr(4,2),16)*114))/1000; return y >= 128 ? '#000000' : '#ffffff'; }
+    
+    function getTimeBadgeHtml(data) {
+        const s = data.fixture.status.short, e = data.fixture.status.elapsed;
+        let dMin = e && e !== 'LIVE' ? (e.endsWith("'") ? e : `${e}'`) : 'LIVE'; if (s === 'HT') dMin = 'HT';
+        if (['PST','CANC','ABD'].includes(s)) return `<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">${s}</span>`;
+        if (['FT','AET','PEN'].includes(s)) return `<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
+        if (!['NS','TBD'].includes(s)) return `<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${dMin}</span>`;
+        return '';
+    }
+    
+    function getLatestEventHtml(data, rib = false) {
+        if (!data.events || data.events.length === 0) return rib ? `<div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div>` : '';
+        const ev = data.events[data.events.length - 1], isH = ev.team_id === data.teams.home.id;
+        const n = isH ? data.teams.home.name : data.teams.away.name, lg = isH ? data.teams.home.logo : data.teams.away.logo;
+        if (ev.type === 'subst') {
+            const pOut = shortenPlayerName(ev.player), pIn = shortenPlayerName(ev.player_out);
+            return rib ? `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate">🔄 <img src="${lg}" style="width: 12px; height: 12px;" class="me-1">${ev.time}'</div><div class="text-truncate">🟢 <span class="text-success">${pIn}</span></div><div class="text-muted text-truncate">🔴 ${pOut}</div></div>`
+                       : `<div class="ms-2 d-flex align-items-center text-dark fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="d-flex align-items-center me-2"><span class="bg-primary text-white rounded d-flex justify-content-center align-items-center me-1" style="width: 14px; height: 14px; font-size: 0.55rem;">🔄</span><img src="${lg}" style="width: 14px; height: 14px; object-fit: contain;" class="me-1"><span>${ev.time}'</span></div><div class="d-flex flex-column text-start" style="min-width: 0;"><div class="text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#20c997; margin-bottom:1px; margin-right:3px;"></span>${pIn}</div><div class="text-muted text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#dc3545; margin-bottom:1px; margin-right:3px;"></span>${pOut}</div></div></div>`;
+        } else {
+            let ic = '🟨', tc = 'text-warning'; if (ev.type === 'Goal') { ic = '⚽'; tc = 'text-success'; } else if (ev.type === 'Red Card') { ic = '🟥'; tc = 'text-danger'; }
+            const pn = shortenPlayerName(ev.player || n);
+            return rib ? `<div class="${tc} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate"><img src="${lg}" style="width: 12px; height: 12px;" class="me-1">${ev.time}'</div><div class="text-truncate">${ic} ${pn}</div>${ev.type==='Goal'&&ev.assist?`<div class="text-muted text-truncate" style="font-size: 0.55rem;">👟 ${shortenPlayerName(ev.assist)}</div>`:''}</div>`
+                       : `<div class="ms-2 d-flex flex-column text-start ${tc} fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="text-truncate">${ic} ${ev.time}' <img src="${lg}" style="width: 12px; height: 12px;" class="mx-1">${pn}</div>${ev.type==='Goal'&&ev.assist?`<div class="text-muted text-truncate fw-normal" style="font-size: 0.55rem;"><span style="display:inline-block; width:12px;"></span>👟 ${shortenPlayerName(ev.assist)}</div>`:''}</div>`;
+        }
+    }
+    
+    function getRibbonHtml(data) {
+        const isPre = ['NS','TBD','PST','CANC','ABD'].includes(data.fixture.status.short);
+        const flg = data.league.flag ? (data.league.flag.startsWith('http') ? `<img src="${data.league.flag}" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">` : `<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${data.league.flag}</span>`) : '🏆';
+        return `<div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;"><div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div><a href="/leagues/${data.league.slug}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">${flg}${data.league.abbrev}</a></div><div class="col-5 px-2"><div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.home.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.home??0)}</span></div></div><div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.away.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.away??0)}</span></div></div></div><div class="col-4 text-center border-start d-flex justify-content-center align-items-center">${getLatestEventHtml(data, true)}</div></div>`;
+    }
+    
+    function getCenterColumnHtml(data) {
+        if (['NS','TBD','PST','CANC','ABD'].includes(data.fixture.status.short) || !data.team_stats) return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${data.goals?.home??0} - ${data.goals?.away??0}</div>`;
+        const ts = data.team_stats, hc = data.homeLineup?.team?.colors?.player?.primary?`#${data.homeLineup.team.colors.player.primary}`:'#0d6efd', ac = data.awayLineup?.team?.colors?.player?.primary?`#${data.awayLineup.team.colors.player.primary}`:'#dc3545';
+        const bb = (lbl, hv, av, p) => `<div class="text-center w-100 px-1"><div class="stat-label-tiny">${lbl}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: ${hv+av===0?50:hv/(hv+av)*100}%; background-color: ${hc}; color: ${getContrastColor(hc)};">${p?hv+'%':hv}</div><div class="stat-bar-segment" style="width: ${hv+av===0?50:av/(hv+av)*100}%; background-color: ${ac}; color: ${getContrastColor(ac)};">${p?av+'%':av}</div></div></div>`;
+        return `<div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals?.home??0} - ${data.goals?.away??0}</div>${bb("Possession", ts.home?.possession??0, ts.away?.possession??0, true)}${bb("Total Shots", ts.home?.total_shots??0, ts.away?.total_shots??0)}${bb("Shots on Target", ts.home?.shots_on_target??0, ts.away?.shots_on_target??0)}${bb("Corners", ts.home?.corners??0, ts.away?.corners??0)}<div class="text-center w-100 px-1 mt-1"><div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div><div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;"><span>🟨 ${ts.home?.yellow_cards??0} 🟥 ${ts.home?.red_cards??0}</span><span>🟨 ${ts.away?.yellow_cards??0} 🟥 ${ts.away?.red_cards??0}</span></div></div>`;
+    }
+    
+    function getEventsHtml(data) {
+        if (!data.events || !data.events.length) return '';
+        const fe = (e, tn) => {
+            if (e.type === 'subst') return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">🔄</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player_out)}</span> IN<br><span class="text-muted" style="font-size: 0.55rem;">(${shortenPlayerName(e.player)} OUT)</span></div></div>`;
+            return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">${e.type==='Goal'?'⚽':(e.type==='Red Card'?'🟥':'🟨')}</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player||tn)}</span>${e.type==='Goal'&&e.assist?`<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>`:''}</div></div>`;
+        };
+        const he = [...data.events].filter(e=>e.team_id===data.teams.home.id).reverse(), ae = [...data.events].filter(e=>e.team_id===data.teams.away.id).reverse(), nc = Math.max(he.length, ae.length) > 1;
+        return `<div class="w-100 px-2 pt-1 mt-1 border-top text-muted" style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" onclick="if(${nc}) { const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp); }"><div class="event-collapsed"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${he.length?fe(he[0], data.teams.home.name):''}</div><div class="text-start" style="flex: 1; min-width: 0;">${ae.length?fe(ae[0], data.teams.away.name):''}</div></div>${nc?`<div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▼</div>`:''}</div><div class="event-expanded d-none"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${he.map(e=>fe(e, data.teams.home.name)).join('')}</div><div class="text-start" style="flex: 1; min-width: 0;">${ae.map(e=>fe(e, data.teams.away.name)).join('')}</div></div><div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▲</div></div></div>`;
+    }
+    
+    function triggerCardGlow(fixId, eventType) {
+        const card = document.getElementById(`card-${fixId}`); if (!card) return;
+        const typeLower = (eventType || '').toLowerCase();
+        let glowClass = 'glow-goal';
+        if (typeLower.includes('red')) glowClass = 'glow-red-card';
+        else if (typeLower.includes('yellow')) glowClass = 'glow-yellow-card';
+        else if (typeLower.includes('sub')) glowClass = 'glow-subst';
+        card.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
+        void card.offsetWidth; 
+        card.classList.add(glowClass);
+        setTimeout(() => { card.classList.remove(glowClass); }, 4000);
+    }
+    
+    function detectNewEventsAndGlow(oldEvents, newEvents, fixId) {
+        if (!newEvents || newEvents.length === 0) return;
+        const known = new Set((oldEvents || []).map(e => `${e.time}_${e.type}_${e.player}_${e.player_out || ''}`));
+        const fresh = newEvents.filter(e => !known.has(`${e.time}_${e.type}_${e.player}_${e.player_out || ''}`));
+        if (fresh.length) triggerCardGlow(fixId, fresh[fresh.length - 1].type);
+    }
+
+    async function pollAndUpdateDOM() {
+        try {
+            const res = await fetch(window.location.href, { cache: 'no-store' }); if (!res.ok) return;
+            const htmlText = await res.text(), startStr = "const STATIC_MATCHES = ", sIdx = htmlText.indexOf(startStr);
+            if (sIdx === -1) return;
+            const jStart = sIdx + startStr.length, jEnd = htmlText.indexOf("let ACTIVE_DAY", jStart);
+            if (jEnd === -1) return;
+            
+            const rawJson = htmlText.substring(jStart, jEnd).trim().replace(/;$/, '');
+            const freshData = JSON.parse(rawJson);
+            const freshMatches = freshData[ACTIVE_DAY] || [], oldMatches = STATIC_MATCHES[ACTIVE_DAY] || [];
+
+            freshMatches.forEach(nm => {
+                const fixId = nm.fixture.id, om = oldMatches.find(m => m.fixture.id === fixId);
+                if (!om) return;
+
+                detectNewEventsAndGlow(om.events, nm.events, fixId);
+
+                const tEl = document.getElementById(`time-${fixId}`); if (tEl) { const html = `${getTimeBadgeHtml(nm)} ${getLatestEventHtml(nm)}`; if(tEl.innerHTML!==html) tEl.innerHTML=html; }
+                const sEl = document.getElementById(`score-${fixId}`); if (sEl) { const html = getCenterColumnHtml(nm); if(sEl.innerHTML!==html) sEl.innerHTML=html; }
+                const eEl = document.getElementById(`events-${fixId}`); if (eEl) { const html = getEventsHtml(nm); if(eEl.innerHTML!==html) eEl.innerHTML=html; }
+                const rEl = document.getElementById(`ribbon-${fixId}`); if (rEl) { const html = getRibbonHtml(nm); if(rEl.innerHTML!==html) rEl.innerHTML=html; }
+
+                Object.assign(om, nm);
+            });
+        } catch (err) { console.error("Silent update check failed:", err); }
+    }
 </script>
 </body>
 </html>
@@ -1473,6 +1132,7 @@ def generate_v2_index():
     
     template = Template(HTML_TEMPLATE)
     output_html = template.render(
+        matches_by_day=matches_by_day,
         matches_json=json.dumps(matches_by_day),
         display_dates=day_info["display"]
     )
@@ -1484,7 +1144,7 @@ def generate_v2_index():
         f.write(output_html)
     
     file_size_kb = round(os.path.getsize(file_path) / 1024, 2)
-    print(f"\n🎉 Successfully compiled static frontend at {file_path} ({file_size_kb} KB)")
+    print(f"\n🎉 Successfully compiled TRUE STATIC frontend at {file_path} ({file_size_kb} KB)")
 
 if __name__ == "__main__":
     generate_v2_index()
