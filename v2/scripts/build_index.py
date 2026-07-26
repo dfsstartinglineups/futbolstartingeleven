@@ -617,6 +617,24 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
             for ev in key_events:
                 ev_type_info = ev.get('type', {})
                 ev_text = ev_type_info.get('text', '')
+                ev_text_lower = ev_text.lower()
+                
+                # 1. Explicitly check for valid event types
+                is_goal = "goal" in ev_text_lower or "penalty - scored" in ev_text_lower
+                is_sub = "substitution" in ev_text_lower or "sub" in ev_text_lower
+                is_card = "card" in ev_text_lower
+                
+                # 2. If it's a delay, kickoff, halftime, etc., skip it entirely!
+                if not (is_goal or is_sub or is_card):
+                    continue
+                
+                if is_goal:
+                    ev_type = "Goal"
+                elif is_sub:
+                    ev_type = "subst"
+                else:
+                    ev_type = "Card"
+
                 clock_text = ev.get('clock', {}).get('displayValue', "0'")
                 team_id = str(ev.get('team', {}).get('id', ''))
                 
@@ -632,12 +650,9 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                 if len(participants) > 1:
                     p_out = participants[1].get('athlete', {}).get('displayName', '')
                     
-                is_sub = "substitution" in ev_text.lower() or "sub" in ev_text.lower()
-                ev_type = "Goal" if "goal" in ev_text.lower() else ("subst" if is_sub else "Card")
-
                 p_player = p_out if ev_type == "subst" else p_in
                 
-                # Fallback if the structured participant data is missing
+                # Fallback if the structured participant data is missing (common for cards)
                 if not p_player:
                     raw_text = ev.get('shortText') or ev.get('text') or ''
                     if " - " in raw_text:
