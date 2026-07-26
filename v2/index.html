@@ -12116,8 +12116,17 @@
     }
 
     window.toggleSingleCard = function(fixId) {
-        document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
-        document.getElementById(`full-${fixId}`)?.classList.toggle('d-none');
+    const fullView = document.getElementById(`full-${fixId}`);
+    document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
+    fullView?.classList.toggle('d-none');
+
+        // Load headshots for this card only when opened
+        if (fullView && !fullView.classList.contains('d-none')) {
+            fullView.querySelectorAll('img[data-src]').forEach(img => {
+                img.src = img.getAttribute('data-src');
+                img.removeAttribute('data-src');
+            });
+        }
     };
 
     window.switchLineupTab = function(event, fixId, tabName) {
