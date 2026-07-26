@@ -199,7 +199,6 @@ def sync_team_state(matches):
                 team_state = json.load(f)
         except: pass
 
-    # Always ensure discovered teams in today's payload are tracked
     for m in matches:
         for t_side in ['home', 'away']:
             team_info = m['teams'].get(t_side, {})
@@ -269,7 +268,6 @@ def get_position_category(raw_pos):
 def get_formation(lineup_data):
     if lineup_data and lineup_data.get('formation'):
         return str(lineup_data['formation'])
-    # Tier 2: Infer from active positional count
     if lineup_data and lineup_data.get('startXI'):
         d = m = f = 0
         for s in lineup_data['startXI']:
@@ -279,7 +277,6 @@ def get_formation(lineup_data):
             elif cat == 'F': f += 1
         if d + m + f > 0:
             return f"{d}-{m}-{f}"
-    # Tier 3: Failsafe
     return "4-4-2"
 
 def is_valid_sub_minute(minute_val):
@@ -637,11 +634,10 @@ def generate_pitch_html(lineup, default_hex):
     color = get_team_color(lineup, default_hex)
     contrast = get_contrast_color(color)
     
-    # Extract row configuration (e.g. "4-3-3" -> [4, 3, 3])
     try:
         rows = [int(x) for x in formation.split('-')]
         if sum(rows) != 10:
-            rows = [4, 4, 2] # Fallback if invalid lengths
+            rows = [4, 4, 2] 
     except:
         rows = [4, 4, 2]
 
@@ -676,10 +672,8 @@ def generate_pitch_html(lineup, default_hex):
             <div style="background: rgba(0,0,0,0.7); color: #fff; font-size: 0.60rem; font-weight: bold; padding: 2px 4px; border-radius: 4px; margin-top: 3px; white-space: nowrap; max-width: 70px; overflow: hidden; text-overflow: ellipsis;">{name}</div>
         </div>'''
 
-    # Render GK at the bottom
     html += render_pitch_player(gk, 50, 92, color, contrast)
     
-    # Calculate spacing and distribute evenly per row
     y_step = 82 / (len(rows) + 1)
     player_idx = 0
     for r_idx, count in enumerate(rows):
@@ -852,7 +846,6 @@ def pre_render_game_card(data):
     home_slug = create_slug(data['teams']['home']['name'])
     away_slug = create_slug(data['teams']['away']['name'])
     
-    # Only render the Lineup link if it's a today's match
     home_lineup_html = f'<a href="/v2/teams/{home_slug}/lineup/index.html" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
     away_lineup_html = f'<a href="/v2/teams/{away_slug}/lineup/index.html" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
 
@@ -1324,18 +1317,23 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 
                 if (!newCard) return;
 
+                // PREVENT FLASH: Skip if HTML content is unchanged
                 if (currentCard.innerHTML === newCard.innerHTML) return;
 
+                // Glow detection: Check if events block updated
                 const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
 
+                // Preserve UI State
                 const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
                 const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
                 const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
 
+                // Swap HTML
                 currentCard.innerHTML = newCard.innerHTML;
 
+                // Restore UI State
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
                     currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
@@ -1345,6 +1343,237 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     window.switchLineupTab(null, fixId, tabName);
                 }
 
+                // Trigger Glow Animation
+                if (hasNewEvent) {
+                    triggerCardGlow(currentCard, newEventsHtml);
+                }
+            });
+        } catch (err) {
+            console.error("DOM update failed:", err);
+        }
+    }
+</script>
+</body>
+</html>
+"""
+
+LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#212529">
+    
+    <title>{{ seo_title }}</title>
+    <meta name="description" content="{{ seo_desc }}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ seo_title }}">
+    <meta property="og:description" content="{{ seo_desc }}">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ seo_title }}">
+    <meta name="twitter:description" content="{{ seo_desc }}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('error', function (e) { if (e.target.tagName === 'IMG') { e.target.style.display = 'none'; } }, true);
+    </script>
+    <style>
+        body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .header-brand a { color: inherit; }
+        .header-brand span { text-shadow: none !important; background: linear-gradient(to bottom, #20c997 0%, #198754 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6)); }
+        
+        .lineup-card { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px; overflow: hidden; }
+        .team-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1)); }
+        .batting-order { padding-left: 0; list-style-type: none; margin-bottom: 0; }
+        .batting-order li { padding: 6px 12px; font-size: 0.85rem; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; align-items: center; }
+        .batting-order li:last-child { border-bottom: none; }
+        .batter-name { font-weight: 600; color: #495057; }
+        
+        .date-subheader { background: #ffffff; border-left: 4px solid #0d6efd; border-radius: 8px; font-weight: 700; color: #343a40; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .live-dot { display: inline-block; width: 7px; height: 7px; background-color: #fff; border-radius: 50%; margin-right: 5px; margin-bottom: 1px; animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); } }
+        .stat-bar-container { display: flex; width: 100%; height: 14px; background-color: #e9ecef; border-radius: 4px; overflow: hidden; margin-top: 2px; }
+        .stat-bar-segment { display: flex; align-items: center; justify-content: center; font-size: 0.60rem; font-weight: 800; padding: 0 4px; transition: width 0.5s ease-in-out; }
+        .stat-label-tiny { font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px; }
+        .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
+        .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
+
+        @keyframes glowGoal { 0% { border-color: #20c997; box-shadow: 0 0 25px rgba(32, 201, 151, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerGoal { 0% { background-color: #d1e7dd !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-goal { animation: glowGoal 4s ease-out !important; border: 3px solid #20c997 !important; position: relative !important; z-index: 10 !important; }
+        .glow-goal .p-2.pb-1 { animation: headerGoal 4s ease-out !important; }
+
+        @keyframes glowRed { 0% { border-color: #dc3545; box-shadow: 0 0 25px rgba(220, 53, 69, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerRed { 0% { background-color: #f8d7da !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-red-card { animation: glowRed 4s ease-out !important; border: 3px solid #dc3545 !important; position: relative !important; z-index: 10 !important; }
+        .glow-red-card .p-2.pb-1 { animation: headerRed 4s ease-out !important; }
+
+        @keyframes glowYellow { 0% { border-color: #ffc107; box-shadow: 0 0 25px rgba(255, 193, 7, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerYellow { 0% { background-color: #fff3cd !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-yellow-card { animation: glowYellow 4s ease-out !important; border: 3px solid #ffc107 !important; position: relative !important; z-index: 10 !important; }
+        .glow-yellow-card .p-2.pb-1 { animation: headerYellow 4s ease-out !important; }
+
+        @keyframes glowSub { 0% { border-color: #212529; box-shadow: 0 0 25px rgba(33, 37, 41, 0.6); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerSub { 0% { background-color: #e9ecef !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-subst { animation: glowSub 4s ease-out !important; border: 3px solid #212529 !important; position: relative !important; z-index: 10 !important; }
+        .glow-subst .p-2.pb-1 { animation: headerSub 4s ease-out !important; }
+    </style>
+</head>
+<body>
+
+""" + BASE_HEADER + """
+
+<div class="container mt-4 mb-3 text-center">
+    <h1 class="h4 fw-bold text-dark mb-1">{{ page_h1 }}</h1>
+    {% if not is_today %}
+        <p class="text-muted mb-2" style="font-size: 0.85rem;">Upcoming 14-day schedule, betting odds, and match info.</p>
+    {% endif %}
+</div>
+
+<div class="container pb-5">
+    <div class="row justify-content-start">
+        {% if grouped_matches | length == 0 %}
+            <div class="col-12 text-center mt-5">
+                <div class="card p-5 shadow-sm border-0 rounded-4">
+                    <div class="h3 mb-3">🏖️</div>
+                    <div class="h4 text-dark fw-bold mb-2">{{ league_name }} is currently on break.</div>
+                    <p class="text-muted">There are no upcoming matches scheduled for this league in the next 14 days. Please check back as we get closer to match day.</p>
+                </div>
+            </div>
+        {% else %}
+            {% for date_str, matches in grouped_matches.items() %}
+                {% if not is_today %}
+                <div class="col-12 mt-4 mb-3 px-1">
+                    <div class="d-flex align-items-center p-2 rounded-3 shadow-sm date-subheader">
+                        <span style="font-size: 1.1rem; margin-right: 8px;">📅</span> 
+                        <h2 class="h6 mb-0">{{ date_str }}</h2>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% for match in matches %}
+                <div class="col-md-6 col-lg-6 col-xl-4 mb-3">
+                    {{ match.html_card | safe }}
+                </div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('leagueSearchNavInput')?.addEventListener('input', function(e) {
+            const text = e.target.value.toLowerCase();
+            document.querySelectorAll('#leagueSearchList li').forEach(li => {
+                const leagueName = li.textContent.toLowerCase();
+                li.style.display = leagueName.includes(text) ? '' : 'none';
+            });
+        });
+
+        document.querySelectorAll('.local-time-badge').forEach(badge => {
+            const utcStr = badge.getAttribute('data-utc');
+            if (utcStr) {
+                const dt = new Date(utcStr);
+                const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+                let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+                badge.textContent = `${day} ${time}`;
+            }
+        });
+
+        setInterval(pollAndUpdateDOM, 30000);
+    });
+
+    window.toggleSingleCard = function(fixId) {
+        const fullView = document.getElementById(`full-${fixId}`);
+        document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
+        fullView?.classList.toggle('d-none');
+        if (fullView && !fullView.classList.contains('d-none')) {
+            fullView.querySelectorAll('img[data-src]').forEach(img => {
+                img.src = img.getAttribute('data-src');
+                img.removeAttribute('data-src');
+            });
+        }
+    };
+
+    window.switchLineupTab = function(event, fixId, tabName) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        const xiTab = document.getElementById(`tab-xi-${fixId}`), statsTab = document.getElementById(`tab-stats-${fixId}`);
+        const xiView = document.getElementById(`view-xi-${fixId}`), statsView = document.getElementById(`view-stats-${fixId}`);
+        if (tabName === 'xi') {
+            xiTab?.classList.add('active'); statsTab?.classList.remove('active');
+            xiView?.classList.remove('d-none'); statsView?.classList.add('d-none');
+        } else if (tabName === 'stats') {
+            statsTab?.classList.add('active'); xiTab?.classList.remove('active');
+            statsView?.classList.remove('d-none'); xiView?.classList.add('d-none');
+        }
+    };
+
+    function triggerCardGlow(cardEl, eventTypeOrText) {
+        if (!cardEl) return;
+        const typeLower = (eventTypeOrText || '').toLowerCase();
+        let glowClass = 'glow-goal';
+        if (typeLower.includes('red') || typeLower.includes('🟥')) glowClass = 'glow-red-card';
+        else if (typeLower.includes('yellow') || typeLower.includes('🟨')) glowClass = 'glow-yellow-card';
+        else if (typeLower.includes('sub') || typeLower.includes('🔄')) glowClass = 'glow-subst';
+
+        cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
+        void cardEl.offsetWidth; // Force CSS reflow to trigger animation
+        cardEl.classList.add(glowClass);
+        setTimeout(() => { cardEl.classList.remove(glowClass); }, 4000);
+    }
+
+    async function pollAndUpdateDOM() {
+        try {
+            const res = await fetch(window.location.href, { cache: 'no-store' });
+            if (!res.ok) return;
+            const htmlText = await res.text();
+            
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(htmlText, 'text/html');
+
+            document.querySelectorAll('.lineup-card').forEach(currentCard => {
+                const cardId = currentCard.id;
+                if (!cardId) return;
+                const fixId = cardId.replace('card-', '');
+                const newCard = newDoc.getElementById(cardId);
+                
+                if (!newCard) return;
+
+                // PREVENT FLASH: Skip if HTML content is unchanged
+                if (currentCard.innerHTML === newCard.innerHTML) return;
+
+                // Glow detection: Check if events block updated
+                const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
+                const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
+                const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
+
+                // Preserve UI State
+                const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
+                const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
+                const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
+
+                // Swap HTML
+                currentCard.innerHTML = newCard.innerHTML;
+
+                // Restore UI State
+                if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
+                    currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
+                    currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
+                }
+                if (activeTab) {
+                    const tabName = activeTab.includes('stats') ? 'stats' : 'xi';
+                    window.switchLineupTab(null, fixId, tabName);
+                }
+
+                // Trigger Glow Animation
                 if (hasNewEvent) {
                     triggerCardGlow(currentCard, newEventsHtml);
                 }
@@ -1409,6 +1638,50 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
 </body>
 </html>
 """
+
+def build_single_league_page(league_slug, league_data, matches, is_today, nav_html, today_date_str):
+    league_dir = os.path.join('v2', 'leagues', league_slug)
+    os.makedirs(league_dir, exist_ok=True)
+    
+    league_name = league_data.get('name', 'League')
+    
+    if is_today:
+        seo_title = f"Today's {league_name} Starting Lineups & Live Scores - {today_date_str}"
+        page_h1 = f"Today's {league_name} Matches - {today_date_str}"
+        seo_desc = f"Get real-time starting lineups, live scores, injuries, and betting odds for today's {league_name} matches on {today_date_str}."
+        grouped_matches = {"Today": matches}
+    else:
+        seo_title = f"{league_name} Upcoming Match Schedule & Odds"
+        page_h1 = f"{league_name} Upcoming Matches & Schedule"
+        seo_desc = f"View the latest results, upcoming 14-day schedule, betting odds, and match info for the {league_name}."
+        grouped_matches = {}
+        for m in matches:
+            date_raw = m['fixture'].get('date', '')
+            try:
+                dt = datetime.fromisoformat(date_raw.replace('Z', '+00:00'))
+                dt_local = dt.astimezone(pytz.timezone('America/New_York'))
+                date_header = dt_local.strftime('%A, %B %-d')
+            except:
+                date_header = "Upcoming"
+                
+            if date_header not in grouped_matches:
+                grouped_matches[date_header] = []
+            grouped_matches[date_header].append(m)
+
+    template = Template(LEAGUE_HTML_TEMPLATE)
+    output = template.render(
+        seo_title=seo_title,
+        seo_desc=seo_desc,
+        page_h1=page_h1,
+        league_name=league_name,
+        is_today=is_today,
+        grouped_matches=grouped_matches,
+        nav_leagues_html=nav_html
+    )
+    
+    with open(os.path.join(league_dir, 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(output)
+
 
 def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, today_date_str):
     team_dir = os.path.join('v2', 'teams', team_slug, 'lineup')
@@ -1504,7 +1777,6 @@ def generate_v2_index():
             if is_today_treatment:
                 today_matches_for_league = [m for m in raw_matches_by_day['today'] if m.get('league', {}).get('slug') == slug]
                 # LEAGUE PAGES
-                from functools import partial
                 build_single_league_page(
                     slug, state[slug], today_matches_for_league, 
                     is_today=True, nav_html=nav_html, 
