@@ -7,6 +7,7 @@
     
     <title>Scottish League Cup, Group H Upcoming Match Schedule & Odds</title>
     <meta name="description" content="View the latest results, upcoming 14-day schedule, betting odds, and match info for the Scottish League Cup, Group H.">
+    <link rel="canonical" href="https://futbolstartingeleven.com/v2/leagues/scottish-league-cup-group-h/">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -253,7 +254,7 @@
         else if (typeLower.includes('sub') || typeLower.includes('🔄')) glowClass = 'glow-subst';
 
         cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
-        void cardEl.offsetWidth; // Force CSS reflow to trigger animation
+        void cardEl.offsetWidth;
         cardEl.classList.add(glowClass);
         setTimeout(() => { cardEl.classList.remove(glowClass); }, 4000);
     }
@@ -275,23 +276,18 @@
                 
                 if (!newCard) return;
 
-                // PREVENT FLASH: Skip if HTML content is unchanged
                 if (currentCard.innerHTML === newCard.innerHTML) return;
 
-                // Glow detection: Check if events block updated
                 const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
 
-                // Preserve UI State
                 const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
                 const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
                 const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
 
-                // Swap HTML
                 currentCard.innerHTML = newCard.innerHTML;
 
-                // Restore UI State
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
                     currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
@@ -301,7 +297,6 @@
                     window.switchLineupTab(null, fixId, tabName);
                 }
 
-                // Trigger Glow Animation
                 if (hasNewEvent) {
                     triggerCardGlow(currentCard, newEventsHtml);
                 }

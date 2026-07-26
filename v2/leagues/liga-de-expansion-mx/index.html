@@ -7,6 +7,7 @@
     
     <title>Today's Liga de Expansión MX Starting Lineups & Live Scores - Sun, Jul 26</title>
     <meta name="description" content="Get real-time starting lineups, live scores, injuries, and betting odds for today's Liga de Expansión MX matches on Sun, Jul 26.">
+    <link rel="canonical" href="https://futbolstartingeleven.com/v2/leagues/liga-de-expansion-mx/">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -202,7 +203,7 @@
         else if (typeLower.includes('sub') || typeLower.includes('🔄')) glowClass = 'glow-subst';
 
         cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
-        void cardEl.offsetWidth; // Force CSS reflow to trigger animation
+        void cardEl.offsetWidth;
         cardEl.classList.add(glowClass);
         setTimeout(() => { cardEl.classList.remove(glowClass); }, 4000);
     }
@@ -224,23 +225,18 @@
                 
                 if (!newCard) return;
 
-                // PREVENT FLASH: Skip if HTML content is unchanged
                 if (currentCard.innerHTML === newCard.innerHTML) return;
 
-                // Glow detection: Check if events block updated
                 const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
 
-                // Preserve UI State
                 const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
                 const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
                 const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
 
-                // Swap HTML
                 currentCard.innerHTML = newCard.innerHTML;
 
-                // Restore UI State
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
                     currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
@@ -250,7 +246,6 @@
                     window.switchLineupTab(null, fixId, tabName);
                 }
 
-                // Trigger Glow Animation
                 if (hasNewEvent) {
                     triggerCardGlow(currentCard, newEventsHtml);
                 }
