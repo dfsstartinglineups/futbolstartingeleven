@@ -189,6 +189,36 @@ def sync_league_state(all_active_matches):
             
     return state, state_file
 
+def sync_team_state(matches):
+    state_file = 'v2/data/site_teams.json'
+    os.makedirs('v2/data', exist_ok=True)
+    team_state = {}
+    if os.path.exists(state_file):
+        try:
+            with open(state_file, 'r', encoding='utf-8') as f:
+                team_state = json.load(f)
+        except: pass
+
+    # Always ensure discovered teams in today's payload are tracked
+    for m in matches:
+        for t_side in ['home', 'away']:
+            team_info = m['teams'].get(t_side, {})
+            team_id = str(team_info.get('id', ''))
+            team_name = team_info.get('name', '')
+            if team_id and team_name:
+                slug = create_slug(team_name)
+                if slug not in team_state:
+                    team_state[slug] = {
+                        "id": team_id,
+                        "name": team_name,
+                        "slug": slug,
+                        "logo": team_info.get('logo', ''),
+                        "last_match_id": "",
+                        "last_updated": 0.0,
+                        "is_final": False
+                    }
+    return team_state, state_file
+
 def generate_nav_leagues_html(state):
     sorted_leagues = sorted(state.items(), key=lambda x: x[1]['name'].lower())
     html = ""
@@ -235,6 +265,22 @@ def get_position_category(raw_pos):
     if any(term in p for term in ['CF', 'ST', 'FW', 'LW', 'RW', 'WF', 'SS', 'ATT', 'STR', 'AM', 'CAM']) or p == 'F': return 'F'
     if any(term in p for term in ['CD', 'CB', 'LB', 'RB', 'WB', 'SW', 'DF', 'DEF']) or p == 'D': return 'D'
     return 'M'
+
+def get_formation(lineup_data):
+    if lineup_data and lineup_data.get('formation'):
+        return str(lineup_data['formation'])
+    # Tier 2: Infer from active positional count
+    if lineup_data and lineup_data.get('startXI'):
+        d = m = f = 0
+        for s in lineup_data['startXI']:
+            cat = s.get('player', {}).get('category', 'M')
+            if cat == 'D': d += 1
+            elif cat == 'M': m += 1
+            elif cat == 'F': f += 1
+        if d + m + f > 0:
+            return f"{d}-{m}-{f}"
+    # Tier 3: Failsafe
+    return "4-4-2"
 
 def is_valid_sub_minute(minute_val):
     if not minute_val: return False
@@ -578,6 +624,76 @@ def get_team_color(lineup, default_hex):
     except:
         return default_hex
 
+# ====================================================================
+# TACTICAL PITCH HTML GENERATOR (PYTHON RENDERING)
+# ====================================================================
+def generate_pitch_html(lineup, default_hex):
+    if not lineup or not lineup.get('startXI'):
+        return '''<div class="d-flex align-items-center justify-content-center" style="width:100%; aspect-ratio: 2/3; background: #2e8b57; margin: 0 auto; border-radius: 8px;">
+            <span class="text-white fw-bold" style="font-size: 1.2rem; text-align: center; padding: 20px;">Awaiting Live Lineup Data</span>
+        </div>'''
+        
+    formation = get_formation(lineup)
+    color = get_team_color(lineup, default_hex)
+    contrast = get_contrast_color(color)
+    
+    # Extract row configuration (e.g. "4-3-3" -> [4, 3, 3])
+    try:
+        rows = [int(x) for x in formation.split('-')]
+        if sum(rows) != 10:
+            rows = [4, 4, 2] # Fallback if invalid lengths
+    except:
+        rows = [4, 4, 2]
+
+    starters = lineup.get('startXI', [])
+    gk = None
+    field_players = []
+    
+    for s in starters:
+        p = s.get('player', {})
+        if p.get('category') == 'G' and not gk:
+            gk = p
+        else:
+            field_players.append(p)
+            
+    html = '<div class="pitch-container" style="position:relative; width: 100%; max-width: 500px; aspect-ratio: 2/3; background: #2e8b57; margin: 0 auto; border: 2px solid #fff; border-radius: 8px; overflow: hidden;">'
+    html += '<div style="position:absolute; top:50%; left:0; width:100%; height:2px; background:rgba(255,255,255,0.4);"></div>'
+    html += '<div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:60px; height:60px; border:2px solid rgba(255,255,255,0.4); border-radius:50%;"></div>'
+    
+    def render_pitch_player(player, x, y, bg_color, text_color):
+        if not player: return ""
+        name = shorten_player_name(player.get('name'))
+        photo = player.get('photo', '')
+        
+        if photo:
+            avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 2px solid {bg_color}; background-color: #fff;">'
+        else:
+            initial = name[0] if name else ''
+            avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; border: 2px solid #fff;">{initial}</div>'
+            
+        return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: 44px; z-index: 10;">
+            <div style="width: 34px; height: 34px; background: #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">{avatar}</div>
+            <div style="background: rgba(0,0,0,0.7); color: #fff; font-size: 0.60rem; font-weight: bold; padding: 2px 4px; border-radius: 4px; margin-top: 3px; white-space: nowrap; max-width: 70px; overflow: hidden; text-overflow: ellipsis;">{name}</div>
+        </div>'''
+
+    # Render GK at the bottom
+    html += render_pitch_player(gk, 50, 92, color, contrast)
+    
+    # Calculate spacing and distribute evenly per row
+    y_step = 82 / (len(rows) + 1)
+    player_idx = 0
+    for r_idx, count in enumerate(rows):
+        y_pos = 92 - ((r_idx + 1) * y_step)
+        x_step = 100 / (count + 1)
+        for c_idx in range(count):
+            if player_idx < len(field_players):
+                x_pos = (c_idx + 1) * x_step
+                html += render_pitch_player(field_players[player_idx], x_pos, y_pos, color, contrast)
+                player_idx += 1
+                
+    html += '</div>'
+    return html
+
 def get_time_badge_html(data):
     status = str((data['fixture']['status'] or {}).get('short', ''))
     elapsed = (data['fixture']['status'] or {}).get('elapsed')
@@ -701,7 +817,7 @@ def build_lineup_list(lineup_data):
         pho = f'''<img data-src="{p.get('photo', '')}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2 player-headshot">''' if p.get('photo') else '''<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>'''
         sub = '''<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>''' if p.get('isSubbedOut') else ''
         items += f'''<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">{p.get('pos','M')}</span>{pho}<span class="batter-name text-dark text-truncate">{sub}{shorten_player_name(p.get('name'))}</span><span class="ms-auto text-muted" style="font-size: 0.65rem;">#{p.get('number','')}</span></li>'''
-    return f'''<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ {lineup_data.get('formation', '4-3-3')}</div><ul class="batting-order w-100 m-0 p-0">{items}</ul>'''
+    return f'''<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ {get_formation(lineup_data)}</div><ul class="batting-order w-100 m-0 p-0">{items}</ul>'''
 
 def build_live_stats_grid(lineup_data, hex_color):
     if not lineup_data or not lineup_data.get('startXI'): return '<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>'
@@ -732,6 +848,13 @@ def pre_render_game_card(data):
     
     h_col = get_team_color(data.get('homeLineup'), '#0d6efd')
     a_col = get_team_color(data.get('awayLineup'), '#dc3545')
+    
+    home_slug = create_slug(data['teams']['home']['name'])
+    away_slug = create_slug(data['teams']['away']['name'])
+    
+    # Only render the Lineup link if it's a today's match
+    home_lineup_html = f'<a href="/v2/teams/{home_slug}/lineup/index.html" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
+    away_lineup_html = f'<a href="/v2/teams/{away_slug}/lineup/index.html" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
 
     return f'''<!-- MATCH_{fix_id} -->
     <div class="lineup-card shadow-sm" id="card-{fix_id}">
@@ -743,9 +866,9 @@ def pre_render_game_card(data):
                     <a href="/v2/leagues/{data['league']['slug']}/index.html" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="{data['league']['name']}">{flag_html} <span class="text-truncate">{data['league']['name']}</span></a>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
-                    <div class="text-center" style="width: 30%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['home']['name']}</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['home']['name']}</div>{home_lineup_html}</div>
                     <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-{fix_id}">{get_center_column_html(data)}</div>
-                    <div class="text-center" style="width: 30%;"><img src="{data['teams']['away']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['away']['name']}</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="{data['teams']['away']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['away']['name']}</div>{away_lineup_html}</div>
                 </div>
                 <div class="w-100" id="events-{fix_id}">{get_events_html(data)}</div>
             </div>
@@ -787,7 +910,7 @@ def group_and_sort_matches_by_league(matches):
     league_list.sort(key=lambda x: x['earliest_date'])
     return league_list
 
-def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None):
+def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None, is_today_partition=False):
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
     seen_ids = set()
@@ -871,7 +994,8 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None)
                             "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}},
                             "teams": {"home": {"name": home_name}, "away": {"name": away_name}},
                             "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag},
-                            "html_card": f"<!-- MATCH_{event_id} -->{card_content}<!-- END_MATCH_{event_id} -->"
+                            "html_card": f"<!-- MATCH_{event_id} -->{card_content}<!-- END_MATCH_{event_id} -->",
+                            "is_today_partition": is_today_partition
                         })
                         continue
 
@@ -900,7 +1024,8 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None)
                     "away": int((summary.get('live_score') or {}).get('away') or away_comp.get('score') or 0)
                 },
                 "team_stats": summary["team_stats"], "homeLineup": summary["homeLineup"], "awayLineup": summary["awayLineup"],
-                "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"]
+                "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"],
+                "is_today_partition": is_today_partition
             }
             
             match_entry["html_card"] = pre_render_game_card(match_entry)
@@ -912,7 +1037,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None)
     return matches
 
 # ====================================================================
-# HTML TEMPLATES (MAIN + LEAGUE)
+# HTML TEMPLATES (MAIN + LEAGUE + TEAM)
 # ====================================================================
 BASE_HEADER = """
 <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-0" style="background-color: #212529; z-index: 1050;">
@@ -1199,23 +1324,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 
                 if (!newCard) return;
 
-                // PREVENT FLASH: Skip if HTML content is unchanged
                 if (currentCard.innerHTML === newCard.innerHTML) return;
 
-                // Glow detection: Check if events block updated
                 const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
 
-                // Preserve UI State
                 const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
                 const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
                 const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
 
-                // Swap HTML
                 currentCard.innerHTML = newCard.innerHTML;
 
-                // Restore UI State
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
                     currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
@@ -1225,7 +1345,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     window.switchLineupTab(null, fixId, tabName);
                 }
 
-                // Trigger Glow Animation
                 if (hasNewEvent) {
                     triggerCardGlow(currentCard, newEventsHtml);
                 }
@@ -1239,7 +1358,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
-LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
+TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1249,63 +1368,13 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ seo_title }}">
-    <meta property="og:description" content="{{ seo_desc }}">
-    
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="{{ seo_title }}">
-    <meta name="twitter:description" content="{{ seo_desc }}">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('error', function (e) { if (e.target.tagName === 'IMG') { e.target.style.display = 'none'; } }, true);
-    </script>
     <style>
         body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .header-brand a { color: inherit; }
         .header-brand span { text-shadow: none !important; background: linear-gradient(to bottom, #20c997 0%, #198754 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6)); }
-        
-        .lineup-card { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px; overflow: hidden; }
-        .team-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1)); }
-        .batting-order { padding-left: 0; list-style-type: none; margin-bottom: 0; }
-        .batting-order li { padding: 6px 12px; font-size: 0.85rem; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; align-items: center; }
-        .batting-order li:last-child { border-bottom: none; }
-        .batter-name { font-weight: 600; color: #495057; }
-        
-        .date-subheader { background: #ffffff; border-left: 4px solid #0d6efd; border-radius: 8px; font-weight: 700; color: #343a40; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .live-dot { display: inline-block; width: 7px; height: 7px; background-color: #fff; border-radius: 50%; margin-right: 5px; margin-bottom: 1px; animation: pulse-green 2s infinite; }
-        @keyframes pulse-green { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); } }
-        .stat-bar-container { display: flex; width: 100%; height: 14px; background-color: #e9ecef; border-radius: 4px; overflow: hidden; margin-top: 2px; }
-        .stat-bar-segment { display: flex; align-items: center; justify-content: center; font-size: 0.60rem; font-weight: 800; padding: 0 4px; transition: width 0.5s ease-in-out; }
-        .stat-label-tiny { font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px; }
-        .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
-        .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
-
-        @keyframes glowGoal { 0% { border-color: #20c997; box-shadow: 0 0 25px rgba(32, 201, 151, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
-        @keyframes headerGoal { 0% { background-color: #d1e7dd !important; } 100% { background-color: #fcfcfc !important; } }
-        .glow-goal { animation: glowGoal 4s ease-out !important; border: 3px solid #20c997 !important; position: relative !important; z-index: 10 !important; }
-        .glow-goal .p-2.pb-1 { animation: headerGoal 4s ease-out !important; }
-
-        @keyframes glowRed { 0% { border-color: #dc3545; box-shadow: 0 0 25px rgba(220, 53, 69, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
-        @keyframes headerRed { 0% { background-color: #f8d7da !important; } 100% { background-color: #fcfcfc !important; } }
-        .glow-red-card { animation: glowRed 4s ease-out !important; border: 3px solid #dc3545 !important; position: relative !important; z-index: 10 !important; }
-        .glow-red-card .p-2.pb-1 { animation: headerRed 4s ease-out !important; }
-
-        @keyframes glowYellow { 0% { border-color: #ffc107; box-shadow: 0 0 25px rgba(255, 193, 7, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
-        @keyframes headerYellow { 0% { background-color: #fff3cd !important; } 100% { background-color: #fcfcfc !important; } }
-        .glow-yellow-card { animation: glowYellow 4s ease-out !important; border: 3px solid #ffc107 !important; position: relative !important; z-index: 10 !important; }
-        .glow-yellow-card .p-2.pb-1 { animation: headerYellow 4s ease-out !important; }
-
-        @keyframes glowSub { 0% { border-color: #212529; box-shadow: 0 0 25px rgba(33, 37, 41, 0.6); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
-        @keyframes headerSub { 0% { background-color: #e9ecef !important; } 100% { background-color: #fcfcfc !important; } }
-        .glow-subst { animation: glowSub 4s ease-out !important; border: 3px solid #212529 !important; position: relative !important; z-index: 10 !important; }
-        .glow-subst .p-2.pb-1 { animation: headerSub 4s ease-out !important; }
     </style>
 </head>
 <body>
@@ -1313,40 +1382,16 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
 """ + BASE_HEADER + """
 
 <div class="container mt-4 mb-3 text-center">
-    <h1 class="h4 fw-bold text-dark mb-1">{{ page_h1 }}</h1>
-    {% if not is_today %}
-        <p class="text-muted mb-2" style="font-size: 0.85rem;">Upcoming 14-day schedule, betting odds, and match info.</p>
-    {% endif %}
+    <img src="{{ team_logo }}" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px;">
+    <h1 class="h3 fw-bold text-dark mb-1">{{ team_name }} Starting Lineup</h1>
+    <h2 class="h6 text-muted mb-3">{{ header_state }}</h2>
 </div>
 
 <div class="container pb-5">
-    <div class="row justify-content-start">
-        {% if grouped_matches | length == 0 %}
-            <div class="col-12 text-center mt-5">
-                <div class="card p-5 shadow-sm border-0 rounded-4">
-                    <div class="h3 mb-3">🏖️</div>
-                    <div class="h4 text-dark fw-bold mb-2">{{ league_name }} is currently on break.</div>
-                    <p class="text-muted">There are no upcoming matches scheduled for this league in the next 14 days. Please check back as we get closer to match day.</p>
-                </div>
-            </div>
-        {% else %}
-            {% for date_str, matches in grouped_matches.items() %}
-                {% if not is_today %}
-                <div class="col-12 mt-4 mb-3 px-1">
-                    <div class="d-flex align-items-center p-2 rounded-3 shadow-sm date-subheader">
-                        <span style="font-size: 1.1rem; margin-right: 8px;">📅</span> 
-                        <h2 class="h6 mb-0">{{ date_str }}</h2>
-                    </div>
-                </div>
-                {% endif %}
-                
-                {% for match in matches %}
-                <div class="col-md-6 col-lg-6 col-xl-4 mb-3">
-                    {{ match.html_card | safe }}
-                </div>
-                {% endfor %}
-            {% endfor %}
-        {% endif %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            {{ pitch_html | safe }}
+        </div>
     </div>
 </div>
 
@@ -1359,157 +1404,51 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
                 li.style.display = leagueName.includes(text) ? '' : 'none';
             });
         });
-
-        document.querySelectorAll('.local-time-badge').forEach(badge => {
-            const utcStr = badge.getAttribute('data-utc');
-            if (utcStr) {
-                const dt = new Date(utcStr);
-                const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
-                let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
-                badge.textContent = `${day} ${time}`;
-            }
-        });
-
-        setInterval(pollAndUpdateDOM, 30000);
     });
-
-    window.toggleSingleCard = function(fixId) {
-        const fullView = document.getElementById(`full-${fixId}`);
-        document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
-        fullView?.classList.toggle('d-none');
-        if (fullView && !fullView.classList.contains('d-none')) {
-            fullView.querySelectorAll('img[data-src]').forEach(img => {
-                img.src = img.getAttribute('data-src');
-                img.removeAttribute('data-src');
-            });
-        }
-    };
-
-    window.switchLineupTab = function(event, fixId, tabName) {
-        if (event && event.stopPropagation) event.stopPropagation();
-        const xiTab = document.getElementById(`tab-xi-${fixId}`), statsTab = document.getElementById(`tab-stats-${fixId}`);
-        const xiView = document.getElementById(`view-xi-${fixId}`), statsView = document.getElementById(`view-stats-${fixId}`);
-        if (tabName === 'xi') {
-            xiTab?.classList.add('active'); statsTab?.classList.remove('active');
-            xiView?.classList.remove('d-none'); statsView?.classList.add('d-none');
-        } else if (tabName === 'stats') {
-            statsTab?.classList.add('active'); xiTab?.classList.remove('active');
-            statsView?.classList.remove('d-none'); xiView?.classList.add('d-none');
-        }
-    };
-
-    function triggerCardGlow(cardEl, eventTypeOrText) {
-        if (!cardEl) return;
-        const typeLower = (eventTypeOrText || '').toLowerCase();
-        let glowClass = 'glow-goal';
-        if (typeLower.includes('red') || typeLower.includes('🟥')) glowClass = 'glow-red-card';
-        else if (typeLower.includes('yellow') || typeLower.includes('🟨')) glowClass = 'glow-yellow-card';
-        else if (typeLower.includes('sub') || typeLower.includes('🔄')) glowClass = 'glow-subst';
-
-        cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
-        void cardEl.offsetWidth; // Force CSS reflow to trigger animation
-        cardEl.classList.add(glowClass);
-        setTimeout(() => { cardEl.classList.remove(glowClass); }, 4000);
-    }
-
-    async function pollAndUpdateDOM() {
-        try {
-            const res = await fetch(window.location.href, { cache: 'no-store' });
-            if (!res.ok) return;
-            const htmlText = await res.text();
-            
-            const parser = new DOMParser();
-            const newDoc = parser.parseFromString(htmlText, 'text/html');
-
-            document.querySelectorAll('.lineup-card').forEach(currentCard => {
-                const cardId = currentCard.id;
-                if (!cardId) return;
-                const fixId = cardId.replace('card-', '');
-                const newCard = newDoc.getElementById(cardId);
-                
-                if (!newCard) return;
-
-                // PREVENT FLASH: Skip if HTML content is unchanged
-                if (currentCard.innerHTML === newCard.innerHTML) return;
-
-                // Glow detection: Check if events block updated
-                const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
-                const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
-                const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
-
-                // Preserve UI State
-                const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
-                const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
-                const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
-
-                // Swap HTML
-                currentCard.innerHTML = newCard.innerHTML;
-
-                // Restore UI State
-                if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
-                    currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
-                    currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
-                }
-                if (activeTab) {
-                    const tabName = activeTab.includes('stats') ? 'stats' : 'xi';
-                    window.switchLineupTab(null, fixId, tabName);
-                }
-
-                // Trigger Glow Animation
-                if (hasNewEvent) {
-                    triggerCardGlow(currentCard, newEventsHtml);
-                }
-            });
-        } catch (err) {
-            console.error("DOM update failed:", err);
-        }
-    }
 </script>
 </body>
 </html>
 """
 
-def build_single_league_page(league_slug, league_data, matches, is_today, nav_html, today_date_str):
-    league_dir = os.path.join('v2', 'leagues', league_slug)
-    os.makedirs(league_dir, exist_ok=True)
+def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, today_date_str):
+    team_dir = os.path.join('v2', 'teams', team_slug, 'lineup')
+    os.makedirs(team_dir, exist_ok=True)
     
-    league_name = league_data.get('name', 'League')
+    team_name = team_data.get('name', 'Team')
+    team_logo = team_data.get('logo', '')
     
-    if is_today:
-        seo_title = f"Today's {league_name} Starting Lineups & Live Scores - {today_date_str}"
-        page_h1 = f"Today's {league_name} Matches - {today_date_str}"
-        seo_desc = f"Get real-time starting lineups, live scores, injuries, and betting odds for today's {league_name} matches on {today_date_str}."
-        grouped_matches = {"Today": matches}
-    else:
-        seo_title = f"{league_name} Upcoming Match Schedule & Odds"
-        page_h1 = f"{league_name} Upcoming Matches & Schedule"
-        seo_desc = f"View the latest results, upcoming 14-day schedule, betting odds, and match info for the {league_name}."
-        grouped_matches = {}
-        for m in matches:
-            date_raw = m['fixture'].get('date', '')
-            try:
-                dt = datetime.fromisoformat(date_raw.replace('Z', '+00:00'))
-                dt_local = dt.astimezone(pytz.timezone('America/New_York'))
-                date_header = dt_local.strftime('%A, %B %-d')
-            except:
-                date_header = "Upcoming"
-                
-            if date_header not in grouped_matches:
-                grouped_matches[date_header] = []
-            grouped_matches[date_header].append(m)
+    opp_side = 'away' if is_home else 'home'
+    opp_name = match_data['teams'][opp_side]['name']
+    
+    status_short = match_data['fixture']['status']['short']
+    is_pre = status_short in ['NS', 'TBD']
+    is_final = status_short in ['FT', 'AET', 'PEN']
 
-    template = Template(LEAGUE_HTML_TEMPLATE)
+    lineup = match_data.get('homeLineup') if is_home else match_data.get('awayLineup')
+    
+    if is_final:
+        header_state = f"Last Match: vs {opp_name}"
+        seo_title = f"{team_name} Starting Lineup - Tactical Formation"
+        seo_desc = f"View the latest starting lineup and tactical formation for {team_name}."
+    else:
+        header_state = f"vs {opp_name} • {today_date_str}"
+        seo_title = f"{team_name} Starting Lineup vs {opp_name} - {today_date_str}"
+        seo_desc = f"Official starting lineup and tactical formation for {team_name} vs {opp_name} on {today_date_str}."
+
+    pitch_html = generate_pitch_html(lineup, '#333333')
+
+    template = Template(TEAM_HTML_TEMPLATE)
     output = template.render(
         seo_title=seo_title,
         seo_desc=seo_desc,
-        page_h1=page_h1,
-        league_name=league_name,
-        is_today=is_today,
-        grouped_matches=grouped_matches,
+        team_name=team_name,
+        team_logo=team_logo,
+        header_state=header_state,
+        pitch_html=pitch_html,
         nav_leagues_html=nav_html
     )
     
-    with open(os.path.join(league_dir, 'index.html'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(team_dir, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(output)
 
 # ====================================================================
@@ -1517,7 +1456,7 @@ def build_single_league_page(league_slug, league_data, matches, is_today, nav_ht
 # ====================================================================
 def generate_v2_index():
     print("\n==================================================")
-    print("⏳ STARTING SSG BUILD PIPELINE & LEAGUE GENERATOR")
+    print("⏳ STARTING SSG BUILD PIPELINE & LEAGUE/TEAM GENERATOR")
     print("==================================================")
     
     os.makedirs('v2', exist_ok=True)
@@ -1530,15 +1469,16 @@ def generate_v2_index():
     
     # 1. Fetch Global Core Data
     raw_matches_by_day = {
-        "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"], old_html),
-        "today": fetch_espn_scores_for_date(day_info["dates"]["today"], old_html),
-        "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], old_html)
+        "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"], old_html, is_today_partition=False),
+        "today": fetch_espn_scores_for_date(day_info["dates"]["today"], old_html, is_today_partition=True),
+        "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], old_html, is_today_partition=False)
     }
 
     all_active_matches = raw_matches_by_day['yesterday'] + raw_matches_by_day['today'] + raw_matches_by_day['tomorrow']
 
-    # 2. Sync League Registry & Generate Global HTML Dropdown
+    # 2. Sync League & Team State & Generate Global HTML Dropdown
     state, state_file = sync_league_state(all_active_matches)
+    team_state, team_state_file = sync_team_state(raw_matches_by_day['today'])
     nav_html = generate_nav_leagues_html(state)
     
     # 3. Generate Active League Pages instantly from memory
@@ -1563,6 +1503,8 @@ def generate_v2_index():
             
             if is_today_treatment:
                 today_matches_for_league = [m for m in raw_matches_by_day['today'] if m.get('league', {}).get('slug') == slug]
+                # LEAGUE PAGES
+                from functools import partial
                 build_single_league_page(
                     slug, state[slug], today_matches_for_league, 
                     is_today=True, nav_html=nav_html, 
@@ -1576,7 +1518,40 @@ def generate_v2_index():
                 )
             state[slug]['last_updated'] = datetime.now().timestamp()
 
-    # 4. Generate ONE Dormant League (14-Day Trickle Round Robin)
+    # 4. Update Team Pages for Today's schedule
+    print(f"🔄 Updating Team Lineup Pages for Today's Matches...")
+    for m in raw_matches_by_day['today']:
+        match_id = str(m['fixture']['id'])
+        status_short = m['fixture']['status']['short']
+        
+        for side in ['home', 'away']:
+            team_info = m['teams'][side]
+            slug = create_slug(team_info['name'])
+            if slug in team_state:
+                t_data = team_state[slug]
+                
+                # If the team was marked as final previously and this is still the same game, skip
+                if t_data.get('last_match_id') == match_id and t_data.get('is_final'):
+                    continue
+                    
+                build_team_lineup_page(
+                    slug, t_data, m, 
+                    is_home=(side=='home'), 
+                    nav_html=nav_html, 
+                    today_date_str=day_info["display"]["today"]
+                )
+                
+                # Update Tracking
+                t_data['last_updated'] = datetime.now().timestamp()
+                t_data['last_match_id'] = match_id
+                
+                # Rollover check
+                if status_short in ['FT', 'AET', 'PEN']:
+                    t_data['is_final'] = True
+                else:
+                    t_data['is_final'] = False
+
+    # 5. Generate ONE Dormant League (14-Day Trickle Round Robin)
     dormant_leagues = [s for s, d in state.items() if s not in active_slugs and d.get('pill')]
     if dormant_leagues:
         dormant_leagues.sort(key=lambda s: state[s].get('last_updated', 0))
@@ -1591,7 +1566,7 @@ def generate_v2_index():
         end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
         
         fourteen_day_matches = fetch_espn_scores_for_date(
-            start_date, "", pill=target_data['pill'], end_date_str=end_date
+            start_date, "", pill=target_data['pill'], end_date_str=end_date, is_today_partition=False
         )
             
         build_single_league_page(
@@ -1600,11 +1575,13 @@ def generate_v2_index():
         )
         state[target_slug]['last_updated'] = datetime.now().timestamp()
 
-    # Save Registry State
+    # Save Registry States
     with open(state_file, 'w', encoding='utf-8') as f: 
         json.dump(state, f, indent=2, ensure_ascii=False)
+    with open(team_state_file, 'w', encoding='utf-8') as f:
+        json.dump(team_state, f, indent=2, ensure_ascii=False)
 
-    # 5. Build Main Global Homepage
+    # 6. Build Main Global Homepage
     leagues_by_day = {
         day: group_and_sort_matches_by_league(matches)
         for day, matches in raw_matches_by_day.items()
@@ -1616,6 +1593,7 @@ def generate_v2_index():
     print(f"  ├─ Today:     {len(raw_matches_by_day['today'])} matches")
     print(f"  └─ Tomorrow:  {len(raw_matches_by_day['tomorrow'])} matches")
     print(f"  ├─ Active League Pages Generated: {len(active_slugs)}")
+    print(f"  ├─ Team Lineup Pages Processed: {len(raw_matches_by_day['today']) * 2}")
     print(f"  └─ Dormant Pages Synced: 1 (Round Robin)")
     print(f"==================================================")
     
