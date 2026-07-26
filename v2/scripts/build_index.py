@@ -1336,11 +1336,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const startIndex = htmlText.indexOf(startStr);
             if (startIndex === -1) return;
 
-            const jsonStart = startIndex + startStr.length;
-            const jsonEnd = htmlText.indexOf(";\n    let ACTIVE_DAY", jsonStart);
+           const jsonStart = startIndex + startStr.length;
+            const jsonEnd = htmlText.indexOf("let ACTIVE_DAY", jsonStart);
             if (jsonEnd === -1) return;
 
-            const freshData = JSON.parse(htmlText.substring(jsonStart, jsonEnd));
+            // Trim whitespace and trailing semicolon cleanly before parsing
+            const rawJson = htmlText.substring(jsonStart, jsonEnd).trim().replace(/;$/, '');
+            const freshData = JSON.parse(rawJson);
             const freshDayMatches = freshData[ACTIVE_DAY] || [];
             const currentDayMatches = STATIC_MATCHES[ACTIVE_DAY] || [];
 
