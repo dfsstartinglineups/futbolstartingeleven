@@ -2,9 +2,7 @@ import os
 import re
 import json
 import requests
-import traceback
 import unicodedata
-import math
 from datetime import datetime, timedelta
 import pytz
 import asyncio
@@ -120,33 +118,12 @@ NORMALIZED_HUMAN_LEAGUE_FLAGS = {
 }
 
 # ====================================================================
-# DYNAMIC INTERNAL LEAGUE SLUG PARSER (NO DICTIONARY REQUIRED)
-# ====================================================================
-def get_internal_league_slug(event_obj, comp_obj=None, league_obj=None):
-    # 1. Inspect raw JSON string for Core API $ref links embedded by ESPN
-    event_str = json.dumps(event_obj)
-    ref_matches = re.findall(r'/sports/soccer/leagues/([a-zA-Z0-9.-]+)', event_str)
-    for slug in ref_matches:
-        clean_slug = slug.lower()
-        if clean_slug not in ['all', 'soccer', 'none', '']:
-            return clean_slug
-
-    # 2. Check direct object attributes
-    for obj in [league_obj, comp_obj]:
-        if isinstance(obj, dict):
-            slug = obj.get('slug')
-            if slug and str(slug).lower() not in ['all', 'soccer', 'none', '']:
-                return str(slug).lower()
-
-    return None
-
-# ====================================================================
-# ASYNC CORE API STATS FETCHER
+# ASYNC CORE API PLAYER STATS FETCHER
 # ====================================================================
 async def fetch_single_player_core_stats(session, internal_slug, event_id, team_id, player_id):
     url = f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{internal_slug}/events/{event_id}/competitions/{event_id}/competitors/{team_id}/roster/{player_id}/statistics/0"
     try:
-        async with session.get(url, timeout=4) as resp:
+        async with session.get(url, timeout=5) as resp:
             if resp.status == 200:
                 data = await resp.json()
                 stats_dict = {}
@@ -154,13 +131,17 @@ async def fetch_single_player_core_stats(session, internal_slug, event_id, team_
                     for stat in cat.get('stats', []):
                         stats_dict[stat.get('name')] = stat.get('value')
                 return str(player_id), stats_dict
-    except:
+    except Exception:
         pass
     return str(player_id), {}
 
 async def get_core_stats_concurrently(internal_slug, event_id, player_list):
-    async with aiohttp.ClientSession() as session:
-        tasks = [fetch_single_player_core_stats(session, internal_slug, event_id, tid, pid) for tid, pid in player_list]
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    async with aiohttp.ClientSession(headers=headers) as session:
+        tasks = [
+            fetch_single_player_core_stats(session, internal_slug, event_id, tid, pid) 
+            for tid, pid in player_list
+        ]
         results = await asyncio.gather(*tasks)
         return {pid: stats for pid, stats in results if stats}
 
@@ -267,94 +248,73 @@ def should_fetch_summary(event):
             except Exception as e: return False, f"Date parse error: {e}"
     return False, f"State '{state}' not eligible"
 
-def extract_player_live_stats(entry_obj, core_raw_stats=None):
-    stats_raw = (entry_obj.get('stats') or []) + (entry_obj.get('statistics') or [])
+def extract_player_live_stats(core_stats):
     live_stats = {}
-    
+    if not core_stats or not isinstance(core_stats, dict):
+        return live_stats
+
     def cnum(v):
-        try: return int(float(re.sub(r'[^0-9.-]', '', str(v))))
+        try:
+            cleaned = re.sub(r'[^0-9.-]', '', str(v))
+            return int(float(cleaned)) if cleaned else 0
         except: return 0
+
     def cflt(v):
-        try: return round(float(str(v).strip('%')), 2)
+        try:
+            cleaned = re.sub(r'[^0-9.-]', '', str(v).strip('%'))
+            return round(float(cleaned), 2) if cleaned else 0.0
         except: return 0.0
 
-    for st in stats_raw:
-        if not isinstance(st, dict): continue
-        raw_k = st.get('name', '')
-        raw_abbr = str(st.get('abbreviation', '')).upper()
-        raw_v = st.get('displayValue', st.get('value', 0))
+    field_map = {
+        'touches': ('touches', cnum),
+        'expectedGoals': ('xg', cflt),
+        'expectedAssists': ('xa', cflt),
+        'shotsOnTarget': ('shots_on_target', cnum),
+        'totalShots': ('total_shots', cnum),
+        'bigChanceCreated': ('bcc', cnum),
+        'defensiveInterventions': ('dint', cnum),
+        'duelsWon': ('duels_won', cnum),
+        'accuratePasses': ('accurate_passes', cnum),
+        'effectiveTackles': ('tackles', cnum),
+        'totalTackles': ('tackles', cnum),
+        'totalGoals': ('goals', cnum),
+        'goalAssists': ('assists', cnum),
+        'goalsConceded': ('conceded', cnum),
+        'saves': ('saves', cnum),
+        'expectedGoalsConceded': ('xga', cflt),
+        'shotsOnGoalAgainst': ('shots_faced', cnum)
+    }
 
-        if raw_k in ['touches', 'totalTouches'] or raw_abbr == 'TCH': live_stats['touches'] = cnum(raw_v)
-        elif raw_k in ['expectedGoals', 'xg'] or raw_abbr == 'XG': live_stats['xg'] = cflt(raw_v)
-        elif raw_k in ['expectedAssists', 'xa'] or raw_abbr == 'XA': live_stats['xa'] = cflt(raw_v)
-        elif raw_k in ['shotsOnTarget', 'shotsOnGoal'] or raw_abbr == 'SOG': live_stats['shots_on_target'] = cnum(raw_v)
-        elif raw_k in ['totalShots', 'shots'] or raw_abbr == 'SHOT': live_stats['total_shots'] = cnum(raw_v)
-        elif raw_k in ['chancesCreated', 'bigChancesCreated'] or raw_abbr == 'BCC': live_stats['bcc'] = cnum(raw_v)
-        elif raw_k in ['interceptions', 'dint', 'defensiveInterventions'] or raw_abbr == 'DINT': live_stats['dint'] = cnum(raw_v)
-        elif raw_k in ['duelsWon', 'duelw', 'groundDuelsWon'] or raw_abbr == 'DUELW': live_stats['duels_won'] = cnum(raw_v)
-        elif raw_k in ['accuratePasses', 'passes'] or raw_abbr in ['PAS', 'PASS']: live_stats['accurate_passes'] = cnum(raw_v)
-        elif raw_k in ['effectiveTackles', 'tackles'] or raw_abbr in ['TK', 'TCKL']: live_stats['tackles'] = cnum(raw_v)
-        elif raw_k in ['totalGoals', 'goals', 'goal'] or raw_abbr == 'G': live_stats['goals'] = cnum(raw_v)
-        elif raw_k in ['goalAssists', 'assists', 'assist'] or raw_abbr == 'A': live_stats['assists'] = cnum(raw_v)
-        elif raw_k in ['goalsConceded', 'goalsAgainst'] or raw_abbr == 'GA': live_stats['conceded'] = cnum(raw_v)
-        elif raw_k in ['saves'] or raw_abbr == 'SV': live_stats['saves'] = cnum(raw_v)
-        elif raw_k in ['expectedGoalsConceded'] or raw_abbr == 'XGA': live_stats['xga'] = cflt(raw_v)
-        elif raw_k in ['shotsOnGoalAgainst', 'shotsFaced'] or raw_abbr == 'SHF': live_stats['shots_faced'] = cnum(raw_v)
-
-    if core_raw_stats:
-        if 'touches' in core_raw_stats: live_stats['touches'] = cnum(core_raw_stats['touches'])
-        if 'expectedGoals' in core_raw_stats: live_stats['xg'] = cflt(core_raw_stats['expectedGoals'])
-        if 'expectedAssists' in core_raw_stats: live_stats['xa'] = cflt(core_raw_stats['expectedAssists'])
-        if 'shotsOnTarget' in core_raw_stats: live_stats['shots_on_target'] = cnum(core_raw_stats['shotsOnTarget'])
-        elif 'shotsOnGoal' in core_raw_stats: live_stats['shots_on_target'] = cnum(core_raw_stats['shotsOnGoal'])
-        if 'shots' in core_raw_stats: live_stats['total_shots'] = cnum(core_raw_stats['shots'])
-        elif 'totalShots' in core_raw_stats: live_stats['total_shots'] = cnum(core_raw_stats['totalShots'])
-        if 'bigChancesCreated' in core_raw_stats: live_stats['bcc'] = cnum(core_raw_stats['bigChancesCreated'])
-        elif 'chancesCreated' in core_raw_stats: live_stats['bcc'] = cnum(core_raw_stats['chancesCreated'])
-        if 'defensiveInterventions' in core_raw_stats: live_stats['dint'] = cnum(core_raw_stats['defensiveInterventions'])
-        if 'groundDuelsWon' in core_raw_stats: live_stats['duels_won'] = cnum(core_raw_stats['groundDuelsWon'])
-        elif 'duelsWon' in core_raw_stats: live_stats['duels_won'] = cnum(core_raw_stats['duelsWon'])
-        if 'accuratePasses' in core_raw_stats: live_stats['accurate_passes'] = cnum(core_raw_stats['accuratePasses'])
-        if 'effectiveTackles' in core_raw_stats: live_stats['tackles'] = cnum(core_raw_stats['effectiveTackles'])
-        elif 'tackles' in core_raw_stats: live_stats['tackles'] = cnum(core_raw_stats['tackles'])
-        if 'goals' in core_raw_stats: live_stats['goals'] = cnum(core_raw_stats['goals'])
-        elif 'totalGoals' in core_raw_stats: live_stats['goals'] = cnum(core_raw_stats['totalGoals'])
-        if 'assists' in core_raw_stats: live_stats['assists'] = cnum(core_raw_stats['assists'])
-        elif 'goalAssists' in core_raw_stats: live_stats['assists'] = cnum(core_raw_stats['goalAssists'])
-        if 'goalsConceded' in core_raw_stats: live_stats['conceded'] = cnum(core_raw_stats['goalsConceded'])
-        if 'saves' in core_raw_stats: live_stats['saves'] = cnum(core_raw_stats['saves'])
-        if 'expectedGoalsConceded' in core_raw_stats: live_stats['xga'] = cflt(core_raw_stats['expectedGoalsConceded'])
-        if 'shotsOnGoalAgainst' in core_raw_stats: live_stats['shots_faced'] = cnum(core_raw_stats['shotsOnGoalAgainst'])
-        elif 'shotsFaced' in core_raw_stats: live_stats['shots_faced'] = cnum(core_raw_stats['shotsFaced'])
+    for raw_k, (out_k, cvt_fn) in field_map.items():
+        if raw_k in core_stats:
+            val = cvt_fn(core_stats[raw_k])
+            live_stats[out_k] = max(live_stats.get(out_k, 0 if cvt_fn == cnum else 0.0), val)
 
     return live_stats
 
-def parse_espn_summary(event_id, internal_slug, match_label="Match"):
-    headers = {'User-Agent': 'Mozilla/5.0'}
+def parse_espn_summary(event_id):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     summary_data = {
         "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [],
         "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
         "injuries": {"home": [], "away": []}, "live_score": {}, "status_obj": None
     }
-    urls_to_try = []
-    if internal_slug: urls_to_try.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/{internal_slug}/summary?event={event_id}")
-    urls_to_try.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/summary?event={event_id}")
-
-    res = None
-    for url in urls_to_try:
-        try:
-            r = requests.get(url, headers=headers, timeout=6)
-            if r.status_code == 200:
-                res = r
-                break
-        except: continue
-    if not res or res.status_code != 200: return summary_data
+    
+    url = f"https://site.web.api.espn.com/apis/site/v2/sports/soccer/all/summary?event={event_id}"
+    try:
+        r = requests.get(url, headers=headers, timeout=6)
+        if r.status_code != 200: return summary_data
+        data = r.json()
+    except:
+        return summary_data
 
     try:
-        data = res.json()
         comp_head = data.get('header', {}).get('competitions', [{}])[0]
         summary_data["status_obj"] = comp_head.get('status', {})
         game_state = comp_head.get('status', {}).get('type', {}).get('state', 'pre')
+
+        # Read exact league slug directly from response header
+        internal_slug = data.get('header', {}).get('league', {}).get('slug', '')
 
         live_scores = {}
         for comp in comp_head.get('competitors', []):
@@ -399,27 +359,25 @@ def parse_espn_summary(event_id, internal_slug, match_label="Match"):
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
             
-            # --- CONCURRENT CORE API DEEP STATS ENGINE ---
-            active_player_list = []
-            for r_data in rosters:
-                t_id = str(r_data.get('team', {}).get('id', ''))
-                for entry in r_data.get('roster', []):
-                    ath = entry.get('athlete', {})
-                    p_name = ath.get('displayName', 'Unknown')
-                    
-                    sub_in_flag = entry.get('subbedIn', False) or entry.get('starter', False) or (game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
-                    
-                    if sub_in_flag or entry.get('played') or entry.get('didPlay'):
-                        p_id = str(ath.get('id', ''))
-                        if p_id and t_id: 
-                            active_player_list.append((t_id, p_id))
-
+            # Fetch active player stats via Core API
             core_stats_cache = {}
-            if active_player_list and internal_slug:
-                try:
-                    core_stats_cache = asyncio.run(get_core_stats_concurrently(internal_slug, event_id, active_player_list))
-                except Exception as e:
-                    print(f"⚠️ Core API Fetch failed for event {event_id}: {e}")
+            if game_state != 'pre' and internal_slug:
+                active_player_list = []
+                for r_data in rosters:
+                    t_id = str(r_data.get('team', {}).get('id', ''))
+                    for entry in r_data.get('roster', []):
+                        ath = entry.get('athlete', {})
+                        p_id = str(ath.get('id', ''))
+                        p_name = ath.get('displayName', '')
+                        if entry.get('starter') or entry.get('subbedIn') or entry.get('didPlay') or entry.get('played') or (p_id in subbed_in or p_name.lower() in subbed_in):
+                            if t_id and p_id:
+                                active_player_list.append((t_id, p_id))
+
+                if active_player_list:
+                    try:
+                        core_stats_cache = asyncio.run(get_core_stats_concurrently(internal_slug, event_id, active_player_list))
+                    except Exception:
+                        pass
 
             for r_data in rosters:
                 ha = r_data.get('homeAway', 'home')
@@ -430,17 +388,18 @@ def parse_espn_summary(event_id, internal_slug, match_label="Match"):
                 for entry in r_data.get('roster', []):
                     if not entry.get('starter', False): continue
                     ath = entry.get('athlete', {})
+                    p_id = str(ath.get('id', ''))
                     p_name = ath.get('displayName', 'Unknown')
                     pos = entry.get('position', {}).get('abbreviation') or ath.get('position', {}).get('abbreviation') or 'M'
                     
                     sub_in_flag = entry.get('subbedIn', False)
-                    sub_in = sub_in_flag or (game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
-                    sub_out = game_state != 'pre' and (str(ath.get('id')) in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
+                    sub_in = sub_in_flag or (game_state != 'pre' and (p_id in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
+                    sub_out = game_state != 'pre' and (p_id in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
                     
-                    p_stats = extract_player_live_stats(entry, core_stats_cache.get(str(ath.get('id'))))
+                    p_stats = extract_player_live_stats(core_stats_cache.get(p_id))
                     
                     p_obj = {
-                        "id": str(ath.get('id', '')), "name": p_name, "pos": pos.upper(), "category": get_position_category(pos),
+                        "id": p_id, "name": p_name, "pos": pos.upper(), "category": get_position_category(pos),
                         "number": str(entry.get('jersey', '')), "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
                         "live_stats": p_stats,
                         "isSubbedIn": sub_in, "isSubbedOut": sub_out, "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
@@ -451,6 +410,7 @@ def parse_espn_summary(event_id, internal_slug, match_label="Match"):
                 for entry in r_data.get('roster', []):
                     if entry.get('starter', False): continue
                     ath = entry.get('athlete', {})
+                    p_id = str(ath.get('id', ''))
                     p_name = ath.get('displayName', 'Unknown')
                     pos = ath.get('position', {}).get('abbreviation') or entry.get('position', {}).get('abbreviation') or 'M'
                     if pos.upper() in ['SUB', 'S', 'SUBSTITUTE', '']:
@@ -459,14 +419,14 @@ def parse_espn_summary(event_id, internal_slug, match_label="Match"):
                     else: pos_cat = get_position_category(pos)
                     
                     sub_in_flag = entry.get('subbedIn', False)
-                    sub_in = sub_in_flag or (game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
-                    sub_out = game_state != 'pre' and (str(ath.get('id')) in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
+                    sub_in = sub_in_flag or (game_state != 'pre' and (p_id in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
+                    sub_out = game_state != 'pre' and (p_id in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
                     
-                    p_stats = extract_player_live_stats(entry, core_stats_cache.get(str(ath.get('id'))))
+                    p_stats = extract_player_live_stats(core_stats_cache.get(p_id))
                     
                     if entry.get('didPlay') or entry.get('played') or sub_in or p_stats:
                         subs.append({"player": {
-                            "id": str(ath.get('id', '')), "name": p_name, "pos": pos.upper(), "category": pos_cat,
+                            "id": p_id, "name": p_name, "pos": pos.upper(), "category": pos_cat,
                             "number": str(entry.get('jersey', '')), "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
                             "live_stats": p_stats, "isSubbedIn": sub_in, "isSubbedOut": sub_out, "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                         }})
@@ -512,12 +472,11 @@ def parse_espn_summary(event_id, internal_slug, match_label="Match"):
         if isinstance(inj_raw, list) and len(inj_raw) == 2:
             summary_data["injuries"] = {"home": [i.get('athlete', {}).get('displayName', '') for i in inj_raw[0].get('injuries', [])], "away": [i.get('athlete', {}).get('displayName', '') for i in inj_raw[1].get('injuries', [])]}
 
-    except Exception as e: print(f"    ❌ EXCEPTION in parse_espn_summary for event {event_id}: {e}")
+    except Exception as e:
+        print(f"    ❌ EXCEPTION in parse_espn_summary for event {event_id}: {e}")
+
     return summary_data
 
-# ====================================================================
-# HTML GENERATORS
-# ====================================================================
 def shorten_player_name(full_name):
     if not full_name: return "Unknown"
     parts = str(full_name).strip().split(' ')
@@ -798,7 +757,6 @@ def fetch_espn_scores_for_date(date_str, old_html):
 
             league_flag = str(league_flag or "")
 
-            # Reuse saved card HTML for completed games
             if state == 'post' and old_html:
                 match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
                 saved_block = re.search(match_pattern, old_html, re.DOTALL)
@@ -811,11 +769,8 @@ def fetch_espn_scores_for_date(date_str, old_html):
                     })
                     continue
 
-            # Dynamically extract internal slug from event object (no hardcoded map)
-            internal_slug = get_internal_league_slug(event, comp, league_obj)
-
             should_fetch, _ = should_fetch_summary(event)
-            summary = parse_espn_summary(event_id, internal_slug=internal_slug) if should_fetch else {
+            summary = parse_espn_summary(event_id) if should_fetch else {
                 "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [], 
                 "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}, 
                 "injuries": {"home": [], "away": []}, 
@@ -1129,7 +1084,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 def generate_v2_index():
     print("\n==================================================")
-    print("⏳ STARTING SSG BUILD PIPELINE (NO JSON CACHE)")
+    print("⏳ STARTING SSG BUILD PIPELINE (PURE JSON API)")
     print("==================================================")
     
     os.makedirs('v2', exist_ok=True)
