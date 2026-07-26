@@ -534,7 +534,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
     return summary_data
 
 # ====================================================================
-# PYTHON STATIC HTML GENERATORS (Translating exactly what JS used to do)
+# PYTHON STATIC HTML GENERATORS
 # ====================================================================
 
 def shorten_player_name(full_name):
@@ -621,10 +621,18 @@ def get_center_column_html(data):
     if is_pre or not data.get('team_stats'): return f'<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">{"vs" if is_pre else f"{h_score} - {a_score}"}</div>'
     
     t_stats = data['team_stats']
-    try: h_color = '#' + data['homeLineup']['team']['colors']['player']['primary']
+    
+    # SAFE LINEUP CHECK (Fixed)
+    h_lineup = data.get('homeLineup') or {}
+    a_lineup = data.get('awayLineup') or {}
+    
+    try: h_color = '#' + h_lineup.get('team', {}).get('colors', {}).get('player', {}).get('primary')
     except: h_color = '#0d6efd'
-    try: a_color = '#' + data['awayLineup']['team']['colors']['player']['primary']
+    if h_color == '#': h_color = '#0d6efd'
+        
+    try: a_color = '#' + a_lineup.get('team', {}).get('colors', {}).get('player', {}).get('primary')
     except: a_color = '#dc3545'
+    if a_color == '#': a_color = '#dc3545'
 
     def build_bar(label, h_val, a_val, is_pct=False):
         tot = h_val + a_val
@@ -633,6 +641,7 @@ def get_center_column_html(data):
         return f'''<div class="text-center w-100 px-1"><div class="stat-label-tiny">{label}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: {h_pct}%; background-color: {h_color}; color: {get_contrast_color(h_color)};">{f"{h_val}%" if is_pct else h_val}</div><div class="stat-bar-segment" style="width: {a_pct}%; background-color: {a_color}; color: {get_contrast_color(a_color)};">{f"{a_val}%" if is_pct else a_val}</div></div></div>'''
 
     return f'''<div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">{h_score} - {a_score}</div>{build_bar("Possession", t_stats['home'].get('possession',0), t_stats['away'].get('possession',0), True)}{build_bar("Total Shots", t_stats['home'].get('total_shots',0), t_stats['away'].get('total_shots',0))}{build_bar("Shots on Target", t_stats['home'].get('shots_on_target',0), t_stats['away'].get('shots_on_target',0))}{build_bar("Corners", t_stats['home'].get('corners',0), t_stats['away'].get('corners',0))}<div class="text-center w-100 px-1 mt-1"><div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div><div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;"><span>🟨 {t_stats['home'].get('yellow_cards',0)} 🟥 {t_stats['home'].get('red_cards',0)}</span><span>🟨 {t_stats['away'].get('yellow_cards',0)} 🟥 {t_stats['away'].get('red_cards',0)}</span></div></div>'''
+
 
 def get_events_html(data):
     if not data.get('events'): return ''
@@ -701,9 +710,13 @@ def pre_render_game_card(data):
     flag_html = f'<img src="{data["league"]["flag"]}" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">' if data['league'].get('flag','').startswith('http') else f'<span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{data["league"].get("flag","🏆")}</span>'
     has_stats = bool(data.get('team_stats'))
     
-    try: h_col = data['homeLineup']['team']['colors']['player']['primary']
+    # SAFE LINEUP CHECK (Fixed)
+    h_lineup = data.get('homeLineup') or {}
+    a_lineup = data.get('awayLineup') or {}
+    
+    try: h_col = h_lineup.get('team', {}).get('colors', {}).get('player', {}).get('primary')
     except: h_col = None
-    try: a_col = data['awayLineup']['team']['colors']['player']['primary']
+    try: a_col = a_lineup.get('team', {}).get('colors', {}).get('player', {}).get('primary')
     except: a_col = None
 
     return f'''
@@ -822,7 +835,9 @@ def fetch_espn_scores_for_date(date_str, cache):
             matches.append(match_entry)
             if st == 'post': cache[event_id] = match_entry
 
-        except Exception as e: print(f"❌ ERROR parsing match item {event.get('id')}: {e}")
+        except Exception as e: 
+            print(f"❌ ERROR parsing match item {event.get('id')}: {e}")
+            traceback.print_exc()
 
     return matches
 
