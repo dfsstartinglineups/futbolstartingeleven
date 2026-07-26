@@ -396,7 +396,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
     summary_data = {
         "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [],
         "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
-        "injuries": {"home": [], "away": []}, "live_score": None
+        "injuries": {"home": [], "away": []}, "live_score": None, "status_obj": None
     }
 
     urls_to_try = []
@@ -422,6 +422,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
         header = data.get('header', {})
         header_comps = header.get('competitions', [{}])
         comp_head = header_comps[0] if isinstance(header_comps, list) and header_comps else {}
+        summary_data["status_obj"] = comp_head.get('status', {})
         status_type = comp_head.get('status', {}).get('type', {})
         game_state = status_type.get('state', 'pre')
 
@@ -810,12 +811,6 @@ def fetch_espn_scores_for_date(date_str, cache):
                 if not league_flag and 'friendly' in name_lower: league_flag = "🤝"
                 if not league_flag and 'cup' in name_lower: league_flag = "🏆"
 
-            if state == 'pre': status_short = 'NS'
-            elif state == 'post': status_short = 'FT'
-            else: status_short = status_type.get('shortDetail', 'LIVE')
-
-            elapsed_clock = extract_match_clock(status_obj)
-
             should_fetch, fetch_reason = should_fetch_summary(event)
 
             if should_fetch:
@@ -825,8 +820,19 @@ def fetch_espn_scores_for_date(date_str, cache):
                 summary = {
                     "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [],
                     "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
-                    "injuries": {"home": [], "away": []}, "live_score": None
+                    "injuries": {"home": [], "away": []}, "live_score": None, "status_obj": None
                 }
+
+            # Prefer the fresh status_obj from summary endpoint over stale scoreboard status
+            fresh_status = summary.get("status_obj") or status_obj
+            fresh_type = fresh_status.get('type', {})
+            state = fresh_type.get('state', state)
+
+            if state == 'pre': status_short = 'NS'
+            elif state == 'post': status_short = 'FT'
+            else: status_short = fresh_type.get('shortDetail', 'LIVE')
+
+            elapsed_clock = extract_match_clock(fresh_status)
 
             h_score = summary.get('live_score', {}).get('home') if summary.get('live_score') else home.get('score')
             a_score = summary.get('live_score', {}).get('away') if summary.get('live_score') else away.get('score')
