@@ -218,6 +218,47 @@ def sync_team_state(matches):
                     }
     return team_state, state_file
 
+def sync_player_state(matches):
+    state_file = 'v2/data/site_players.json'
+    os.makedirs('v2/data', exist_ok=True)
+    player_state = {}
+    if os.path.exists(state_file):
+        try:
+            with open(state_file, 'r', encoding='utf-8') as f:
+                player_state = json.load(f)
+        except: pass
+
+    for m in matches:
+        for side in ['home', 'away']:
+            lineup = m.get(side + 'Lineup')
+            if not lineup: continue
+            team_info = m['teams'][side]
+            
+            players = []
+            if lineup.get('startXI'): players.extend(lineup['startXI'])
+            if lineup.get('substitutes'): players.extend(lineup['substitutes'])
+            
+            for s_obj in players:
+                p = s_obj.get('player', {})
+                pid = str(p.get('id', ''))
+                pname = p.get('name', '')
+                if pid and pname:
+                    slug = create_slug(pname)
+                    if slug not in player_state:
+                        player_state[slug] = {
+                            "id": pid,
+                            "name": pname,
+                            "slug": slug,
+                            "team_name": team_info.get('name', ''),
+                            "team_slug": create_slug(team_info.get('name', '')),
+                            "position": p.get('pos', 'M'),
+                            "photo": p.get('photo', ''),
+                            "last_match_id": "",
+                            "last_updated": 0.0,
+                            "is_final": False
+                        }
+    return player_state, state_file
+
 def generate_nav_leagues_html(state):
     sorted_leagues = sorted(state.items(), key=lambda x: x[1]['name'].lower())
     html = ""
@@ -1030,7 +1071,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
     return matches
 
 # ====================================================================
-# HTML TEMPLATES (MAIN + LEAGUE + TEAM)
+# HTML TEMPLATES (MAIN + LEAGUE + TEAM + PLAYER)
 # ====================================================================
 BASE_HEADER = """
 <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-0" style="background-color: #212529; z-index: 1050;">
@@ -1640,6 +1681,159 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
+PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>{{ seo_title }}</title>
+    <meta name="description" content="{{ seo_desc }}">
+    <meta name="robots" content="index, follow">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow-x: hidden; }
+        .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .header-brand a { color: inherit; }
+        .header-brand span { text-shadow: none !important; background: linear-gradient(to bottom, #20c997 0%, #198754 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6)); }
+        .profile-sidebar-card { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); padding: 24px; text-align: center; }
+        .player-avatar-wrapper { position: relative; width: 110px; height: 110px; margin: 0 auto 15px auto; }
+        .player-avatar { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 4px solid #20c997; background-color: #f8f9fa; }
+        .sidebar-player-name { font-size: 1.4rem; font-weight: 800; color: #212529; margin-bottom: 2px; }
+        .sidebar-player-meta { font-size: 0.8rem; font-weight: 700; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px; }
+        .seo-link { color: inherit; text-decoration: none; transition: color 0.15s ease-in-out; }
+        .sidebar-player-meta .seo-link:hover { color: #20c997; }
+        .info-card { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); padding: 20px; margin-bottom: 24px; }
+        .info-card h3 { font-size: 1rem; font-weight: 800; color: #212529; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f1f3f5; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f8f9fa; }
+        .stat-row:last-child { border-bottom: none; }
+        .stat-label { color: #6c757d; font-size: 0.85rem; font-weight: 600; }
+        .stat-value { color: #212529; font-size: 0.9rem; font-weight: 700; text-align: right; }
+        .table-responsive { border-radius: 8px; overflow-x: auto; border: 1px solid #dee2e6; width: 100%; }
+        .table thead th { background-color: #212529; color: #fff; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; border: none; padding: 12px; white-space: nowrap; }
+        .table tbody td { font-size: 0.85rem; font-weight: 600; color: #495057; padding: 12px; vertical-align: middle; border-bottom: 1px solid #f1f3f5; white-space: nowrap; }
+        .table tbody tr:hover { background-color: #f8f9fa; }
+        .big-stat-box { background: #f8f9fa; border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #e9ecef; }
+        .big-stat-value { font-size: 1.6rem; font-weight: 900; color: #198754; line-height: 1; }
+        .big-stat-label { font-size: 0.7rem; font-weight: 700; color: #6c757d; text-transform: uppercase; margin-top: 5px; letter-spacing: 0.5px; }
+        @keyframes pulse-green { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); } }
+        .live-dot { display: inline-block; width: 8px; height: 8px; background-color: #20c997; border-radius: 50%; margin-right: 6px; margin-bottom: 1px; animation: pulse-green 2s infinite; }
+        @media (max-width: 576px) { .header-brand { font-size: 1.5rem; } }
+    </style>
+</head>
+<body>
+
+""" + BASE_HEADER + """
+
+    <div class="container mb-5 mt-4">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="profile-sidebar-card">
+                    <div class="player-avatar-wrapper">
+                        <img src="{{ player_photo }}" alt="{{ player_name }}" class="player-avatar">
+                    </div>
+                    <div class="sidebar-player-name">{{ player_name }}</div>
+                    <div class="sidebar-player-meta">
+                        <a href="/v2/teams/{{ team_slug }}/lineup/index.html" class="seo-link fw-bold">{{ team_name }}</a> • <span>{{ position }}</span>
+                        <div class="mt-3 d-flex justify-content-center align-items-center gap-2">
+                            <span class="badge {{ badge_class }} py-2 px-3 fw-bold shadow-sm" style="font-size: 0.85rem; border-radius: 6px;">{{ badge_text }}</span>
+                        </div>
+                    </div>
+                    <hr style="border-color: #dee2e6; opacity: 1; margin: 15px 0;">
+                    <div class="text-start">
+                        <div class="stat-row"><span class="stat-label">Team</span><span class="stat-value">{{ team_name }}</span></div>
+                        <div class="stat-row"><span class="stat-label">Position</span><span class="stat-value">{{ position }}</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div id="live-match-widget" class="info-card border-dark" style="border-left: 5px solid #212529; margin-bottom: 20px;">
+                    {{ live_widget_html | safe }}
+                </div>
+
+                <div class="info-card">
+                    <h3>Season Overview</h3>
+                    <div class="row g-3">
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">-</div><div class="big-stat-label">Matches</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">-</div><div class="big-stat-label">Goals</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">-</div><div class="big-stat-label">Assists</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">-</div><div class="big-stat-label">Pass Acc</div></div></div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>Performance by Competition</h3>
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Competition</th>
+                                    <th class="text-center">MP</th>
+                                    <th class="text-center">Min</th>
+                                    <th class="text-center">Gls</th>
+                                    <th class="text-center">Ast</th>
+                                    <th class="text-center">Sh (On)</th>
+                                    <th class="text-center">Pass Acc</th>
+                                    <th class="text-center">Key P</th>
+                                    <th class="text-center">Tkl(Int) / Sav</th>
+                                    <th class="text-center">Yel/Red</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="10" class="text-center text-muted fst-italic py-3">Detailed season data currently unavailable.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('leagueSearchNavInput')?.addEventListener('input', function(e) {
+            const text = e.target.value.toLowerCase();
+            document.querySelectorAll('#leagueSearchList li').forEach(li => {
+                const leagueName = li.textContent.toLowerCase();
+                li.style.display = leagueName.includes(text) ? '' : 'none';
+            });
+        });
+    });
+    
+    async function pollAndUpdateDOM() {
+        try {
+            const res = await fetch(window.location.href, { cache: 'no-store' });
+            if (!res.ok) return;
+            const htmlText = await res.text();
+            
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(htmlText, 'text/html');
+            
+            const currentWidget = document.getElementById('live-match-widget');
+            const newWidget = newDoc.getElementById('live-match-widget');
+            if (currentWidget && newWidget && currentWidget.innerHTML !== newWidget.innerHTML) {
+                currentWidget.innerHTML = newWidget.innerHTML;
+            }
+            
+            const currentBadge = document.querySelector('.sidebar-player-meta .badge');
+            const newBadge = newDoc.querySelector('.sidebar-player-meta .badge');
+            if (currentBadge && newBadge && currentBadge.outerHTML !== newBadge.outerHTML) {
+                currentBadge.outerHTML = newBadge.outerHTML;
+            }
+        } catch (err) {
+            console.error("DOM update failed:", err);
+        }
+    }
+    setInterval(pollAndUpdateDOM, 30000);
+</script>
+</body>
+</html>
+"""
+
 def build_single_league_page(league_slug, league_data, matches, is_today, nav_html, today_date_str):
     league_dir = os.path.join('v2', 'leagues', league_slug)
     os.makedirs(league_dir, exist_ok=True)
@@ -1727,12 +1921,174 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
     with open(os.path.join(team_dir, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(output)
 
+
+def build_single_player_page(player_slug, player_data, match_data, is_home, nav_html, today_date_str):
+    player_dir = os.path.join('v2', 'players', player_slug)
+    os.makedirs(player_dir, exist_ok=True)
+    
+    p_name = player_data.get('name', 'Player')
+    t_name = player_data.get('team_name', 'Team')
+    t_slug = player_data.get('team_slug', '')
+    p_pos = player_data.get('position', 'M')
+    p_photo = player_data.get('photo') or 'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png'
+    
+    status_short = match_data['fixture']['status']['short']
+    is_pre = status_short in ['NS', 'TBD']
+    is_final = status_short in ['FT', 'AET', 'PEN']
+
+    opp_side = 'away' if is_home else 'home'
+    team_side = 'home' if is_home else 'away'
+    opp_name = match_data['teams'][opp_side]['name']
+    
+    if is_final:
+        seo_title = f"{p_name} - Lineup Status, Stats & Profile | Futbol Starting Eleven"
+        seo_desc = f"View performance stats and season overview for {p_name} ({t_name})."
+    else:
+        seo_title = f"Is {p_name} Starting Today? Lineup Status & Stats | Futbol Starting Eleven"
+        seo_desc = f"Is {p_name} starting today for {t_name}? Get real-time starting lineup status, match performance stats, and position updates."
+        
+    lineup = match_data.get(team_side + 'Lineup') or {}
+    p_obj = None
+    p_status = 'not_in_squad'
+    
+    for s in lineup.get('startXI', []):
+        if str(s.get('player', {}).get('id')) == str(player_data['id']):
+            p_obj = s.get('player', {})
+            p_status = 'subbed_out' if p_obj.get('isSubbedOut') else 'on_pitch'
+            break
+            
+    if not p_obj:
+        for s in lineup.get('substitutes', []):
+            if str(s.get('player', {}).get('id')) == str(player_data['id']):
+                p_obj = s.get('player', {})
+                if p_obj.get('isSubbedIn'):
+                    p_status = 'subbed_out' if p_obj.get('isSubbedOut') else 'on_pitch'
+                else:
+                    p_status = 'bench'
+                break
+                
+    has_lineups = bool(lineup.get('startXI'))
+    if p_status == 'not_in_squad' and not has_lineups:
+        p_status = 'pending'
+
+    badge_class = "bg-secondary"
+    badge_text = "Lineup Pending"
+    if p_status == 'on_pitch':
+        badge_class = "bg-success"
+        badge_text = "In the Starting XI" if is_pre else "On Field"
+    elif p_status == 'subbed_out':
+        badge_class = "bg-secondary text-white"
+        badge_text = "Off Field"
+    elif p_status == 'bench':
+        badge_class = "bg-warning text-dark"
+        badge_text = "Bench"
+    elif p_status == 'not_in_squad':
+        badge_class = "bg-danger"
+        badge_text = "Not in Squad"
+
+    player_stats_html = ""
+    if p_obj and not is_pre:
+        ls = p_obj.get('live_stats', {})
+        cat = p_obj.get('category', 'M')
+        
+        grps = {
+            'F': {'s': ['G','A','xG','SOG'], 'k': ['goals','assists','xg','shots_on_target']},
+            'M': {'s': ['G','A','PAS','DUEL'], 'k': ['goals','assists','accurate_passes','duels_won']},
+            'D': {'s': ['G','DINT','TK','DUEL'], 'k': ['goals','dint','tackles','duels_won']},
+            'G': {'s': ['SV','GA','xGA','SHF'], 'k': ['saves','conceded','xga','shots_faced']}
+        }
+        g = grps.get(cat, grps['M'])
+        v1, v2, v3, v4 = ls.get(g['k'][0],0), ls.get(g['k'][1],0), ls.get(g['k'][2],0), ls.get(g['k'][3],0)
+        
+        player_stats_html = f'''
+        <div class="mt-2 d-flex justify-content-end">
+            <div class="d-flex align-items-center bg-light border rounded px-3 py-1 gap-3 shadow-sm">
+                <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">MIN</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">-</div></div>
+                <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">{g['s'][0]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">{v1}</div></div>
+                <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">{g['s'][1]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">{v2}</div></div>
+                <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">{g['s'][2]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">{v3}</div></div>
+                <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">{g['s'][3]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">{v4}</div></div>
+                <div class="border-start" style="height: 20px;"></div>
+                <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">RTG</div><div class="fw-bold text-success" style="font-size: 0.85rem;">-</div></div>
+            </div>
+        </div>
+        '''
+
+    header_class = "text-dark"
+    live_indicator = ""
+    elapsed = match_data['fixture']['status'].get('elapsed', '')
+    
+    if not is_pre and not is_final:
+        display_min = 'HT' if status_short == 'HT' else f"{elapsed}'"
+        header_text = f"LIVE: {display_min}"
+        header_class = "text-success"
+        live_indicator = '<span class="live-dot"></span>'
+    elif is_final:
+        header_text = "Match Finished"
+    else:
+        try:
+            dt = datetime.fromisoformat(match_data['fixture']['date'].replace('Z', '+00:00'))
+            dt_local = dt.astimezone(pytz.timezone('America/New_York'))
+            time_str = dt_local.strftime("%I:%M%p").lstrip('0').lower()
+            header_text = f"{dt_local.strftime('%a')} {time_str}"
+        except:
+            header_text = "Upcoming"
+
+    home_score = match_data['goals']['home']
+    away_score = match_data['goals']['away']
+    score_html = '<span class="mx-2 text-muted">vs</span>' if is_pre else f'<span class="mx-3 fw-bold text-dark" style="font-size: 1.3rem;">{home_score} - {away_score}</span>'
+
+    live_widget_html = f'''
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3" style="width: 100%;">
+        <div class="d-flex flex-column align-items-start">
+            <span class="fw-bold {header_class} mb-1" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center;">
+                {live_indicator} {header_text}
+            </span>
+            <div class="d-flex align-items-center" style="font-size: 1rem; font-weight: 700;">
+                <a href="/v2/teams/{create_slug(match_data['teams']['home']['name'])}/lineup/index.html" class="text-decoration-none text-dark" style="color: inherit;">
+                    <img src="{match_data['teams']['home']['logo']}" width="18" height="18" class="me-1" style="object-fit:contain;">
+                    {match_data['teams']['home']['name']} 
+                </a>
+                {score_html} 
+                <a href="/v2/teams/{create_slug(match_data['teams']['away']['name'])}/lineup/index.html" class="text-decoration-none text-dark" style="color: inherit;">
+                    <img src="{match_data['teams']['away']['logo']}" width="18" height="18" class="me-1" style="object-fit:contain;">
+                    {match_data['teams']['away']['name']}
+                </a>
+            </div>
+        </div>
+        <div class="text-end">
+            <div class="d-flex justify-content-end align-items-center gap-2">
+                <a href="/v2/teams/{t_slug}/lineup/index.html" class="text-decoration-none fw-bold" style="font-size: 0.7rem; color: #6c757d;">View Lineup &rarr;</a>
+            </div>
+            {player_stats_html}
+        </div>
+    </div>
+    '''
+
+    template = Template(PLAYER_HTML_TEMPLATE)
+    output = template.render(
+        seo_title=seo_title,
+        seo_desc=seo_desc,
+        player_photo=p_photo,
+        player_name=p_name,
+        team_name=t_name,
+        team_slug=t_slug,
+        position=p_pos,
+        live_widget_html=live_widget_html,
+        nav_leagues_html=nav_html,
+        badge_class=badge_class,
+        badge_text=badge_text.upper()
+    )
+    
+    with open(os.path.join(player_dir, 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(output)
+
 # ====================================================================
 # MAIN GENERATOR PIPELINE
 # ====================================================================
 def generate_v2_index():
     print("\n==================================================")
-    print("⏳ STARTING SSG BUILD PIPELINE & LEAGUE/TEAM GENERATOR")
+    print("⏳ STARTING SSG BUILD PIPELINE & LEAGUE/TEAM/PLAYER GENERATOR")
     print("==================================================")
     
     os.makedirs('v2', exist_ok=True)
@@ -1752,9 +2108,10 @@ def generate_v2_index():
 
     all_active_matches = raw_matches_by_day['yesterday'] + raw_matches_by_day['today'] + raw_matches_by_day['tomorrow']
 
-    # 2. Sync League & Team State & Generate Global HTML Dropdown
+    # 2. Sync Registries & Generate Global HTML Dropdown
     state, state_file = sync_league_state(all_active_matches)
     team_state, team_state_file = sync_team_state(raw_matches_by_day['today'])
+    player_state, player_state_file = sync_player_state(raw_matches_by_day['today'])
     nav_html = generate_nav_leagues_html(state)
     
     # 3. Generate Active League Pages instantly from memory
@@ -1779,7 +2136,6 @@ def generate_v2_index():
             
             if is_today_treatment:
                 today_matches_for_league = [m for m in raw_matches_by_day['today'] if m.get('league', {}).get('slug') == slug]
-                # LEAGUE PAGES
                 build_single_league_page(
                     slug, state[slug], today_matches_for_league, 
                     is_today=True, nav_html=nav_html, 
@@ -1793,38 +2149,54 @@ def generate_v2_index():
                 )
             state[slug]['last_updated'] = datetime.now().timestamp()
 
-    # 4. Update Team Pages for Today's schedule
-    print(f"🔄 Updating Team Lineup Pages for Today's Matches...")
+    # 4. Update Team & Player Pages for Today's schedule
+    print(f"🔄 Updating Team Lineups and Player Profiles for Today's Matches...")
     for m in raw_matches_by_day['today']:
         match_id = str(m['fixture']['id'])
         status_short = m['fixture']['status']['short']
         
         for side in ['home', 'away']:
+            # TEAM GENERATION
             team_info = m['teams'][side]
-            slug = create_slug(team_info['name'])
-            if slug in team_state:
-                t_data = team_state[slug]
+            t_slug = create_slug(team_info['name'])
+            if t_slug in team_state:
+                t_data = team_state[t_slug]
                 
-                # If the team was marked as final previously and this is still the same game, skip
-                if t_data.get('last_match_id') == match_id and t_data.get('is_final'):
-                    continue
+                if not (t_data.get('last_match_id') == match_id and t_data.get('is_final')):
+                    build_team_lineup_page(
+                        t_slug, t_data, m, 
+                        is_home=(side=='home'), 
+                        nav_html=nav_html, 
+                        today_date_str=day_info["display"]["today"]
+                    )
+                    t_data['last_updated'] = datetime.now().timestamp()
+                    t_data['last_match_id'] = match_id
+                    t_data['is_final'] = (status_short in ['FT', 'AET', 'PEN'])
+
+            # PLAYER GENERATION
+            lineup = m.get(side + 'Lineup')
+            if lineup:
+                roster = []
+                if lineup.get('startXI'): roster.extend(lineup['startXI'])
+                if lineup.get('substitutes'): roster.extend(lineup['substitutes'])
+                
+                for s_obj in roster:
+                    p_info = s_obj.get('player', {})
+                    p_slug = create_slug(p_info.get('name', ''))
                     
-                build_team_lineup_page(
-                    slug, t_data, m, 
-                    is_home=(side=='home'), 
-                    nav_html=nav_html, 
-                    today_date_str=day_info["display"]["today"]
-                )
-                
-                # Update Tracking
-                t_data['last_updated'] = datetime.now().timestamp()
-                t_data['last_match_id'] = match_id
-                
-                # Rollover check
-                if status_short in ['FT', 'AET', 'PEN']:
-                    t_data['is_final'] = True
-                else:
-                    t_data['is_final'] = False
+                    if p_slug in player_state:
+                        p_data = player_state[p_slug]
+                        
+                        if not (p_data.get('last_match_id') == match_id and p_data.get('is_final')):
+                            build_single_player_page(
+                                p_slug, p_data, m, 
+                                is_home=(side=='home'), 
+                                nav_html=nav_html, 
+                                today_date_str=day_info["display"]["today"]
+                            )
+                            p_data['last_updated'] = datetime.now().timestamp()
+                            p_data['last_match_id'] = match_id
+                            p_data['is_final'] = (status_short in ['FT', 'AET', 'PEN'])
 
     # 5. Generate ONE Dormant League (14-Day Trickle Round Robin)
     dormant_leagues = [s for s, d in state.items() if s not in active_slugs and d.get('pill')]
@@ -1851,10 +2223,9 @@ def generate_v2_index():
         state[target_slug]['last_updated'] = datetime.now().timestamp()
 
     # Save Registry States
-    with open(state_file, 'w', encoding='utf-8') as f: 
-        json.dump(state, f, indent=2, ensure_ascii=False)
-    with open(team_state_file, 'w', encoding='utf-8') as f:
-        json.dump(team_state, f, indent=2, ensure_ascii=False)
+    with open(state_file, 'w', encoding='utf-8') as f: json.dump(state, f, indent=2, ensure_ascii=False)
+    with open(team_state_file, 'w', encoding='utf-8') as f: json.dump(team_state, f, indent=2, ensure_ascii=False)
+    with open(player_state_file, 'w', encoding='utf-8') as f: json.dump(player_state, f, indent=2, ensure_ascii=False)
 
     # 6. Build Main Global Homepage
     leagues_by_day = {
@@ -1867,8 +2238,8 @@ def generate_v2_index():
     print(f"  ├─ Yesterday: {len(raw_matches_by_day['yesterday'])} matches")
     print(f"  ├─ Today:     {len(raw_matches_by_day['today'])} matches")
     print(f"  └─ Tomorrow:  {len(raw_matches_by_day['tomorrow'])} matches")
-    print(f"  ├─ Active League Pages Generated: {len(active_slugs)}")
-    print(f"  ├─ Team Lineup Pages Processed: {len(raw_matches_by_day['today']) * 2}")
+    print(f"  ├─ League Pages Generated: {len(active_slugs)}")
+    print(f"  ├─ Team/Player Profiles Generated for Today's active rosters")
     print(f"  └─ Dormant Pages Synced: 1 (Round Robin)")
     print(f"==================================================")
     
