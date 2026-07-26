@@ -890,18 +890,26 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
         .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
 
-        /* Card Glow Animations */
-        @keyframes glowGoal { 0% { border-color: #20c997; box-shadow: 0 0 25px rgba(32, 201, 151, 0.9); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
-        .glow-goal { animation: glowGoal 4s ease-out !important; border: 2px solid #20c997 !important; }
+        /* Card Glow Animations matching script.js */
+        @keyframes glowGoal { 0% { border-color: #20c997; box-shadow: 0 0 25px rgba(32, 201, 151, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerGoal { 0% { background-color: #d1e7dd !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-goal { animation: glowGoal 4s ease-out !important; border: 3px solid #20c997 !important; position: relative !important; z-index: 10 !important; }
+        .glow-goal .p-2.pb-1 { animation: headerGoal 4s ease-out !important; }
 
-        @keyframes glowRed { 0% { border-color: #dc3545; box-shadow: 0 0 25px rgba(220, 53, 69, 0.9); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
-        .glow-red-card { animation: glowRed 4s ease-out !important; border: 2px solid #dc3545 !important; }
+        @keyframes glowRed { 0% { border-color: #dc3545; box-shadow: 0 0 25px rgba(220, 53, 69, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerRed { 0% { background-color: #f8d7da !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-red-card { animation: glowRed 4s ease-out !important; border: 3px solid #dc3545 !important; position: relative !important; z-index: 10 !important; }
+        .glow-red-card .p-2.pb-1 { animation: headerRed 4s ease-out !important; }
 
-        @keyframes glowYellow { 0% { border-color: #ffc107; box-shadow: 0 0 25px rgba(255, 193, 7, 0.9); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
-        .glow-yellow-card { animation: glowYellow 4s ease-out !important; border: 2px solid #ffc107 !important; }
+        @keyframes glowYellow { 0% { border-color: #ffc107; box-shadow: 0 0 25px rgba(255, 193, 7, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerYellow { 0% { background-color: #fff3cd !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-yellow-card { animation: glowYellow 4s ease-out !important; border: 3px solid #ffc107 !important; position: relative !important; z-index: 10 !important; }
+        .glow-yellow-card .p-2.pb-1 { animation: headerYellow 4s ease-out !important; }
 
-        @keyframes glowSub { 0% { border-color: #212529; box-shadow: 0 0 25px rgba(33, 37, 41, 0.7); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
-        .glow-subst { animation: glowSub 4s ease-out !important; border: 2px solid #212529 !important; }
+        @keyframes glowSub { 0% { border-color: #212529; box-shadow: 0 0 25px rgba(33, 37, 41, 0.6); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerSub { 0% { background-color: #e9ecef !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-subst { animation: glowSub 4s ease-out !important; border: 3px solid #212529 !important; position: relative !important; z-index: 10 !important; }
+        .glow-subst .p-2.pb-1 { animation: headerSub 4s ease-out !important; }
     </style>
 </head>
 <body>
@@ -1290,15 +1298,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         else filtered.forEach(item => container.appendChild(createGameCard(item)));
     }
 
-    // Trigger glowing border animation on a card
+    // Trigger glowing border & header animation on a card
     function triggerCardGlow(fixId, eventType) {
         const card = document.getElementById(`card-${fixId}`);
         if (!card) return;
 
+        const typeLower = (eventType || '').toLowerCase();
         let glowClass = 'glow-goal';
-        if (eventType === 'Red Card') glowClass = 'glow-red-card';
-        else if (eventType === 'Yellow Card') glowClass = 'glow-yellow-card';
-        else if (eventType === 'subst') glowClass = 'glow-subst';
+        if (typeLower.includes('red')) glowClass = 'glow-red-card';
+        else if (typeLower.includes('yellow')) glowClass = 'glow-yellow-card';
+        else if (typeLower.includes('sub')) glowClass = 'glow-subst';
+        else if (typeLower.includes('goal')) glowClass = 'glow-goal';
 
         card.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
         void card.offsetWidth; // Force CSS reflow
@@ -1313,16 +1323,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     function detectNewEventsAndGlow(oldEvents, newEvents, fixId) {
         if (!newEvents || newEvents.length === 0) return;
         
-        const knownKeys = new Set((oldEvents || []).map(e => `${e.time}_${e.type}_${e.player}`));
-        const freshEvents = newEvents.filter(e => !knownKeys.has(`${e.time}_${e.type}_${e.player}`));
+        const knownKeys = new Set((oldEvents || []).map(e => `${e.time}_${e.type}_${e.player}_${e.player_out || ''}`));
+        const freshEvents = newEvents.filter(e => !knownKeys.has(`${e.time}_${e.type}_${e.player}_${e.player_out || ''}`));
 
         if (freshEvents.length === 0) return;
 
-        // Rank event priority: Goal > Red Card > Yellow Card > Substitution
-        const priority = { 'Goal': 4, 'Red Card': 3, 'Yellow Card': 2, 'subst': 1 };
-        freshEvents.sort((a, b) => (priority[b.type] || 0) - (priority[a.type] || 0));
-
-        triggerCardGlow(fixId, freshEvents[0].type);
+        // Always trigger glow for the newest event chronological in the log (last item)
+        const latestFreshEvent = freshEvents[freshEvents.length - 1];
+        triggerCardGlow(fixId, latestFreshEvent.type);
     }
 
     // Silent DOM Updater
