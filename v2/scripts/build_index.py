@@ -1025,14 +1025,20 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const activePartition = document.getElementById('partition-' + ACTIVE_DAY);
         if (!activePartition) return;
 
-        const headers = activePartition.querySelectorAll('.league-header');
+        // Filter visible headers and sort them alphabetically A-Z
+        const headers = Array.from(activePartition.querySelectorAll('.league-header'))
+            .filter(h => !h.classList.contains('d-none'))
+            .sort((a, b) => {
+                const nameA = (a.getAttribute('data-league-name') || '').toLowerCase();
+                const nameB = (b.getAttribute('data-league-name') || '').toLowerCase();
+                return nameA.localeCompare(nameB);
+            });
+
         headers.forEach(h => {
-            if (!h.classList.contains('d-none')) {
-                const opt = document.createElement('option');
-                opt.value = h.id;
-                opt.textContent = h.getAttribute('data-league-name') || 'League';
-                select.appendChild(opt);
-            }
+            const opt = document.createElement('option');
+            opt.value = h.id;
+            opt.textContent = h.getAttribute('data-league-name') || 'League';
+            select.appendChild(opt);
         });
     }
 
