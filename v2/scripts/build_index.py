@@ -153,7 +153,7 @@ def create_slug(name):
     slug = re.sub(r'[\s-]+', '-', slug)
     return slug.strip('-')
 
-def sync_league_state(today_matches):
+def sync_league_state(all_active_matches):
     state_file = 'v2/data/site_pages.json'
     os.makedirs('v2/data', exist_ok=True)
     state = {}
@@ -171,8 +171,8 @@ def sync_league_state(today_matches):
         if slug not in state:
             state[slug] = {"name": name.title(), "pill": "", "last_updated": 0.0, "flag": flag_url}
 
-    # 3. Auto-discover from today's matches and self-heal missing pills
-    for m in today_matches:
+    # 3. Auto-discover from ALL active matches (Yesterday, Today, Tomorrow) and self-heal missing pills
+    for m in all_active_matches:
         l_info = m.get('league', {})
         slug = l_info.get('slug')
         pill = l_info.get('pill', '')
@@ -654,7 +654,7 @@ def get_center_column_html(data):
         tot = h_val + a_val
         h_pct = (h_val / tot * 100) if tot > 0 else 50
         a_pct = (a_val / tot * 100) if tot > 0 else 50
-        return f'''<div class="text-center w-100 px-1"><div class="stat-label-tiny">{label}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: {h_pct}%; background-color: {h_color}; color: {getContrastColor(h_color)};">{f"{h_val}%" if is_pct else h_val}</div><div class="stat-bar-segment" style="width: {a_pct}%; background-color: {a_color}; color: {getContrastColor(a_color)};">{f"{a_val}%" if is_pct else a_val}</div></div></div>'''
+        return f'''<div class="text-center w-100 px-1"><div class="stat-label-tiny">{label}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: {h_pct}%; background-color: {h_color}; color: {get_contrast_color(h_color)};">{f"{h_val}%" if is_pct else h_val}</div><div class="stat-bar-segment" style="width: {a_pct}%; background-color: {a_color}; color: {get_contrast_color(a_color)};">{f"{a_val}%" if is_pct else a_val}</div></div></div>'''
 
     return f'''<div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">{h_score} - {a_score}</div>{build_bar("Possession", t_stats['home'].get('possession',0), t_stats['away'].get('possession',0), True)}{build_bar("Total Shots", t_stats['home'].get('total_shots',0), t_stats['away'].get('total_shots',0))}{build_bar("Shots on Target", t_stats['home'].get('shots_on_target',0), t_stats['away'].get('shots_on_target',0))}{build_bar("Corners", t_stats['home'].get('corners',0), t_stats['away'].get('corners',0))}<div class="text-center w-100 px-1 mt-1"><div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div><div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;"><span>🟨 {t_stats['home'].get('yellow_cards',0)} 🟥 {t_stats['home'].get('red_cards',0)}</span><span>🟨 {t_stats['away'].get('yellow_cards',0)} 🟥 {t_stats['away'].get('red_cards',0)}</span></div></div>'''
 
@@ -1166,7 +1166,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     };
 
     function shortenPlayerName(fn) { if (!fn) return "Unknown"; const p = fn.split(' '); return p.length === 1 ? fn : `${p[0].charAt(0).toUpperCase()}. ${p.slice(1).join(' ')}`; }
-    function getContrastColor(h) { if (!h) return '#ffffff'; h = h.replace('#', ''); const y = ((parseInt(h.substr(0,2),16)*299) + (parseInt(h.substr(2,2),16)*587) + (parseInt(h.substr(4,2),16)*114))/1000; return y >= 128 ? '#000000' : '#ffffff'; }
     
     function getTimeBadgeHtml(data) {
         const s = data.fixture.status.short, e = data.fixture.status.elapsed;
@@ -1208,10 +1207,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     function getCenterColumnHtml(data) {
         if (['NS','TBD','PST','CANC','ABD'].includes(data.fixture.status.short) || !data.team_stats) return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${data.goals?.home??0} - ${data.goals?.away??0}</div>`;
         const ts = data.team_stats;
-        const hc = (data.homeLineup?.team?.colors?.player?.primary) ? `#${data.homeLineup.team.colors.player.primary.replace('#','')}` : '#0d6efd';
-        const ac = (data.awayLineup?.team?.colors?.player?.primary) ? `#${data.awayLineup.team.colors.player.primary.replace('#','')}` : '#dc3545';
-        const bb = (lbl, hv, av, p) => `<div class="text-center w-100 px-1"><div class="stat-label-tiny">${lbl}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: ${hv+av===0?50:hv/(hv+av)*100}%; background-color: ${hc}; color: ${getContrastColor(hc)};">${p?hv+'%':hv}</div><div class="stat-bar-segment" style="width: ${hv+av===0?50:av/(hv+av)*100}%; background-color: ${ac}; color: ${getContrastColor(ac)};">${p?av+'%':av}</div></div></div>`;
-        return `<div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals?.home??0} - ${data.goals?.away??0}</div>${bb("Possession", ts.home?.possession??0, ts.away?.possession??0, true)}${bb("Total Shots", ts.home?.total_shots??0, ts.away?.total_shots??0)}${bb("Shots on Target", ts.home?.shots_on_target??0, ts.away?.shots_on_target??0)}${bb("Corners", ts.home?.corners??0, ts.away?.corners??0)}<div class="text-center w-100 px-1 mt-1"><div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div><div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;"><span>🟨 ${ts.home?.yellow_cards??0} 🟥 ${ts.home?.red_cards??0}</span><span>🟨 ${ts.away?.yellow_cards??0} 🟥 ${ts.away?.red_cards??0}</span></div></div>`;
+        return `<div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals?.home??0} - ${data.goals?.away??0}</div>`;
     }
     
     function getEventsHtml(data) {
@@ -1283,7 +1279,20 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#212529">
+    
     <title>{{ seo_title }}</title>
+    <meta name="description" content="{{ seo_desc }}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ seo_title }}">
+    <meta property="og:description" content="{{ seo_desc }}">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ seo_title }}">
+    <meta name="twitter:description" content="{{ seo_desc }}">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -1412,10 +1421,12 @@ def build_single_league_page(league_slug, league_data, matches, is_today, nav_ht
     if is_today:
         seo_title = f"Today's {league_name} Starting Lineups & Live Scores - {today_date_str}"
         page_h1 = f"Today's {league_name} Matches - {today_date_str}"
+        seo_desc = f"Get real-time starting lineups, live scores, injuries, and betting odds for today's {league_name} matches on {today_date_str}."
         grouped_matches = {"Today": matches}
     else:
         seo_title = f"{league_name} Upcoming Match Schedule & Odds"
         page_h1 = f"{league_name} Upcoming Matches & Schedule"
+        seo_desc = f"View the latest results, upcoming 14-day schedule, betting odds, and match info for the {league_name}."
         grouped_matches = {}
         for m in matches:
             date_raw = m['fixture'].get('date', '')
@@ -1433,6 +1444,7 @@ def build_single_league_page(league_slug, league_data, matches, is_today, nav_ht
     template = Template(LEAGUE_HTML_TEMPLATE)
     output = template.render(
         seo_title=seo_title,
+        seo_desc=seo_desc,
         page_h1=page_h1,
         league_name=league_name,
         is_today=is_today,
@@ -1466,43 +1478,46 @@ def generate_v2_index():
         "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], old_html)
     }
 
+    all_active_matches = raw_matches_by_day['yesterday'] + raw_matches_by_day['today'] + raw_matches_by_day['tomorrow']
+
     # 2. Sync League Registry & Generate Global HTML Dropdown
-    state, state_file = sync_league_state(raw_matches_by_day['today'])
+    state, state_file = sync_league_state(all_active_matches)
     nav_html = generate_nav_leagues_html(state)
     
-    # 3. Generate Active League Pages instantly from memory (Yesterday, Today, Tomorrow)
+    # 3. Generate Active League Pages instantly from memory
     combined_active_leagues = {}
     
-    # Collect all matches across all 3 active days
-    for day_key in ['yesterday', 'today', 'tomorrow']:
-        for m in raw_matches_by_day[day_key]:
-            slug = m.get('league', {}).get('slug')
-            if not slug: continue
-            if slug not in combined_active_leagues:
-                combined_active_leagues[slug] = []
-            
-            # Deduplicate matches (in case an event spans midnight or ESPN returns it twice)
-            if m['fixture']['id'] not in [x['fixture']['id'] for x in combined_active_leagues[slug]]:
-                combined_active_leagues[slug].append(m)
+    for m in all_active_matches:
+        slug = m.get('league', {}).get('slug')
+        if not slug: continue
+        if slug not in combined_active_leagues:
+            combined_active_leagues[slug] = []
+        if m['fixture']['id'] not in [x['fixture']['id'] for x in combined_active_leagues[slug]]:
+            combined_active_leagues[slug].append(m)
 
-    # Determine which leagues get the "Today" treatment
     today_slugs = {lg['slug'] for lg in group_and_sort_matches_by_league(raw_matches_by_day['today'])}
     active_slugs = set()
     
     for slug, matches in combined_active_leagues.items():
         active_slugs.add(slug)
         if slug in state:
-            # Sort matches chronologically
             matches.sort(key=lambda x: (x.get('fixture') or {}).get('date', '9999-99-99') or '9999-99-99')
-            
-            # Apply the "Today" treatment only if they have a match today
             is_today_treatment = slug in today_slugs
             
-            build_single_league_page(
-                slug, state[slug], matches, 
-                is_today=is_today_treatment, nav_html=nav_html, 
-                today_date_str=day_info["display"]["today"]
-            )
+            if is_today_treatment:
+                # SEO FIX: Pass ONLY today's matches to the page builder
+                today_matches_for_league = [m for m in raw_matches_by_day['today'] if m.get('league', {}).get('slug') == slug]
+                build_single_league_page(
+                    slug, state[slug], today_matches_for_league, 
+                    is_today=True, nav_html=nav_html, 
+                    today_date_str=day_info["display"]["today"]
+                )
+            else:
+                build_single_league_page(
+                    slug, state[slug], matches, 
+                    is_today=False, nav_html=nav_html, 
+                    today_date_str=""
+                )
             state[slug]['last_updated'] = datetime.now().timestamp()
 
     # 4. Generate ONE Dormant League (14-Day Trickle Round Robin)
