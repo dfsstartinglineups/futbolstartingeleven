@@ -632,8 +632,12 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     ev_type = "Goal"
                 elif is_sub:
                     ev_type = "subst"
-                else:
-                    ev_type = "Card"
+                elif is_card:
+                    # Capture red cards (including "Yellowred Card" / second yellow)
+                    if "red" in ev_text_lower:
+                        ev_type = "Red Card"
+                    else:
+                        ev_type = "Yellow Card"
 
                 clock_text = ev.get('clock', {}).get('displayValue', "0'")
                 team_id = str(ev.get('team', {}).get('id', ''))
@@ -990,9 +994,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         </div>`;
             }
         } else {
-            let icon = lastEv.type === 'Goal' ? '⚽' : '🟨';
+            let icon = '🟨';
+            let textColor = 'text-warning';
+            
+            if (lastEv.type === 'Goal') {
+                icon = '⚽';
+                textColor = 'text-success';
+            } else if (lastEv.type === 'Red Card') {
+                icon = '🟥';
+                textColor = 'text-danger';
+            }
+            
             let playerName = shortenPlayerName(lastEv.player || teamName);
-            let textColor = lastEv.type === 'Goal' ? 'text-success' : 'text-warning';
             if (isRibbon) {
                 let assistHtml = (lastEv.type === 'Goal' && lastEv.assist) ? `<div class="text-muted text-truncate" style="font-size: 0.55rem;">👟 ${shortenPlayerName(lastEv.assist)}</div>` : '';
                 return `<div class="${textColor} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;">
@@ -1075,7 +1088,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         const formatSingleEvent = (e, teamName) => {
             if (e.type === 'subst') return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">🔄</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player_out)}</span> IN<br><span class="text-muted" style="font-size: 0.55rem;">(${shortenPlayerName(e.player)} OUT)</span></div></div>`;
-            return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">${e.type === 'Goal' ? '⚽' : '🟨'}</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player || teamName)}</span>${(e.type === 'Goal' && e.assist) ? `<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>` : ''}</div></div>`;
+            
+            let icon = '🟨';
+            if (e.type === 'Goal') icon = '⚽';
+            else if (e.type === 'Red Card') icon = '🟥';
+            
+            return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">${icon}</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player || teamName)}</span>${(e.type === 'Goal' && e.assist) ? `<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>` : ''}</div></div>`;
         };
 
         const homeReversed = [...homeEvents].reverse(), awayReversed = [...awayEvents].reverse();
