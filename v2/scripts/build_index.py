@@ -615,16 +615,39 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
         if isinstance(key_events, list) and len(key_events) > 0:
             for ev in key_events:
-                ev_text = ev.get('type', {}).get('text', '')
+                ev_type_info = ev.get('type', {})
+                ev_text = ev_type_info.get('text', '')
                 clock_text = ev.get('clock', {}).get('displayValue', "0'")
                 team_id = str(ev.get('team', {}).get('id', ''))
+                
                 participants = ev.get('participants', [])
-                p_in = participants[0].get('athlete', {}).get('displayName', '') if len(participants) > 0 else ''
-                p_out = participants[1].get('athlete', {}).get('displayName', '') if len(participants) > 1 else ''
+                p_in, p_out = '', ''
+                
+                if len(participants) > 0:
+                    p_in = participants[0].get('athlete', {}).get('displayName', '')
+                    # Check if the participant is a coach instead of an athlete
+                    if not p_in:
+                        p_in = participants[0].get('coach', {}).get('displayName', '')
+                        
+                if len(participants) > 1:
+                    p_out = participants[1].get('athlete', {}).get('displayName', '')
+                    
                 is_sub = "substitution" in ev_text.lower() or "sub" in ev_text.lower()
                 ev_type = "Goal" if "goal" in ev_text.lower() else ("subst" if is_sub else "Card")
 
-                p_player = p_out if ev_type == "subst" else (p_in if p_in else "Unknown")
+                p_player = p_out if ev_type == "subst" else p_in
+                
+                # Fallback if the structured participant data is missing
+                if not p_player:
+                    raw_text = ev.get('shortText') or ev.get('text') or ''
+                    if " - " in raw_text:
+                        p_player = raw_text.split(" - ")[-1].strip()
+                    elif raw_text:
+                        # If no dash is present, just use the raw text up to a reasonable length
+                        p_player = raw_text[:20] + '...' if len(raw_text) > 20 else raw_text
+                    else:
+                        p_player = "Unknown"
+
                 p_player_out = p_in if ev_type == "subst" else (p_out if p_out else None)
 
                 summary_data["events"].append({
