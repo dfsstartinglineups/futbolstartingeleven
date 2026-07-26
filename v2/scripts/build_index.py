@@ -1,7 +1,6 @@
 import os
 import re
 import json
-import csv
 import requests
 import unicodedata
 from datetime import datetime, timedelta
@@ -129,7 +128,7 @@ def get_local_image_url(url, subfolder="images/teams"):
         ext = 'png'
     filename = f"{hashlib.md5(url.encode()).hexdigest()[:12]}.{ext}"
     local_file_path = os.path.join(local_dir, filename)
-    web_path = f"/{subfolder}/{filename}" # Leading slash for absolute path routing
+    web_path = f"/v2/{subfolder}/{filename}" # Leading slash for absolute path routing
     if not os.path.exists(local_file_path):
         try:
             headers = {'User-Agent': 'Mozilla/5.0'}
@@ -159,31 +158,31 @@ def sync_league_state(today_matches):
     os.makedirs('v2/data', exist_ok=True)
     state = {}
     
+    # 1. Load existing state to preserve previous discovery
     if os.path.exists(state_file):
         try:
-            with open(state_file, 'r') as f:
+            with open(state_file, 'r', encoding='utf-8') as f:
                 state = json.load(f)
         except: pass
         
-    try:
-        if os.path.exists('espn_master_leagues.csv'):
-            with open('espn_master_leagues.csv', 'r', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    pill = row.get('ESPN Pill', '').strip()
-                    name = row.get('League Name', '').strip()
-                    if pill and name:
-                        slug = create_slug(name)
-                        if slug not in state:
-                            state[slug] = {"name": name, "pill": pill, "last_updated": 0.0, "flag": ""}
-    except Exception as e:
-        print(f"Notice: Could not load CSV - {e}")
-        
+    # 2. Pre-seed state directly from HUMAN_LEAGUE_FLAGS
+    for name, flag_url in HUMAN_LEAGUE_FLAGS.items():
+        slug = create_slug(name)
+        if slug not in state:
+            state[slug] = {"name": name.title(), "pill": "", "last_updated": 0.0, "flag": flag_url}
+
+    # 3. Auto-discover from today's matches and self-heal missing pills
     for m in today_matches:
         l_info = m.get('league', {})
         slug = l_info.get('slug')
-        if slug and slug not in state:
-            state[slug] = {"name": l_info.get('name', slug), "pill": "", "last_updated": 0.0, "flag": l_info.get('flag', '')}
+        pill = l_info.get('pill', '')
+        flag = l_info.get('flag', '')
+        
+        if slug:
+            if slug not in state:
+                state[slug] = {"name": l_info.get('name', slug), "pill": pill, "last_updated": 0.0, "flag": flag}
+            elif not state[slug].get('pill') and pill:
+                state[slug]['pill'] = pill
             
     return state, state_file
 
@@ -628,7 +627,7 @@ def get_ribbon_html(data):
     a_score = '-' if is_pre else (data.get('goals') or {}).get('away', 0)
     
     l_flag = str(data["league"].get("flag") or "")
-    flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">' if l_flag.startswith('http') or l_flag.startswith('images/') else f'<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
+    flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">' if l_flag.startswith('http') or l_flag.startswith('/v2/') else f'<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
     
     return f'''
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
@@ -655,7 +654,7 @@ def get_center_column_html(data):
         tot = h_val + a_val
         h_pct = (h_val / tot * 100) if tot > 0 else 50
         a_pct = (a_val / tot * 100) if tot > 0 else 50
-        return f'''<div class="text-center w-100 px-1"><div class="stat-label-tiny">{label}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: {h_pct}%; background-color: {h_color}; color: {get_contrast_color(h_color)};">{f"{h_val}%" if is_pct else h_val}</div><div class="stat-bar-segment" style="width: {a_pct}%; background-color: {a_color}; color: {get_contrast_color(a_color)};">{f"{a_val}%" if is_pct else a_val}</div></div></div>'''
+        return f'''<div class="text-center w-100 px-1"><div class="stat-label-tiny">{label}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: {h_pct}%; background-color: {h_color}; color: {getContrastColor(h_color)};">{f"{h_val}%" if is_pct else h_val}</div><div class="stat-bar-segment" style="width: {a_pct}%; background-color: {a_color}; color: {getContrastColor(a_color)};">{f"{a_val}%" if is_pct else a_val}</div></div></div>'''
 
     return f'''<div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">{h_score} - {a_score}</div>{build_bar("Possession", t_stats['home'].get('possession',0), t_stats['away'].get('possession',0), True)}{build_bar("Total Shots", t_stats['home'].get('total_shots',0), t_stats['away'].get('total_shots',0))}{build_bar("Shots on Target", t_stats['home'].get('shots_on_target',0), t_stats['away'].get('shots_on_target',0))}{build_bar("Corners", t_stats['home'].get('corners',0), t_stats['away'].get('corners',0))}<div class="text-center w-100 px-1 mt-1"><div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div><div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;"><span>🟨 {t_stats['home'].get('yellow_cards',0)} 🟥 {t_stats['home'].get('red_cards',0)}</span><span>🟨 {t_stats['away'].get('yellow_cards',0)} 🟥 {t_stats['away'].get('red_cards',0)}</span></div></div>'''
 
@@ -726,7 +725,7 @@ def pre_render_game_card(data):
     has_stats = bool(data.get('team_stats'))
     
     l_flag = str(data['league'].get('flag') or "")
-    flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">' if l_flag.startswith('http') or l_flag.startswith('images/') else f'<span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
+    flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">' if l_flag.startswith('http') or l_flag.startswith('/v2/') else f'<span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
     
     h_col = get_team_color(data.get('homeLineup'), '#0d6efd')
     a_col = get_team_color(data.get('awayLineup'), '#dc3545')
@@ -888,7 +887,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None)
 
             match_entry = {
                 "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": status_short, "elapsed": extract_match_clock(fresh_status)}},
-                "league": {"id": event_id, "name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag},
+                "league": {"id": event_id, "name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_obj.get('slug', '')},
                 "teams": {
                     "home": {"id": home_id, "name": home_name, "logo": home_logo},
                     "away": {"id": away_id, "name": away_name, "logo": away_logo}
@@ -1030,7 +1029,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     {% for league in leagues %}
                         <div class="col-12 league-header mt-3 mb-2 px-1" id="league-{{ day }}-{{ league.slug }}" data-league-name="{{ league.name }}">
                             <div class="d-flex align-items-center p-2 rounded-3 shadow-sm league-banner">
-                                {% if league.flag and (league.flag.startswith('http') or league.flag.startswith('images/')) %}
+                                {% if league.flag and (league.flag.startswith('http') or league.flag.startswith('/v2/')) %}
                                     <img src="{{ league.flag }}" loading="lazy" decoding="async" alt="" style="width: 22px; height: 22px; object-fit: contain;" class="me-2 rounded-1">
                                 {% else %}
                                     <span class="me-2" style="font-size: 1.1rem;">{{ league.flag or '🏆' }}</span>
@@ -1202,7 +1201,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     function getRibbonHtml(data) {
         const isPre = ['NS','TBD','PST','CANC','ABD'].includes(data.fixture.status.short);
         const l_flag = data.league.flag || "";
-        const flg = l_flag.startsWith('http') || l_flag.startsWith('images/') ? `<img src="${l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">` : `<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${l_flag || "🏆"}</span>`;
+        const flg = l_flag.startsWith('http') || l_flag.startsWith('/v2/') ? `<img src="${l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">` : `<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${l_flag || "🏆"}</span>`;
         return `<div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;"><div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div><a href="/v2/leagues/${data.league.slug}/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">${flg}${data.league.abbrev}</a></div><div class="col-5 px-2"><div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.home.logo}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.home.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.home??0)}</span></div></div><div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.away.logo}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.away.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.away??0)}</span></div></div></div><div class="col-4 text-center border-start d-flex justify-content-center align-items-center">${getLatestEventHtml(data, true)}</div></div>`;
     }
     
@@ -1471,16 +1470,37 @@ def generate_v2_index():
     state, state_file = sync_league_state(raw_matches_by_day['today'])
     nav_html = generate_nav_leagues_html(state)
     
-    # 3. Generate Active (Today) League Pages instantly from memory
-    today_leagues = group_and_sort_matches_by_league(raw_matches_by_day['today'])
+    # 3. Generate Active League Pages instantly from memory (Yesterday, Today, Tomorrow)
+    combined_active_leagues = {}
+    
+    # Collect all matches across all 3 active days
+    for day_key in ['yesterday', 'today', 'tomorrow']:
+        for m in raw_matches_by_day[day_key]:
+            slug = m.get('league', {}).get('slug')
+            if not slug: continue
+            if slug not in combined_active_leagues:
+                combined_active_leagues[slug] = []
+            
+            # Deduplicate matches (in case an event spans midnight or ESPN returns it twice)
+            if m['fixture']['id'] not in [x['fixture']['id'] for x in combined_active_leagues[slug]]:
+                combined_active_leagues[slug].append(m)
+
+    # Determine which leagues get the "Today" treatment
+    today_slugs = {lg['slug'] for lg in group_and_sort_matches_by_league(raw_matches_by_day['today'])}
     active_slugs = set()
-    for lg in today_leagues:
-        slug = lg['slug']
+    
+    for slug, matches in combined_active_leagues.items():
         active_slugs.add(slug)
         if slug in state:
+            # Sort matches chronologically
+            matches.sort(key=lambda x: (x.get('fixture') or {}).get('date', '9999-99-99') or '9999-99-99')
+            
+            # Apply the "Today" treatment only if they have a match today
+            is_today_treatment = slug in today_slugs
+            
             build_single_league_page(
-                slug, state[slug], lg['matches'], 
-                is_today=True, nav_html=nav_html, 
+                slug, state[slug], matches, 
+                is_today=is_today_treatment, nav_html=nav_html, 
                 today_date_str=day_info["display"]["today"]
             )
             state[slug]['last_updated'] = datetime.now().timestamp()
@@ -1499,7 +1519,6 @@ def generate_v2_index():
         start_date = now.strftime('%Y%m%d')
         end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
         
-        # We reuse the robust global parser, but point it directly to this league's specific 14-day API path
         fourteen_day_matches = fetch_espn_scores_for_date(
             start_date, "", pill=target_data['pill'], end_date_str=end_date
         )
@@ -1510,8 +1529,9 @@ def generate_v2_index():
         )
         state[target_slug]['last_updated'] = datetime.now().timestamp()
 
-    # Save Registry State
-    with open(state_file, 'w') as f: json.dump(state, f, indent=2)
+    # Save Registry State (ensure_ascii=False keeps accents visible in the JSON file)
+    with open(state_file, 'w', encoding='utf-8') as f: 
+        json.dump(state, f, indent=2, ensure_ascii=False)
 
     # 5. Build Main Global Homepage
     leagues_by_day = {
