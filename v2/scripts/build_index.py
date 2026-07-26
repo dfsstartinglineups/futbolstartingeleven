@@ -889,6 +889,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .stat-label-tiny { font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px; }
         .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
         .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
+
+        /* Card Glow Animations */
+        @keyframes glowGoal { 0% { border-color: #20c997; box-shadow: 0 0 25px rgba(32, 201, 151, 0.9); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        .glow-goal { animation: glowGoal 4s ease-out !important; border: 2px solid #20c997 !important; }
+
+        @keyframes glowRed { 0% { border-color: #dc3545; box-shadow: 0 0 25px rgba(220, 53, 69, 0.9); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        .glow-red-card { animation: glowRed 4s ease-out !important; border: 2px solid #dc3545 !important; }
+
+        @keyframes glowYellow { 0% { border-color: #ffc107; box-shadow: 0 0 25px rgba(255, 193, 7, 0.9); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        .glow-yellow-card { animation: glowYellow 4s ease-out !important; border: 2px solid #ffc107 !important; }
+
+        @keyframes glowSub { 0% { border-color: #212529; box-shadow: 0 0 25px rgba(33, 37, 41, 0.7); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        .glow-subst { animation: glowSub 4s ease-out !important; border: 2px solid #212529 !important; }
     </style>
 </head>
 <body>
@@ -1027,6 +1040,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }
         }
     }
+
     function getRibbonHtml(data) {
         const home = data.teams.home, away = data.teams.away, status = data.fixture.status.short;
         const isPreGame = ['NS', 'TBD'].includes(status), isDelayed = ['PST', 'CANC', 'ABD'].includes(status);
@@ -1218,12 +1232,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         </div>
                         <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
                             <div class="text-center" style="width: 30%;"><img src="${data.teams.home.logo}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${data.teams.home.name}</div></div>
-                            <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;">${getCenterColumnHtml(data)}</div>
+                            <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-${fixId}">${getCenterColumnHtml(data)}</div>
                             <div class="text-center" style="width: 30%;"><img src="${data.teams.away.logo}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">${data.teams.away.name}</div></div>
                         </div>
-                        <div class="w-100">${getEventsHtml(data)}</div>
+                        <div class="w-100" id="events-${fixId}">${getEventsHtml(data)}</div>
                     </div>
-                    <div class="w-100">${getOddsHtml(data)}</div><div class="w-100">${getInjuriesHtml(data)}</div>
+                    <div class="w-100" id="odds-${fixId}">${getOddsHtml(data)}</div>
+                    <div class="w-100" id="injuries-${fixId}">${getInjuriesHtml(data)}</div>
                     <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
                         <div class="d-flex gap-4 w-100">
                             <div class="lineup-tab ${(!data.team_stats || isPreGame) ? 'active' : ''}" id="tab-xi-${fixId}" onclick="switchLineupTab(event, '${fixId}', 'xi')" style="flex: 1; text-align: center;">${isPreGame ? 'STARTING XI' : 'FINAL XI'}</div>
@@ -1275,6 +1290,126 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         else filtered.forEach(item => container.appendChild(createGameCard(item)));
     }
 
+    // Trigger glowing border animation on a card
+    function triggerCardGlow(fixId, eventType) {
+        const card = document.getElementById(`card-${fixId}`);
+        if (!card) return;
+
+        let glowClass = 'glow-goal';
+        if (eventType === 'Red Card') glowClass = 'glow-red-card';
+        else if (eventType === 'Yellow Card') glowClass = 'glow-yellow-card';
+        else if (eventType === 'subst') glowClass = 'glow-subst';
+
+        card.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
+        void card.offsetWidth; // Force CSS reflow
+        card.classList.add(glowClass);
+
+        setTimeout(() => {
+            card.classList.remove(glowClass);
+        }, 4000);
+    }
+
+    // Compare old and new events to find fresh occurrences
+    function detectNewEventsAndGlow(oldEvents, newEvents, fixId) {
+        if (!newEvents || newEvents.length === 0) return;
+        
+        const knownKeys = new Set((oldEvents || []).map(e => `${e.time}_${e.type}_${e.player}`));
+        const freshEvents = newEvents.filter(e => !knownKeys.has(`${e.time}_${e.type}_${e.player}`));
+
+        if (freshEvents.length === 0) return;
+
+        // Rank event priority: Goal > Red Card > Yellow Card > Substitution
+        const priority = { 'Goal': 4, 'Red Card': 3, 'Yellow Card': 2, 'subst': 1 };
+        freshEvents.sort((a, b) => (priority[b.type] || 0) - (priority[a.type] || 0));
+
+        triggerCardGlow(fixId, freshEvents[0].type);
+    }
+
+    // Silent DOM Updater
+    async function pollAndUpdateDOM() {
+        try {
+            const res = await fetch(window.location.href, { cache: 'no-store' });
+            if (!res.ok) return;
+            const htmlText = await res.text();
+
+            const startStr = "const STATIC_MATCHES = ";
+            const startIndex = htmlText.indexOf(startStr);
+            if (startIndex === -1) return;
+
+            const jsonStart = startIndex + startStr.length;
+            const jsonEnd = htmlText.indexOf(";\n    let ACTIVE_DAY", jsonStart);
+            if (jsonEnd === -1) return;
+
+            const freshData = JSON.parse(htmlText.substring(jsonStart, jsonEnd));
+            const freshDayMatches = freshData[ACTIVE_DAY] || [];
+            const currentDayMatches = STATIC_MATCHES[ACTIVE_DAY] || [];
+
+            freshDayMatches.forEach(newMatch => {
+                const fixId = newMatch.fixture.id;
+                const oldMatch = currentDayMatches.find(m => m.fixture.id === fixId);
+
+                if (!oldMatch) return;
+
+                // 1. Check for event changes and trigger glow
+                detectNewEventsAndGlow(oldMatch.events, newMatch.events, fixId);
+
+                // 2. Silent DOM Replacement for changed sections
+                const timeEl = document.getElementById(`time-${fixId}`);
+                if (timeEl) {
+                    const newTimeHtml = `${getTimeBadgeHtml(newMatch)} ${getLatestEventHtml(newMatch)}`;
+                    if (timeEl.innerHTML.trim() !== newTimeHtml.trim()) timeEl.innerHTML = newTimeHtml;
+                }
+
+                const scoreEl = document.getElementById(`score-${fixId}`);
+                if (scoreEl) {
+                    const newScoreHtml = getCenterColumnHtml(newMatch);
+                    if (scoreEl.innerHTML.trim() !== newScoreHtml.trim()) scoreEl.innerHTML = newScoreHtml;
+                }
+
+                const eventsEl = document.getElementById(`events-${fixId}`);
+                if (eventsEl) {
+                    const newEventsHtml = getEventsHtml(newMatch);
+                    if (eventsEl.innerHTML.trim() !== newEventsHtml.trim()) eventsEl.innerHTML = newEventsHtml;
+                }
+
+                const oddsEl = document.getElementById(`odds-${fixId}`);
+                if (oddsEl) {
+                    const newOddsHtml = getOddsHtml(newMatch);
+                    if (oddsEl.innerHTML.trim() !== newOddsHtml.trim()) oddsEl.innerHTML = newOddsHtml;
+                }
+
+                const injuriesEl = document.getElementById(`injuries-${fixId}`);
+                if (injuriesEl) {
+                    const newInjuriesHtml = getInjuriesHtml(newMatch);
+                    if (injuriesEl.innerHTML.trim() !== newInjuriesHtml.trim()) injuriesEl.innerHTML = newInjuriesHtml;
+                }
+
+                const ribbonEl = document.getElementById(`ribbon-${fixId}`);
+                if (ribbonEl) {
+                    const newRibbonHtml = getRibbonHtml(newMatch);
+                    if (ribbonEl.innerHTML.trim() !== newRibbonHtml.trim()) ribbonEl.innerHTML = newRibbonHtml;
+                }
+
+                // Update lineups & stats
+                const viewXi = document.getElementById(`view-xi-${fixId}`);
+                if (viewXi && newMatch.homeLineup) {
+                    viewXi.innerHTML = `<div class="row g-0 bg-white border-top"><div class="col-6 border-end">${buildLineupList(newMatch.homeLineup)}</div><div class="col-6">${buildLineupList(newMatch.awayLineup)}</div></div>`;
+                }
+
+                const viewStats = document.getElementById(`view-stats-${fixId}`);
+                if (viewStats && newMatch.team_stats) {
+                    viewStats.innerHTML = `<div class="row g-0 bg-white border-top"><div class="col-6 border-end">${buildLiveStatsGrid(newMatch.homeLineup, newMatch.homeLineup?.team?.colors?.player?.primary)}</div><div class="col-6">${buildLiveStatsGrid(newMatch.awayLineup, newMatch.awayLineup?.team?.colors?.player?.primary)}</div></div>`;
+                }
+
+                // Update local memory so subsequent diffs compare against this payload
+                Object.assign(oldMatch, newMatch);
+            });
+
+        } catch (err) {
+            console.error("Silent update check failed:", err);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         renderGames();
         document.querySelectorAll('.day-tab-btn').forEach(btn => {
@@ -1294,6 +1429,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             document.querySelectorAll('.full-view').forEach(el => el.classList.toggle('d-none', globalScoreboardMode));
             document.getElementById('toggle-all-lineups')?.classList.toggle('d-none', globalScoreboardMode);
         });
+
+        // Start background polling every 30 seconds
+        setInterval(pollAndUpdateDOM, 30000);
     });
 </script>
 </body>
