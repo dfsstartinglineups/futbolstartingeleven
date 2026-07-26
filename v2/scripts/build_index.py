@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import csv
 import requests
 import unicodedata
 from datetime import datetime, timedelta
@@ -119,30 +120,16 @@ NORMALIZED_HUMAN_LEAGUE_FLAGS = {
 }
 
 def get_local_image_url(url, subfolder="images/teams"):
-    """
-    Downloads an external image to a local directory during SSG build
-    and returns the relative web path for the HTML tag.
-    """
     if not url or not url.startswith('http'):
         return url
-
-    # Target folder path on disk: v2/images/teams or v2/images/leagues
     local_dir = os.path.join("v2", subfolder)
     os.makedirs(local_dir, exist_ok=True)
-    
-    # Extract extension or default to .png
     ext = url.split('.')[-1].split('?')[0].lower()
     if ext not in ['png', 'jpg', 'jpeg', 'svg', 'webp']:
         ext = 'png'
-    
-    # Generate unique 12-char filename based on original URL
     filename = f"{hashlib.md5(url.encode()).hexdigest()[:12]}.{ext}"
     local_file_path = os.path.join(local_dir, filename)
-    
-    # HTML src path (e.g. "images/teams/a1b2c3d4e5f6.png")
-    web_path = f"{subfolder}/{filename}"
-
-    # Download only if we don't already have it locally
+    web_path = f"/{subfolder}/{filename}" # Leading slash for absolute path routing
     if not os.path.exists(local_file_path):
         try:
             headers = {'User-Agent': 'Mozilla/5.0'}
@@ -152,9 +139,60 @@ def get_local_image_url(url, subfolder="images/teams"):
                     f.write(resp.content)
                 return web_path
         except Exception:
-            return url # Graceful fallback to original URL if download fails
-
+            return url
     return web_path
+
+# ====================================================================
+# SLUG & STATE MANAGEMENT (SEO & ROUND-ROBIN)
+# ====================================================================
+def create_slug(name):
+    if not name: return ""
+    nfkd_form = unicodedata.normalize('NFKD', str(name))
+    slug = nfkd_form.encode('ascii', 'ignore').decode('utf-8').lower()
+    slug = re.sub(r'[\/]', '-', slug)
+    slug = re.sub(r'[^a-z0-9\s-]', '', slug)
+    slug = re.sub(r'[\s-]+', '-', slug)
+    return slug.strip('-')
+
+def sync_league_state(today_matches):
+    state_file = 'v2/data/site_pages.json'
+    os.makedirs('v2/data', exist_ok=True)
+    state = {}
+    
+    if os.path.exists(state_file):
+        try:
+            with open(state_file, 'r') as f:
+                state = json.load(f)
+        except: pass
+        
+    try:
+        if os.path.exists('espn_master_leagues.csv'):
+            with open('espn_master_leagues.csv', 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    pill = row.get('ESPN Pill', '').strip()
+                    name = row.get('League Name', '').strip()
+                    if pill and name:
+                        slug = create_slug(name)
+                        if slug not in state:
+                            state[slug] = {"name": name, "pill": pill, "last_updated": 0.0, "flag": ""}
+    except Exception as e:
+        print(f"Notice: Could not load CSV - {e}")
+        
+    for m in today_matches:
+        l_info = m.get('league', {})
+        slug = l_info.get('slug')
+        if slug and slug not in state:
+            state[slug] = {"name": l_info.get('name', slug), "pill": "", "last_updated": 0.0, "flag": l_info.get('flag', '')}
+            
+    return state, state_file
+
+def generate_nav_leagues_html(state):
+    sorted_leagues = sorted(state.items(), key=lambda x: x[1]['name'].lower())
+    html = ""
+    for slug, data in sorted_leagues:
+        html += f'<li><a class="dropdown-item" href="/v2/leagues/{slug}/index.html" style="font-size: 0.85rem; font-weight: 500;">{data["name"]}</a></li>'
+    return html
 
 # ====================================================================
 # ASYNC CORE API PLAYER STATS FETCHER
@@ -166,7 +204,6 @@ async def fetch_single_player_core_stats(session, internal_slug, event_id, team_
             if resp.status == 200:
                 data = await resp.json()
                 stats_dict = {}
-                # FIX: Handle potential nulls in splits/categories
                 categories = (data.get('splits') or {}).get('categories') or []
                 for cat in categories:
                     for stat in cat.get('stats', []):
@@ -189,14 +226,6 @@ async def get_core_stats_concurrently(internal_slug, event_id, player_list):
 # ====================================================================
 # HELPER UTILITIES & GROUPING
 # ====================================================================
-def create_slug(name):
-    if not name: return ""
-    slug = name.lower()
-    slug = re.sub(r'[\/]', '-', slug)
-    slug = re.sub(r'[^a-z0-9\s-]', '', slug)
-    slug = re.sub(r'[\s-]+', '-', slug)
-    return slug.strip('-')
-
 def get_position_category(raw_pos):
     if not raw_pos: return 'M'
     p = str(raw_pos).strip().upper()
@@ -212,7 +241,6 @@ def is_valid_sub_minute(minute_val):
 
 def extract_match_clock(status_obj):
     if not status_obj: return "LIVE"
-    # FIX: Safely fallback to dict if type is None
     status_type = status_obj.get('type') or {}
     state = status_type.get('state', 'pre')
     if state == 'pre': return "NS"
@@ -237,7 +265,6 @@ def extract_match_clock(status_obj):
             except: pass
         return str(display_clock).replace("'", "")
 
-    # FIX: Safely grab clock, enforcing integer mathematically
     raw_clock = status_obj.get('clock') if status_obj.get('clock') is not None else 0
     if raw_clock > 0:
         return str(int(raw_clock // 60) + 1)
@@ -352,7 +379,6 @@ def parse_espn_summary(event_id):
         return summary_data
 
     try:
-        # FIX: Safe extraction from heavily nested dictionaries
         header = data.get('header') or {}
         comp_list = header.get('competitions') or [{}]
         comp_head = comp_list[0] if comp_list else {}
@@ -396,7 +422,6 @@ def parse_espn_summary(event_id):
                 if "substitution" in ev_text or "sub" in ev_text:
                     parts = ev.get('participants', [])
                     if len(parts) >= 2:
-                        # FIX: Defensive unwrapping
                         p_in = (parts[0].get('athlete') or {}).get('displayName', '').lower()
                         p_out = (parts[1].get('athlete') or {}).get('displayName', '').lower()
                         if p_in and p_out: sub_to_starter[p_in] = p_out
@@ -507,8 +532,6 @@ def parse_espn_summary(event_id):
         pickcenter = data.get('pickcenter', []) or data.get('odds', [])
         if isinstance(pickcenter, list) and pickcenter:
             odds_item = pickcenter[0]
-            
-            # FIX: Ensure nested odd structures exist before accessing text properties
             home_odds = odds_item.get('homeTeamOdds') or {}
             draw_odds = odds_item.get('drawOdds') or {}
             away_odds = odds_item.get('awayTeamOdds') or {}
@@ -609,7 +632,7 @@ def get_ribbon_html(data):
     
     return f'''
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
-        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">{get_time_badge_html(data)}</div><a href="/leagues/{data["league"]["slug"]}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="{data["league"]["name"]}">{flag_html}{data["league"]["abbrev"]}</a></div>
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">{get_time_badge_html(data)}</div><a href="/v2/leagues/{data["league"]["slug"]}/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="{data["league"]["name"]}">{flag_html}{data["league"]["abbrev"]}</a></div>
         <div class="col-5 px-2">
             <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['home']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{h_score}</span></div></div>
             <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['away']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['away']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{a_score}</span></div></div>
@@ -715,7 +738,7 @@ def pre_render_game_card(data):
             <div class="p-2 pb-1" style="background-color: #fcfcfc;">
                 <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('{fix_id}')">
                     <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-{fix_id}" style="white-space: nowrap;">{get_time_badge_html(data)} {get_latest_event_html(data)}</div>
-                    <a href="/leagues/{data['league']['slug']}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="{data['league']['name']}">{flag_html} <span class="text-truncate">{data['league']['name']}</span></a>
+                    <a href="/v2/leagues/{data['league']['slug']}/index.html" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="{data['league']['name']}">{flag_html} <span class="text-truncate">{data['league']['name']}</span></a>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
                     <div class="text-center" style="width: 30%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['home']['name']}</div></div>
@@ -741,8 +764,7 @@ def pre_render_game_card(data):
     <!-- END_MATCH_{fix_id} -->'''
 
 def group_and_sort_matches_by_league(matches):
-    if not matches:
-        return []
+    if not matches: return []
     leagues_map = {}
     for m in matches:
         l_info = m.get('league') or {}
@@ -752,36 +774,29 @@ def group_and_sort_matches_by_league(matches):
         match_date = (m.get('fixture') or {}).get('date', '9999-99-99') or '9999-99-99'
 
         if l_slug not in leagues_map:
-            leagues_map[l_slug] = {
-                'name': l_name,
-                'slug': l_slug,
-                'flag': l_flag,
-                'earliest_date': match_date,
-                'matches': []
-            }
+            leagues_map[l_slug] = {'name': l_name, 'slug': l_slug, 'flag': l_flag, 'earliest_date': match_date, 'matches': []}
         
         leagues_map[l_slug]['matches'].append(m)
         if match_date < leagues_map[l_slug]['earliest_date']:
             leagues_map[l_slug]['earliest_date'] = match_date
 
     league_list = list(leagues_map.values())
-    
-    # Sort matches within each league chronologically
-    for lg in league_list:
-        lg['matches'].sort(key=lambda x: (x.get('fixture') or {}).get('date', '9999-99-99') or '9999-99-99')
-
-    # Sort leagues by earliest match date
+    for lg in league_list: lg['matches'].sort(key=lambda x: (x.get('fixture') or {}).get('date', '9999-99-99') or '9999-99-99')
     league_list.sort(key=lambda x: x['earliest_date'])
     return league_list
 
-def fetch_espn_scores_for_date(date_str, old_html):
+def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None):
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
     seen_ids = set()
     page, max_pages = 1, 10
 
     while page <= max_pages:
-        url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=1000&page={page}"
+        if pill and end_date_str:
+            url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{pill}/scoreboard?dates={date_str}-{end_date_str}&limit=1000&page={page}"
+        else:
+            url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=1000&page={page}"
+            
         try:
             res = requests.get(url, headers=headers, timeout=10)
             if res.status_code != 200: break
@@ -813,7 +828,6 @@ def fetch_espn_scores_for_date(date_str, old_html):
             h_team = home_comp.get('team') or {}
             a_team = away_comp.get('team') or {}
             
-            # Localize Team Logos
             home_id = str(h_team.get('id', ''))
             away_id = str(a_team.get('id', ''))
             home_name = str(h_team.get('displayName') or h_team.get('name') or "TBD")
@@ -843,7 +857,6 @@ def fetch_espn_scores_for_date(date_str, old_html):
                 if not league_flag and 'friendly' in clean_league: league_flag = "🤝"
                 if not league_flag and 'cup' in clean_league: league_flag = "🏆"
 
-            # Localize League Flags
             league_flag = get_local_image_url(str(league_flag or ""), subfolder="images/leagues")
 
             if state == 'post' and old_html:
@@ -865,8 +878,7 @@ def fetch_espn_scores_for_date(date_str, old_html):
                 "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [], 
                 "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}, 
                 "injuries": {"home": [], "away": []}, 
-                "live_score": {},
-                "status_obj": None
+                "live_score": {}, "status_obj": None
             }
 
             fresh_status = summary.get("status_obj") or event.get('status') or {}
@@ -897,6 +909,26 @@ def fetch_espn_scores_for_date(date_str, old_html):
 
     return matches
 
+# ====================================================================
+# HTML TEMPLATES (MAIN + LEAGUE)
+# ====================================================================
+BASE_HEADER = """
+<nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-0" style="background-color: #212529; z-index: 1050;">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="header-brand"><a href="/v2/index.html" class="text-decoration-none">Futbol Starting <span>Eleven</span></a></div>
+        <div class="d-flex align-items-center gap-2">
+            <div class="dropdown league-search-container">
+                <input type="text" id="leagueSearchNavInput" class="form-control form-control-sm" placeholder="🏆 Search leagues..." data-bs-toggle="dropdown" aria-expanded="false" style="width: 160px; background-color: #343a40; color: white; border: 1px solid #495057; cursor: pointer;" autocomplete="off">
+                <ul id="leagueSearchList" class="dropdown-menu dropdown-menu-end shadow-sm mt-2" style="max-height: 400px; overflow-y: auto; width: 260px; border-radius: 8px;">
+                    {{ nav_leagues_html | safe }}
+                </ul>
+            </div>
+            <input type="text" id="team-search" class="form-control form-control-sm ms-2" placeholder="🔍 Search...">
+        </div>
+    </div>
+</nav>
+"""
+
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -905,13 +937,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <meta name="theme-color" content="#212529">
     <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores, Injuries & Odds</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Immediately terminate any hanging/broken image requests
-        document.addEventListener('error', function (e) {
-            if (e.target.tagName === 'IMG') {
-                e.target.style.display = 'none'; // Hide broken image immediately
-            }
-        }, true);
+        document.addEventListener('error', function (e) { if (e.target.tagName === 'IMG') { e.target.style.display = 'none'; } }, true);
     </script>
     <style>
         body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -934,7 +962,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .stat-label-tiny { font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px; }
         .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
         .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
-
         .league-banner { background: #ffffff; border-left: 4px solid #198754; border-radius: 8px; }
 
         @keyframes glowGoal { 0% { border-color: #20c997; box-shadow: 0 0 25px rgba(32, 201, 151, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
@@ -960,12 +987,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </head>
 <body>
 
-<nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-0" style="background-color: #212529; z-index: 1050;">
-    <div class="container d-flex justify-content-between align-items-center">
-        <div class="header-brand"><a href="/" class="text-decoration-none">Futbol Starting <span>Eleven</span></a></div>
-        <div class="d-flex align-items-center gap-2"><input type="text" id="team-search" class="form-control form-control-sm" placeholder="🔍 Search..."></div>
-    </div>
-</nav>
+""" + BASE_HEADER + """
 
 <div class="container mt-3 mb-2 text-center">
     <h1 class="h5 fw-bold text-dark mb-1">Futbol Starting Eleven: Live Soccer Starting Lineups, Scores & Odds</h1>
@@ -978,7 +1000,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     </div>
 </div>
 
-<!-- CONTROLS & LEAGUE JUMP DROPDOWN -->
 <div class="container mb-3">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
@@ -1007,7 +1028,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         <div class="card p-4 shadow-sm border-0"><div class="h4 text-muted">🏟️ No matches found.</div></div>
                     </div>
                     {% for league in leagues %}
-                        <!-- LEAGUE HEADER -->
                         <div class="col-12 league-header mt-3 mb-2 px-1" id="league-{{ day }}-{{ league.slug }}" data-league-name="{{ league.name }}">
                             <div class="d-flex align-items-center p-2 rounded-3 shadow-sm league-banner">
                                 {% if league.flag and (league.flag.startswith('http') or league.flag.startswith('images/')) %}
@@ -1015,11 +1035,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                                 {% else %}
                                     <span class="me-2" style="font-size: 1.1rem;">{{ league.flag or '🏆' }}</span>
                                 {% endif %}
-                                <h2 class="h6 mb-0 fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">{{ league.name }}</h2>
+                                <h2 class="h6 mb-0 fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px;"><a href="/v2/leagues/{{ league.slug }}/index.html" class="text-dark text-decoration-none">{{ league.name }}</a></h2>
                                 <span class="badge bg-light text-secondary border ms-auto px-2 py-1" style="font-size: 0.65rem;">{{ league.matches | length }} {{ 'Match' if league.matches | length == 1 else 'Matches' }}</span>
                             </div>
                         </div>
-                        <!-- MATCH CARDS -->
                         {% for match in league.matches %}
                             <div class="col-md-6 col-lg-6 col-xl-4 mb-3 game-card-wrapper" data-search="{{ (match.teams.home.name | default('')) | lower }} {{ (match.teams.away.name | default('')) | lower }} {{ (match.league.name | default('')) | lower }} {{ (match.league.abbrev | default('')) | lower }}">
                                 {{ match.html_card | safe }}
@@ -1039,8 +1058,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
     document.addEventListener('DOMContentLoaded', () => {
         populateLeagueDropdown();
-
-        // Convert EST fallback times to user's local timezone
         document.querySelectorAll('.local-time-badge').forEach(badge => {
             const utcStr = badge.getAttribute('data-utc');
             if (utcStr) {
@@ -1056,16 +1073,21 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 document.querySelectorAll('.day-tab-btn').forEach(b => { b.classList.remove('btn-dark', 'active'); b.classList.add('btn-outline-dark'); });
                 e.target.closest('.day-tab-btn').classList.remove('btn-outline-dark'); e.target.closest('.day-tab-btn').classList.add('btn-dark', 'active');
                 ACTIVE_DAY = e.target.closest('.day-tab-btn').getAttribute('data-day');
-                
                 document.querySelectorAll('.day-partition').forEach(p => p.classList.add('d-none'));
                 document.getElementById('partition-' + ACTIVE_DAY)?.classList.remove('d-none');
-                
                 populateLeagueDropdown();
                 applySearchFilter();
             });
         });
 
         document.getElementById('team-search')?.addEventListener('input', applySearchFilter);
+        document.getElementById('leagueSearchNavInput')?.addEventListener('input', function(e) {
+            const text = e.target.value.toLowerCase();
+            document.querySelectorAll('#leagueSearchList li').forEach(li => {
+                const leagueName = li.textContent.toLowerCase();
+                li.style.display = leagueName.includes(text) ? '' : 'none';
+            });
+        });
 
         document.getElementById('toggle-all-cards')?.addEventListener('click', (e) => {
             globalScoreboardMode = !globalScoreboardMode;
@@ -1083,37 +1105,24 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 const navOffset = 70;
                 const elementPosition = targetEl.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - navOffset;
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
             }
         });
-
         setInterval(pollAndUpdateDOM, 30000);
     });
 
     function populateLeagueDropdown() {
         const select = document.getElementById('league-select');
         if (!select) return;
-
         select.innerHTML = '<option value="">-- Select League --</option>';
         const activePartition = document.getElementById('partition-' + ACTIVE_DAY);
         if (!activePartition) return;
-
-        // Filter visible headers and sort them alphabetically A-Z
         const headers = Array.from(activePartition.querySelectorAll('.league-header'))
             .filter(h => !h.classList.contains('d-none'))
-            .sort((a, b) => {
-                const nameA = (a.getAttribute('data-league-name') || '').toLowerCase();
-                const nameB = (b.getAttribute('data-league-name') || '').toLowerCase();
-                return nameA.localeCompare(nameB);
-            });
-
+            .sort((a, b) => (a.getAttribute('data-league-name') || '').localeCompare(b.getAttribute('data-league-name') || ''));
         headers.forEach(h => {
             const opt = document.createElement('option');
-            opt.value = h.id;
-            opt.textContent = h.getAttribute('data-league-name') || 'League';
+            opt.value = h.id; opt.textContent = h.getAttribute('data-league-name') || 'League';
             select.appendChild(opt);
         });
     }
@@ -1122,47 +1131,30 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const searchText = (document.getElementById('team-search')?.value || '').toLowerCase();
         const activePartition = document.getElementById('partition-' + ACTIVE_DAY);
         if (!activePartition) return;
-        
         let totalVisibleMatches = 0;
-
         activePartition.querySelectorAll('.league-header').forEach(header => {
-            let visibleInLeague = 0;
-            let sibling = header.nextElementSibling;
-            
+            let visibleInLeague = 0, sibling = header.nextElementSibling;
             while (sibling && !sibling.classList.contains('league-header')) {
                 if (sibling.classList.contains('game-card-wrapper')) {
-                    const searchData = sibling.getAttribute('data-search') || '';
-                    if (searchData.includes(searchText)) {
-                        sibling.classList.remove('d-none');
-                        visibleInLeague++;
-                        totalVisibleMatches++;
-                    } else {
-                        sibling.classList.add('d-none');
-                    }
+                    if ((sibling.getAttribute('data-search') || '').includes(searchText)) {
+                        sibling.classList.remove('d-none'); visibleInLeague++; totalVisibleMatches++;
+                    } else { sibling.classList.add('d-none'); }
                 }
                 sibling = sibling.nextElementSibling;
             }
-
             header.classList.toggle('d-none', visibleInLeague === 0);
         });
-
         const emptyState = activePartition.querySelector('.empty-state');
         if (emptyState) emptyState.classList.toggle('d-none', totalVisibleMatches > 0);
-
         populateLeagueDropdown();
     }
 
     window.toggleSingleCard = function(fixId) {
-    const fullView = document.getElementById(`full-${fixId}`);
-    document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
-    fullView?.classList.toggle('d-none');
-
-        // Load headshots for this card only when opened
+        const fullView = document.getElementById(`full-${fixId}`);
+        document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
+        fullView?.classList.toggle('d-none');
         if (fullView && !fullView.classList.contains('d-none')) {
-            fullView.querySelectorAll('img[data-src]').forEach(img => {
-                img.src = img.getAttribute('data-src');
-                img.removeAttribute('data-src');
-            });
+            fullView.querySelectorAll('img[data-src]').forEach(img => { img.src = img.getAttribute('data-src'); img.removeAttribute('data-src'); });
         }
     };
 
@@ -1170,14 +1162,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         if (event && event.stopPropagation) event.stopPropagation();
         const xiTab = document.getElementById(`tab-xi-${fixId}`), statsTab = document.getElementById(`tab-stats-${fixId}`);
         const xiView = document.getElementById(`view-xi-${fixId}`), statsView = document.getElementById(`view-stats-${fixId}`);
-
-        if (tabName === 'xi') {
-            xiTab?.classList.add('active'); statsTab?.classList.remove('active');
-            xiView?.classList.remove('d-none'); statsView?.classList.add('d-none');
-        } else if (tabName === 'stats') {
-            statsTab?.classList.add('active'); xiTab?.classList.remove('active');
-            statsView?.classList.remove('d-none'); xiView?.classList.add('d-none');
-        }
+        if (tabName === 'xi') { xiTab?.classList.add('active'); statsTab?.classList.remove('active'); xiView?.classList.remove('d-none'); statsView?.classList.add('d-none'); }
+        else if (tabName === 'stats') { statsTab?.classList.add('active'); xiTab?.classList.remove('active'); statsView?.classList.remove('d-none'); xiView?.classList.add('d-none'); }
     };
 
     function shortenPlayerName(fn) { if (!fn) return "Unknown"; const p = fn.split(' '); return p.length === 1 ? fn : `${p[0].charAt(0).toUpperCase()}. ${p.slice(1).join(' ')}`; }
@@ -1189,15 +1175,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         if (['PST','CANC','ABD'].includes(s)) return `<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">${s}</span>`;
         if (['FT','AET','PEN'].includes(s)) return `<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
         if (!['NS','TBD'].includes(s)) return `<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${dMin}</span>`;
-        
         try {
             const dt = new Date(data.fixture.date);
             const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
             let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
             return `<span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="${data.fixture.date}" style="font-size: 0.65rem; white-space: nowrap;">${day} ${time}</span>`;
-        } catch (err) {
-            return `<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${data.fixture.date}</span>`;
-        }
+        } catch (err) { return `<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${data.fixture.date}</span>`; }
     }
     
     function getLatestEventHtml(data, rib = false) {
@@ -1219,8 +1202,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     function getRibbonHtml(data) {
         const isPre = ['NS','TBD','PST','CANC','ABD'].includes(data.fixture.status.short);
         const l_flag = data.league.flag || "";
-        const flg = l_flag.startsWith('http') || l_flag.startswith('images/') ? `<img src="${l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">` : `<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${l_flag || "🏆"}</span>`;
-        return `<div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;"><div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div><a href="/leagues/${data.league.slug}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">${flg}${data.league.abbrev}</a></div><div class="col-5 px-2"><div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.home.logo}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.home.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.home??0)}</span></div></div><div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.away.logo}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.away.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.away??0)}</span></div></div></div><div class="col-4 text-center border-start d-flex justify-content-center align-items-center">${getLatestEventHtml(data, true)}</div></div>`;
+        const flg = l_flag.startsWith('http') || l_flag.startsWith('images/') ? `<img src="${l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">` : `<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${l_flag || "🏆"}</span>`;
+        return `<div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;"><div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div><a href="/v2/leagues/${data.league.slug}/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">${flg}${data.league.abbrev}</a></div><div class="col-5 px-2"><div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.home.logo}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.home.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.home??0)}</span></div></div><div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.away.logo}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.away.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.away??0)}</span></div></div></div><div class="col-4 text-center border-start d-flex justify-content-center align-items-center">${getLatestEventHtml(data, true)}</div></div>`;
     }
     
     function getCenterColumnHtml(data) {
@@ -1273,26 +1256,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const rawJson = htmlText.substring(jStart, jEnd).trim().replace(/;$/, '');
             const freshData = JSON.parse(rawJson);
             const freshMatches = freshData[ACTIVE_DAY] || [], oldMatches = STATIC_MATCHES[ACTIVE_DAY] || [];
-
             const finishedStates = ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD'];
 
             freshMatches.forEach(nm => {
                 const fixId = nm.fixture.id, om = oldMatches.find(m => m.fixture.id === fixId);
                 if (!om) return;
-
                 const freshStatus = nm.fixture?.status?.short;
                 const oldStatus = om.fixture?.status?.short;
-                if (finishedStates.includes(freshStatus) || finishedStates.includes(oldStatus)) {
-                    return;
-                }
-
+                if (finishedStates.includes(freshStatus) || finishedStates.includes(oldStatus)) return;
                 detectNewEventsAndGlow(om.events, nm.events, fixId);
-
                 const tEl = document.getElementById(`time-${fixId}`); if (tEl) { const html = `${getTimeBadgeHtml(nm)} ${getLatestEventHtml(nm)}`; if(tEl.innerHTML!==html) tEl.innerHTML=html; }
                 const sEl = document.getElementById(`score-${fixId}`); if (sEl) { const html = getCenterColumnHtml(nm); if(sEl.innerHTML!==html) sEl.innerHTML=html; }
                 const eEl = document.getElementById(`events-${fixId}`); if (eEl) { const html = getEventsHtml(nm); if(eEl.innerHTML!==html) eEl.innerHTML=html; }
                 const rEl = document.getElementById(`ribbon-${fixId}`); if (rEl) { const html = getRibbonHtml(nm); if(rEl.innerHTML!==html) rEl.innerHTML=html; }
-
                 Object.assign(om, nm);
             });
         } catch (err) { console.error("Silent update check failed:", err); }
@@ -1302,27 +1278,242 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
+LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#212529">
+    <title>{{ seo_title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('error', function (e) { if (e.target.tagName === 'IMG') { e.target.style.display = 'none'; } }, true);
+    </script>
+    <style>
+        body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .header-brand a { color: inherit; }
+        .header-brand span { text-shadow: none !important; background: linear-gradient(to bottom, #20c997 0%, #198754 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6)); }
+        
+        .lineup-card { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px; overflow: hidden; }
+        .team-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1)); }
+        .batting-order { padding-left: 0; list-style-type: none; margin-bottom: 0; }
+        .batting-order li { padding: 6px 12px; font-size: 0.85rem; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; align-items: center; }
+        .batting-order li:last-child { border-bottom: none; }
+        .batter-name { font-weight: 600; color: #495057; }
+        
+        .date-subheader { background: #ffffff; border-left: 4px solid #0d6efd; border-radius: 8px; font-weight: 700; color: #343a40; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .live-dot { display: inline-block; width: 7px; height: 7px; background-color: #fff; border-radius: 50%; margin-right: 5px; margin-bottom: 1px; animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); } }
+        .stat-bar-container { display: flex; width: 100%; height: 14px; background-color: #e9ecef; border-radius: 4px; overflow: hidden; margin-top: 2px; }
+        .stat-bar-segment { display: flex; align-items: center; justify-content: center; font-size: 0.60rem; font-weight: 800; padding: 0 4px; transition: width 0.5s ease-in-out; }
+        .stat-label-tiny { font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px; }
+        .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
+        .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
+    </style>
+</head>
+<body>
+
+""" + BASE_HEADER + """
+
+<div class="container mt-4 mb-3 text-center">
+    <h1 class="h4 fw-bold text-dark mb-1">{{ page_h1 }}</h1>
+    {% if not is_today %}
+        <p class="text-muted mb-2" style="font-size: 0.85rem;">Upcoming 14-day schedule, betting odds, and match info.</p>
+    {% endif %}
+</div>
+
+<div class="container pb-5">
+    <div class="row justify-content-start">
+        {% if grouped_matches | length == 0 %}
+            <div class="col-12 text-center mt-5">
+                <div class="card p-5 shadow-sm border-0 rounded-4">
+                    <div class="h3 mb-3">🏖️</div>
+                    <div class="h4 text-dark fw-bold mb-2">{{ league_name }} is currently on break.</div>
+                    <p class="text-muted">There are no upcoming matches scheduled for this league in the next 14 days. Please check back as we get closer to match day.</p>
+                </div>
+            </div>
+        {% else %}
+            {% for date_str, matches in grouped_matches.items() %}
+                {% if not is_today %}
+                <div class="col-12 mt-4 mb-3 px-1">
+                    <div class="d-flex align-items-center p-2 rounded-3 shadow-sm date-subheader">
+                        <span style="font-size: 1.1rem; margin-right: 8px;">📅</span> 
+                        <h2 class="h6 mb-0">{{ date_str }}</h2>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% for match in matches %}
+                <div class="col-md-6 col-lg-6 col-xl-4 mb-3">
+                    {{ match.html_card | safe }}
+                </div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.getElementById('leagueSearchNavInput')?.addEventListener('input', function(e) {
+        const text = e.target.value.toLowerCase();
+        document.querySelectorAll('#leagueSearchList li').forEach(li => {
+            const leagueName = li.textContent.toLowerCase();
+            li.style.display = leagueName.includes(text) ? '' : 'none';
+        });
+    });
+
+    window.toggleSingleCard = function(fixId) {
+        const fullView = document.getElementById(`full-${fixId}`);
+        document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
+        fullView?.classList.toggle('d-none');
+        if (fullView && !fullView.classList.contains('d-none')) {
+            fullView.querySelectorAll('img[data-src]').forEach(img => {
+                img.src = img.getAttribute('data-src');
+                img.removeAttribute('data-src');
+            });
+        }
+    };
+
+    window.switchLineupTab = function(event, fixId, tabName) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        const xiTab = document.getElementById(`tab-xi-${fixId}`), statsTab = document.getElementById(`tab-stats-${fixId}`);
+        const xiView = document.getElementById(`view-xi-${fixId}`), statsView = document.getElementById(`view-stats-${fixId}`);
+        if (tabName === 'xi') {
+            xiTab?.classList.add('active'); statsTab?.classList.remove('active');
+            xiView?.classList.remove('d-none'); statsView?.classList.add('d-none');
+        } else if (tabName === 'stats') {
+            statsTab?.classList.add('active'); xiTab?.classList.remove('active');
+            statsView?.classList.remove('d-none'); xiView?.classList.add('d-none');
+        }
+    };
+
+    document.querySelectorAll('.local-time-badge').forEach(badge => {
+        const utcStr = badge.getAttribute('data-utc');
+        if (utcStr) {
+            const dt = new Date(utcStr);
+            const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+            let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+            badge.textContent = `${day} ${time}`;
+        }
+    });
+</script>
+</body>
+</html>
+"""
+
+def build_single_league_page(league_slug, league_data, matches, is_today, nav_html, today_date_str):
+    league_dir = os.path.join('v2', 'leagues', league_slug)
+    os.makedirs(league_dir, exist_ok=True)
+    
+    league_name = league_data.get('name', 'League')
+    
+    if is_today:
+        seo_title = f"Today's {league_name} Starting Lineups & Live Scores - {today_date_str}"
+        page_h1 = f"Today's {league_name} Matches - {today_date_str}"
+        grouped_matches = {"Today": matches}
+    else:
+        seo_title = f"{league_name} Upcoming Match Schedule & Odds"
+        page_h1 = f"{league_name} Upcoming Matches & Schedule"
+        grouped_matches = {}
+        for m in matches:
+            date_raw = m['fixture'].get('date', '')
+            try:
+                dt = datetime.fromisoformat(date_raw.replace('Z', '+00:00'))
+                dt_local = dt.astimezone(pytz.timezone('America/New_York'))
+                date_header = dt_local.strftime('%A, %B %-d')
+            except:
+                date_header = "Upcoming"
+                
+            if date_header not in grouped_matches:
+                grouped_matches[date_header] = []
+            grouped_matches[date_header].append(m)
+
+    template = Template(LEAGUE_HTML_TEMPLATE)
+    output = template.render(
+        seo_title=seo_title,
+        page_h1=page_h1,
+        league_name=league_name,
+        is_today=is_today,
+        grouped_matches=grouped_matches,
+        nav_leagues_html=nav_html
+    )
+    
+    with open(os.path.join(league_dir, 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(output)
+
+# ====================================================================
+# MAIN GENERATOR PIPELINE
+# ====================================================================
 def generate_v2_index():
     print("\n==================================================")
-    print("⏳ STARTING SSG BUILD PIPELINE (PURE JSON API)")
+    print("⏳ STARTING SSG BUILD PIPELINE & LEAGUE GENERATOR")
     print("==================================================")
     
     os.makedirs('v2', exist_ok=True)
     file_path = 'v2/index.html'
-
     old_html = ""
     if os.path.exists(file_path):
-        with open(file_path, 'r', encoding='utf-8') as f:
-            old_html = f.read()
+        with open(file_path, 'r', encoding='utf-8') as f: old_html = f.read()
 
     day_info = get_3day_dates()
     
+    # 1. Fetch Global Core Data
     raw_matches_by_day = {
         "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"], old_html),
         "today": fetch_espn_scores_for_date(day_info["dates"]["today"], old_html),
         "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], old_html)
     }
 
+    # 2. Sync League Registry & Generate Global HTML Dropdown
+    state, state_file = sync_league_state(raw_matches_by_day['today'])
+    nav_html = generate_nav_leagues_html(state)
+    
+    # 3. Generate Active (Today) League Pages instantly from memory
+    today_leagues = group_and_sort_matches_by_league(raw_matches_by_day['today'])
+    active_slugs = set()
+    for lg in today_leagues:
+        slug = lg['slug']
+        active_slugs.add(slug)
+        if slug in state:
+            build_single_league_page(
+                slug, state[slug], lg['matches'], 
+                is_today=True, nav_html=nav_html, 
+                today_date_str=day_info["display"]["today"]
+            )
+            state[slug]['last_updated'] = datetime.now().timestamp()
+
+    # 4. Generate ONE Dormant League (14-Day Trickle Round Robin)
+    dormant_leagues = [s for s, d in state.items() if s not in active_slugs and d.get('pill')]
+    if dormant_leagues:
+        dormant_leagues.sort(key=lambda s: state[s].get('last_updated', 0))
+        target_slug = dormant_leagues[0]
+        target_data = state[target_slug]
+        
+        print(f"🔄 TRICKLE UPDATE: Fetching 14-day schedule for dormant league -> {target_data['name']}")
+        
+        est = pytz.timezone('America/New_York')
+        now = datetime.now(est)
+        start_date = now.strftime('%Y%m%d')
+        end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
+        
+        # We reuse the robust global parser, but point it directly to this league's specific 14-day API path
+        fourteen_day_matches = fetch_espn_scores_for_date(
+            start_date, "", pill=target_data['pill'], end_date_str=end_date
+        )
+            
+        build_single_league_page(
+            target_slug, target_data, fourteen_day_matches, 
+            is_today=False, nav_html=nav_html, today_date_str=""
+        )
+        state[target_slug]['last_updated'] = datetime.now().timestamp()
+
+    # Save Registry State
+    with open(state_file, 'w') as f: json.dump(state, f, indent=2)
+
+    # 5. Build Main Global Homepage
     leagues_by_day = {
         day: group_and_sort_matches_by_league(matches)
         for day, matches in raw_matches_by_day.items()
@@ -1330,16 +1521,19 @@ def generate_v2_index():
     
     print(f"\n==================================================")
     print(f"📊 SSG BUILD SUMMARY:")
-    print(f"  ├─ Yesterday ({day_info['dates']['yesterday']}): {len(raw_matches_by_day['yesterday'])} matches parsed")
-    print(f"  ├─ Today     ({day_info['dates']['today']}):     {len(raw_matches_by_day['today'])} matches parsed")
-    print(f"  └─ Tomorrow  ({day_info['dates']['tomorrow']}):  {len(raw_matches_by_day['tomorrow'])} matches parsed")
+    print(f"  ├─ Yesterday: {len(raw_matches_by_day['yesterday'])} matches")
+    print(f"  ├─ Today:     {len(raw_matches_by_day['today'])} matches")
+    print(f"  └─ Tomorrow:  {len(raw_matches_by_day['tomorrow'])} matches")
+    print(f"  ├─ Active League Pages Generated: {len(active_slugs)}")
+    print(f"  └─ Dormant Pages Synced: 1 (Round Robin)")
     print(f"==================================================")
     
     template = Template(HTML_TEMPLATE)
     output_html = template.render(
         leagues_by_day=leagues_by_day,
         matches_json=json.dumps(raw_matches_by_day),
-        display_dates=day_info["display"]
+        display_dates=day_info["display"],
+        nav_leagues_html=nav_html
     )
     
     with open(file_path, 'w', encoding='utf-8') as f:
