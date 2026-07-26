@@ -7,6 +7,8 @@ import unicodedata
 import math
 from datetime import datetime, timedelta
 import pytz
+import asyncio
+import aiohttp
 from jinja2 import Template
 
 HUMAN_LEAGUE_FLAGS = {
@@ -150,6 +152,34 @@ COUNTRY_FLAG_URLS = {
     "costa rican": "cr", "costa rica": "cr", "fpd": "cr"
 }
 
+# ====================================================================
+# ASYNC CORE API FETCHER (DEEP STATS)
+# ====================================================================
+async def fetch_single_player_core_stats(session, league_slug, player_id):
+    url = f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{league_slug}/athletes/{player_id}/statistics"
+    try:
+        async with session.get(url, timeout=3) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                stats_dict = {}
+                for cat in data.get('splits', {}).get('categories', []):
+                    for stat in cat.get('stats', []):
+                        stats_dict[stat.get('name')] = stat.get('value')
+                return str(player_id), stats_dict
+    except:
+        pass
+    return str(player_id), {}
+
+async def get_core_stats_concurrently(league_slug, player_ids):
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_single_player_core_stats(session, league_slug, pid) for pid in player_ids]
+        results = await asyncio.gather(*tasks)
+        return {pid: stats for pid, stats in results if stats}
+
+# ====================================================================
+# UTILITIES
+# ====================================================================
+
 def normalize_text(text):
     if not text: return ""
     nfkd_form = unicodedata.normalize('NFD', text)
@@ -279,6 +309,7 @@ def extract_player_live_stats(entry_obj, core_raw_stats=None):
         try: return round(float(str(v).strip('%')), 2)
         except: return 0.0
 
+    # Parse basic boxscore stats if any exist
     for st in stats_raw:
         if not isinstance(st, dict): continue
         raw_k = st.get('name', '')
@@ -302,7 +333,7 @@ def extract_player_live_stats(entry_obj, core_raw_stats=None):
         elif raw_k in ['expectedGoalsConceded'] or raw_abbr == 'XGA': live_stats['xga'] = cflt(raw_v)
         elif raw_k in ['shotsFaced'] or raw_abbr == 'SHF': live_stats['shots_faced'] = cnum(raw_v)
 
-    # Boxscore deep stats injection (Zero Threading Required)
+    # Inject Deep Stats from the Async Core API fetch
     if core_raw_stats:
         if 'touches' in core_raw_stats: live_stats['touches'] = cnum(core_raw_stats['touches'])
         if 'expectedGoals' in core_raw_stats: live_stats['xg'] = cflt(core_raw_stats['expectedGoals'])
@@ -396,28 +427,28 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
-            # INSTANT DEEP STATS (Extracted from boxscore, zero external requests!)
+            
+            # --- ASYNC DEEP STATS ENGINE ---
+            # 1. Gather all active players who saw the field
+            active_player_ids = []
+            for r_data in rosters:
+                for entry in r_data.get('roster', []):
+                    if entry.get('starter', False) or entry.get('subbedIn', False):
+                        p_id = str(entry.get('athlete', {}).get('id', ''))
+                        if p_id: active_player_ids.append(p_id)
+
+            # 2. Fetch stats concurrently in < 1 second
             core_stats_cache = {}
-            players_box = data.get('boxscore', {}).get('players', [])
-            for p_team in players_box:
-                t_id_box = str(p_team.get('team', {}).get('id', ''))
-                for stat_cat in p_team.get('statistics', []):
-                    stat_names = stat_cat.get('names', [])
-                    for ath in stat_cat.get('athletes', []):
-                        a_id = str(ath.get('athlete', {}).get('id', ''))
-                        a_stats = ath.get('stats', [])
-                        if not a_id: continue
-                        cache_key = (t_id_box, a_id)
-                        if cache_key not in core_stats_cache:
-                            core_stats_cache[cache_key] = {}
-                        for idx, s_name in enumerate(stat_names):
-                            if idx < len(a_stats):
-                                core_stats_cache[cache_key][s_name] = a_stats[idx]
+            if active_player_ids and league_code and league_code != "all":
+                try:
+                    core_stats_cache = asyncio.run(get_core_stats_concurrently(league_code, active_player_ids))
+                except Exception as e:
+                    print(f"⚠️ Core API Fetch failed for event {event_id}: {e}")
+            # --------------------------------
 
             for r_data in rosters:
                 ha = r_data.get('homeAway', 'home')
                 team_obj = r_data.get('team', {})
-                t_id = str(team_obj.get('id', ''))
                 start_xi, subs = [], []
                 starters_look = {}
                 
@@ -431,10 +462,13 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     sub_in = sub_in_flag or (game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
                     sub_out = game_state != 'pre' and (str(ath.get('id')) in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
                     
+                    # Merge deep stats cache!
+                    p_stats = extract_player_live_stats(entry, core_stats_cache.get(str(ath.get('id'))))
+                    
                     p_obj = {
                         "id": str(ath.get('id', '')), "name": p_name, "pos": pos.upper(), "category": get_position_category(pos),
                         "number": str(entry.get('jersey', '')), "photo": ath.get('headshot', {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
-                        "live_stats": extract_player_live_stats(entry, core_stats_cache.get((t_id, str(ath.get('id'))))),
+                        "live_stats": p_stats,
                         "isSubbedIn": sub_in, "isSubbedOut": sub_out, "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                     }
                     start_xi.append({"player": p_obj})
@@ -454,7 +488,9 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     sub_in = sub_in_flag or (game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
                     sub_out = game_state != 'pre' and (str(ath.get('id')) in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
                     
-                    p_stats = extract_player_live_stats(entry, core_stats_cache.get((t_id, str(ath.get('id')))))
+                    # Merge deep stats cache!
+                    p_stats = extract_player_live_stats(entry, core_stats_cache.get(str(ath.get('id'))))
+                    
                     if entry.get('didPlay') or entry.get('played') or sub_in or p_stats:
                         subs.append({"player": {
                             "id": str(ath.get('id', '')), "name": p_name, "pos": pos.upper(), "category": pos_cat,
@@ -690,7 +726,6 @@ def pre_render_game_card(data):
     h_col = get_team_color(data.get('homeLineup'), '#0d6efd')
     a_col = get_team_color(data.get('awayLineup'), '#dc3545')
 
-    # THE MAGIC INJECTION: Wraps the Jinja HTML in a specific Match ID comment block
     return f'''<!-- MATCH_{fix_id} -->
     <div class="lineup-card shadow-sm" id="card-{fix_id}">
         <div class="ribbon-view" id="ribbon-{fix_id}" onclick="toggleSingleCard('{fix_id}')">{get_ribbon_html(data)}</div>
@@ -792,13 +827,12 @@ def fetch_espn_scores_for_date(date_str, old_html):
 
             league_flag = str(league_flag or "")
 
-            # THE MAGIC CHECK: If the game is over and we have the old HTML, regex extract it and skip the ESPN Summary API entirely
+            # Regex Extract from previous index.html for completed games
             if state == 'post' and old_html:
                 match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
                 saved_block = re.search(match_pattern, old_html, re.DOTALL)
                 
                 if saved_block:
-                    # Provide a skeleton dict so the frontend search box still works, but use the cached HTML card
                     matches.append({
                         "fixture": {"id": event_id, "status": {"short": "FT"}},
                         "teams": {"home": {"name": home_name}, "away": {"name": away_name}},
@@ -807,7 +841,7 @@ def fetch_espn_scores_for_date(date_str, old_html):
                     })
                     continue
 
-            # If we reached this point, the game is LIVE, UPCOMING, or missing from the old index.html. We must fetch.
+            # Fetch Live or New Summary
             should_fetch, _ = should_fetch_summary(event)
             summary = parse_espn_summary(event_id, league_code=(league_obj.get('slug') or 'all')) if should_fetch else {
                 "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [], 
@@ -837,7 +871,6 @@ def fetch_espn_scores_for_date(date_str, old_html):
                 "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"]
             }
             
-            # Pre-render the fresh HTML and attach it to the loop
             match_entry["html_card"] = pre_render_game_card(match_entry)
             matches.append(match_entry)
 
@@ -1131,7 +1164,6 @@ def generate_v2_index():
     os.makedirs('v2', exist_ok=True)
     file_path = 'v2/index.html'
 
-    # 1. LOAD THE EXISTING HTML TO ACT AS OUR DATABASE
     old_html = ""
     if os.path.exists(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
