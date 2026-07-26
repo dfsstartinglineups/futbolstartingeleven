@@ -100,13 +100,31 @@ HUMAN_LEAGUE_FLAGS = {
 }
 
 COUNTRY_FLAG_URLS = {
+    # Existing mappings
     "belgian": "be", "chilean": "cl", "chinese": "cn", "dutch": "nl",
     "english": "gb-eng", "french": "fr", "german": "de", "bolivian": "bo",
     "norwegian": "no", "russian": "ru", "portuguese": "pt", "scottish": "gb-sct",
     "swedish": "se", "argentine": "ar", "brazilian": "br", "italian": "it",
     "mexican": "mx", "paraguayan": "py", "japanese": "jp", "spanish": "es",
-    "danish": "dk", "indian": "in", "uruguay": "uy", "peruvian": "pe",
-    "salvadoran": "sv", "costa rican": "cr"
+    "danish": "dk", "indian": "in", "salvadoran": "sv", "costa rican": "cr",
+    
+    # 1. Peru
+    "peruvian": "pe", "peru": "pe",
+    
+    # 2. Uruguay / Uruguaya
+    "uruguay": "uy", "uruguayan": "uy", "uruguaya": "uy",
+    
+    # 3. Brazil
+    "brazil": "br",
+    
+    # 4. Ecuador
+    "ecuador": "ec", "ecuadorian": "ec",
+    
+    # 5. Mexico / MX
+    "mexico": "mx", "mx": "mx",
+    
+    # 6. Croatia / FPD
+    "croatian": "hr", "croatia": "hr", "fpd": "hr"
 }
 
 def normalize_text(text):
