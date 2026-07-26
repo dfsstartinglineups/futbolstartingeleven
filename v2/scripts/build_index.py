@@ -100,34 +100,18 @@ HUMAN_LEAGUE_FLAGS = {
 }
 
 COUNTRY_FLAG_URLS = {
-    # Existing mappings
     "belgian": "be", "chilean": "cl", "chinese": "cn", "dutch": "nl",
     "english": "gb-eng", "french": "fr", "german": "de", "bolivian": "bo",
     "norwegian": "no", "russian": "ru", "portuguese": "pt", "scottish": "gb-sct",
     "swedish": "se", "argentine": "ar", "brazilian": "br", "italian": "it",
     "mexican": "mx", "paraguayan": "py", "japanese": "jp", "spanish": "es",
     "danish": "dk", "indian": "in", "salvadoran": "sv", "costa rican": "cr",
-    
-    # 1. Peru
     "peruvian": "pe", "peru": "pe",
-    
-    # 2. Uruguay / Uruguaya
     "uruguay": "uy", "uruguayan": "uy", "uruguaya": "uy",
-    
-    # 3. Brazil
     "brazil": "br",
-    
-    # 4. Ecuador
     "ecuador": "ec", "ecuadorian": "ec",
-    
-    # 5. Mexico / MX
     "mexico": "mx", "mx": "mx",
-
-    # Guatemala
-    "guatemalan": "gt",
-    "guatemala": "gt",
-    
-    # 6. Croatia / FPD
+    "guatemalan": "gt", "guatemala": "gt",
     "croatian": "hr", "croatia": "hr", "fpd": "hr"
 }
 
@@ -150,7 +134,7 @@ def get_local_image_url(url, subfolder="images/teams"):
         ext = 'png'
     filename = f"{hashlib.md5(url.encode()).hexdigest()[:12]}.{ext}"
     local_file_path = os.path.join(local_dir, filename)
-    web_path = f"/v2/{subfolder}/{filename}" # Leading slash for absolute path routing
+    web_path = f"/v2/{subfolder}/{filename}"
     if not os.path.exists(local_file_path):
         try:
             headers = {'User-Agent': 'Mozilla/5.0'}
@@ -180,20 +164,17 @@ def sync_league_state(all_active_matches):
     os.makedirs('v2/data', exist_ok=True)
     state = {}
     
-    # 1. Load existing state to preserve previous discovery
     if os.path.exists(state_file):
         try:
             with open(state_file, 'r', encoding='utf-8') as f:
                 state = json.load(f)
         except: pass
         
-    # 2. Pre-seed state directly from HUMAN_LEAGUE_FLAGS
     for name, flag_url in HUMAN_LEAGUE_FLAGS.items():
         slug = create_slug(name)
         if slug not in state:
             state[slug] = {"name": name.title(), "pill": "", "last_updated": 0.0, "flag": flag_url}
 
-    # 3. Auto-discover from ALL active matches (Yesterday, Today, Tomorrow) and self-heal missing pills
     for m in all_active_matches:
         l_info = m.get('league', {})
         slug = l_info.get('slug')
@@ -1073,7 +1054,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </div>
 
 <script>
-    const STATIC_MATCHES = {{ matches_json | safe }};
     let ACTIVE_DAY = "today";
     let globalScoreboardMode = true;
 
@@ -1129,6 +1109,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
             }
         });
+
         setInterval(pollAndUpdateDOM, 30000);
     });
 
@@ -1187,108 +1168,71 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         else if (tabName === 'stats') { statsTab?.classList.add('active'); xiTab?.classList.remove('active'); statsView?.classList.remove('d-none'); xiView?.classList.add('d-none'); }
     };
 
-    function shortenPlayerName(fn) { if (!fn) return "Unknown"; const p = fn.split(' '); return p.length === 1 ? fn : `${p[0].charAt(0).toUpperCase()}. ${p.slice(1).join(' ')}`; }
-    
-    function getTimeBadgeHtml(data) {
-        const s = data.fixture.status.short, e = data.fixture.status.elapsed;
-        let dMin = e && e !== 'LIVE' ? (String(e).endsWith("'") ? e : `${e}'`) : 'LIVE'; if (s === 'HT') dMin = 'HT';
-        if (['PST','CANC','ABD'].includes(s)) return `<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">${s}</span>`;
-        if (['FT','AET','PEN'].includes(s)) return `<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
-        if (!['NS','TBD'].includes(s)) return `<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${dMin}</span>`;
-        try {
-            const dt = new Date(data.fixture.date);
-            const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
-            let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
-            return `<span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="${data.fixture.date}" style="font-size: 0.65rem; white-space: nowrap;">${day} ${time}</span>`;
-        } catch (err) { return `<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${data.fixture.date}</span>`; }
-    }
-    
-    function getLatestEventHtml(data, rib = false) {
-        if (!data.events || data.events.length === 0) return rib ? `<div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div>` : '';
-        const ev = data.events[data.events.length - 1], isH = ev.team_id === data.teams.home.id;
-        const n = isH ? data.teams.home.name : data.teams.away.name, lg = isH ? data.teams.home.logo : data.teams.away.logo;
-        if (ev.type === 'subst') {
-            const pOut = shortenPlayerName(ev.player), pIn = shortenPlayerName(ev.player_out);
-            return rib ? `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate">🔄 <img src="${lg}" loading="lazy" decoding="async" style="width: 12px; height: 12px;" class="me-1">${ev.time}'</div><div class="text-truncate">🟢 <span class="text-success">${pIn}</span></div><div class="text-muted text-truncate">🔴 ${pOut}</div></div>`
-                       : `<div class="ms-2 d-flex align-items-center text-dark fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="d-flex align-items-center me-2"><span class="bg-primary text-white rounded d-flex justify-content-center align-items-center me-1" style="width: 14px; height: 14px; font-size: 0.55rem;">🔄</span><img src="${lg}" loading="lazy" decoding="async" style="width: 14px; height: 14px; object-fit: contain;" class="me-1"><span>${ev.time}'</span></div><div class="d-flex flex-column text-start" style="min-width: 0;"><div class="text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#20c997; margin-bottom:1px; margin-right:3px;"></span>${pIn}</div><div class="text-muted text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#dc3545; margin-bottom:1px; margin-right:3px;"></span>${pOut}</div></div></div>`;
-        } else {
-            let ic = '🟨', tc = 'text-warning'; if (ev.type === 'Goal') { ic = '⚽'; tc = 'text-success'; } else if (ev.type === 'Red Card') { ic = '🟥'; tc = 'text-danger'; }
-            const pn = shortenPlayerName(ev.player || n);
-            return rib ? `<div class="${tc} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate"><img src="${lg}" loading="lazy" decoding="async" style="width: 12px; height: 12px;" class="me-1">${ev.time}'</div><div class="text-truncate">${ic} ${pn}</div>${ev.type==='Goal'&&ev.assist?`<div class="text-muted text-truncate" style="font-size: 0.55rem;">👟 ${shortenPlayerName(ev.assist)}</div>`:''}</div>`
-                       : `<div class="ms-2 d-flex flex-column text-start ${tc} fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="text-truncate">${ic} ${ev.time}' <img src="${lg}" loading="lazy" decoding="async" style="width: 12px; height: 12px;" class="mx-1">${pn}</div>${ev.type==='Goal'&&ev.assist?`<div class="text-muted text-truncate fw-normal" style="font-size: 0.55rem;"><span style="display:inline-block; width:12px;"></span>👟 ${shortenPlayerName(ev.assist)}</div>`:''}</div>`;
-        }
-    }
-    
-    function getRibbonHtml(data) {
-        const isPre = ['NS','TBD','PST','CANC','ABD'].includes(data.fixture.status.short);
-        const l_flag = data.league.flag || "";
-        const flg = l_flag.startsWith('http') || l_flag.startsWith('/v2/') ? `<img src="${l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">` : `<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${l_flag || "🏆"}</span>`;
-        return `<div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;"><div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div><a href="/v2/leagues/${data.league.slug}/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">${flg}${data.league.abbrev}</a></div><div class="col-5 px-2"><div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.home.logo}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.home.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.home??0)}</span></div></div><div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.away.logo}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.away.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.away??0)}</span></div></div></div><div class="col-4 text-center border-start d-flex justify-content-center align-items-center">${getLatestEventHtml(data, true)}</div></div>`;
-    }
-    
-    function getCenterColumnHtml(data) {
-        if (['NS','TBD','PST','CANC','ABD'].includes(data.fixture.status.short) || !data.team_stats) return `<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">${data.goals?.home??0} - ${data.goals?.away??0}</div>`;
-        const ts = data.team_stats;
-        return `<div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">${data.goals?.home??0} - ${data.goals?.away??0}</div>`;
-    }
-    
-    function getEventsHtml(data) {
-        if (!data.events || !data.events.length) return '';
-        const fe = (e, tn) => {
-            if (e.type === 'subst') return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">🔄</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player_out)}</span> IN<br><span class="text-muted" style="font-size: 0.55rem;">(${shortenPlayerName(e.player)} OUT)</span></div></div>`;
-            return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">${e.type==='Goal'?'⚽':(e.type==='Red Card'?'🟥':'🟨')}</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player||tn)}</span>${e.type==='Goal'&&e.assist?`<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>`:''}</div></div>`;
-        };
-        const he = [...data.events].filter(e=>e.team_id===data.teams.home.id).reverse(), ae = [...data.events].filter(e=>e.team_id===data.teams.away.id).reverse(), nc = Math.max(he.length, ae.length) > 1;
-        return `<div class="w-100 px-2 pt-1 mt-1 border-top text-muted" style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" onclick="if(${nc}) { const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp); }"><div class="event-collapsed"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${he.length?fe(he[0], data.teams.home.name):''}</div><div class="text-start" style="flex: 1; min-width: 0;">${ae.length?fe(ae[0], data.teams.away.name):''}</div></div>${nc?`<div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▼</div>`:''}</div><div class="event-expanded d-none"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${he.map(e=>fe(e, data.teams.home.name)).join('')}</div><div class="text-start" style="flex: 1; min-width: 0;">${ae.map(e=>fe(e, data.teams.away.name)).join('')}</div></div><div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▲</div></div></div>`;
-    }
-    
-    function triggerCardGlow(fixId, eventType) {
-        const card = document.getElementById(`card-${fixId}`); if (!card) return;
-        const typeLower = (eventType || '').toLowerCase();
+    function triggerCardGlow(cardEl, eventTypeOrText) {
+        if (!cardEl) return;
+        const typeLower = (eventTypeOrText || '').toLowerCase();
         let glowClass = 'glow-goal';
-        if (typeLower.includes('red')) glowClass = 'glow-red-card';
-        else if (typeLower.includes('yellow')) glowClass = 'glow-yellow-card';
-        else if (typeLower.includes('sub')) glowClass = 'glow-subst';
-        card.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
-        void card.offsetWidth; 
-        card.classList.add(glowClass);
-        setTimeout(() => { card.classList.remove(glowClass); }, 4000);
-    }
-    
-    function detectNewEventsAndGlow(oldEvents, newEvents, fixId) {
-        if (!newEvents || newEvents.length === 0) return;
-        const known = new Set((oldEvents || []).map(e => `${e.time}_${e.type}_${e.player}_${e.player_out || ''}`));
-        const fresh = newEvents.filter(e => !known.has(`${e.time}_${e.type}_${e.player}_${e.player_out || ''}`));
-        if (fresh.length) triggerCardGlow(fixId, fresh[fresh.length - 1].type);
+        if (typeLower.includes('red') || typeLower.includes('🟥')) glowClass = 'glow-red-card';
+        else if (typeLower.includes('yellow') || typeLower.includes('🟨')) glowClass = 'glow-yellow-card';
+        else if (typeLower.includes('sub') || typeLower.includes('🔄')) glowClass = 'glow-subst';
+
+        cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
+        void cardEl.offsetWidth; // Force CSS reflow to trigger animation
+        cardEl.classList.add(glowClass);
+        setTimeout(() => { cardEl.classList.remove(glowClass); }, 4000);
     }
 
     async function pollAndUpdateDOM() {
         try {
-            const res = await fetch(window.location.href, { cache: 'no-store' }); if (!res.ok) return;
-            const htmlText = await res.text(), startStr = "const STATIC_MATCHES = ", sIdx = htmlText.indexOf(startStr);
-            if (sIdx === -1) return;
-            const jStart = sIdx + startStr.length, jEnd = htmlText.indexOf("let ACTIVE_DAY", jStart);
-            if (jEnd === -1) return;
+            const res = await fetch(window.location.href, { cache: 'no-store' });
+            if (!res.ok) return;
+            const htmlText = await res.text();
             
-            const rawJson = htmlText.substring(jStart, jEnd).trim().replace(/;$/, '');
-            const freshData = JSON.parse(rawJson);
-            const freshMatches = freshData[ACTIVE_DAY] || [], oldMatches = STATIC_MATCHES[ACTIVE_DAY] || [];
-            const finishedStates = ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD'];
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(htmlText, 'text/html');
 
-            freshMatches.forEach(nm => {
-                const fixId = nm.fixture.id, om = oldMatches.find(m => m.fixture.id === fixId);
-                if (!om) return;
-                const freshStatus = nm.fixture?.status?.short;
-                const oldStatus = om.fixture?.status?.short;
-                if (finishedStates.includes(freshStatus) || finishedStates.includes(oldStatus)) return;
-                detectNewEventsAndGlow(om.events, nm.events, fixId);
-                const tEl = document.getElementById(`time-${fixId}`); if (tEl) { const html = `${getTimeBadgeHtml(nm)} ${getLatestEventHtml(nm)}`; if(tEl.innerHTML!==html) tEl.innerHTML=html; }
-                const sEl = document.getElementById(`score-${fixId}`); if (sEl) { const html = getCenterColumnHtml(nm); if(sEl.innerHTML!==html) sEl.innerHTML=html; }
-                const eEl = document.getElementById(`events-${fixId}`); if (eEl) { const html = getEventsHtml(nm); if(eEl.innerHTML!==html) eEl.innerHTML=html; }
-                const rEl = document.getElementById(`ribbon-${fixId}`); if (rEl) { const html = getRibbonHtml(nm); if(rEl.innerHTML!==html) rEl.innerHTML=html; }
-                Object.assign(om, nm);
+            document.querySelectorAll('.lineup-card').forEach(currentCard => {
+                const cardId = currentCard.id;
+                if (!cardId) return;
+                const fixId = cardId.replace('card-', '');
+                const newCard = newDoc.getElementById(cardId);
+                
+                if (!newCard) return;
+
+                // PREVENT FLASH: Skip if HTML content is unchanged
+                if (currentCard.innerHTML === newCard.innerHTML) return;
+
+                // Glow detection: Check if events block updated
+                const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
+                const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
+                const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
+
+                // Preserve UI State
+                const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
+                const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
+                const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
+
+                // Swap HTML
+                currentCard.innerHTML = newCard.innerHTML;
+
+                // Restore UI State
+                if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
+                    currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
+                    currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
+                }
+                if (activeTab) {
+                    const tabName = activeTab.includes('stats') ? 'stats' : 'xi';
+                    window.switchLineupTab(null, fixId, tabName);
+                }
+
+                // Trigger Glow Animation
+                if (hasNewEvent) {
+                    triggerCardGlow(currentCard, newEventsHtml);
+                }
             });
-        } catch (err) { console.error("Silent update check failed:", err); }
+        } catch (err) {
+            console.error("DOM update failed:", err);
+        }
     }
 </script>
 </body>
@@ -1342,6 +1286,26 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
         .stat-label-tiny { font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px; }
         .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
         .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
+
+        @keyframes glowGoal { 0% { border-color: #20c997; box-shadow: 0 0 25px rgba(32, 201, 151, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerGoal { 0% { background-color: #d1e7dd !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-goal { animation: glowGoal 4s ease-out !important; border: 3px solid #20c997 !important; position: relative !important; z-index: 10 !important; }
+        .glow-goal .p-2.pb-1 { animation: headerGoal 4s ease-out !important; }
+
+        @keyframes glowRed { 0% { border-color: #dc3545; box-shadow: 0 0 25px rgba(220, 53, 69, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerRed { 0% { background-color: #f8d7da !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-red-card { animation: glowRed 4s ease-out !important; border: 3px solid #dc3545 !important; position: relative !important; z-index: 10 !important; }
+        .glow-red-card .p-2.pb-1 { animation: headerRed 4s ease-out !important; }
+
+        @keyframes glowYellow { 0% { border-color: #ffc107; box-shadow: 0 0 25px rgba(255, 193, 7, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerYellow { 0% { background-color: #fff3cd !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-yellow-card { animation: glowYellow 4s ease-out !important; border: 3px solid #ffc107 !important; position: relative !important; z-index: 10 !important; }
+        .glow-yellow-card .p-2.pb-1 { animation: headerYellow 4s ease-out !important; }
+
+        @keyframes glowSub { 0% { border-color: #212529; box-shadow: 0 0 25px rgba(33, 37, 41, 0.6); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerSub { 0% { background-color: #e9ecef !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-subst { animation: glowSub 4s ease-out !important; border: 3px solid #212529 !important; position: relative !important; z-index: 10 !important; }
+        .glow-subst .p-2.pb-1 { animation: headerSub 4s ease-out !important; }
     </style>
 </head>
 <body>
@@ -1387,12 +1351,26 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
 </div>
 
 <script>
-    document.getElementById('leagueSearchNavInput')?.addEventListener('input', function(e) {
-        const text = e.target.value.toLowerCase();
-        document.querySelectorAll('#leagueSearchList li').forEach(li => {
-            const leagueName = li.textContent.toLowerCase();
-            li.style.display = leagueName.includes(text) ? '' : 'none';
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('leagueSearchNavInput')?.addEventListener('input', function(e) {
+            const text = e.target.value.toLowerCase();
+            document.querySelectorAll('#leagueSearchList li').forEach(li => {
+                const leagueName = li.textContent.toLowerCase();
+                li.style.display = leagueName.includes(text) ? '' : 'none';
+            });
         });
+
+        document.querySelectorAll('.local-time-badge').forEach(badge => {
+            const utcStr = badge.getAttribute('data-utc');
+            if (utcStr) {
+                const dt = new Date(utcStr);
+                const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+                let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+                badge.textContent = `${day} ${time}`;
+            }
+        });
+
+        setInterval(pollAndUpdateDOM, 30000);
     });
 
     window.toggleSingleCard = function(fixId) {
@@ -1420,15 +1398,72 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
         }
     };
 
-    document.querySelectorAll('.local-time-badge').forEach(badge => {
-        const utcStr = badge.getAttribute('data-utc');
-        if (utcStr) {
-            const dt = new Date(utcStr);
-            const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
-            let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
-            badge.textContent = `${day} ${time}`;
+    function triggerCardGlow(cardEl, eventTypeOrText) {
+        if (!cardEl) return;
+        const typeLower = (eventTypeOrText || '').toLowerCase();
+        let glowClass = 'glow-goal';
+        if (typeLower.includes('red') || typeLower.includes('🟥')) glowClass = 'glow-red-card';
+        else if (typeLower.includes('yellow') || typeLower.includes('🟨')) glowClass = 'glow-yellow-card';
+        else if (typeLower.includes('sub') || typeLower.includes('🔄')) glowClass = 'glow-subst';
+
+        cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
+        void cardEl.offsetWidth; // Force CSS reflow to trigger animation
+        cardEl.classList.add(glowClass);
+        setTimeout(() => { cardEl.classList.remove(glowClass); }, 4000);
+    }
+
+    async function pollAndUpdateDOM() {
+        try {
+            const res = await fetch(window.location.href, { cache: 'no-store' });
+            if (!res.ok) return;
+            const htmlText = await res.text();
+            
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(htmlText, 'text/html');
+
+            document.querySelectorAll('.lineup-card').forEach(currentCard => {
+                const cardId = currentCard.id;
+                if (!cardId) return;
+                const fixId = cardId.replace('card-', '');
+                const newCard = newDoc.getElementById(cardId);
+                
+                if (!newCard) return;
+
+                // PREVENT FLASH: Skip if HTML content is unchanged
+                if (currentCard.innerHTML === newCard.innerHTML) return;
+
+                // Glow detection: Check if events block updated
+                const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
+                const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
+                const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
+
+                // Preserve UI State
+                const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
+                const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
+                const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
+
+                // Swap HTML
+                currentCard.innerHTML = newCard.innerHTML;
+
+                // Restore UI State
+                if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
+                    currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
+                    currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
+                }
+                if (activeTab) {
+                    const tabName = activeTab.includes('stats') ? 'stats' : 'xi';
+                    window.switchLineupTab(null, fixId, tabName);
+                }
+
+                // Trigger Glow Animation
+                if (hasNewEvent) {
+                    triggerCardGlow(currentCard, newEventsHtml);
+                }
+            });
+        } catch (err) {
+            console.error("DOM update failed:", err);
         }
-    });
+    }
 </script>
 </body>
 </html>
@@ -1527,7 +1562,6 @@ def generate_v2_index():
             is_today_treatment = slug in today_slugs
             
             if is_today_treatment:
-                # SEO FIX: Pass ONLY today's matches to the page builder
                 today_matches_for_league = [m for m in raw_matches_by_day['today'] if m.get('league', {}).get('slug') == slug]
                 build_single_league_page(
                     slug, state[slug], today_matches_for_league, 
@@ -1566,7 +1600,7 @@ def generate_v2_index():
         )
         state[target_slug]['last_updated'] = datetime.now().timestamp()
 
-    # Save Registry State (ensure_ascii=False keeps accents visible in the JSON file)
+    # Save Registry State
     with open(state_file, 'w', encoding='utf-8') as f: 
         json.dump(state, f, indent=2, ensure_ascii=False)
 
@@ -1588,7 +1622,6 @@ def generate_v2_index():
     template = Template(HTML_TEMPLATE)
     output_html = template.render(
         leagues_by_day=leagues_by_day,
-        matches_json=json.dumps(raw_matches_by_day),
         display_dates=day_info["display"],
         nav_leagues_html=nav_html
     )
