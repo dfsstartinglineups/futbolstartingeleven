@@ -667,9 +667,9 @@ def generate_pitch_html(lineup, default_hex):
             initial = name[0] if name else ''
             avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; border: 2px solid #fff;">{initial}</div>'
             
-        return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: 44px; z-index: 10;">
+        return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: 90px; z-index: 10;">
             <div style="width: 34px; height: 34px; background: #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">{avatar}</div>
-            <div style="background: rgba(0,0,0,0.7); color: #fff; font-size: 0.60rem; font-weight: bold; padding: 2px 4px; border-radius: 4px; margin-top: 3px; white-space: nowrap; max-width: 70px; overflow: hidden; text-overflow: ellipsis;">{name}</div>
+            <div style="background: rgba(0,0,0,0.7); color: #fff; font-size: 0.60rem; font-weight: bold; padding: 2px 5px; border-radius: 4px; margin-top: 3px; white-space: nowrap; max-width: 90px; overflow: hidden; text-overflow: ellipsis;">{name}</div>
         </div>'''
 
     html += render_pitch_player(gk, 50, 92, color, contrast)
@@ -1613,7 +1613,8 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
 <div class="container mt-4 mb-3 text-center">
     <img src="{{ team_logo }}" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px;">
     <h1 class="h3 fw-bold text-dark mb-1">{{ team_name }} Starting Lineup</h1>
-    <h2 class="h6 text-muted mb-3">{{ header_state }}</h2>
+    <h2 class="h6 text-muted mb-2">{{ header_state }}</h2>
+    <span class="badge bg-success px-3 py-2" style="font-size: 0.8rem; letter-spacing: 0.5px;">Formation: {{ formation }}</span>
 </div>
 
 <div class="container pb-5">
@@ -1698,6 +1699,7 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
     is_final = status_short in ['FT', 'AET', 'PEN']
 
     lineup = match_data.get('homeLineup') if is_home else match_data.get('awayLineup')
+    formation_str = get_formation(lineup)
     
     if is_final:
         header_state = f"Last Match: vs {opp_name}"
@@ -1717,6 +1719,7 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
         team_name=team_name,
         team_logo=team_logo,
         header_state=header_state,
+        formation=formation_str,
         pitch_html=pitch_html,
         nav_leagues_html=nav_html
     )
