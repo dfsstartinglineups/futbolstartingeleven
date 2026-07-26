@@ -155,24 +155,35 @@ COUNTRY_FLAG_URLS = {
 # ====================================================================
 # ASYNC CORE API FETCHER (DEEP STATS)
 # ====================================================================
-async def fetch_single_player_core_stats(session, league_slug, player_id):
-    url = f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{league_slug}/athletes/{player_id}/statistics"
-    try:
-        async with session.get(url, timeout=3) as resp:
-            if resp.status == 200:
-                data = await resp.json()
-                stats_dict = {}
-                for cat in data.get('splits', {}).get('categories', []):
-                    for stat in cat.get('stats', []):
-                        stats_dict[stat.get('name')] = stat.get('value')
-                return str(player_id), stats_dict
-    except:
-        pass
+async def fetch_single_player_core_stats(session, league_slug, event_id, team_id, player_id):
+    # CRITICAL FIX: We must hit the LIVE MATCH statistics endpoint, passing the event and team contexts.
+    # The previous URL was hitting the season totals endpoint, which caused the wall of zeros.
+    urls = [
+        f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{league_slug}/events/{event_id}/competitions/{event_id}/competitors/{team_id}/roster/{player_id}/statistics/0",
+        f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{league_slug}/events/{event_id}/competitions/{event_id}/competitors/{team_id}/roster/{player_id}/statistics"
+    ]
+    
+    for url in urls:
+        try:
+            async with session.get(url, timeout=4) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    stats_dict = {}
+                    for cat in data.get('splits', {}).get('categories', []):
+                        for stat in cat.get('stats', []):
+                            stats_dict[stat.get('name')] = stat.get('value')
+                    
+                    if stats_dict:
+                        return str(player_id), stats_dict
+        except:
+            continue
+            
     return str(player_id), {}
 
-async def get_core_stats_concurrently(league_slug, player_ids):
+async def get_core_stats_concurrently(league_slug, event_id, player_list):
     async with aiohttp.ClientSession() as session:
-        tasks = [fetch_single_player_core_stats(session, league_slug, pid) for pid in player_ids]
+        # player_list is a list of tuples: (team_id, player_id)
+        tasks = [fetch_single_player_core_stats(session, league_slug, event_id, tid, pid) for tid, pid in player_list]
         results = await asyncio.gather(*tasks)
         return {pid: stats for pid, stats in results if stats}
 
@@ -303,7 +314,7 @@ def extract_player_live_stats(entry_obj, core_raw_stats=None):
     live_stats = {}
     
     def cnum(v):
-        try: return int(float(re.sub(r'[^0-9.]', '', str(v))))
+        try: return int(float(re.sub(r'[^0-9.-]', '', str(v))))
         except: return 0
     def cflt(v):
         try: return round(float(str(v).strip('%')), 2)
@@ -429,19 +440,25 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
         if isinstance(rosters, list) and len(rosters) >= 2:
             
             # --- ASYNC DEEP STATS ENGINE ---
-            # 1. Gather all active players who saw the field
-            active_player_ids = []
+            active_player_list = []
             for r_data in rosters:
+                t_id = str(r_data.get('team', {}).get('id', ''))
                 for entry in r_data.get('roster', []):
-                    if entry.get('starter', False) or entry.get('subbedIn', False):
-                        p_id = str(entry.get('athlete', {}).get('id', ''))
-                        if p_id: active_player_ids.append(p_id)
+                    ath = entry.get('athlete', {})
+                    p_name = ath.get('displayName', 'Unknown')
+                    
+                    # Ensure we flag anyone who stepped on the pitch
+                    sub_in_flag = entry.get('subbedIn', False) or entry.get('starter', False) or (game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
+                    
+                    if sub_in_flag or entry.get('played') or entry.get('didPlay'):
+                        p_id = str(ath.get('id', ''))
+                        if p_id and t_id: 
+                            active_player_list.append((t_id, p_id))
 
-            # 2. Fetch stats concurrently in < 1 second
             core_stats_cache = {}
-            if active_player_ids and league_code and league_code != "all":
+            if active_player_list and league_code and league_code != "all":
                 try:
-                    core_stats_cache = asyncio.run(get_core_stats_concurrently(league_code, active_player_ids))
+                    core_stats_cache = asyncio.run(get_core_stats_concurrently(league_code, event_id, active_player_list))
                 except Exception as e:
                     print(f"⚠️ Core API Fetch failed for event {event_id}: {e}")
             # --------------------------------
@@ -462,7 +479,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     sub_in = sub_in_flag or (game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
                     sub_out = game_state != 'pre' and (str(ath.get('id')) in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
                     
-                    # Merge deep stats cache!
+                    # Merge deep stats cache using player ID
                     p_stats = extract_player_live_stats(entry, core_stats_cache.get(str(ath.get('id'))))
                     
                     p_obj = {
@@ -488,7 +505,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
                     sub_in = sub_in_flag or (game_state != 'pre' and (str(ath.get('id')) in subbed_in or p_name.lower() in subbed_in or is_valid_sub_minute(entry.get('subbedInMinute'))))
                     sub_out = game_state != 'pre' and (str(ath.get('id')) in subbed_out or p_name.lower() in subbed_out or is_valid_sub_minute(entry.get('subbedOutMinute')))
                     
-                    # Merge deep stats cache!
+                    # Merge deep stats cache using player ID
                     p_stats = extract_player_live_stats(entry, core_stats_cache.get(str(ath.get('id'))))
                     
                     if entry.get('didPlay') or entry.get('played') or sub_in or p_stats:
@@ -827,7 +844,6 @@ def fetch_espn_scores_for_date(date_str, old_html):
 
             league_flag = str(league_flag or "")
 
-            # Regex Extract from previous index.html for completed games
             if state == 'post' and old_html:
                 match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
                 saved_block = re.search(match_pattern, old_html, re.DOTALL)
@@ -841,7 +857,6 @@ def fetch_espn_scores_for_date(date_str, old_html):
                     })
                     continue
 
-            # Fetch Live or New Summary
             should_fetch, _ = should_fetch_summary(event)
             summary = parse_espn_summary(event_id, league_code=(league_obj.get('slug') or 'all')) if should_fetch else {
                 "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [], 
