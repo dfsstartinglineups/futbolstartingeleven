@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#212529">
+    <title>Today's Brazil Serie A Starting Lineups & Live Scores - Sun, Jul 26</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('error', function (e) { if (e.target.tagName === 'IMG') { e.target.style.display = 'none'; } }, true);
+    </script>
+    <style>
+        body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .header-brand a { color: inherit; }
+        .header-brand span { text-shadow: none !important; background: linear-gradient(to bottom, #20c997 0%, #198754 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6)); }
+        
+        .lineup-card { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 16px; overflow: hidden; }
+        .team-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1)); }
+        .batting-order { padding-left: 0; list-style-type: none; margin-bottom: 0; }
+        .batting-order li { padding: 6px 12px; font-size: 0.85rem; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; align-items: center; }
+        .batting-order li:last-child { border-bottom: none; }
+        .batter-name { font-weight: 600; color: #495057; }
+        
+        .date-subheader { background: #ffffff; border-left: 4px solid #0d6efd; border-radius: 8px; font-weight: 700; color: #343a40; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .live-dot { display: inline-block; width: 7px; height: 7px; background-color: #fff; border-radius: 50%; margin-right: 5px; margin-bottom: 1px; animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); } }
+        .stat-bar-container { display: flex; width: 100%; height: 14px; background-color: #e9ecef; border-radius: 4px; overflow: hidden; margin-top: 2px; }
+        .stat-bar-segment { display: flex; align-items: center; justify-content: center; font-size: 0.60rem; font-weight: 800; padding: 0 4px; transition: width 0.5s ease-in-out; }
+        .stat-label-tiny { font-size: 0.55rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 4px; }
+        .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
+        .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
+    </style>
+</head>
+<body>
+
+
+<nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-0" style="background-color: #212529; z-index: 1050;">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="header-brand"><a href="/v2/index.html" class="text-decoration-none">Futbol Starting <span>Eleven</span></a></div>
+        <div class="d-flex align-items-center gap-2">
+            <div class="dropdown league-search-container">
+                <input type="text" id="leagueSearchNavInput" class="form-control form-control-sm" placeholder="🏆 Search leagues..." data-bs-toggle="dropdown" aria-expanded="false" style="width: 160px; background-color: #343a40; color: white; border: 1px solid #495057; cursor: pointer;" autocomplete="off">
+                <ul id="leagueSearchList" class="dropdown-menu dropdown-menu-end shadow-sm mt-2" style="max-height: 400px; overflow-y: auto; width: 260px; border-radius: 8px;">
+                    <li><a class="dropdown-item" href="/v2/leagues/argentine-lpf/index.html" style="font-size: 0.85rem; font-weight: 500;">Argentine LPF</a></li><li><a class="dropdown-item" href="/v2/leagues/argentine-nacional-b/index.html" style="font-size: 0.85rem; font-weight: 500;">Argentine Nacional B</a></li><li><a class="dropdown-item" href="/v2/leagues/argentine-primera-b/index.html" style="font-size: 0.85rem; font-weight: 500;">Argentine Primera B</a></li><li><a class="dropdown-item" href="/v2/leagues/bolivian-liga-profesional/index.html" style="font-size: 0.85rem; font-weight: 500;">Bolivian Liga Profesional</a></li><li><a class="dropdown-item" href="/v2/leagues/brazil-serie-a/index.html" style="font-size: 0.85rem; font-weight: 500;">Brazil Serie A</a></li><li><a class="dropdown-item" href="/v2/leagues/brazil-serie-b/index.html" style="font-size: 0.85rem; font-weight: 500;">Brazil Serie B</a></li><li><a class="dropdown-item" href="/v2/leagues/chilean-primera/index.html" style="font-size: 0.85rem; font-weight: 500;">Chilean Primera</a></li><li><a class="dropdown-item" href="/v2/leagues/chinese-super-league/index.html" style="font-size: 0.85rem; font-weight: 500;">Chinese Super League</a></li><li><a class="dropdown-item" href="/v2/leagues/club-friendly/index.html" style="font-size: 0.85rem; font-weight: 500;">Club Friendly</a></li><li><a class="dropdown-item" href="/v2/leagues/colombian-primera-a/index.html" style="font-size: 0.85rem; font-weight: 500;">Colombian Primera A</a></li><li><a class="dropdown-item" href="/v2/leagues/danish-superliga/index.html" style="font-size: 0.85rem; font-weight: 500;">Danish Superliga</a></li><li><a class="dropdown-item" href="/v2/leagues/guatemalan-liga-nacional/index.html" style="font-size: 0.85rem; font-weight: 500;">Guatemalan Liga Nacional</a></li><li><a class="dropdown-item" href="/v2/leagues/liga-auf-uruguaya/index.html" style="font-size: 0.85rem; font-weight: 500;">Liga AUF Uruguaya</a></li><li><a class="dropdown-item" href="/v2/leagues/liga-de-expansion-mx/index.html" style="font-size: 0.85rem; font-weight: 500;">Liga de Expansión MX</a></li><li><a class="dropdown-item" href="/v2/leagues/liga-fpd/index.html" style="font-size: 0.85rem; font-weight: 500;">Liga FPD</a></li><li><a class="dropdown-item" href="/v2/leagues/liga-mx/index.html" style="font-size: 0.85rem; font-weight: 500;">Liga MX</a></li><li><a class="dropdown-item" href="/v2/leagues/ligapro-ecuador/index.html" style="font-size: 0.85rem; font-weight: 500;">LigaPro Ecuador</a></li><li><a class="dropdown-item" href="/v2/leagues/norwegian-eliteserien/index.html" style="font-size: 0.85rem; font-weight: 500;">Norwegian Eliteserien</a></li><li><a class="dropdown-item" href="/v2/leagues/nwsl/index.html" style="font-size: 0.85rem; font-weight: 500;">NWSL</a></li><li><a class="dropdown-item" href="/v2/leagues/paraguayan-primera/index.html" style="font-size: 0.85rem; font-weight: 500;">Paraguayan Primera</a></li><li><a class="dropdown-item" href="/v2/leagues/peru-liga-1/index.html" style="font-size: 0.85rem; font-weight: 500;">Peru Liga 1</a></li><li><a class="dropdown-item" href="/v2/leagues/russian-premier/index.html" style="font-size: 0.85rem; font-weight: 500;">Russian Premier</a></li><li><a class="dropdown-item" href="/v2/leagues/salvadoran-primera/index.html" style="font-size: 0.85rem; font-weight: 500;">Salvadoran Primera</a></li><li><a class="dropdown-item" href="/v2/leagues/scottish-league-cup-group-c/index.html" style="font-size: 0.85rem; font-weight: 500;">Scottish League Cup, Group C</a></li><li><a class="dropdown-item" href="/v2/leagues/swedish-allsvenskan/index.html" style="font-size: 0.85rem; font-weight: 500;">Swedish Allsvenskan</a></li><li><a class="dropdown-item" href="/v2/leagues/womens-africa-cup-of-nations-group-a/index.html" style="font-size: 0.85rem; font-weight: 500;">Women's Africa Cup of Nations, Group A</a></li>
+                </ul>
+            </div>
+            <input type="text" id="team-search" class="form-control form-control-sm ms-2" placeholder="🔍 Search...">
+        </div>
+    </div>
+</nav>
+
+
+<div class="container mt-4 mb-3 text-center">
+    <h1 class="h4 fw-bold text-dark mb-1">Today's Brazil Serie A Matches - Sun, Jul 26</h1>
+    
+</div>
+
+<div class="container pb-5">
+    <div class="row justify-content-start">
+        
+            
+                
+                
+                
+                <div class="col-md-6 col-lg-6 col-xl-4 mb-3">
+                    <!-- MATCH_401841159 -->
+    <div class="lineup-card shadow-sm" id="card-401841159">
+        <div class="ribbon-view" id="ribbon-401841159" onclick="toggleSingleCard('401841159')">
+    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T19:00Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 3:00pm</span></div><a href="/v2/leagues/brazil-serie-a/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="Brazil Serie A"><span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span>SERA</a></div>
+        <div class="col-5 px-2">
+            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/b00045cd613d.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Bahia</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/775b106c38e1.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Corinthians</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+        </div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center"><div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div></div>
+    </div></div>
+        <div class="full-view d-none" id="full-401841159">
+            <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('401841159')">
+                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-401841159" style="white-space: nowrap;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T19:00Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 3:00pm</span> </div>
+                    <a href="/v2/leagues/brazil-serie-a/index.html" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="Brazil Serie A"><span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span> <span class="text-truncate">Brazil Serie A</span></a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/b00045cd613d.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Bahia</div></div>
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-401841159"><div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">vs</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/775b106c38e1.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Corinthians</div></div>
+                </div>
+                <div class="w-100" id="events-401841159"></div>
+            </div>
+            <div class="w-100" id="odds-401841159"></div>
+            <div class="w-100" id="injuries-401841159"></div>
+            <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
+                <div class="d-flex gap-4 w-100">
+                    <div class="lineup-tab active" id="tab-xi-401841159" onclick="switchLineupTab(event, '401841159', 'xi')" style="flex: 1; text-align: center;">STARTING XI</div>
+                    <div class="lineup-tab  d-none" id="tab-stats-401841159" onclick="switchLineupTab(event, '401841159', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                </div>
+            </div>
+            <div class="collapse show lineup-container" id="lineup-collapse-401841159">
+                <div id="view-xi-401841159" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
+                <div id="view-stats-401841159" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
+            </div>
+        </div>
+    </div>
+    <!-- END_MATCH_401841159 -->
+                </div>
+                
+                <div class="col-md-6 col-lg-6 col-xl-4 mb-3">
+                    <!-- MATCH_401841167 -->
+    <div class="lineup-card shadow-sm" id="card-401841167">
+        <div class="ribbon-view" id="ribbon-401841167" onclick="toggleSingleCard('401841167')">
+    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T19:00Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 3:00pm</span></div><a href="/v2/leagues/brazil-serie-a/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="Brazil Serie A"><span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span>SERA</a></div>
+        <div class="col-5 px-2">
+            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/5d2a77cf3503.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Cruzeiro</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/67a7a9fc9465.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Botafogo</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+        </div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center"><div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div></div>
+    </div></div>
+        <div class="full-view d-none" id="full-401841167">
+            <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('401841167')">
+                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-401841167" style="white-space: nowrap;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T19:00Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 3:00pm</span> </div>
+                    <a href="/v2/leagues/brazil-serie-a/index.html" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="Brazil Serie A"><span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span> <span class="text-truncate">Brazil Serie A</span></a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/5d2a77cf3503.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Cruzeiro</div></div>
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-401841167"><div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">vs</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/67a7a9fc9465.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Botafogo</div></div>
+                </div>
+                <div class="w-100" id="events-401841167"></div>
+            </div>
+            <div class="w-100" id="odds-401841167"></div>
+            <div class="w-100" id="injuries-401841167"></div>
+            <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
+                <div class="d-flex gap-4 w-100">
+                    <div class="lineup-tab active" id="tab-xi-401841167" onclick="switchLineupTab(event, '401841167', 'xi')" style="flex: 1; text-align: center;">STARTING XI</div>
+                    <div class="lineup-tab  d-none" id="tab-stats-401841167" onclick="switchLineupTab(event, '401841167', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                </div>
+            </div>
+            <div class="collapse show lineup-container" id="lineup-collapse-401841167">
+                <div id="view-xi-401841167" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
+                <div id="view-stats-401841167" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
+            </div>
+        </div>
+    </div>
+    <!-- END_MATCH_401841167 -->
+                </div>
+                
+                <div class="col-md-6 col-lg-6 col-xl-4 mb-3">
+                    <!-- MATCH_401841166 -->
+    <div class="lineup-card shadow-sm" id="card-401841166">
+        <div class="ribbon-view" id="ribbon-401841166" onclick="toggleSingleCard('401841166')">
+    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T21:30Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 5:30pm</span></div><a href="/v2/leagues/brazil-serie-a/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="Brazil Serie A"><span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span>SERA</a></div>
+        <div class="col-5 px-2">
+            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/ce0a2f3ecdfb.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Flamengo</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/9fcc333bfe3a.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">São Paulo</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+        </div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center"><div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div></div>
+    </div></div>
+        <div class="full-view d-none" id="full-401841166">
+            <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('401841166')">
+                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-401841166" style="white-space: nowrap;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T21:30Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 5:30pm</span> </div>
+                    <a href="/v2/leagues/brazil-serie-a/index.html" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="Brazil Serie A"><span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span> <span class="text-truncate">Brazil Serie A</span></a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/ce0a2f3ecdfb.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Flamengo</div></div>
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-401841166"><div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">vs</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/9fcc333bfe3a.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">São Paulo</div></div>
+                </div>
+                <div class="w-100" id="events-401841166"></div>
+            </div>
+            <div class="w-100" id="odds-401841166"></div>
+            <div class="w-100" id="injuries-401841166"></div>
+            <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
+                <div class="d-flex gap-4 w-100">
+                    <div class="lineup-tab active" id="tab-xi-401841166" onclick="switchLineupTab(event, '401841166', 'xi')" style="flex: 1; text-align: center;">STARTING XI</div>
+                    <div class="lineup-tab  d-none" id="tab-stats-401841166" onclick="switchLineupTab(event, '401841166', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                </div>
+            </div>
+            <div class="collapse show lineup-container" id="lineup-collapse-401841166">
+                <div id="view-xi-401841166" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
+                <div id="view-stats-401841166" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
+            </div>
+        </div>
+    </div>
+    <!-- END_MATCH_401841166 -->
+                </div>
+                
+                <div class="col-md-6 col-lg-6 col-xl-4 mb-3">
+                    <!-- MATCH_401841165 -->
+    <div class="lineup-card shadow-sm" id="card-401841165">
+        <div class="ribbon-view" id="ribbon-401841165" onclick="toggleSingleCard('401841165')">
+    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T21:30Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 5:30pm</span></div><a href="/v2/leagues/brazil-serie-a/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="Brazil Serie A"><span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span>SERA</a></div>
+        <div class="col-5 px-2">
+            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/dd11459f9c9f.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Grêmio</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/6a1bd3deedd7.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Fluminense</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+        </div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center"><div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div></div>
+    </div></div>
+        <div class="full-view d-none" id="full-401841165">
+            <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('401841165')">
+                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-401841165" style="white-space: nowrap;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T21:30Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 5:30pm</span> </div>
+                    <a href="/v2/leagues/brazil-serie-a/index.html" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="Brazil Serie A"><span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span> <span class="text-truncate">Brazil Serie A</span></a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/dd11459f9c9f.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Grêmio</div></div>
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-401841165"><div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">vs</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/6a1bd3deedd7.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Fluminense</div></div>
+                </div>
+                <div class="w-100" id="events-401841165"></div>
+            </div>
+            <div class="w-100" id="odds-401841165"></div>
+            <div class="w-100" id="injuries-401841165"></div>
+            <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
+                <div class="d-flex gap-4 w-100">
+                    <div class="lineup-tab active" id="tab-xi-401841165" onclick="switchLineupTab(event, '401841165', 'xi')" style="flex: 1; text-align: center;">STARTING XI</div>
+                    <div class="lineup-tab  d-none" id="tab-stats-401841165" onclick="switchLineupTab(event, '401841165', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                </div>
+            </div>
+            <div class="collapse show lineup-container" id="lineup-collapse-401841165">
+                <div id="view-xi-401841165" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
+                <div id="view-stats-401841165" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
+            </div>
+        </div>
+    </div>
+    <!-- END_MATCH_401841165 -->
+                </div>
+                
+                <div class="col-md-6 col-lg-6 col-xl-4 mb-3">
+                    <!-- MATCH_401841163 -->
+    <div class="lineup-card shadow-sm" id="card-401841163">
+        <div class="ribbon-view" id="ribbon-401841163" onclick="toggleSingleCard('401841163')">
+    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T21:30Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 5:30pm</span></div><a href="/v2/leagues/brazil-serie-a/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="Brazil Serie A"><span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span>SERA</a></div>
+        <div class="col-5 px-2">
+            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/b9e02dbab813.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Red Bull Bragantino</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/a64b7537e7d3.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Coritiba</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+        </div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center"><div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div></div>
+    </div></div>
+        <div class="full-view d-none" id="full-401841163">
+            <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('401841163')">
+                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-401841163" style="white-space: nowrap;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T21:30Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 5:30pm</span> </div>
+                    <a href="/v2/leagues/brazil-serie-a/index.html" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="Brazil Serie A"><span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span> <span class="text-truncate">Brazil Serie A</span></a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/b9e02dbab813.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Red Bull Bragantino</div></div>
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-401841163"><div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">vs</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/a64b7537e7d3.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Coritiba</div></div>
+                </div>
+                <div class="w-100" id="events-401841163"></div>
+            </div>
+            <div class="w-100" id="odds-401841163"></div>
+            <div class="w-100" id="injuries-401841163"></div>
+            <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
+                <div class="d-flex gap-4 w-100">
+                    <div class="lineup-tab active" id="tab-xi-401841163" onclick="switchLineupTab(event, '401841163', 'xi')" style="flex: 1; text-align: center;">STARTING XI</div>
+                    <div class="lineup-tab  d-none" id="tab-stats-401841163" onclick="switchLineupTab(event, '401841163', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                </div>
+            </div>
+            <div class="collapse show lineup-container" id="lineup-collapse-401841163">
+                <div id="view-xi-401841163" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
+                <div id="view-stats-401841163" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
+            </div>
+        </div>
+    </div>
+    <!-- END_MATCH_401841163 -->
+                </div>
+                
+                <div class="col-md-6 col-lg-6 col-xl-4 mb-3">
+                    <!-- MATCH_401841164 -->
+    <div class="lineup-card shadow-sm" id="card-401841164">
+        <div class="ribbon-view" id="ribbon-401841164" onclick="toggleSingleCard('401841164')">
+    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T22:30Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 6:30pm</span></div><a href="/v2/leagues/brazil-serie-a/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="Brazil Serie A"><span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span>SERA</a></div>
+        <div class="col-5 px-2">
+            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/25cd99258580.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Palmeiras</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/faeaab82352a.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Atlético-MG</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+        </div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center"><div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div></div>
+    </div></div>
+        <div class="full-view d-none" id="full-401841164">
+            <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('401841164')">
+                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-401841164" style="white-space: nowrap;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T22:30Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 6:30pm</span> </div>
+                    <a href="/v2/leagues/brazil-serie-a/index.html" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="Brazil Serie A"><span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span> <span class="text-truncate">Brazil Serie A</span></a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/25cd99258580.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Palmeiras</div></div>
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-401841164"><div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">vs</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/faeaab82352a.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Atlético-MG</div></div>
+                </div>
+                <div class="w-100" id="events-401841164"></div>
+            </div>
+            <div class="w-100" id="odds-401841164"></div>
+            <div class="w-100" id="injuries-401841164"></div>
+            <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
+                <div class="d-flex gap-4 w-100">
+                    <div class="lineup-tab active" id="tab-xi-401841164" onclick="switchLineupTab(event, '401841164', 'xi')" style="flex: 1; text-align: center;">STARTING XI</div>
+                    <div class="lineup-tab  d-none" id="tab-stats-401841164" onclick="switchLineupTab(event, '401841164', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                </div>
+            </div>
+            <div class="collapse show lineup-container" id="lineup-collapse-401841164">
+                <div id="view-xi-401841164" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
+                <div id="view-stats-401841164" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
+            </div>
+        </div>
+    </div>
+    <!-- END_MATCH_401841164 -->
+                </div>
+                
+                <div class="col-md-6 col-lg-6 col-xl-4 mb-3">
+                    <!-- MATCH_401841162 -->
+    <div class="lineup-card shadow-sm" id="card-401841162">
+        <div class="ribbon-view" id="ribbon-401841162" onclick="toggleSingleCard('401841162')">
+    <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T22:30Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 6:30pm</span></div><a href="/v2/leagues/brazil-serie-a/index.html" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="Brazil Serie A"><span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span>SERA</a></div>
+        <div class="col-5 px-2">
+            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/abcddb7f0a87.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Remo</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="/images/teams/c9a0617d1354.png" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">Vitória</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">-</span></div></div>
+        </div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center"><div class="text-muted text-start w-100 ps-2" style="font-size: 0.6rem; font-style: italic;">No Events</div></div>
+    </div></div>
+        <div class="full-view d-none" id="full-401841162">
+            <div class="p-2 pb-1" style="background-color: #fcfcfc;">
+                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('401841162')">
+                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-401841162" style="white-space: nowrap;"><span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="2026-07-26T22:30Z" style="font-size: 0.65rem; white-space: nowrap;">Sun 6:30pm</span> </div>
+                    <a href="/v2/leagues/brazil-serie-a/index.html" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="Brazil Serie A"><span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">🏆</span> <span class="text-truncate">Brazil Serie A</span></a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/abcddb7f0a87.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Remo</div></div>
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-401841162"><div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">vs</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/c9a0617d1354.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Vitória</div></div>
+                </div>
+                <div class="w-100" id="events-401841162"></div>
+            </div>
+            <div class="w-100" id="odds-401841162"></div>
+            <div class="w-100" id="injuries-401841162"></div>
+            <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
+                <div class="d-flex gap-4 w-100">
+                    <div class="lineup-tab active" id="tab-xi-401841162" onclick="switchLineupTab(event, '401841162', 'xi')" style="flex: 1; text-align: center;">STARTING XI</div>
+                    <div class="lineup-tab  d-none" id="tab-stats-401841162" onclick="switchLineupTab(event, '401841162', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                </div>
+            </div>
+            <div class="collapse show lineup-container" id="lineup-collapse-401841162">
+                <div id="view-xi-401841162" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
+                <div id="view-stats-401841162" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
+            </div>
+        </div>
+    </div>
+    <!-- END_MATCH_401841162 -->
+                </div>
+                
+            
+        
+    </div>
+</div>
+
+<script>
+    document.getElementById('leagueSearchNavInput')?.addEventListener('input', function(e) {
+        const text = e.target.value.toLowerCase();
+        document.querySelectorAll('#leagueSearchList li').forEach(li => {
+            const leagueName = li.textContent.toLowerCase();
+            li.style.display = leagueName.includes(text) ? '' : 'none';
+        });
+    });
+
+    window.toggleSingleCard = function(fixId) {
+        const fullView = document.getElementById(`full-${fixId}`);
+        document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
+        fullView?.classList.toggle('d-none');
+        if (fullView && !fullView.classList.contains('d-none')) {
+            fullView.querySelectorAll('img[data-src]').forEach(img => {
+                img.src = img.getAttribute('data-src');
+                img.removeAttribute('data-src');
+            });
+        }
+    };
+
+    window.switchLineupTab = function(event, fixId, tabName) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        const xiTab = document.getElementById(`tab-xi-${fixId}`), statsTab = document.getElementById(`tab-stats-${fixId}`);
+        const xiView = document.getElementById(`view-xi-${fixId}`), statsView = document.getElementById(`view-stats-${fixId}`);
+        if (tabName === 'xi') {
+            xiTab?.classList.add('active'); statsTab?.classList.remove('active');
+            xiView?.classList.remove('d-none'); statsView?.classList.add('d-none');
+        } else if (tabName === 'stats') {
+            statsTab?.classList.add('active'); xiTab?.classList.remove('active');
+            statsView?.classList.remove('d-none'); xiView?.classList.add('d-none');
+        }
+    };
+
+    document.querySelectorAll('.local-time-badge').forEach(badge => {
+        const utcStr = badge.getAttribute('data-utc');
+        if (utcStr) {
+            const dt = new Date(utcStr);
+            const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+            let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+            badge.textContent = `${day} ${time}`;
+        }
+    });
+</script>
+</body>
+</html>
