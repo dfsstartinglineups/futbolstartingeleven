@@ -619,7 +619,7 @@ def build_lineup_list(lineup_data):
     items = ""
     for s in lineup_data['startXI']:
         p = s.get('player', {})
-        pho = f'''<img src="{p.get('photo', '')}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2">''' if p.get('photo') else '''<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>'''
+        pho = f'''<img data-src="{p.get('photo', '')}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2 player-headshot">''' if p.get('photo') else '''<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>'''
         sub = '''<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>''' if p.get('isSubbedOut') else ''
         items += f'''<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">{p.get('pos','M')}</span>{pho}<span class="batter-name text-dark text-truncate">{sub}{shorten_player_name(p.get('name'))}</span><span class="ms-auto text-muted" style="font-size: 0.65rem;">#{p.get('number','')}</span></li>'''
     return f'''<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ {lineup_data.get('formation', '4-3-3')}</div><ul class="batting-order w-100 m-0 p-0">{items}</ul>'''
@@ -1077,8 +1077,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     }
 
     window.toggleSingleCard = function(fixId) {
-        document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
-        document.getElementById(`full-${fixId}`)?.classList.toggle('d-none');
+    const fullView = document.getElementById(`full-${fixId}`);
+    document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
+    fullView?.classList.toggle('d-none');
+
+        // Load headshots for this card only when opened
+        if (fullView && !fullView.classList.contains('d-none')) {
+            fullView.querySelectorAll('img[data-src]').forEach(img => {
+                img.src = img.getAttribute('data-src');
+                img.removeAttribute('data-src');
+            });
+        }
     };
 
     window.switchLineupTab = function(event, fixId, tabName) {
