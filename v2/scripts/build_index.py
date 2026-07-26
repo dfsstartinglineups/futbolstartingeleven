@@ -122,6 +122,10 @@ COUNTRY_FLAG_URLS = {
     
     # 5. Mexico / MX
     "mexico": "mx", "mx": "mx",
+
+    # Guatemala
+    "guatemalan": "gt",
+    "guatemala": "gt",
     
     # 6. Croatia / FPD
     "croatian": "hr", "croatia": "hr", "fpd": "hr"
