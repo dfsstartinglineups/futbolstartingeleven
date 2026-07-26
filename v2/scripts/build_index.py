@@ -313,7 +313,6 @@ def parse_espn_summary(event_id):
         summary_data["status_obj"] = comp_head.get('status', {})
         game_state = comp_head.get('status', {}).get('type', {}).get('state', 'pre')
 
-        # Read exact league slug directly from response header
         internal_slug = data.get('header', {}).get('league', {}).get('slug', '')
 
         live_scores = {}
@@ -359,7 +358,6 @@ def parse_espn_summary(event_id):
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
             
-            # Fetch active player stats via Core API
             core_stats_cache = {}
             if game_state != 'pre' and internal_slug:
                 active_player_list = []
@@ -757,17 +755,21 @@ def fetch_espn_scores_for_date(date_str, old_html):
 
             league_flag = str(league_flag or "")
 
+            # If match is finished, check if old_html contains the completed card
             if state == 'post' and old_html:
                 match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
                 saved_block = re.search(match_pattern, old_html, re.DOTALL)
                 if saved_block:
-                    matches.append({
-                        "fixture": {"id": event_id, "status": {"short": "FT"}},
-                        "teams": {"home": {"name": home_name}, "away": {"name": away_name}},
-                        "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name)},
-                        "html_card": f"<!-- MATCH_{event_id} -->{saved_block.group(1)}<!-- END_MATCH_{event_id} -->"
-                    })
-                    continue
+                    card_content = saved_block.group(1)
+                    # Verify the saved card in disk is actually rendered as finished
+                    if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>']):
+                        matches.append({
+                            "fixture": {"id": event_id, "status": {"short": "FT"}},
+                            "teams": {"home": {"name": home_name}, "away": {"name": away_name}},
+                            "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name)},
+                            "html_card": f"<!-- MATCH_{event_id} -->{card_content}<!-- END_MATCH_{event_id} -->"
+                        })
+                        continue
 
             should_fetch, _ = should_fetch_summary(event)
             summary = parse_espn_summary(event_id) if should_fetch else {
@@ -1062,9 +1064,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const freshData = JSON.parse(rawJson);
             const freshMatches = freshData[ACTIVE_DAY] || [], oldMatches = STATIC_MATCHES[ACTIVE_DAY] || [];
 
+            const finishedStates = ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD'];
+
             freshMatches.forEach(nm => {
                 const fixId = nm.fixture.id, om = oldMatches.find(m => m.fixture.id === fixId);
                 if (!om) return;
+
+                // 🛑 CRITICAL FIX: Leave Full Time & finished games untouched!
+                const freshStatus = nm.fixture?.status?.short;
+                const oldStatus = om.fixture?.status?.short;
+                if (finishedStates.includes(freshStatus) || finishedStates.includes(oldStatus)) {
+                    return;
+                }
 
                 detectNewEventsAndGlow(om.events, nm.events, fixId);
 
