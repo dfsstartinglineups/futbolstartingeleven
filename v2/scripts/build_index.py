@@ -939,7 +939,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                             <div class="text-muted text-truncate">🔴 ${pOut}</div>
                         </div>`;
             } else {
-                return `<span class="ms-2 text-dark fw-bold text-truncate" style="font-size: 0.65rem;">🔄 ${lastEv.time}' <img src="${teamLogo}" style="width: 12px; height: 12px;" class="me-1"> 🟢 ${pIn} <span class="text-muted">🔴 ${pOut}</span></span>`;
+                return `<div class="ms-2 d-flex flex-wrap align-items-center text-dark fw-bold" style="font-size: 0.70rem; line-height: 1.2;">
+                            <span class="bg-primary text-white rounded d-flex justify-content-center align-items-center me-1" style="width: 14px; height: 14px; font-size: 0.55rem;">🔄</span>
+                            <span class="me-1">${lastEv.time}'</span>
+                            <img src="${teamLogo}" style="width: 14px; height: 14px; object-fit: contain;" class="me-1">
+                            <span class="me-2 text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#20c997; margin-bottom:1px; margin-right:3px;"></span>${pIn}</span>
+                            <span class="text-muted text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#dc3545; margin-bottom:1px; margin-right:3px;"></span>${pOut}</span>
+                        </div>`;
             }
         } else {
             let icon = lastEv.type === 'Goal' ? '⚽' : '🟨';
