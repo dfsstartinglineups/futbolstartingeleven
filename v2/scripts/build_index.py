@@ -555,7 +555,7 @@ def get_time_badge_html(data):
         display_min = str(elapsed) if (elapsed and elapsed != 'LIVE' and str(elapsed).endswith("'")) else (f"{elapsed}'" if elapsed and elapsed != 'LIVE' else 'LIVE')
         if status == 'HT': display_min = 'HT'
         return f'<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>{display_min}</span>'
-    else: return f'<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">{match_time}</span>'
+    else: return f'<span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="{date_str}" style="font-size: 0.65rem; white-space: nowrap;">{match_time}</span>'
 
 def get_latest_event_html(data, is_ribbon=False):
     events = data.get('events', [])
@@ -1024,6 +1024,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     document.addEventListener('DOMContentLoaded', () => {
         populateLeagueDropdown();
 
+        // Convert EST fallback times to user's local timezone
+        document.querySelectorAll('.local-time-badge').forEach(badge => {
+            const utcStr = badge.getAttribute('data-utc');
+            if (utcStr) {
+                const dt = new Date(utcStr);
+                const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+                let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+                badge.textContent = `${day} ${time}`;
+            }
+        });
+
         document.querySelectorAll('.day-tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.day-tab-btn').forEach(b => { b.classList.remove('btn-dark', 'active'); b.classList.add('btn-outline-dark'); });
@@ -1162,7 +1173,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         if (['PST','CANC','ABD'].includes(s)) return `<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">${s}</span>`;
         if (['FT','AET','PEN'].includes(s)) return `<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>`;
         if (!['NS','TBD'].includes(s)) return `<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>${dMin}</span>`;
-        return '';
+        
+        try {
+            const dt = new Date(data.fixture.date);
+            const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+            let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+            return `<span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="${data.fixture.date}" style="font-size: 0.65rem; white-space: nowrap;">${day} ${time}</span>`;
+        } catch (err) {
+            return `<span class="badge bg-white text-dark border px-1 py-1" style="font-size: 0.65rem; white-space: nowrap;">${data.fixture.date}</span>`;
+        }
     }
     
     function getLatestEventHtml(data, rib = false) {
