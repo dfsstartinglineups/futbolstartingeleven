@@ -146,7 +146,7 @@ async def get_core_stats_concurrently(internal_slug, event_id, player_list):
         return {pid: stats for pid, stats in results if stats}
 
 # ====================================================================
-# HELPER UTILITIES
+# HELPER UTILITIES & GROUPING
 # ====================================================================
 def create_slug(name):
     if not name: return ""
@@ -686,6 +686,40 @@ def pre_render_game_card(data):
     </div>
     <!-- END_MATCH_{fix_id} -->'''
 
+def group_and_sort_matches_by_league(matches):
+    if not matches:
+        return []
+    leagues_map = {}
+    for m in matches:
+        l_info = m.get('league', {})
+        l_slug = l_info.get('slug') or create_slug(l_info.get('name', 'other'))
+        l_name = l_info.get('name', 'Global Football')
+        l_flag = l_info.get('flag', '')
+        match_date = m.get('fixture', {}).get('date', '9999-99-99') or '9999-99-99'
+
+        if l_slug not in leagues_map:
+            leagues_map[l_slug] = {
+                'name': l_name,
+                'slug': l_slug,
+                'flag': l_flag,
+                'earliest_date': match_date,
+                'matches': []
+            }
+        
+        leagues_map[l_slug]['matches'].append(m)
+        if match_date < leagues_map[l_slug]['earliest_date']:
+            leagues_map[l_slug]['earliest_date'] = match_date
+
+    league_list = list(leagues_map.values())
+    
+    # Sort matches within each league chronologically
+    for lg in league_list:
+        lg['matches'].sort(key=lambda x: x.get('fixture', {}).get('date', '9999-99-99') or '9999-99-99')
+
+    # Sort leagues by earliest match date
+    league_list.sort(key=lambda x: x['earliest_date'])
+    return league_list
+
 def fetch_espn_scores_for_date(date_str, old_html):
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
@@ -755,18 +789,16 @@ def fetch_espn_scores_for_date(date_str, old_html):
 
             league_flag = str(league_flag or "")
 
-            # If match is finished, check if old_html contains the completed card
             if state == 'post' and old_html:
                 match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
                 saved_block = re.search(match_pattern, old_html, re.DOTALL)
                 if saved_block:
                     card_content = saved_block.group(1)
-                    # Verify the saved card in disk is actually rendered as finished
                     if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>']):
                         matches.append({
-                            "fixture": {"id": event_id, "status": {"short": "FT"}},
+                            "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}},
                             "teams": {"home": {"name": home_name}, "away": {"name": away_name}},
-                            "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name)},
+                            "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag},
                             "html_card": f"<!-- MATCH_{event_id} -->{card_content}<!-- END_MATCH_{event_id} -->"
                         })
                         continue
@@ -838,6 +870,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
         .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
 
+        .league-banner { background: #ffffff; border-left: 4px solid #198754; border-radius: 8px; }
+
         @keyframes glowGoal { 0% { border-color: #20c997; box-shadow: 0 0 25px rgba(32, 201, 151, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
         @keyframes headerGoal { 0% { background-color: #d1e7dd !important; } 100% { background-color: #fcfcfc !important; } }
         .glow-goal { animation: glowGoal 4s ease-out !important; border: 3px solid #20c997 !important; position: relative !important; z-index: 10 !important; }
@@ -877,18 +911,29 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <button class="btn btn-dark day-tab-btn active" data-day="today">Today<br><small style="font-size: 0.65rem;">{{ display_dates.today }}</small></button>
         <button class="btn btn-outline-dark day-tab-btn" data-day="tomorrow">Tomorrow<br><small style="font-size: 0.65rem;">{{ display_dates.tomorrow }}</small></button>
     </div>
+</div>
 
-    <div class="text-center mt-2">
-        <button id="toggle-all-cards" class="btn btn-sm btn-dark text-white shadow-sm px-3 py-1 me-2" style="font-size: 0.70rem; font-weight: 700; border-radius: 20px;">🔽 COMPACT SCOREBOARD</button>
-        <button id="toggle-all-lineups" class="btn btn-sm btn-dark text-white shadow-sm px-3 py-1 d-none" style="font-size: 0.70rem; font-weight: 700; border-radius: 20px;">🔼 COLLAPSE ALL LINEUPS</button>
+<!-- CONTROLS & LEAGUE JUMP DROPDOWN -->
+<div class="container mb-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <label for="league-select" class="fw-bold text-dark small mb-0" style="white-space: nowrap;">🏆 Jump to League:</label>
+            <select id="league-select" class="form-select form-select-sm shadow-sm" style="min-width: 200px; max-width: 320px; font-weight: 600;">
+                <option value="">-- Select League --</option>
+            </select>
+        </div>
+        <div>
+            <button id="toggle-all-cards" class="btn btn-sm btn-dark text-white shadow-sm px-3 py-1 me-2" style="font-size: 0.70rem; font-weight: 700; border-radius: 20px;">🔽 COMPACT SCOREBOARD</button>
+            <button id="toggle-all-lineups" class="btn btn-sm btn-dark text-white shadow-sm px-3 py-1 d-none" style="font-size: 0.70rem; font-weight: 700; border-radius: 20px;">🔼 COLLAPSE ALL LINEUPS</button>
+        </div>
     </div>
 </div>
 
 <div class="container pb-5">
-    <div id="games-container" class="row justify-content-center">
-        {% for day, matches in matches_by_day.items() %}
-            <div id="partition-{{ day }}" class="day-partition {{ '' if day == 'today' else 'd-none' }} row w-100 m-0">
-                {% if matches | length == 0 %}
+    <div id="games-container" class="row justify-content-start">
+        {% for day, leagues in leagues_by_day.items() %}
+            <div id="partition-{{ day }}" class="day-partition {{ '' if day == 'today' else 'd-none' }} row w-100 m-0 justify-content-start">
+                {% if leagues | length == 0 %}
                     <div class="col-12 text-center mt-5 empty-state">
                         <div class="card p-4 shadow-sm border-0"><div class="h4 text-muted">🏟️ No matches scheduled for this partition.</div></div>
                     </div>
@@ -896,10 +941,25 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     <div class="col-12 text-center mt-5 empty-state d-none">
                         <div class="card p-4 shadow-sm border-0"><div class="h4 text-muted">🏟️ No matches found.</div></div>
                     </div>
-                    {% for match in matches %}
-                        <div class="col-md-6 col-lg-6 col-xl-4 mb-3 game-card-wrapper" data-search="{{ (match.teams.home.name | default('')) | lower }} {{ (match.teams.away.name | default('')) | lower }} {{ (match.league.name | default('')) | lower }} {{ (match.league.abbrev | default('')) | lower }}">
-                            {{ match.html_card | safe }}
+                    {% for league in leagues %}
+                        <!-- LEAGUE HEADER -->
+                        <div class="col-12 league-header mt-3 mb-2 px-1" id="league-{{ day }}-{{ league.slug }}" data-league-name="{{ league.name }}">
+                            <div class="d-flex align-items-center p-2 rounded-3 shadow-sm league-banner">
+                                {% if league.flag and league.flag.startswith('http') %}
+                                    <img src="{{ league.flag }}" alt="" style="width: 22px; height: 22px; object-fit: contain;" class="me-2 rounded-1">
+                                {% else %}
+                                    <span class="me-2" style="font-size: 1.1rem;">{{ league.flag or '🏆' }}</span>
+                                {% endif %}
+                                <h2 class="h6 mb-0 fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">{{ league.name }}</h2>
+                                <span class="badge bg-light text-secondary border ms-auto px-2 py-1" style="font-size: 0.65rem;">{{ league.matches | length }} {{ 'Match' if league.matches | length == 1 else 'Matches' }}</span>
+                            </div>
                         </div>
+                        <!-- MATCH CARDS -->
+                        {% for match in league.matches %}
+                            <div class="col-md-6 col-lg-6 col-xl-4 mb-3 game-card-wrapper" data-search="{{ (match.teams.home.name | default('')) | lower }} {{ (match.teams.away.name | default('')) | lower }} {{ (match.league.name | default('')) | lower }} {{ (match.league.abbrev | default('')) | lower }}">
+                                {{ match.html_card | safe }}
+                            </div>
+                        {% endfor %}
                     {% endfor %}
                 {% endif %}
             </div>
@@ -911,9 +971,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     const STATIC_MATCHES = {{ matches_json | safe }};
     let ACTIVE_DAY = "today";
     let globalScoreboardMode = true;
-    let globalLineupsExpanded = true;
 
     document.addEventListener('DOMContentLoaded', () => {
+        populateLeagueDropdown();
+
         document.querySelectorAll('.day-tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.day-tab-btn').forEach(b => { b.classList.remove('btn-dark', 'active'); b.classList.add('btn-outline-dark'); });
@@ -922,6 +983,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 
                 document.querySelectorAll('.day-partition').forEach(p => p.classList.add('d-none'));
                 document.getElementById('partition-' + ACTIVE_DAY)?.classList.remove('d-none');
+                
+                populateLeagueDropdown();
                 applySearchFilter();
             });
         });
@@ -936,27 +999,75 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             document.getElementById('toggle-all-lineups')?.classList.toggle('d-none', globalScoreboardMode);
         });
 
+        document.getElementById('league-select')?.addEventListener('change', (e) => {
+            const targetId = e.target.value;
+            if (!targetId) return;
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                const navOffset = 70;
+                const elementPosition = targetEl.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+
         setInterval(pollAndUpdateDOM, 30000);
     });
+
+    function populateLeagueDropdown() {
+        const select = document.getElementById('league-select');
+        if (!select) return;
+
+        select.innerHTML = '<option value="">-- Select League --</option>';
+        const activePartition = document.getElementById('partition-' + ACTIVE_DAY);
+        if (!activePartition) return;
+
+        const headers = activePartition.querySelectorAll('.league-header');
+        headers.forEach(h => {
+            if (!h.classList.contains('d-none')) {
+                const opt = document.createElement('option');
+                opt.value = h.id;
+                opt.textContent = h.getAttribute('data-league-name') || 'League';
+                select.appendChild(opt);
+            }
+        });
+    }
 
     function applySearchFilter() {
         const searchText = (document.getElementById('team-search')?.value || '').toLowerCase();
         const activePartition = document.getElementById('partition-' + ACTIVE_DAY);
         if (!activePartition) return;
         
-        let visibleCount = 0;
-        activePartition.querySelectorAll('.game-card-wrapper').forEach(card => {
-            const searchData = card.getAttribute('data-search') || '';
-            if (searchData.includes(searchText)) {
-                card.classList.remove('d-none');
-                visibleCount++;
-            } else {
-                card.classList.add('d-none');
+        let totalVisibleMatches = 0;
+
+        activePartition.querySelectorAll('.league-header').forEach(header => {
+            let visibleInLeague = 0;
+            let sibling = header.nextElementSibling;
+            
+            while (sibling && !sibling.classList.contains('league-header')) {
+                if (sibling.classList.contains('game-card-wrapper')) {
+                    const searchData = sibling.getAttribute('data-search') || '';
+                    if (searchData.includes(searchText)) {
+                        sibling.classList.remove('d-none');
+                        visibleInLeague++;
+                        totalVisibleMatches++;
+                    } else {
+                        sibling.classList.add('d-none');
+                    }
+                }
+                sibling = sibling.nextElementSibling;
             }
+
+            header.classList.toggle('d-none', visibleInLeague === 0);
         });
-        
+
         const emptyState = activePartition.querySelector('.empty-state');
-        if (emptyState) emptyState.classList.toggle('d-none', visibleCount > 0);
+        if (emptyState) emptyState.classList.toggle('d-none', totalVisibleMatches > 0);
+
+        populateLeagueDropdown();
     }
 
     window.toggleSingleCard = function(fixId) {
@@ -1070,7 +1181,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 const fixId = nm.fixture.id, om = oldMatches.find(m => m.fixture.id === fixId);
                 if (!om) return;
 
-                // 🛑 CRITICAL FIX: Leave Full Time & finished games untouched!
                 const freshStatus = nm.fixture?.status?.short;
                 const oldStatus = om.fixture?.status?.short;
                 if (finishedStates.includes(freshStatus) || finishedStates.includes(oldStatus)) {
@@ -1108,23 +1218,28 @@ def generate_v2_index():
 
     day_info = get_3day_dates()
     
-    matches_by_day = {
+    raw_matches_by_day = {
         "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"], old_html),
         "today": fetch_espn_scores_for_date(day_info["dates"]["today"], old_html),
         "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], old_html)
     }
+
+    leagues_by_day = {
+        day: group_and_sort_matches_by_league(matches)
+        for day, matches in raw_matches_by_day.items()
+    }
     
     print(f"\n==================================================")
     print(f"📊 SSG BUILD SUMMARY:")
-    print(f"  ├─ Yesterday ({day_info['dates']['yesterday']}): {len(matches_by_day['yesterday'])} matches parsed")
-    print(f"  ├─ Today     ({day_info['dates']['today']}):     {len(matches_by_day['today'])} matches parsed")
-    print(f"  └─ Tomorrow  ({day_info['dates']['tomorrow']}):  {len(matches_by_day['tomorrow'])} matches parsed")
+    print(f"  ├─ Yesterday ({day_info['dates']['yesterday']}): {len(raw_matches_by_day['yesterday'])} matches parsed")
+    print(f"  ├─ Today     ({day_info['dates']['today']}):     {len(raw_matches_by_day['today'])} matches parsed")
+    print(f"  └─ Tomorrow  ({day_info['dates']['tomorrow']}):  {len(raw_matches_by_day['tomorrow'])} matches parsed")
     print(f"==================================================")
     
     template = Template(HTML_TEMPLATE)
     output_html = template.render(
-        matches_by_day=matches_by_day,
-        matches_json=json.dumps(matches_by_day),
+        leagues_by_day=leagues_by_day,
+        matches_json=json.dumps(raw_matches_by_day),
         display_dates=day_info["display"]
     )
     
