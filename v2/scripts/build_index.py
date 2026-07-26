@@ -295,6 +295,39 @@ async def get_core_stats_concurrently(internal_slug, event_id, player_list):
         results = await asyncio.gather(*tasks)
         return {pid: stats for pid, stats in results if stats}
 
+def fetch_athlete_season_stats(player_id):
+    if not player_id:
+        return {"matches": "-", "goals": "-", "assists": "-", "pass_acc": "-"}
+    url = f"https://sports.core.api.espn.com/v2/sports/soccer/athletes/{player_id}/statistics"
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    try:
+        resp = requests.get(url, headers=headers, timeout=4)
+        if resp.status_code == 200:
+            data = resp.json()
+            splits = data.get('splits') or {}
+            categories = splits.get('categories') or []
+            stats_dict = {}
+            for cat in categories:
+                for stat in cat.get('stats', []):
+                    stats_dict[stat.get('name')] = stat.get('displayValue', stat.get('value', 0))
+            
+            matches = stats_dict.get('appearances') or stats_dict.get('gamesPlayed') or stats_dict.get('gamesStarted') or '-'
+            goals = stats_dict.get('totalGoals') or stats_dict.get('goals') or '0'
+            assists = stats_dict.get('goalAssists') or stats_dict.get('assists') or '0'
+            pass_acc = stats_dict.get('passPct') or stats_dict.get('passingAccuracy') or '-'
+            if pass_acc != '-' and not str(pass_acc).endswith('%'):
+                pass_acc = f"{pass_acc}%"
+                
+            return {
+                "matches": str(matches),
+                "goals": str(goals),
+                "assists": str(assists),
+                "pass_acc": str(pass_acc)
+            }
+    except Exception:
+        pass
+    return {"matches": "-", "goals": "-", "assists": "-", "pass_acc": "-"}
+
 # ====================================================================
 # HELPER UTILITIES & GROUPING
 # ====================================================================
@@ -701,6 +734,7 @@ def generate_pitch_html(lineup, default_hex):
         if not player: return ""
         name = shorten_player_name(player.get('name'))
         photo = player.get('photo', '')
+        p_slug = create_slug(player.get('name', ''))
         
         if photo:
             avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 2px solid {bg_color}; background-color: #fff;">'
@@ -709,8 +743,10 @@ def generate_pitch_html(lineup, default_hex):
             avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; border: 2px solid #fff;">{initial}</div>'
             
         return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: 90px; z-index: 10;">
-            <div style="width: 34px; height: 34px; background: #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">{avatar}</div>
-            <div style="background: rgba(0,0,0,0.7); color: #fff; font-size: 0.60rem; font-weight: bold; padding: 2px 5px; border-radius: 4px; margin-top: 3px; white-space: nowrap; max-width: 90px; overflow: hidden; text-overflow: ellipsis;">{name}</div>
+            <a href="/v2/players/{p_slug}/index.html" class="text-decoration-none" style="display:flex; flex-direction:column; align-items:center; color:inherit;">
+                <div style="width: 34px; height: 34px; background: #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">{avatar}</div>
+                <div style="background: rgba(0,0,0,0.7); color: #fff; font-size: 0.60rem; font-weight: bold; padding: 2px 5px; border-radius: 4px; margin-top: 3px; white-space: nowrap; max-width: 90px; overflow: hidden; text-overflow: ellipsis;">{name}</div>
+            </a>
         </div>'''
 
     html += render_pitch_player(gk, 50, 92, color, contrast)
@@ -849,9 +885,10 @@ def build_lineup_list(lineup_data):
     items = ""
     for s in lineup_data['startXI']:
         p = s.get('player', {})
+        p_slug = create_slug(p.get('name', ''))
         pho = f'''<img data-src="{p.get('photo', '')}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2 player-headshot">''' if p.get('photo') else '''<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>'''
         sub = '''<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>''' if p.get('isSubbedOut') else ''
-        items += f'''<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">{p.get('pos','M')}</span>{pho}<span class="batter-name text-dark text-truncate">{sub}{shorten_player_name(p.get('name'))}</span><span class="ms-auto text-muted" style="font-size: 0.65rem;">#{p.get('number','')}</span></li>'''
+        items += f'''<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">{p.get('pos','M')}</span>{pho}<a href="/v2/players/{p_slug}/index.html" class="batter-name text-dark text-decoration-none text-truncate">{sub}{shorten_player_name(p.get('name'))}</a><span class="ms-auto text-muted" style="font-size: 0.65rem;">#{p.get('number','')}</span></li>'''
     return f'''<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ {get_formation(lineup_data)}</div><ul class="batting-order w-100 m-0 p-0">{items}</ul>'''
 
 def build_live_stats_grid(lineup_data, hex_color):
@@ -868,9 +905,10 @@ def build_live_stats_grid(lineup_data, hex_color):
         g = grps[pk]
         html += f'''<div class="d-flex w-100 px-2 py-1 align-items-center bg-light border-bottom" style="font-size: 0.6rem; font-weight: 700;"><div style="flex: 1; color: {c};">{g['t']}</div><div style="width: 18px; text-align: center;">{g['s'][0]}</div><div style="width: 22px; text-align: center;">{g['s'][1]}</div><div style="width: 28px; text-align: center;">{g['s'][2]}</div><div style="width: 24px; text-align: center;">{g['s'][3]}</div></div>'''
         for p in grouped[pk]:
+            p_slug = create_slug(p.get('name', ''))
             pre = '<span class="text-success fw-bold me-1">▲</span>' if p.get('isSubbedIn') else ('<span class="text-primary fw-bold me-1">↻</span>' if p.get('isSubbedOut') else '')
             st = p.get('live_stats', {})
-            html += f'''<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;"><div class="text-start text-truncate" style="flex: 1;">{pre}{shorten_player_name(p.get('name'))}</div><div class="text-muted" style="width: 18px; text-align: center; font-weight: 600;">{st.get(g['k'][0],0)}</div><div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">{st.get(g['k'][1],0)}</div><div class="text-muted" style="width: 28px; text-align: center; font-weight: 600;">{st.get(g['k'][2],0)}</div><div class="text-muted" style="width: 24px; text-align: center; font-weight: 600;">{st.get(g['k'][3],0)}</div></div>'''
+            html += f'''<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;"><div class="text-start text-truncate" style="flex: 1;"><a href="/v2/players/{p_slug}/index.html" class="text-dark text-decoration-none text-truncate">{pre}{shorten_player_name(p.get('name'))}</a></div><div class="text-muted" style="width: 18px; text-align: center; font-weight: 600;">{st.get(g['k'][0],0)}</div><div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">{st.get(g['k'][1],0)}</div><div class="text-muted" style="width: 28px; text-align: center; font-weight: 600;">{st.get(g['k'][2],0)}</div><div class="text-muted" style="width: 24px; text-align: center; font-weight: 600;">{st.get(g['k'][3],0)}</div></div>'''
     return html
 
 def pre_render_game_card(data):
@@ -1097,6 +1135,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#212529">
     <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores, Injuries & Odds</title>
+    <link rel="canonical" href="https://futbolstartingeleven.com/v2/">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -1336,7 +1375,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         else if (typeLower.includes('sub') || typeLower.includes('🔄')) glowClass = 'glow-subst';
 
         cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
-        void cardEl.offsetWidth; // Force CSS reflow to trigger animation
+        void cardEl.offsetWidth;
         cardEl.classList.add(glowClass);
         setTimeout(() => { cardEl.classList.remove(glowClass); }, 4000);
     }
@@ -1358,23 +1397,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 
                 if (!newCard) return;
 
-                // PREVENT FLASH: Skip if HTML content is unchanged
                 if (currentCard.innerHTML === newCard.innerHTML) return;
 
-                // Glow detection: Check if events block updated
                 const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
 
-                // Preserve UI State
                 const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
                 const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
                 const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
 
-                // Swap HTML
                 currentCard.innerHTML = newCard.innerHTML;
 
-                // Restore UI State
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
                     currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
@@ -1384,7 +1418,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     window.switchLineupTab(null, fixId, tabName);
                 }
 
-                // Trigger Glow Animation
                 if (hasNewEvent) {
                     triggerCardGlow(currentCard, newEventsHtml);
                 }
@@ -1407,6 +1440,7 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
     
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
+    <link rel="canonical" href="https://futbolstartingeleven.com/v2/leagues/{{ league_slug }}/">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -1566,7 +1600,7 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
         else if (typeLower.includes('sub') || typeLower.includes('🔄')) glowClass = 'glow-subst';
 
         cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
-        void cardEl.offsetWidth; // Force CSS reflow to trigger animation
+        void cardEl.offsetWidth;
         cardEl.classList.add(glowClass);
         setTimeout(() => { cardEl.classList.remove(glowClass); }, 4000);
     }
@@ -1588,23 +1622,18 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
                 
                 if (!newCard) return;
 
-                // PREVENT FLASH: Skip if HTML content is unchanged
                 if (currentCard.innerHTML === newCard.innerHTML) return;
 
-                // Glow detection: Check if events block updated
                 const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
 
-                // Preserve UI State
                 const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
                 const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
                 const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
 
-                // Swap HTML
                 currentCard.innerHTML = newCard.innerHTML;
 
-                // Restore UI State
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
                     currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
@@ -1614,7 +1643,6 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
                     window.switchLineupTab(null, fixId, tabName);
                 }
 
-                // Trigger Glow Animation
                 if (hasNewEvent) {
                     triggerCardGlow(currentCard, newEventsHtml);
                 }
@@ -1637,6 +1665,7 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
     
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
+    <link rel="canonical" href="https://futbolstartingeleven.com/v2/teams/{{ team_slug }}/lineup/">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -1690,6 +1719,7 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
     <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://futbolstartingeleven.com/v2/players/{{ player_slug }}/">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -1757,10 +1787,10 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
                 <div class="info-card">
                     <h3>Season Overview</h3>
                     <div class="row g-3">
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">-</div><div class="big-stat-label">Matches</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">-</div><div class="big-stat-label">Goals</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">-</div><div class="big-stat-label">Assists</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">-</div><div class="big-stat-label">Pass Acc</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.matches }}</div><div class="big-stat-label">Matches</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.goals }}</div><div class="big-stat-label">Goals</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.assists }}</div><div class="big-stat-label">Assists</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.pass_acc }}</div><div class="big-stat-label">Pass Acc</div></div></div>
                     </div>
                 </div>
 
@@ -1868,6 +1898,7 @@ def build_single_league_page(league_slug, league_data, matches, is_today, nav_ht
         seo_title=seo_title,
         seo_desc=seo_desc,
         page_h1=page_h1,
+        league_slug=league_slug,
         league_name=league_name,
         is_today=is_today,
         grouped_matches=grouped_matches,
@@ -1911,6 +1942,7 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
         seo_title=seo_title,
         seo_desc=seo_desc,
         team_name=team_name,
+        team_slug=team_slug,
         team_logo=team_logo,
         header_state=header_state,
         formation=formation_str,
@@ -1929,7 +1961,17 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
     p_name = player_data.get('name', 'Player')
     t_name = player_data.get('team_name', 'Team')
     t_slug = player_data.get('team_slug', '')
-    p_pos = player_data.get('position', 'M')
+    
+    POS_FULL_NAMES = {
+        'F': 'Forward', 'FW': 'Forward', 'ST': 'Forward', 'CF': 'Forward', 'LW': 'Forward', 'RW': 'Forward',
+        'M': 'Midfielder', 'MF': 'Midfielder', 'CM': 'Midfielder', 'AM': 'Midfielder', 'DM': 'Midfielder', 'CAM': 'Midfielder',
+        'D': 'Defender', 'DF': 'Defender', 'CB': 'Defender', 'LB': 'Defender', 'RB': 'Defender', 'WB': 'Defender',
+        'G': 'Goalkeeper', 'GK': 'Goalkeeper'
+    }
+    raw_pos = str(player_data.get('position', 'M')).upper()
+    cat = get_position_category(raw_pos)
+    p_pos = POS_FULL_NAMES.get(raw_pos) or POS_FULL_NAMES.get(cat, 'Midfielder')
+    
     p_photo = player_data.get('photo') or 'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png'
     
     status_short = match_data['fixture']['status']['short']
@@ -1989,7 +2031,6 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
     player_stats_html = ""
     if p_obj and not is_pre:
         ls = p_obj.get('live_stats', {})
-        cat = p_obj.get('category', 'M')
         
         grps = {
             'F': {'s': ['G','A','xG','SOG'], 'k': ['goals','assists','xg','shots_on_target']},
@@ -2065,16 +2106,20 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
     </div>
     '''
 
+    season_stats = fetch_athlete_season_stats(player_data.get('id'))
+
     template = Template(PLAYER_HTML_TEMPLATE)
     output = template.render(
         seo_title=seo_title,
         seo_desc=seo_desc,
+        player_slug=player_slug,
         player_photo=p_photo,
         player_name=p_name,
         team_name=t_name,
         team_slug=t_slug,
         position=p_pos,
         live_widget_html=live_widget_html,
+        season_stats=season_stats,
         nav_leagues_html=nav_html,
         badge_class=badge_class,
         badge_text=badge_text.upper()
