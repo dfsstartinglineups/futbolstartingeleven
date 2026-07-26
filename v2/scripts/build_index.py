@@ -6,7 +6,6 @@ import traceback
 import unicodedata
 import math
 from datetime import datetime, timedelta
-from concurrent.futures import ThreadPoolExecutor
 import pytz
 from jinja2 import Template
 
@@ -291,73 +290,61 @@ def should_fetch_summary(event):
             except Exception as e: return False, f"Date parse error: {e}"
     return False, f"State '{state}' not eligible"
 
-def fetch_single_player_core_stats(league_slug, event_id, team_id, player_id):
-    if not league_slug or league_slug == 'all' or not team_id or not player_id: return {}
-    url = f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{league_slug}/events/{event_id}/competitions/{event_id}/competitors/{team_id}/roster/{player_id}/statistics/0"
-    try:
-        r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=3)
-        if r.status_code == 200:
-            stats_data = r.json()
-            raw_stats = {}
-            for category in stats_data.get('splits', {}).get('categories', []):
-                for stat in category.get('stats', []):
-                    raw_stats[stat.get('name')] = stat.get('value', 0)
-            return raw_stats
-    except Exception: pass
-    return {}
-
 def extract_player_live_stats(entry_obj, core_raw_stats=None):
     stats_raw = (entry_obj.get('stats') or []) + (entry_obj.get('statistics') or [])
     live_stats = {}
+    
+    def cnum(v):
+        try: return int(float(re.sub(r'[^0-9.]', '', str(v))))
+        except: return 0
+    def cflt(v):
+        try: return round(float(str(v).strip('%')), 2)
+        except: return 0.0
+
     for st in stats_raw:
         if not isinstance(st, dict): continue
         raw_k = st.get('name', '')
         raw_abbr = str(st.get('abbreviation', '')).upper()
         raw_v = st.get('displayValue', st.get('value', 0))
-        try: num_v = float(str(raw_v)) if '.' in str(raw_v) else int(float(str(raw_v)))
-        except: num_v = raw_v
 
-        if raw_k:
-            live_stats[raw_k] = num_v
-            live_stats[to_snake_case(raw_k)] = num_v
-        if raw_abbr:
-            live_stats[raw_abbr] = num_v
-            live_stats[raw_abbr.lower()] = num_v
+        if raw_k in ['touches', 'totalTouches'] or raw_abbr == 'TCH': live_stats['touches'] = cnum(raw_v)
+        elif raw_k in ['expectedGoals', 'xg'] or raw_abbr == 'XG': live_stats['xg'] = cflt(raw_v)
+        elif raw_k in ['expectedAssists', 'xa'] or raw_abbr == 'XA': live_stats['xa'] = cflt(raw_v)
+        elif raw_k in ['shotsOnTarget', 'shotsOnGoal'] or raw_abbr == 'SOG': live_stats['shots_on_target'] = cnum(raw_v)
+        elif raw_k in ['totalShots', 'shots'] or raw_abbr == 'SHOT': live_stats['total_shots'] = cnum(raw_v)
+        elif raw_k in ['chancesCreated', 'bigChancesCreated'] or raw_abbr == 'BCC': live_stats['bcc'] = cnum(raw_v)
+        elif raw_k in ['interceptions', 'dint', 'defensiveInterventions'] or raw_abbr == 'DINT': live_stats['dint'] = cnum(raw_v)
+        elif raw_k in ['duelsWon', 'duelw', 'groundDuelsWon'] or raw_abbr == 'DUELW': live_stats['duels_won'] = cnum(raw_v)
+        elif raw_k in ['accuratePasses', 'passes'] or raw_abbr in ['PAS', 'PASS']: live_stats['accurate_passes'] = cnum(raw_v)
+        elif raw_k in ['effectiveTackles', 'tackles'] or raw_abbr in ['TK', 'TCKL']: live_stats['tackles'] = cnum(raw_v)
+        elif raw_k in ['totalGoals', 'goals', 'goal'] or raw_abbr == 'G': live_stats['goals'] = cnum(raw_v)
+        elif raw_k in ['goalAssists', 'assists', 'assist'] or raw_abbr == 'A': live_stats['assists'] = cnum(raw_v)
+        elif raw_k in ['goalsConceded', 'goalsAgainst'] or raw_abbr == 'GA': live_stats['conceded'] = cnum(raw_v)
+        elif raw_k in ['saves'] or raw_abbr == 'SV': live_stats['saves'] = cnum(raw_v)
+        elif raw_k in ['expectedGoalsConceded'] or raw_abbr == 'XGA': live_stats['xga'] = cflt(raw_v)
+        elif raw_k in ['shotsFaced'] or raw_abbr == 'SHF': live_stats['shots_faced'] = cnum(raw_v)
 
-        if raw_k in ['touches', 'totalTouches'] or raw_abbr == 'TCH': live_stats['touches'] = num_v
-        elif raw_k in ['expectedGoals', 'xg'] or raw_abbr == 'XG': live_stats['xg'] = num_v
-        elif raw_k in ['expectedAssists', 'xa'] or raw_abbr == 'XA': live_stats['xa'] = num_v
-        elif raw_k in ['shotsOnTarget', 'shotsOnGoal'] or raw_abbr == 'SOG': live_stats['shots_on_target'] = num_v
-        elif raw_k in ['totalShots', 'shots'] or raw_abbr == 'SHOT': live_stats['total_shots'] = num_v
-        elif raw_k in ['chancesCreated', 'bigChancesCreated'] or raw_abbr == 'BCC': live_stats['bcc'] = num_v
-        elif raw_k in ['interceptions', 'dint', 'defensiveInterventions'] or raw_abbr == 'DINT': live_stats['dint'] = num_v
-        elif raw_k in ['duelsWon', 'duelw', 'groundDuelsWon'] or raw_abbr == 'DUELW': live_stats['duels_won'] = num_v
-        elif raw_k in ['accuratePasses', 'passes'] or raw_abbr in ['PAS', 'PASS']: live_stats['accurate_passes'] = num_v
-        elif raw_k in ['effectiveTackles', 'tackles'] or raw_abbr in ['TK', 'TCKL']: live_stats['tackles'] = num_v
-        elif raw_k in ['totalGoals', 'goals', 'goal'] or raw_abbr == 'G': live_stats['goals'] = num_v
-        elif raw_k in ['goalAssists', 'assists', 'assist'] or raw_abbr == 'A': live_stats['assists'] = num_v
-        elif raw_k in ['goalsConceded', 'goalsAgainst'] or raw_abbr == 'GA': live_stats['conceded'] = num_v
-        elif raw_k in ['saves'] or raw_abbr == 'SV': live_stats['saves'] = num_v
-        elif raw_k in ['expectedGoalsConceded'] or raw_abbr == 'XGA': live_stats['xga'] = num_v
-        elif raw_k in ['shotsFaced'] or raw_abbr == 'SHF': live_stats['shots_faced'] = num_v
-
+    # Boxscore deep stats injection (Zero Threading Required)
     if core_raw_stats:
-        if 'touches' in core_raw_stats: live_stats['touches'] = int(core_raw_stats['touches'])
-        if 'expectedGoals' in core_raw_stats: live_stats['xg'] = round(float(core_raw_stats['expectedGoals']), 2)
-        if 'expectedAssists' in core_raw_stats: live_stats['xa'] = round(float(core_raw_stats['expectedAssists']), 2)
-        if 'shotsOnTarget' in core_raw_stats: live_stats['shots_on_target'] = int(core_raw_stats['shotsOnTarget'])
-        if 'totalShots' in core_raw_stats: live_stats['total_shots'] = int(core_raw_stats['totalShots'])
-        if 'bigChancesCreated' in core_raw_stats: live_stats['bcc'] = int(core_raw_stats['bigChancesCreated'])
-        if 'defensiveInterventions' in core_raw_stats: live_stats['dint'] = int(core_raw_stats['defensiveInterventions'])
-        if 'groundDuelsWon' in core_raw_stats: live_stats['duels_won'] = int(core_raw_stats['groundDuelsWon'])
-        if 'accuratePasses' in core_raw_stats: live_stats['accurate_passes'] = int(core_raw_stats['accuratePasses'])
-        if 'effectiveTackles' in core_raw_stats: live_stats['tackles'] = int(core_raw_stats['effectiveTackles'])
-        if 'totalGoals' in core_raw_stats: live_stats['goals'] = int(core_raw_stats['totalGoals'])
-        if 'goalAssists' in core_raw_stats: live_stats['assists'] = int(core_raw_stats['goalAssists'])
-        if 'goalsConceded' in core_raw_stats: live_stats['conceded'] = int(core_raw_stats['goalsConceded'])
-        if 'saves' in core_raw_stats: live_stats['saves'] = int(core_raw_stats['saves'])
-        if 'expectedGoalsConceded' in core_raw_stats: live_stats['xga'] = round(float(core_raw_stats['expectedGoalsConceded']), 2)
-        if 'shotsFaced' in core_raw_stats: live_stats['shots_faced'] = int(core_raw_stats['shotsFaced'])
+        if 'touches' in core_raw_stats: live_stats['touches'] = cnum(core_raw_stats['touches'])
+        if 'expectedGoals' in core_raw_stats: live_stats['xg'] = cflt(core_raw_stats['expectedGoals'])
+        if 'expectedAssists' in core_raw_stats: live_stats['xa'] = cflt(core_raw_stats['expectedAssists'])
+        if 'shotsOnTarget' in core_raw_stats: live_stats['shots_on_target'] = cnum(core_raw_stats['shotsOnTarget'])
+        if 'shots' in core_raw_stats: live_stats['total_shots'] = cnum(core_raw_stats['shots'])
+        elif 'totalShots' in core_raw_stats: live_stats['total_shots'] = cnum(core_raw_stats['totalShots'])
+        if 'bigChancesCreated' in core_raw_stats: live_stats['bcc'] = cnum(core_raw_stats['bigChancesCreated'])
+        if 'defensiveInterventions' in core_raw_stats: live_stats['dint'] = cnum(core_raw_stats['defensiveInterventions'])
+        if 'groundDuelsWon' in core_raw_stats: live_stats['duels_won'] = cnum(core_raw_stats['groundDuelsWon'])
+        if 'accuratePasses' in core_raw_stats: live_stats['accurate_passes'] = cnum(core_raw_stats['accuratePasses'])
+        if 'effectiveTackles' in core_raw_stats: live_stats['tackles'] = cnum(core_raw_stats['effectiveTackles'])
+        if 'goals' in core_raw_stats: live_stats['goals'] = cnum(core_raw_stats['goals'])
+        elif 'totalGoals' in core_raw_stats: live_stats['goals'] = cnum(core_raw_stats['totalGoals'])
+        if 'assists' in core_raw_stats: live_stats['assists'] = cnum(core_raw_stats['assists'])
+        elif 'goalAssists' in core_raw_stats: live_stats['assists'] = cnum(core_raw_stats['goalAssists'])
+        if 'goalsConceded' in core_raw_stats: live_stats['conceded'] = cnum(core_raw_stats['goalsConceded'])
+        if 'saves' in core_raw_stats: live_stats['saves'] = cnum(core_raw_stats['saves'])
+        if 'expectedGoalsConceded' in core_raw_stats: live_stats['xga'] = cflt(core_raw_stats['expectedGoalsConceded'])
+        if 'shotsFaced' in core_raw_stats: live_stats['shots_faced'] = cnum(core_raw_stats['shotsFaced'])
 
     return live_stats
 
@@ -366,7 +353,7 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
     summary_data = {
         "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [],
         "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
-        "injuries": {"home": [], "away": []}, "live_score": None, "status_obj": None
+        "injuries": {"home": [], "away": []}, "live_score": {}, "status_obj": None
     }
     urls_to_try = []
     if league_code and league_code not in ["all", "soccer", ""]: urls_to_try.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_code}/summary?event={event_id}")
@@ -405,8 +392,8 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
             a_raw = extract_stat_dict(teams_box[a_idx].get('statistics', []))
 
             def clean_num(val_str):
-                cleaned = re.sub(r'[^0-9.]', '', str(val_str))
-                return int(float(cleaned)) if cleaned else 0
+                try: return int(float(re.sub(r'[^0-9.]', '', str(val_str))))
+                except: return 0
 
             if h_raw or a_raw:
                 summary_data["team_stats"] = {
@@ -431,20 +418,23 @@ def parse_espn_summary(event_id, league_code="all", match_label="Match"):
 
         rosters = data.get('rosters', [])
         if isinstance(rosters, list) and len(rosters) >= 2:
+            # INSTANT DEEP STATS (Extracted from boxscore, zero external requests!)
             core_stats_cache = {}
-            if game_state in ['in', 'post']:
-                player_fetch_list = []
-                for r_data in rosters:
-                    t_id = str(r_data.get('team', {}).get('id', ''))
-                    for entry in r_data.get('roster', []):
-                        if t_id and entry.get('athlete', {}).get('id'):
-                            player_fetch_list.append((t_id, str(entry['athlete']['id'])))
-                act_slug = league_code if league_code != 'all' else (comp_head.get('league', {}).get('slug') or 'all')
-                if act_slug != 'all' and player_fetch_list:
-                    def fw(item): return item, fetch_single_player_core_stats(act_slug, event_id, item[0], item[1])
-                    with ThreadPoolExecutor(max_workers=12) as ex:
-                        for k, stats in ex.map(fw, player_fetch_list):
-                            if stats: core_stats_cache[k] = stats
+            players_box = data.get('boxscore', {}).get('players', [])
+            for p_team in players_box:
+                t_id_box = str(p_team.get('team', {}).get('id', ''))
+                for stat_cat in p_team.get('statistics', []):
+                    stat_names = stat_cat.get('names', [])
+                    for ath in stat_cat.get('athletes', []):
+                        a_id = str(ath.get('athlete', {}).get('id', ''))
+                        a_stats = ath.get('stats', [])
+                        if not a_id: continue
+                        cache_key = (t_id_box, a_id)
+                        if cache_key not in core_stats_cache:
+                            core_stats_cache[cache_key] = {}
+                        for idx, s_name in enumerate(stat_names):
+                            if idx < len(a_stats):
+                                core_stats_cache[cache_key][s_name] = a_stats[idx]
 
             for r_data in rosters:
                 ha = r_data.get('homeAway', 'home')
@@ -776,14 +766,14 @@ def fetch_espn_scores_for_date(date_str, cache):
             event_id = str(event.get('id', ''))
             state = event.get('status', {}).get('type', {}).get('state', 'pre')
             
-            # CACHE HEALER: If it's loaded from cache, ensure it has the Python HTML string
+            # CACHE HEALER: Restores missing yesterday HTML safely
             if state == 'post' and event_id in cache:
                 cached_match = cache[event_id]
-                if "html_card" not in cached_match:
+                if "html_card" not in cached_match or not cached_match["html_card"]:
                     try:
                         cached_match["html_card"] = pre_render_game_card(cached_match)
                     except Exception as e:
-                        pass # Should never hit, but avoids dropping cached data
+                        cached_match["html_card"] = f"<div class='p-3 text-danger text-center'>Failed to load cached card</div>"
                 matches.append(cached_match)
                 continue
 
@@ -829,7 +819,13 @@ def fetch_espn_scores_for_date(date_str, cache):
             league_flag = str(league_flag or "")
 
             should_fetch, _ = should_fetch_summary(event)
-            summary = parse_espn_summary(event_id, league_code=(league_obj.get('slug') or 'all')) if should_fetch else {"team_stats": None, "homeLineup": None, "awayLineup": None, "events": [], "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}, "injuries": {"home": [], "away": []}, "live_score": None, "status_obj": None}
+            summary = parse_espn_summary(event_id, league_code=(league_obj.get('slug') or 'all')) if should_fetch else {
+                "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [], 
+                "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}, 
+                "injuries": {"home": [], "away": []}, 
+                "live_score": {},  # <--- CRITICAL FIX: Stops the NoneType crash preventing tomorrow's games from rendering.
+                "status_obj": None
+            }
 
             fresh_status = summary.get("status_obj") or event.get('status', {})
             fresh_type = fresh_status.get('type', {})
@@ -843,7 +839,10 @@ def fetch_espn_scores_for_date(date_str, cache):
                     "home": {"id": home_id, "name": home_name, "logo": home_logo},
                     "away": {"id": away_id, "name": away_name, "logo": away_logo}
                 },
-                "goals": {"home": int(summary.get('live_score', {}).get('home') or home_comp.get('score') or 0), "away": int(summary.get('live_score', {}).get('away') or away_comp.get('score') or 0)},
+                "goals": {
+                    "home": int((summary.get('live_score') or {}).get('home') or home_comp.get('score') or 0), 
+                    "away": int((summary.get('live_score') or {}).get('away') or away_comp.get('score') or 0)
+                },
                 "team_stats": summary["team_stats"], "homeLineup": summary["homeLineup"], "awayLineup": summary["awayLineup"],
                 "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"]
             }
@@ -856,7 +855,6 @@ def fetch_espn_scores_for_date(date_str, cache):
 
         except Exception as e: 
             print(f"❌ ERROR parsing match item {event.get('id')}: {e}")
-            traceback.print_exc()
 
     return matches
 
@@ -890,7 +888,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .lineup-tab { font-size: 0.65rem; font-weight: 700; padding: 6px 4px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
         .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
 
-        /* Card Glow Animations matching script.js */
+        /* Card Glow Animations */
         @keyframes glowGoal { 0% { border-color: #20c997; box-shadow: 0 0 25px rgba(32, 201, 151, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
         @keyframes headerGoal { 0% { background-color: #d1e7dd !important; } 100% { background-color: #fcfcfc !important; } }
         .glow-goal { animation: glowGoal 4s ease-out !important; border: 3px solid #20c997 !important; position: relative !important; z-index: 10 !important; }
@@ -938,7 +936,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </div>
 
 <div class="container pb-5">
-    <!-- TRUE STATIC SSG HTML PRE-RENDERED IN PYTHON -->
     <div id="games-container" class="row justify-content-center">
         {% for day, matches in matches_by_day.items() %}
             <div id="partition-{{ day }}" class="day-partition {{ '' if day == 'today' else 'd-none' }} row w-100 m-0">
@@ -951,7 +948,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         <div class="card p-4 shadow-sm border-0"><div class="h4 text-muted">🏟️ No matches found.</div></div>
                     </div>
                     {% for match in matches %}
-                        <div class="col-md-6 col-lg-6 col-xl-4 mb-3 game-card-wrapper" data-search="{{ match.teams.home.name | lower }} {{ match.teams.away.name | lower }} {{ match.league.name | lower }} {{ match.league.abbrev | lower }}">
+                        <div class="col-md-6 col-lg-6 col-xl-4 mb-3 game-card-wrapper" data-search="{{ (match.teams.home.name | default('')) | lower }} {{ (match.teams.away.name | default('')) | lower }} {{ (match.league.name | default('')) | lower }} {{ (match.league.abbrev | default('')) | lower }}">
                             {{ match.html_card | safe }}
                         </div>
                     {% endfor %}
@@ -962,14 +959,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </div>
 
 <script>
-    // Only used for background data updates, NOT for initial rendering!
     const STATIC_MATCHES = {{ matches_json | safe }};
     let ACTIVE_DAY = "today";
     let globalScoreboardMode = true;
     let globalLineupsExpanded = true;
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Tab switching purely swaps CSS visibility on pre-rendered nodes
         document.querySelectorAll('.day-tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.day-tab-btn').forEach(b => { b.classList.remove('btn-dark', 'active'); b.classList.add('btn-outline-dark'); });
@@ -992,7 +987,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             document.getElementById('toggle-all-lineups')?.classList.toggle('d-none', globalScoreboardMode);
         });
 
-        // Start background polling every 30 seconds
         setInterval(pollAndUpdateDOM, 30000);
     });
 
@@ -1035,9 +1029,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         }
     };
 
-    // =========================================================================
-    // SILENT UPDATER ENGINE (Functions only executed on live DOM replacements)
-    // =========================================================================
     function shortenPlayerName(fn) { if (!fn) return "Unknown"; const p = fn.split(' '); return p.length === 1 ? fn : `${p[0].charAt(0).toUpperCase()}. ${p.slice(1).join(' ')}`; }
     function getContrastColor(h) { if (!h) return '#ffffff'; h = h.replace('#', ''); const y = ((parseInt(h.substr(0,2),16)*299) + (parseInt(h.substr(2,2),16)*587) + (parseInt(h.substr(4,2),16)*114))/1000; return y >= 128 ? '#000000' : '#ffffff'; }
     
