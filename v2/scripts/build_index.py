@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import pytz
 import asyncio
 import aiohttp
+import hashlib
 from jinja2 import Template
 
 HUMAN_LEAGUE_FLAGS = {
@@ -116,6 +117,44 @@ def normalize_text(text):
 NORMALIZED_HUMAN_LEAGUE_FLAGS = {
     normalize_text(key): val for key, val in HUMAN_LEAGUE_FLAGS.items()
 }
+
+def get_local_image_url(url, subfolder="images/teams"):
+    """
+    Downloads an external image to a local directory during SSG build
+    and returns the relative web path for the HTML tag.
+    """
+    if not url or not url.startswith('http'):
+        return url
+
+    # Target folder path on disk: v2/images/teams or v2/images/leagues
+    local_dir = os.path.join("v2", subfolder)
+    os.makedirs(local_dir, exist_ok=True)
+    
+    # Extract extension or default to .png
+    ext = url.split('.')[-1].split('?')[0].lower()
+    if ext not in ['png', 'jpg', 'jpeg', 'svg', 'webp']:
+        ext = 'png'
+    
+    # Generate unique 12-char filename based on original URL
+    filename = f"{hashlib.md5(url.encode()).hexdigest()[:12]}.{ext}"
+    local_file_path = os.path.join(local_dir, filename)
+    
+    # HTML src path (e.g. "images/teams/a1b2c3d4e5f6.png")
+    web_path = f"{subfolder}/{filename}"
+
+    # Download only if we don't already have it locally
+    if not os.path.exists(local_file_path):
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0'}
+            resp = requests.get(url, headers=headers, timeout=5)
+            if resp.status_code == 200:
+                with open(local_file_path, 'wb') as f:
+                    f.write(resp.content)
+                return web_path
+        except Exception:
+            return url # Graceful fallback to original URL if download fails
+
+    return web_path
 
 # ====================================================================
 # ASYNC CORE API PLAYER STATS FETCHER
@@ -530,9 +569,9 @@ def get_latest_event_html(data, is_ribbon=False):
         p_out = shorten_player_name(last_ev.get('player'))
         p_in = shorten_player_name(last_ev.get('player_out'))
         if is_ribbon:
-            return f'''<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate">🔄 <img src="{team_logo}" style="width: 12px; height: 12px;" class="me-1">{last_ev.get('time', '')}'</div><div class="text-truncate">🟢 <span class="text-success">{p_in}</span></div><div class="text-muted text-truncate">🔴 {p_out}</div></div>'''
+            return f'''<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate">🔄 <img src="{team_logo}" loading="lazy" decoding="async" style="width: 12px; height: 12px;" class="me-1">{last_ev.get('time', '')}'</div><div class="text-truncate">🟢 <span class="text-success">{p_in}</span></div><div class="text-muted text-truncate">🔴 {p_out}</div></div>'''
         else:
-            return f'''<div class="ms-2 d-flex align-items-center text-dark fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="d-flex align-items-center me-2"><span class="bg-primary text-white rounded d-flex justify-content-center align-items-center me-1" style="width: 14px; height: 14px; font-size: 0.55rem;">🔄</span><img src="{team_logo}" style="width: 14px; height: 14px; object-fit: contain;" class="me-1"><span>{last_ev.get('time', '')}'</span></div><div class="d-flex flex-column text-start" style="min-width: 0;"><div class="text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#20c997; margin-bottom:1px; margin-right:3px;"></span>{p_in}</div><div class="text-muted text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#dc3545; margin-bottom:1px; margin-right:3px;"></span>{p_out}</div></div></div>'''
+            return f'''<div class="ms-2 d-flex align-items-center text-dark fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="d-flex align-items-center me-2"><span class="bg-primary text-white rounded d-flex justify-content-center align-items-center me-1" style="width: 14px; height: 14px; font-size: 0.55rem;">🔄</span><img src="{team_logo}" loading="lazy" decoding="async" style="width: 14px; height: 14px; object-fit: contain;" class="me-1"><span>{last_ev.get('time', '')}'</span></div><div class="d-flex flex-column text-start" style="min-width: 0;"><div class="text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#20c997; margin-bottom:1px; margin-right:3px;"></span>{p_in}</div><div class="text-muted text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#dc3545; margin-bottom:1px; margin-right:3px;"></span>{p_out}</div></div></div>'''
     else:
         icon, text_color = '🟨', 'text-warning'
         if last_ev.get('type') == 'Goal': icon, text_color = '⚽', 'text-success'
@@ -541,9 +580,9 @@ def get_latest_event_html(data, is_ribbon=False):
         ast_html = f'<div class="text-muted text-truncate" style="font-size: 0.55rem;">👟 {shorten_player_name(last_ev.get("assist"))}</div>' if last_ev.get('type') == 'Goal' and last_ev.get('assist') else ''
         ast_html_full = f'<div class="text-muted text-truncate fw-normal" style="font-size: 0.55rem;"><span style="display:inline-block; width:12px;"></span>👟 {shorten_player_name(last_ev.get("assist"))}</div>' if last_ev.get('type') == 'Goal' and last_ev.get('assist') else ''
         if is_ribbon:
-            return f'''<div class="{text_color} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate"><img src="{team_logo}" style="width: 12px; height: 12px;" class="me-1">{last_ev.get('time', '')}'</div><div class="text-truncate">{icon} {p_name}</div>{ast_html}</div>'''
+            return f'''<div class="{text_color} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate"><img src="{team_logo}" loading="lazy" decoding="async" style="width: 12px; height: 12px;" class="me-1">{last_ev.get('time', '')}'</div><div class="text-truncate">{icon} {p_name}</div>{ast_html}</div>'''
         else:
-            return f'''<div class="ms-2 d-flex flex-column text-start {text_color} fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="text-truncate">{icon} {last_ev.get('time', '')}' <img src="{team_logo}" style="width: 12px; height: 12px;" class="mx-1">{p_name}</div>{ast_html_full}</div>'''
+            return f'''<div class="ms-2 d-flex flex-column text-start {text_color} fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="text-truncate">{icon} {last_ev.get('time', '')}' <img src="{team_logo}" loading="lazy" decoding="async" style="width: 12px; height: 12px;" class="mx-1">{p_name}</div>{ast_html_full}</div>'''
 
 def get_ribbon_html(data):
     is_pre = data['fixture']['status']['short'] in ['NS', 'TBD', 'PST', 'CANC', 'ABD']
@@ -551,14 +590,14 @@ def get_ribbon_html(data):
     a_score = '-' if is_pre else data.get('goals', {}).get('away', 0)
     
     l_flag = str(data["league"].get("flag") or "")
-    flag_html = f'<img src="{l_flag}" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">' if l_flag.startswith('http') else f'<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
+    flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">' if l_flag.startswith('http') or l_flag.startswith('images/') else f'<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
     
     return f'''
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
         <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">{get_time_badge_html(data)}</div><a href="/leagues/{data["league"]["slug"]}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="{data["league"]["name"]}">{flag_html}{data["league"]["abbrev"]}</a></div>
         <div class="col-5 px-2">
-            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['home']['logo']}" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['home']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{h_score}</span></div></div>
-            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['away']['logo']}" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['away']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{a_score}</span></div></div>
+            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['home']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{h_score}</span></div></div>
+            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['away']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['away']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{a_score}</span></div></div>
         </div>
         <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">{get_latest_event_html(data, True)}</div>
     </div>'''
@@ -649,7 +688,7 @@ def pre_render_game_card(data):
     has_stats = bool(data.get('team_stats'))
     
     l_flag = str(data['league'].get('flag') or "")
-    flag_html = f'<img src="{l_flag}" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">' if l_flag.startswith('http') else f'<span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
+    flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">' if l_flag.startswith('http') or l_flag.startswith('images/') else f'<span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
     
     h_col = get_team_color(data.get('homeLineup'), '#0d6efd')
     a_col = get_team_color(data.get('awayLineup'), '#dc3545')
@@ -664,9 +703,9 @@ def pre_render_game_card(data):
                     <a href="/leagues/{data['league']['slug']}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="{data['league']['name']}">{flag_html} <span class="text-truncate">{data['league']['name']}</span></a>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
-                    <div class="text-center" style="width: 30%;"><img src="{data['teams']['home']['logo']}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['home']['name']}</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['home']['name']}</div></div>
                     <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-{fix_id}">{get_center_column_html(data)}</div>
-                    <div class="text-center" style="width: 30%;"><img src="{data['teams']['away']['logo']}" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['away']['name']}</div></div>
+                    <div class="text-center" style="width: 30%;"><img src="{data['teams']['away']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['away']['name']}</div></div>
                 </div>
                 <div class="w-100" id="events-{fix_id}">{get_events_html(data)}</div>
             </div>
@@ -759,12 +798,13 @@ def fetch_espn_scores_for_date(date_str, old_html):
             h_team = home_comp.get('team', {})
             a_team = away_comp.get('team', {})
             
+            # Localize Team Logos
             home_id = str(h_team.get('id', ''))
             away_id = str(a_team.get('id', ''))
             home_name = str(h_team.get('displayName') or h_team.get('name') or "TBD")
             away_name = str(a_team.get('displayName') or a_team.get('name') or "TBD")
-            home_logo = str(h_team.get('logo') or "")
-            away_logo = str(a_team.get('logo') or "")
+            home_logo = get_local_image_url(str(h_team.get('logo') or ""), subfolder="images/teams")
+            away_logo = get_local_image_url(str(a_team.get('logo') or ""), subfolder="images/teams")
 
             league_obj = event.get('league') or comp.get('league') or (event.get('leagues', [{}])[0] if event.get('leagues') else {})
             raw_name = str(comp.get('altGameNote') or league_obj.get('name') or league_obj.get('displayName') or "Global Football")
@@ -787,7 +827,8 @@ def fetch_espn_scores_for_date(date_str, old_html):
                 if not league_flag and 'friendly' in clean_league: league_flag = "🤝"
                 if not league_flag and 'cup' in clean_league: league_flag = "🏆"
 
-            league_flag = str(league_flag or "")
+            # Localize League Flags
+            league_flag = get_local_image_url(str(league_flag or ""), subfolder="images/leagues")
 
             if state == 'post' and old_html:
                 match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
@@ -848,6 +889,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <meta name="theme-color" content="#212529">
     <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores, Injuries & Odds</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        // Immediately terminate any hanging/broken image requests
+        document.addEventListener('error', function (e) {
+            if (e.target.tagName === 'IMG') {
+                e.target.style.display = 'none'; // Hide broken image immediately
+            }
+        }, true);
+    </script>
     <style>
         body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
@@ -945,8 +994,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         <!-- LEAGUE HEADER -->
                         <div class="col-12 league-header mt-3 mb-2 px-1" id="league-{{ day }}-{{ league.slug }}" data-league-name="{{ league.name }}">
                             <div class="d-flex align-items-center p-2 rounded-3 shadow-sm league-banner">
-                                {% if league.flag and league.flag.startswith('http') %}
-                                    <img src="{{ league.flag }}" alt="" style="width: 22px; height: 22px; object-fit: contain;" class="me-2 rounded-1">
+                                {% if league.flag and (league.flag.startswith('http') or league.flag.startswith('images/')) %}
+                                    <img src="{{ league.flag }}" loading="lazy" decoding="async" alt="" style="width: 22px; height: 22px; object-fit: contain;" class="me-2 rounded-1">
                                 {% else %}
                                     <span class="me-2" style="font-size: 1.1rem;">{{ league.flag or '🏆' }}</span>
                                 {% endif %}
@@ -1122,21 +1171,21 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const n = isH ? data.teams.home.name : data.teams.away.name, lg = isH ? data.teams.home.logo : data.teams.away.logo;
         if (ev.type === 'subst') {
             const pOut = shortenPlayerName(ev.player), pIn = shortenPlayerName(ev.player_out);
-            return rib ? `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate">🔄 <img src="${lg}" style="width: 12px; height: 12px;" class="me-1">${ev.time}'</div><div class="text-truncate">🟢 <span class="text-success">${pIn}</span></div><div class="text-muted text-truncate">🔴 ${pOut}</div></div>`
-                       : `<div class="ms-2 d-flex align-items-center text-dark fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="d-flex align-items-center me-2"><span class="bg-primary text-white rounded d-flex justify-content-center align-items-center me-1" style="width: 14px; height: 14px; font-size: 0.55rem;">🔄</span><img src="${lg}" style="width: 14px; height: 14px; object-fit: contain;" class="me-1"><span>${ev.time}'</span></div><div class="d-flex flex-column text-start" style="min-width: 0;"><div class="text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#20c997; margin-bottom:1px; margin-right:3px;"></span>${pIn}</div><div class="text-muted text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#dc3545; margin-bottom:1px; margin-right:3px;"></span>${pOut}</div></div></div>`;
+            return rib ? `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate">🔄 <img src="${lg}" loading="lazy" decoding="async" style="width: 12px; height: 12px;" class="me-1">${ev.time}'</div><div class="text-truncate">🟢 <span class="text-success">${pIn}</span></div><div class="text-muted text-truncate">🔴 ${pOut}</div></div>`
+                       : `<div class="ms-2 d-flex align-items-center text-dark fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="d-flex align-items-center me-2"><span class="bg-primary text-white rounded d-flex justify-content-center align-items-center me-1" style="width: 14px; height: 14px; font-size: 0.55rem;">🔄</span><img src="${lg}" loading="lazy" decoding="async" style="width: 14px; height: 14px; object-fit: contain;" class="me-1"><span>${ev.time}'</span></div><div class="d-flex flex-column text-start" style="min-width: 0;"><div class="text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#20c997; margin-bottom:1px; margin-right:3px;"></span>${pIn}</div><div class="text-muted text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#dc3545; margin-bottom:1px; margin-right:3px;"></span>${pOut}</div></div></div>`;
         } else {
             let ic = '🟨', tc = 'text-warning'; if (ev.type === 'Goal') { ic = '⚽'; tc = 'text-success'; } else if (ev.type === 'Red Card') { ic = '🟥'; tc = 'text-danger'; }
             const pn = shortenPlayerName(ev.player || n);
-            return rib ? `<div class="${tc} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate"><img src="${lg}" style="width: 12px; height: 12px;" class="me-1">${ev.time}'</div><div class="text-truncate">${ic} ${pn}</div>${ev.type==='Goal'&&ev.assist?`<div class="text-muted text-truncate" style="font-size: 0.55rem;">👟 ${shortenPlayerName(ev.assist)}</div>`:''}</div>`
-                       : `<div class="ms-2 d-flex flex-column text-start ${tc} fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="text-truncate">${ic} ${ev.time}' <img src="${lg}" style="width: 12px; height: 12px;" class="mx-1">${pn}</div>${ev.type==='Goal'&&ev.assist?`<div class="text-muted text-truncate fw-normal" style="font-size: 0.55rem;"><span style="display:inline-block; width:12px;"></span>👟 ${shortenPlayerName(ev.assist)}</div>`:''}</div>`;
+            return rib ? `<div class="${tc} fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate"><img src="${lg}" loading="lazy" decoding="async" style="width: 12px; height: 12px;" class="me-1">${ev.time}'</div><div class="text-truncate">${ic} ${pn}</div>${ev.type==='Goal'&&ev.assist?`<div class="text-muted text-truncate" style="font-size: 0.55rem;">👟 ${shortenPlayerName(ev.assist)}</div>`:''}</div>`
+                       : `<div class="ms-2 d-flex flex-column text-start ${tc} fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="text-truncate">${ic} ${ev.time}' <img src="${lg}" loading="lazy" decoding="async" style="width: 12px; height: 12px;" class="mx-1">${pn}</div>${ev.type==='Goal'&&ev.assist?`<div class="text-muted text-truncate fw-normal" style="font-size: 0.55rem;"><span style="display:inline-block; width:12px;"></span>👟 ${shortenPlayerName(ev.assist)}</div>`:''}</div>`;
         }
     }
     
     function getRibbonHtml(data) {
         const isPre = ['NS','TBD','PST','CANC','ABD'].includes(data.fixture.status.short);
         const l_flag = data.league.flag || "";
-        const flg = l_flag.startsWith('http') ? `<img src="${l_flag}" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">` : `<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${l_flag || "🏆"}</span>`;
-        return `<div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;"><div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div><a href="/leagues/${data.league.slug}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">${flg}${data.league.abbrev}</a></div><div class="col-5 px-2"><div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.home.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.home.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.home??0)}</span></div></div><div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.away.logo}" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.away.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.away??0)}</span></div></div></div><div class="col-4 text-center border-start d-flex justify-content-center align-items-center">${getLatestEventHtml(data, true)}</div></div>`;
+        const flg = l_flag.startsWith('http') || l_flag.startswith('images/') ? `<img src="${l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">` : `<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">${l_flag || "🏆"}</span>`;
+        return `<div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;"><div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">${getTimeBadgeHtml(data)}</div><a href="/leagues/${data.league.slug}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="${data.league.name}">${flg}${data.league.abbrev}</a></div><div class="col-5 px-2"><div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.home.logo}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.home.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.home??0)}</span></div></div><div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="${data.teams.away.logo}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">${data.teams.away.name}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">${isPre?'-':(data.goals?.away??0)}</span></div></div></div><div class="col-4 text-center border-start d-flex justify-content-center align-items-center">${getLatestEventHtml(data, true)}</div></div>`;
     }
     
     function getCenterColumnHtml(data) {
