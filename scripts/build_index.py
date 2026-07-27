@@ -1555,8 +1555,29 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       gtag('js', new Date());
       gtag('config', 'G-WKSS7R4E02');
     </script>
-    <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores, Injuries & Odds</title>
-    <link class="canonical" href="https://futbolstartingeleven.com/">
+    <!-- Title & SEO Meta Tags -->
+    <title>Futbol Starting Eleven | Live Soccer-Futbol-Football Starting Lineups, Starting XI, Scores, Injuries & Odds</title>
+    <meta name="description" content="Real-time soccer and football starting XIs, live match scores, goalscorers, injuries, and betting odds. Up-to-the-minute data for Premier League, Champions League, MLS, La Liga, and global football.">
+    <meta name="keywords" content="soccer starting lineups, football starting xi, live soccer scores, missing players, soccer injuries, premier league lineups, la liga lineups, mls lineups, soccer betting odds, live match stats">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Futbol Starting Eleven">
+    <meta property="og:url" content="https://futbolstartingeleven.com/">
+    <meta property="og:title" content="Futbol Starting Eleven | Live Soccer Starting Lineups, Scores & Injuries">
+    <meta property="og:description" content="Real-time soccer starting XIs, live scores, goalscorers, injuries, and matchup stats for the world's top leagues.">
+    <meta property="og:image" content="https://futbolstartingeleven.com/social-share1.png">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:domain" content="futbolstartingeleven.com">
+    <meta name="twitter:url" content="https://futbolstartingeleven.com/">
+    <meta name="twitter:title" content="Futbol Starting Eleven | Live Soccer Starting Lineups, Scores & Injuries">
+    <meta name="twitter:description" content="Real-time soccer starting XIs, live match scores, injuries, and betting odds.">
+    <meta name="twitter:image" content="https://futbolstartingeleven.com/social-share1.png">
+    
+    <!-- Canonical -->
+    <link rel="canonical" id="canonical-url" href="https://futbolstartingeleven.com/">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
