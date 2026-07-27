@@ -171,14 +171,14 @@ NORMALIZED_HUMAN_LEAGUE_FLAGS = {
 def get_local_image_url(url, subfolder="images/teams"):
     if not url or not url.startswith('http'):
         return url
-    local_dir = os.path.join("v2", subfolder)
+    local_dir = subfolder
     os.makedirs(local_dir, exist_ok=True)
     ext = url.split('.')[-1].split('?')[0].lower()
     if ext not in ['png', 'jpg', 'jpeg', 'svg', 'webp']:
         ext = 'png'
     filename = f"{hashlib.md5(url.encode()).hexdigest()[:12]}.{ext}"
     local_file_path = os.path.join(local_dir, filename)
-    web_path = f"/v2/{subfolder}/{filename}"
+    web_path = f"/{subfolder}/{filename}"
     if not os.path.exists(local_file_path):
         try:
             headers = {'User-Agent': 'Mozilla/5.0'}
@@ -204,8 +204,8 @@ def create_slug(name):
     return slug.strip('-')
 
 def sync_league_state(all_active_matches):
-    state_file = 'v2/data/site_pages.json'
-    os.makedirs('v2/data', exist_ok=True)
+    state_file = 'data/site_pages.json'
+    os.makedirs('data', exist_ok=True)
     state = {}
     
     if os.path.exists(state_file):
@@ -237,8 +237,8 @@ def sync_league_state(all_active_matches):
     return state, state_file
 
 def sync_team_state(matches):
-    state_file = 'v2/data/site_teams.json'
-    os.makedirs('v2/data', exist_ok=True)
+    state_file = 'data/site_teams.json'
+    os.makedirs('data', exist_ok=True)
     team_state = {}
     if os.path.exists(state_file):
         try:
@@ -267,8 +267,8 @@ def sync_team_state(matches):
     return team_state, state_file
 
 def sync_player_state(matches):
-    state_file = 'v2/data/site_players.json'
-    os.makedirs('v2/data', exist_ok=True)
+    state_file = 'data/site_players.json'
+    os.makedirs('data', exist_ok=True)
     player_state = {}
     if os.path.exists(state_file):
         try:
@@ -390,7 +390,7 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
                                     player_state[p_slug]['team_name'] = t_name
                                     player_state[p_slug]['team_slug'] = t_slug
                             
-                            p_page_path = os.path.join('v2', 'players', p_slug, 'index.html')
+                            p_page_path = os.path.join('players', p_slug, 'index.html')
                             if is_new or not os.path.exists(p_page_path):
                                 next_m, next_is_home = find_next_fixture_for_entity(t_slug, upcoming_pool)
                                 dummy_match = next_m if next_m else {
@@ -417,7 +417,7 @@ def generate_nav_leagues_html(state):
     sorted_leagues = sorted(state.items(), key=lambda x: x[1]['name'].lower())
     html = ""
     for slug, data in sorted_leagues:
-        html += f'<li><a class="dropdown-item" href="/v2/leagues/{slug}/" style="font-size: 0.85rem; font-weight: 500;">{data["name"]}</a></li>'
+        html += f'<li><a class="dropdown-item" href="/leagues/{slug}/" style="font-size: 0.85rem; font-weight: 500;">{data["name"]}</a></li>'
     return html
 
 def find_next_fixture_for_entity(team_id_or_slug, upcoming_matches):
@@ -1125,7 +1125,7 @@ def generate_pitch_html(lineup, default_hex):
             avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; border: 2px solid #fff;">{initial}</div>'
             
         return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: 90px; z-index: 10;">
-            <a href="/v2/players/{p_slug}/" class="text-decoration-none" style="display:flex; flex-direction:column; align-items:center; color:inherit;">
+            <a href="/players/{p_slug}/" class="text-decoration-none" style="display:flex; flex-direction:column; align-items:center; color:inherit;">
                 <div style="width: 34px; height: 34px; background: #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">{avatar}</div>
                 <div style="background: rgba(0,0,0,0.7); color: #fff; font-size: 0.60rem; font-weight: bold; padding: 2px 5px; border-radius: 4px; margin-top: 3px; white-space: nowrap; max-width: 90px; overflow: hidden; text-overflow: ellipsis;">{name}</div>
             </a>
@@ -1199,11 +1199,11 @@ def get_ribbon_html(data):
     a_score = '-' if is_pre else (data.get('goals') or {}).get('away', 0)
     
     l_flag = str(data["league"].get("flag") or "")
-    flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">' if l_flag.startswith('http') or l_flag.startswith('/v2/') else f'<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
+    flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">' if l_flag.startswith('http') or l_flag.startswith('/images/') else f'<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
     
     return f'''
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
-        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">{get_time_badge_html(data)}</div><a href="/v2/leagues/{data["league"]["slug"]}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="{data["league"]["name"]}">{flag_html}{data["league"]["abbrev"]}</a></div>
+        <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">{get_time_badge_html(data)}</div><a href="/leagues/{data["league"]["slug"]}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="{data["league"]["name"]}">{flag_html}{data["league"]["abbrev"]}</a></div>
         <div class="col-5 px-2">
             <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['home']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{h_score}</span></div></div>
             <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['away']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['away']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{a_score}</span></div></div>
@@ -1271,7 +1271,7 @@ def build_lineup_list(lineup_data):
         p_slug = f"{create_slug(p.get('name', ''))}-{p_id}"
         pho = f'''<img data-src="{p.get('photo', '')}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2 player-headshot" onerror="this.onerror=null;this.src='https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png';">''' if p.get('photo') else '''<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>'''
         sub = '''<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>''' if p.get('isSubbedOut') else ''
-        items += f'''<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">{p.get('pos','M')}</span>{pho}<a href="/v2/players/{p_slug}/" class="batter-name text-dark text-decoration-none text-truncate">{sub}{shorten_player_name(p.get('name'))}</a><span class="ms-auto text-muted" style="font-size: 0.65rem;">#{p.get('number','')}</span></li>'''
+        items += f'''<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">{p.get('pos','M')}</span>{pho}<a href="/players/{p_slug}/" class="batter-name text-dark text-decoration-none text-truncate">{sub}{shorten_player_name(p.get('name'))}</a><span class="ms-auto text-muted" style="font-size: 0.65rem;">#{p.get('number','')}</span></li>'''
     return f'''<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ {get_formation(lineup_data)}</div><ul class="batting-order w-100 m-0 p-0">{items}</ul>'''
 
 def build_live_stats_grid(lineup_data, hex_color):
@@ -1292,7 +1292,7 @@ def build_live_stats_grid(lineup_data, hex_color):
             p_slug = f"{create_slug(p.get('name', ''))}-{p_id}"
             pre = '<span class="text-success fw-bold me-1">▲</span>' if p.get('isSubbedIn') else ('<span class="text-primary fw-bold me-1">↻</span>' if p.get('isSubbedOut') else '')
             st = p.get('live_stats', {})
-            html += f'''<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;"><div class="text-start text-truncate" style="flex: 1;"><a href="/v2/players/{p_slug}/" class="text-dark text-decoration-none text-truncate">{pre}{shorten_player_name(p.get('name'))}</a></div><div class="text-muted" style="width: 18px; text-align: center; font-weight: 600;">{st.get(g['k'][0],0)}</div><div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">{st.get(g['k'][1],0)}</div><div class="text-muted" style="width: 28px; text-align: center; font-weight: 600;">{st.get(g['k'][2],0)}</div><div class="text-muted" style="width: 24px; text-align: center; font-weight: 600;">{st.get(g['k'][3],0)}</div></div>'''
+            html += f'''<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;"><div class="text-start text-truncate" style="flex: 1;"><a href="/players/{p_slug}/" class="text-dark text-decoration-none text-truncate">{pre}{shorten_player_name(p.get('name'))}</a></div><div class="text-muted" style="width: 18px; text-align: center; font-weight: 600;">{st.get(g['k'][0],0)}</div><div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">{st.get(g['k'][1],0)}</div><div class="text-muted" style="width: 28px; text-align: center; font-weight: 600;">{st.get(g['k'][2],0)}</div><div class="text-muted" style="width: 24px; text-align: center; font-weight: 600;">{st.get(g['k'][3],0)}</div></div>'''
     return html
 
 def pre_render_game_card(data):
@@ -1301,7 +1301,7 @@ def pre_render_game_card(data):
     has_stats = bool(data.get('team_stats'))
     
     l_flag = str(data['league'].get('flag') or "")
-    flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">' if l_flag.startswith('http') or l_flag.startswith('/v2/') else f'<span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
+    flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 24px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));">' if l_flag.startswith('http') or l_flag.startswith('/images/') else f'<span style="font-size: 1.3rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
     
     h_col = get_team_color(data.get('homeLineup'), '#0d6efd')
     a_col = get_team_color(data.get('awayLineup'), '#dc3545')
@@ -1309,8 +1309,8 @@ def pre_render_game_card(data):
     home_slug = create_slug(data['teams']['home']['name'])
     away_slug = create_slug(data['teams']['away']['name'])
     
-    home_lineup_html = f'<a href="/v2/teams/{home_slug}/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
-    away_lineup_html = f'<a href="/v2/teams/{away_slug}/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
+    home_lineup_html = f'<a href="/teams/{home_slug}/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
+    away_lineup_html = f'<a href="/teams/{away_slug}/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
 
     return f'''<!-- MATCH_{fix_id} -->
     <div class="lineup-card shadow-sm" id="card-{fix_id}">
@@ -1319,7 +1319,7 @@ def pre_render_game_card(data):
             <div class="p-2 pb-1" style="background-color: #fcfcfc;">
                 <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('{fix_id}')">
                     <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-{fix_id}" style="white-space: nowrap;">{get_time_badge_html(data)} {get_latest_event_html(data)}</div>
-                    <a href="/v2/leagues/{data['league']['slug']}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="{data['league']['name']}">{flag_html} <span class="text-truncate">{data['league']['name']}</span></a>
+                    <a href="/leagues/{data['league']['slug']}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="{data['league']['name']}">{flag_html} <span class="text-truncate">{data['league']['name']}</span></a>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
                     <div class="text-center" style="width: 30%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['home']['name']}</div>{home_lineup_html}</div>
@@ -1518,7 +1518,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
 BASE_HEADER = """
 <nav class="navbar sticky-top shadow-sm pt-2 pb-2 mb-0" style="background-color: #212529; z-index: 1050;">
     <div class="container d-flex justify-content-between align-items-center">
-        <div class="header-brand"><a href="/v2/" class="text-decoration-none">Futbol Starting <span>Eleven</span></a></div>
+        <div class="header-brand"><a href="/" class="text-decoration-none">Futbol Starting <span>Eleven</span></a></div>
         <div class="d-flex align-items-center gap-2">
             <div class="dropdown league-search-container">
                 <input type="text" id="leagueSearchNavInput" class="form-control form-control-sm" placeholder="🏆 Search leagues..." data-bs-toggle="dropdown" aria-expanded="false" style="width: 160px; background-color: #343a40; color: white; border: 1px solid #495057; cursor: pointer;" autocomplete="off">
@@ -1538,8 +1538,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#212529">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKSS7R4E02"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WKSS7R4E02');
+    </script>
     <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores, Injuries & Odds</title>
-    <link class="canonical" href="https://futbolstartingeleven.com/v2/">
+    <link class="canonical" href="https://futbolstartingeleven.com/">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -1634,12 +1641,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     {% for league in leagues %}
                         <div class="col-12 league-header mt-3 mb-2 px-1" id="league-{{ day }}-{{ league.slug }}" data-league-name="{{ league.name }}">
                             <div class="d-flex align-items-center p-2 rounded-3 shadow-sm league-banner">
-                                {% if league.flag and (league.flag.startswith('http') or league.flag.startswith('/v2/')) %}
+                                {% if league.flag and (league.flag.startswith('http') or league.flag.startswith('/images/')) %}
                                     <img src="{{ league.flag }}" loading="lazy" decoding="async" alt="" style="width: 22px; height: 22px; object-fit: contain;" class="me-2 rounded-1">
                                 {% else %}
                                     <span class="me-2" style="font-size: 1.1rem;">{{ league.flag or '🏆' }}</span>
                                 {% endif %}
-                                <h2 class="h6 mb-0 fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px;"><a href="/v2/leagues/{{ league.slug }}/" class="text-dark text-decoration-none">{{ league.name }}</a></h2>
+                                <h2 class="h6 mb-0 fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px;"><a href="/leagues/{{ league.slug }}/" class="text-dark text-decoration-none">{{ league.name }}</a></h2>
                                 <span class="badge bg-light text-secondary border ms-auto px-2 py-1" style="font-size: 0.65rem;">{{ league.matches | length }} {{ 'Match' if league.matches | length == 1 else 'Matches' }}</span>
                             </div>
                         </div>
@@ -1841,10 +1848,16 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#212529">
-    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKSS7R4E02"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WKSS7R4E02');
+    </script>
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
-    <link class="canonical" href="https://futbolstartingeleven.com/v2/leagues/{{ league_slug }}/">
+    <link class="canonical" href="https://futbolstartingeleven.com/leagues/{{ league_slug }}/">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -2066,10 +2079,16 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#212529">
-    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKSS7R4E02"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WKSS7R4E02');
+    </script>
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
-    <link class="canonical" href="https://futbolstartingeleven.com/v2/teams/{{ team_slug }}/lineup/">
+    <link class="canonical" href="https://futbolstartingeleven.com/teams/{{ team_slug }}/lineup/">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -2119,11 +2138,17 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKSS7R4E02"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WKSS7R4E02');
+    </script>
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
     <meta name="robots" content="index, follow">
-    <link class="canonical" href="https://futbolstartingeleven.com/v2/players/{{ player_slug }}/">
+    <link class="canonical" href="https://futbolstartingeleven.com/players/{{ player_slug }}/">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -2170,7 +2195,7 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
                     </div>
                     <div class="sidebar-player-name">{{ player_name }}</div>
                     <div class="sidebar-player-meta">
-                        <a href="/v2/teams/{{ team_slug }}/lineup/" class="seo-link fw-bold">{{ team_name }}</a> • <span>{{ position }}</span>
+                        <a href="/teams/{{ team_slug }}/lineup/" class="seo-link fw-bold">{{ team_name }}</a> • <span>{{ position }}</span>
                         <div class="mt-3 d-flex justify-content-center align-items-center gap-2">
                             <span class="badge {{ badge_class }} py-2 px-3 fw-bold shadow-sm" style="font-size: 0.85rem; border-radius: 6px;">{{ badge_text }}</span>
                         </div>
@@ -2325,7 +2350,7 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
 """
 
 def build_single_league_page(league_slug, league_data, matches, is_today, nav_html, today_date_str):
-    league_dir = os.path.join('v2', 'leagues', league_slug)
+    league_dir = os.path.join('leagues', league_slug)
     os.makedirs(league_dir, exist_ok=True)
     
     league_name = league_data.get('name', 'League')
@@ -2370,7 +2395,7 @@ def build_single_league_page(league_slug, league_data, matches, is_today, nav_ht
 
 
 def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, today_date_str, next_match_tuple=None):
-    team_dir = os.path.join('v2', 'teams', team_slug, 'lineup')
+    team_dir = os.path.join('teams', team_slug, 'lineup')
     os.makedirs(team_dir, exist_ok=True)
     
     team_name = team_data.get('name', 'Team')
@@ -2428,7 +2453,7 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
 
 
 def build_single_player_page(player_slug, player_data, match_data, is_home, nav_html, today_date_str, next_match_tuple=None):
-    player_dir = os.path.join('v2', 'players', player_slug)
+    player_dir = os.path.join('players', player_slug)
     os.makedirs(player_dir, exist_ok=True)
     
     p_name = player_data.get('name', 'Player')
@@ -2582,12 +2607,12 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
                 {live_indicator} {header_text}
             </span>
             <div class="d-flex align-items-center" style="font-size: 1rem; font-weight: 700;">
-                <a href="/v2/teams/{create_slug(h_team['name'])}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
+                <a href="/teams/{create_slug(h_team['name'])}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
                     <img src="{h_team.get('logo', '')}" width="18" height="18" class="me-1" style="object-fit:contain;">
                     {h_team['name']} 
                 </a>
                 {score_html} 
-                <a href="/v2/teams/{create_slug(a_team['name'])}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
+                <a href="/teams/{create_slug(a_team['name'])}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
                     <img src="{a_team.get('logo', '')}" width="18" height="18" class="me-1" style="object-fit:contain;">
                     {a_team['name']}
                 </a>
@@ -2595,7 +2620,7 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
         </div>
         <div class="text-end">
             <div class="d-flex justify-content-end align-items-center gap-2">
-                <a href="/v2/teams/{t_slug}/lineup/" class="text-decoration-none fw-bold" style="font-size: 0.7rem; color: #6c757d;">View Lineup &rarr;</a>
+                <a href="/teams/{t_slug}/lineup/" class="text-decoration-none fw-bold" style="font-size: 0.7rem; color: #6c757d;">View Lineup &rarr;</a>
             </div>
             {player_stats_html}
         </div>
@@ -2638,8 +2663,8 @@ def generate_v2_index():
     print("⏳ STARTING SSG BUILD PIPELINE & LEAGUE/TEAM/PLAYER GENERATOR")
     print("==================================================")
     
-    os.makedirs('v2', exist_ok=True)
-    file_path = 'v2/index.html'
+    os.makedirs('data', exist_ok=True)
+    file_path = 'index.html'
     old_html = ""
     if os.path.exists(file_path):
         with open(file_path, 'r', encoding='utf-8') as f: old_html = f.read()
