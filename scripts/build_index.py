@@ -2724,6 +2724,7 @@ def generate_v2_index():
     # 3b. 14-Day Schedule Fetch for Yesterday's Completed Leagues (Crossover Refresh)
     leagues_needing_schedule = yesterday_slugs - today_slugs
     fourteen_day_lookahead_matches = []
+    crossovers_actually_refreshed = 0
     
     # Establish today's date strings once
     est = pytz.timezone('America/New_York')
@@ -2738,6 +2739,7 @@ def generate_v2_index():
             # Check the gatekeeper: Did we already fetch this league today?
             if state[slug].get('last_crossover_date') != current_date_str:
                 print(f"🔄 CROSSOVER: Fetching 14-day schedule for completed yesterday league -> {state[slug]['name']}")
+                crossovers_actually_refreshed += 1
                 
                 l_matches = fetch_espn_scores_for_date(
                     start_date, "", pill=state[slug]['pill'], end_date_str=end_date, is_today_partition=False
@@ -2907,7 +2909,7 @@ def generate_v2_index():
     print(f"  ├─ Today:     {len(raw_matches_by_day['today'])} matches")
     print(f"  └─ Tomorrow:  {len(raw_matches_by_day['tomorrow'])} matches")
     print(f"  ├─ Active League Pages Generated: {len(active_slugs)}")
-    print(f"  ├─ Crossover Leagues Refreshed: {len(leagues_needing_schedule)}")
+    print(f"  ├─ Crossover Leagues Refreshed: {crossovers_actually_refreshed}")
     print(f"  ├─ Silent Player Profiles Synced: {min(5, len(dormant_players))}")
     print(f"  └─ Dormant Pages Synced: 1 (Round Robin)")
     print(f"==================================================")
