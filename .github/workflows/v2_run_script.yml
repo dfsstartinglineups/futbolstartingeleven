@@ -3,6 +3,11 @@ name: Site Manual Build Generator
 on:
   workflow_dispatch: # Triggers strictly on demand from the Actions tab
 
+# Prevents overlapping runs when pinged rapidly
+concurrency:
+  group: futbol-site-build
+  cancel-in-progress: false
+
 jobs:
   build-site:
     runs-on: ubuntu-latest
