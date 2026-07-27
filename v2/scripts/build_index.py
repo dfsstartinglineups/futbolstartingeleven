@@ -307,10 +307,14 @@ def sync_player_state(matches):
                         }
     return player_state, state_file
 
-def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=None):
+def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=None, max_rosters=5):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    rosters_fetched = 0
     
     for m in matches:
+        if rosters_fetched >= max_rosters:
+            break
+
         l_info = m.get('league') or {}
         l_slug = l_info.get('slug', '')
         pill = l_info.get('pill', '')
@@ -327,6 +331,9 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
             continue
             
         for side in ['home', 'away']:
+            if rosters_fetched >= max_rosters:
+                break
+
             t_info = (m.get('teams') or {}).get(side) or {}
             t_id = str(t_info.get('id', ''))
             t_name = t_info.get('name', '')
@@ -403,7 +410,8 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
 
                     if t_slug in team_state:
                         team_state[t_slug]['squad_synced'] = True
-                    print(f"  └─ Squad auto-discovery for {t_name}: registered {new_players_count} new players and built initial pages.")
+                    rosters_fetched += 1
+                    print(f"  └─ Squad auto-discovery ({rosters_fetched}/{max_rosters}) for {t_name}: registered {new_players_count} players.")
             except Exception as e:
                 print(f"  └─ ⚠️ Failed to fetch squad for {t_name} ({t_id}) via pill '{pill}': {e}")
 
