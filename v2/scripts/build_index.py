@@ -266,6 +266,19 @@ def generate_nav_leagues_html(state):
         html += f'<li><a class="dropdown-item" href="/v2/leagues/{slug}/index.html" style="font-size: 0.85rem; font-weight: 500;">{data["name"]}</a></li>'
     return html
 
+def find_next_fixture_for_entity(team_id_or_slug, upcoming_matches):
+    target = str(team_id_or_slug).lower()
+    for m in upcoming_matches:
+        h_id = str(m['teams']['home'].get('id', '')).lower()
+        a_id = str(m['teams']['away'].get('id', '')).lower()
+        h_slug = create_slug(m['teams']['home'].get('name', '')).lower()
+        a_slug = create_slug(m['teams']['away'].get('name', '')).lower()
+        
+        if target in [h_id, a_id, h_slug, a_slug]:
+            is_home = (target in [h_id, h_slug])
+            return m, is_home
+    return None, False
+
 # ====================================================================
 # ASYNC CORE API PLAYER STATS FETCHER
 # ====================================================================
@@ -1188,7 +1201,8 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                     if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>']):
                         matches.append({
                             "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}},
-                            "teams": {"home": {"name": home_name}, "away": {"name": away_name}},
+                            "teams": {"home": {"id": home_id, "name": home_name, "logo": home_logo}, "away": {"id": away_id, "name": away_name, "logo": away_logo}},
+                            "goals": {"home": int(home_comp.get('score') or 0), "away": int(away_comp.get('score') or 0)},
                             "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag},
                             "html_card": f"<!-- MATCH_{event_id} -->{card_content}<!-- END_MATCH_{event_id} -->",
                             "is_today_partition": is_today_partition
@@ -1259,7 +1273,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#212529">
     <title>Futbol Starting Eleven | Live Soccer Starting Lineups, Scores, Injuries & Odds</title>
-    <link rel="canonical" href="https://futbolstartingeleven.com/v2/">
+    <link class="canonical" href="https://futbolstartingeleven.com/v2/">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -1564,7 +1578,7 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
     
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
-    <link rel="canonical" href="https://futbolstartingeleven.com/v2/leagues/{{ league_slug }}/">
+    <link class="canonical" href="https://futbolstartingeleven.com/v2/leagues/{{ league_slug }}/">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -1789,7 +1803,7 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
     
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
-    <link rel="canonical" href="https://futbolstartingeleven.com/v2/teams/{{ team_slug }}/lineup/">
+    <link class="canonical" href="https://futbolstartingeleven.com/v2/teams/{{ team_slug }}/lineup/">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -1843,7 +1857,7 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://futbolstartingeleven.com/v2/players/{{ player_slug }}/">
+    <link class="canonical" href="https://futbolstartingeleven.com/v2/players/{{ player_slug }}/">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -2089,7 +2103,7 @@ def build_single_league_page(league_slug, league_data, matches, is_today, nav_ht
         f.write(output)
 
 
-def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, today_date_str):
+def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, today_date_str, next_match_tuple=None):
     team_dir = os.path.join('v2', 'teams', team_slug, 'lineup')
     os.makedirs(team_dir, exist_ok=True)
     
@@ -2100,16 +2114,29 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
     opp_name = match_data['teams'][opp_side]['name']
     
     status_short = match_data['fixture']['status']['short']
-    is_pre = status_short in ['NS', 'TBD']
     is_final = status_short in ['FT', 'AET', 'PEN']
 
     lineup = match_data.get('homeLineup') if is_home else match_data.get('awayLineup')
     formation_str = get_formation(lineup)
     
     if is_final:
-        header_state = f"Last Match: vs {opp_name}"
-        seo_title = f"{team_name} Starting Lineup - Tactical Formation"
-        seo_desc = f"View the latest starting lineup and tactical formation for {team_name}."
+        next_m, next_is_home = next_match_tuple if next_match_tuple else (None, False)
+        if next_m:
+            next_opp_side = 'away' if next_is_home else 'home'
+            next_opp_name = next_m['teams'][next_opp_side]['name']
+            try:
+                dt = datetime.fromisoformat(next_m['fixture']['date'].replace('Z', '+00:00'))
+                dt_local = dt.astimezone(pytz.timezone('America/New_York'))
+                date_str = dt_local.strftime('%a, %b %d • %I:%M%p').replace(' 0', ' ').lower()
+            except:
+                date_str = "Upcoming"
+            header_state = f"Next Match: vs {next_opp_name} • {date_str}"
+            seo_title = f"{team_name} Next Match & Starting Lineup vs {next_opp_name}"
+            seo_desc = f"Upcoming starting lineup and match details for {team_name} vs {next_opp_name}."
+        else:
+            header_state = f"Last Match: vs {opp_name}"
+            seo_title = f"{team_name} Starting Lineup - Tactical Formation"
+            seo_desc = f"View the latest starting lineup and tactical formation for {team_name}."
     else:
         header_state = f"vs {opp_name} • {today_date_str}"
         seo_title = f"{team_name} Starting Lineup vs {opp_name} - {today_date_str}"
@@ -2134,7 +2161,7 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
         f.write(output)
 
 
-def build_single_player_page(player_slug, player_data, match_data, is_home, nav_html, today_date_str):
+def build_single_player_page(player_slug, player_data, match_data, is_home, nav_html, today_date_str, next_match_tuple=None):
     player_dir = os.path.join('v2', 'players', player_slug)
     os.makedirs(player_dir, exist_ok=True)
     
@@ -2154,13 +2181,13 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
     
     p_photo = player_data.get('photo') or 'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png'
     
-    status_short = match_data['fixture']['status']['short']
+    status_short = match_data['fixture']['status']['short'] if match_data and 'fixture' in match_data else 'NS'
     is_pre = status_short in ['NS', 'TBD']
     is_final = status_short in ['FT', 'AET', 'PEN']
 
     opp_side = 'away' if is_home else 'home'
     team_side = 'home' if is_home else 'away'
-    opp_name = match_data['teams'][opp_side]['name']
+    opp_name = match_data['teams'][opp_side]['name'] if match_data and 'teams' in match_data else 'Opponent'
     
     if is_final:
         seo_title = f"{p_name} - Lineup Status, Stats & Profile | Futbol Starting Eleven"
@@ -2169,7 +2196,7 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
         seo_title = f"Is {p_name} Starting Today? Lineup Status & Stats | Futbol Starting Eleven"
         seo_desc = f"Is {p_name} starting today for {t_name}? Get real-time starting lineup status, match performance stats, and position updates."
         
-    lineup = match_data.get(team_side + 'Lineup') or {}
+    lineup = match_data.get(team_side + 'Lineup') or {} if match_data else {}
     p_obj = None
     p_status = 'not_in_squad'
     
@@ -2239,27 +2266,48 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
 
     header_class = "text-dark"
     live_indicator = ""
-    elapsed = match_data['fixture']['status'].get('elapsed', '')
+    elapsed = match_data['fixture']['status'].get('elapsed', '') if match_data and 'fixture' in match_data else ''
     
-    if not is_pre and not is_final:
+    if is_final:
+        next_m, next_is_home = next_match_tuple if next_match_tuple else (None, False)
+        if next_m:
+            next_opp = next_m['teams']['away']['name'] if next_is_home else next_m['teams']['home']['name']
+            try:
+                dt = datetime.fromisoformat(next_m['fixture']['date'].replace('Z', '+00:00'))
+                dt_local = dt.astimezone(pytz.timezone('America/New_York'))
+                date_str = dt_local.strftime('%a, %b %d • %I:%M%p').replace(' 0', ' ').lower()
+            except: date_str = "Upcoming"
+            header_text = f"Next Match: vs {next_opp} • {date_str}"
+            score_html = '<span class="mx-2 text-muted">vs</span>'
+            h_team = next_m['teams']['home']
+            a_team = next_m['teams']['away']
+        else:
+            header_text = "Match Finished"
+            home_score = match_data['goals']['home']
+            away_score = match_data['goals']['away']
+            score_html = f'<span class="mx-3 fw-bold text-dark" style="font-size: 1.3rem;">{home_score} - {away_score}</span>'
+            h_team = match_data['teams']['home']
+            a_team = match_data['teams']['away']
+    elif not is_pre:
         display_min = 'HT' if status_short == 'HT' else f"{elapsed}'"
         header_text = f"LIVE: {display_min}"
         header_class = "text-success"
         live_indicator = '<span class="live-dot"></span>'
-    elif is_final:
-        header_text = "Match Finished"
+        home_score = match_data['goals']['home']
+        away_score = match_data['goals']['away']
+        score_html = f'<span class="mx-3 fw-bold text-dark" style="font-size: 1.3rem;">{home_score} - {away_score}</span>'
+        h_team = match_data['teams']['home']
+        a_team = match_data['teams']['away']
     else:
         try:
             dt = datetime.fromisoformat(match_data['fixture']['date'].replace('Z', '+00:00'))
             dt_local = dt.astimezone(pytz.timezone('America/New_York'))
             time_str = dt_local.strftime("%I:%M%p").lstrip('0').lower()
             header_text = f"{dt_local.strftime('%a')} {time_str}"
-        except:
-            header_text = "Upcoming"
-
-    home_score = match_data['goals']['home']
-    away_score = match_data['goals']['away']
-    score_html = '<span class="mx-2 text-muted">vs</span>' if is_pre else f'<span class="mx-3 fw-bold text-dark" style="font-size: 1.3rem;">{home_score} - {away_score}</span>'
+        except: header_text = "Upcoming"
+        score_html = '<span class="mx-2 text-muted">vs</span>'
+        h_team = match_data['teams']['home']
+        a_team = match_data['teams']['away']
 
     live_widget_html = f'''
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3" style="width: 100%;">
@@ -2268,14 +2316,14 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
                 {live_indicator} {header_text}
             </span>
             <div class="d-flex align-items-center" style="font-size: 1rem; font-weight: 700;">
-                <a href="/v2/teams/{create_slug(match_data['teams']['home']['name'])}/lineup/index.html" class="text-decoration-none text-dark" style="color: inherit;">
-                    <img src="{match_data['teams']['home']['logo']}" width="18" height="18" class="me-1" style="object-fit:contain;">
-                    {match_data['teams']['home']['name']} 
+                <a href="/v2/teams/{create_slug(h_team['name'])}/lineup/index.html" class="text-decoration-none text-dark" style="color: inherit;">
+                    <img src="{h_team.get('logo', '')}" width="18" height="18" class="me-1" style="object-fit:contain;">
+                    {h_team['name']} 
                 </a>
                 {score_html} 
-                <a href="/v2/teams/{create_slug(match_data['teams']['away']['name'])}/lineup/index.html" class="text-decoration-none text-dark" style="color: inherit;">
-                    <img src="{match_data['teams']['away']['logo']}" width="18" height="18" class="me-1" style="object-fit:contain;">
-                    {match_data['teams']['away']['name']}
+                <a href="/v2/teams/{create_slug(a_team['name'])}/lineup/index.html" class="text-decoration-none text-dark" style="color: inherit;">
+                    <img src="{a_team.get('logo', '')}" width="18" height="18" class="me-1" style="object-fit:contain;">
+                    {a_team['name']}
                 </a>
             </div>
         </div>
@@ -2339,13 +2387,12 @@ def generate_v2_index():
 
     # 2. Sync Registries & Generate Global HTML Dropdown
     state, state_file = sync_league_state(all_active_matches)
-    team_state, team_state_file = sync_team_state(raw_matches_by_day['today'])
-    player_state, player_state_file = sync_player_state(raw_matches_by_day['today'])
+    team_state, team_state_file = sync_team_state(all_active_matches)
+    player_state, player_state_file = sync_player_state(all_active_matches)
     nav_html = generate_nav_leagues_html(state)
     
     # 3. Generate Active League Pages instantly from memory
     combined_active_leagues = {}
-    
     for m in all_active_matches:
         slug = m.get('league', {}).get('slug')
         if not slug: continue
@@ -2355,6 +2402,7 @@ def generate_v2_index():
             combined_active_leagues[slug].append(m)
 
     today_slugs = {lg['slug'] for lg in group_and_sort_matches_by_league(raw_matches_by_day['today'])}
+    yesterday_slugs = {lg['slug'] for lg in group_and_sort_matches_by_league(raw_matches_by_day['yesterday'])}
     active_slugs = set()
     
     for slug, matches in combined_active_leagues.items():
@@ -2378,29 +2426,66 @@ def generate_v2_index():
                 )
             state[slug]['last_updated'] = datetime.now().timestamp()
 
-    # 4. Update Team & Player Pages for Today's schedule
-    print(f"🔄 Updating Team Lineups and Player Profiles for Today's Matches...")
-    for m in raw_matches_by_day['today']:
+    # 3b. 14-Day Schedule Fetch for Yesterday's Completed Leagues (Crossover Refresh)
+    leagues_needing_schedule = yesterday_slugs - today_slugs
+    fourteen_day_lookahead_matches = []
+    for slug in leagues_needing_schedule:
+        if slug in state and state[slug].get('pill'):
+            print(f"🔄 CROSSOVER: Fetching 14-day schedule for completed yesterday league -> {state[slug]['name']}")
+            est = pytz.timezone('America/New_York')
+            now = datetime.now(est)
+            start_date = now.strftime('%Y%m%d')
+            end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
+            
+            l_matches = fetch_espn_scores_for_date(
+                start_date, "", pill=state[slug]['pill'], end_date_str=end_date, is_today_partition=False
+            )
+            if l_matches:
+                fourteen_day_lookahead_matches.extend(l_matches)
+                sync_team_state(l_matches)
+                sync_player_state(l_matches)
+                build_single_league_page(
+                    slug, state[slug], l_matches, 
+                    is_today=False, nav_html=nav_html, today_date_str=""
+                )
+                state[slug]['last_updated'] = datetime.now().timestamp()
+
+    # Pool upcoming matches for Next Match lookups
+    upcoming_pool = raw_matches_by_day['tomorrow'] + fourteen_day_lookahead_matches
+
+    # 4. Update Team & Player Pages for Active Slate (Today + Crossover Yesterday Matches)
+    print(f"🔄 Updating Team Lineups and Player Profiles (Today + Yesterday Crossover)...")
+    
+    # Process both today and yesterday matches to handle active live updates & crossover FT finalization
+    matches_to_process = raw_matches_by_day['today'] + raw_matches_by_day['yesterday']
+    
+    for m in matches_to_process:
         match_id = str(m['fixture']['id'])
         status_short = m['fixture']['status']['short']
+        is_ft = (status_short in ['FT', 'AET', 'PEN'])
         
         for side in ['home', 'away']:
-            # TEAM GENERATION
             team_info = m['teams'][side]
             t_slug = create_slug(team_info['name'])
+            
+            # TEAM GENERATION
             if t_slug in team_state:
                 t_data = team_state[t_slug]
                 
+                # Run build if match is not finalized or hasn't locked its final state for this match ID
                 if not (t_data.get('last_match_id') == match_id and t_data.get('is_final')):
+                    next_match_tuple = find_next_fixture_for_entity(t_slug, upcoming_pool) if is_ft else (None, False)
+                    
                     build_team_lineup_page(
                         t_slug, t_data, m, 
                         is_home=(side=='home'), 
                         nav_html=nav_html, 
-                        today_date_str=day_info["display"]["today"]
+                        today_date_str=day_info["display"]["today"],
+                        next_match_tuple=next_match_tuple
                     )
                     t_data['last_updated'] = datetime.now().timestamp()
                     t_data['last_match_id'] = match_id
-                    t_data['is_final'] = (status_short in ['FT', 'AET', 'PEN'])
+                    t_data['is_final'] = is_ft
 
             # PLAYER GENERATION
             lineup = m.get(side + 'Lineup')
@@ -2420,15 +2505,18 @@ def generate_v2_index():
                             p_data = player_state[p_slug]
                             
                             if not (p_data.get('last_match_id') == match_id and p_data.get('is_final')):
+                                next_match_tuple = find_next_fixture_for_entity(t_slug, upcoming_pool) if is_ft else (None, False)
+                                
                                 build_single_player_page(
                                     p_slug, p_data, m, 
                                     is_home=(side=='home'), 
                                     nav_html=nav_html, 
-                                    today_date_str=day_info["display"]["today"]
+                                    today_date_str=day_info["display"]["today"],
+                                    next_match_tuple=next_match_tuple
                                 )
                                 p_data['last_updated'] = datetime.now().timestamp()
                                 p_data['last_match_id'] = match_id
-                                p_data['is_final'] = (status_short in ['FT', 'AET', 'PEN'])
+                                p_data['is_final'] = is_ft
 
     # 5. Generate ONE Dormant League (14-Day Trickle Round Robin)
     dormant_leagues = [s for s, d in state.items() if s not in active_slugs and d.get('pill')]
@@ -2447,12 +2535,49 @@ def generate_v2_index():
         fourteen_day_matches = fetch_espn_scores_for_date(
             start_date, "", pill=target_data['pill'], end_date_str=end_date, is_today_partition=False
         )
+        if fourteen_day_matches:
+            sync_team_state(fourteen_day_matches)
+            sync_player_state(fourteen_day_matches)
             
         build_single_league_page(
             target_slug, target_data, fourteen_day_matches, 
             is_today=False, nav_html=nav_html, today_date_str=""
         )
         state[target_slug]['last_updated'] = datetime.now().timestamp()
+
+    # 5b. Silent Player Background Trickle Update (Batch Size: 5 dormant players per run)
+    active_player_ids = set()
+    for m in matches_to_process:
+        for side in ['home', 'away']:
+            lineup = m.get(side + 'Lineup') or {}
+            for entry in (lineup.get('startXI', []) + lineup.get('substitutes', [])):
+                p_id = str(entry.get('player', {}).get('id', ''))
+                if p_id: active_player_ids.add(p_id)
+
+    dormant_players = [
+        (p_slug, p_data) for p_slug, p_data in player_state.items()
+        if str(p_data.get('id')) not in active_player_ids
+    ]
+    if dormant_players:
+        dormant_players.sort(key=lambda x: x[1].get('last_updated', 0))
+        target_players = dormant_players[:5]
+        print(f"🔄 SILENT TRICKLE: Refreshing 5 dormant player profiles...")
+        for p_slug, p_data in target_players:
+            t_slug = p_data.get('team_slug', '')
+            next_m, next_is_home = find_next_fixture_for_entity(t_slug, upcoming_pool)
+            dummy_match = next_m if next_m else {
+                "fixture": {"status": {"short": "FT"}},
+                "teams": {"home": {"name": p_data.get('team_name', 'Team')}, "away": {"name": "Opponent"}},
+                "goals": {"home": 0, "away": 0}
+            }
+            build_single_player_page(
+                p_slug, p_data, dummy_match, 
+                is_home=next_is_home, 
+                nav_html=nav_html, 
+                today_date_str=day_info["display"]["today"],
+                next_match_tuple=(next_m, next_is_home) if next_m else None
+            )
+            p_data['last_updated'] = datetime.now().timestamp()
 
     # Save Registry States
     with open(state_file, 'w', encoding='utf-8') as f: json.dump(state, f, indent=2, ensure_ascii=False)
@@ -2470,8 +2595,9 @@ def generate_v2_index():
     print(f"  ├─ Yesterday: {len(raw_matches_by_day['yesterday'])} matches")
     print(f"  ├─ Today:     {len(raw_matches_by_day['today'])} matches")
     print(f"  └─ Tomorrow:  {len(raw_matches_by_day['tomorrow'])} matches")
-    print(f"  ├─ League Pages Generated: {len(active_slugs)}")
-    print(f"  ├─ Team/Player Profiles Generated for Today's active rosters")
+    print(f"  ├─ Active League Pages Generated: {len(active_slugs)}")
+    print(f"  ├─ Crossover Leagues Refreshed: {len(leagues_needing_schedule)}")
+    print(f"  ├─ Silent Player Profiles Synced: {min(5, len(dormant_players))}")
     print(f"  └─ Dormant Pages Synced: 1 (Round Robin)")
     print(f"==================================================")
     
