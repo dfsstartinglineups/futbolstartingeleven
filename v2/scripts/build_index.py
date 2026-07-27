@@ -319,11 +319,9 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
         l_slug = l_info.get('slug', '')
         pill = l_info.get('pill', '')
         
-        # Fallback 1: Check league_state if match object pill is empty
         if not pill and league_state and l_slug in league_state:
             pill = league_state[l_slug].get('pill', '')
             
-        # Fallback 2: Check KNOWN_LEAGUE_PILLS directly
         if not pill and l_info.get('name'):
             pill = KNOWN_LEAGUE_PILLS.get(normalize_text(l_info.get('name')), '')
 
@@ -465,155 +463,252 @@ async def get_core_stats_concurrently(internal_slug, event_id, player_list):
         return {pid: stats for pid, stats in results if stats}
 
 # ====================================================================
-# ESPN COMMON V3 ATHLETE OVERVIEW & GAMELOG FETCHER
+# ESPN COMMON V3 ATHLETE OVERVIEW & GAMELOG FETCHER (PATCHED)
 # ====================================================================
-def fetch_athlete_overview_and_gamelog(player_id):
+def fetch_athlete_overview_and_gamelog(player_id, position='M'):
+    default_headers_comp = {"col2": "Gls", "col3": "Ast", "col4": "Shots (SOG)"}
+    default_headers_log = {"col1": "App", "col2": "Gls", "col3": "Ast", "col4": "Shots"}
     default_return = {
-        "overview_totals": {"matches": "-", "goals": "0", "assists": "0", "shots": "0"},
+        "overview_totals": {"matches": "-", "goals": "0", "assists": "0", "shots": "0", "label1": "Matches", "label2": "Goals", "label3": "Assists", "label4": "Shots"},
         "competition_splits": [],
-        "gamelogs": []
+        "gamelogs": [],
+        "comp_headers": default_headers_comp,
+        "log_headers": default_headers_log,
+        "headshot": ""
     }
     if not player_id:
         return default_return
 
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     overview_url = f"https://site.web.api.espn.com/apis/common/v3/sports/soccer/athletes/{player_id}/overview"
-    gamelog_url = f"https://site.web.api.espn.com/apis/common/v3/sports/soccer/athletes/{player_id}/gamelog"
 
     comp_splits = []
-    tot_apps, tot_goals, tot_assists, tot_shots = 0, 0, 0, 0
+    tot_apps, tot_val2, tot_val3, tot_val4 = 0, 0, 0, 0
     has_overview_data = False
+    fetched_headshot = ""
 
     try:
         r_ov = requests.get(overview_url, headers=headers, timeout=5)
         if r_ov.status_code == 200:
             ov_data = r_ov.json()
-            stats_obj = ov_data.get('statistics') or {}
-            splits = stats_obj.get('splits') or []
             
+            # Extract headshot if present in overview payload
+            ath_obj = ov_data.get('athlete') or {}
+            hs_obj = ath_obj.get('headshot') or {}
+            if isinstance(hs_obj, dict):
+                fetched_headshot = hs_obj.get('href', '')
+            elif isinstance(hs_obj, str):
+                fetched_headshot = hs_obj
+
+            stats_obj = ov_data.get('statistics') or {}
+            labels = stats_obj.get('labels') or []
+            splits = stats_obj.get('splits') or []
+
+            is_gk = (str(position).upper() in ['G', 'GK', 'GOALKEEPER']) or any(l in labels for l in ['SV', 'SAVES', 'GA', 'CS'])
+
             for s in splits:
-                comp_name = s.get('displayName') or (s.get('competition') or {}).get('displayName') or 'Competition'
-                stats_list = s.get('stats') or []
+                comp_name = s.get('displayName') or s.get('teamSlug') or (s.get('competition') or {}).get('displayName') or 'Competition'
+                raw_stats = s.get('stats') or []
                 s_dict = {}
-                for st in stats_list:
-                    s_name = st.get('name') or st.get('abbreviation')
-                    val = st.get('displayValue', st.get('value', '0'))
-                    s_dict[s_name] = str(val)
+                if raw_stats and isinstance(raw_stats[0], dict):
+                    for st in raw_stats:
+                        s_name = st.get('name') or st.get('abbreviation') or st.get('label')
+                        val = st.get('displayValue', st.get('value', '0'))
+                        if s_name: s_dict[s_name] = str(val)
+                else:
+                    s_dict = dict(zip(labels, [str(v) for v in raw_stats]))
 
                 def get_stat(keys, default='0'):
                     for k in keys:
-                        if k in s_dict: return s_dict[k]
+                        if k in s_dict: return str(s_dict[k])
                     return default
 
                 strt = get_stat(['STRT', 'starts', 'gamesStarted'])
-                gls = get_stat(['G', 'totalGoals', 'goals'])
-                ast = get_stat(['A', 'goalAssists', 'assists'])
-                shot = get_stat(['SHOT', 'totalShots', 'shots'])
-                sog = get_stat(['SOG', 'shotsOnTarget'])
+                app = get_stat(['APP', 'appearances', 'gamesPlayed'], strt)
                 of = get_stat(['OF', 'offsides'])
                 fc = get_stat(['FC', 'foulsCommitted'])
                 fa = get_stat(['FA', 'foulsSuffered'])
                 yc = get_stat(['YC', 'yellowCards'])
                 rc = get_stat(['RC', 'redCards'])
-                app = get_stat(['APP', 'appearances', 'gamesPlayed'], strt)
 
                 try: tot_apps += int(app)
                 except: pass
-                try: tot_goals += int(gls)
-                except: pass
-                try: tot_assists += int(ast)
-                except: pass
-                try: tot_shots += int(shot)
-                except: pass
 
-                comp_splits.append({
-                    "competition": comp_name,
-                    "strt": strt,
-                    "goals": gls,
-                    "assists": ast,
-                    "shots_sog": f"{shot} ({sog})",
-                    "fouls": f"{fc}/{fa}",
-                    "offsides": of,
-                    "cards": f"{yc}/{rc}"
-                })
+                if is_gk:
+                    sv = get_stat(['SV', 'saves'])
+                    ga = get_stat(['GA', 'goalsConceded', 'conceded'])
+                    shf = get_stat(['SHOT', 'shotsFaced', 'shotsOnGoalAgainst', 'SOG'])
+                    cs = get_stat(['CS', 'cleanSheets'])
+
+                    try: tot_val2 += int(sv)
+                    except: pass
+                    try: tot_val3 += int(ga)
+                    except: pass
+                    try: tot_val4 += int(cs)
+                    except: pass
+
+                    comp_splits.append({
+                        "competition": comp_name,
+                        "strt": strt,
+                        "goals": sv,
+                        "assists": ga,
+                        "shots_sog": shf,
+                        "fouls": f"{fc}/{fa}",
+                        "offsides": of,
+                        "cards": f"{yc}/{rc}"
+                    })
+                else:
+                    gls = get_stat(['G', 'totalGoals', 'goals'])
+                    ast = get_stat(['A', 'goalAssists', 'assists'])
+                    shot = get_stat(['SHOT', 'totalShots', 'shots'])
+                    sog = get_stat(['SOG', 'shotsOnTarget'])
+
+                    try: tot_val2 += int(gls)
+                    except: pass
+                    try: tot_val3 += int(ast)
+                    except: pass
+                    try: tot_val4 += int(shot)
+                    except: pass
+
+                    comp_splits.append({
+                        "competition": comp_name,
+                        "strt": strt,
+                        "goals": gls,
+                        "assists": ast,
+                        "shots_sog": f"{shot} ({sog})",
+                        "fouls": f"{fc}/{fa}",
+                        "offsides": of,
+                        "cards": f"{yc}/{rc}"
+                    })
                 has_overview_data = True
-    except Exception:
+
+            # Extract Recent Match Logs from bundled gameLog payload
+            gamelogs = []
+            gamelog_data = ov_data.get('gameLog') or {}
+            events_map = gamelog_data.get('events') or {}
+            stats_list = gamelog_data.get('statistics') or []
+
+            gl_labels = []
+            entries = []
+
+            if stats_list and isinstance(stats_list, list) and len(stats_list) > 0:
+                stat_group = stats_list[0]
+                gl_labels = stat_group.get('labels') or []
+                stat_entries = stat_group.get('events') or []
+                if isinstance(stat_entries, list):
+                    entries = stat_entries
+                elif isinstance(stat_entries, dict):
+                    entries = list(stat_entries.values())
+
+            def format_app_status(val):
+                if not val or val == '-': return '-'
+                s = str(val).strip()
+                s_lower = s.lower()
+                if 'started' in s_lower: return 'STRT'
+                if 'sub' in s_lower: return 'SUB'
+                if 'unused' in s_lower: return 'BENCH'
+                return s[:6]
+
+            for entry in entries:
+                ev_id = str(entry.get('eventId') or entry.get('id', ''))
+                ev_info = events_map.get(ev_id) or {}
+
+                date_str = ev_info.get('gameDate') or ev_info.get('date', '')
+                try:
+                    dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                    formatted_date = dt.strftime('%b %d')
+                except:
+                    formatted_date = date_str[:10] if date_str else '-'
+
+                opp_obj = ev_info.get('opponent') or {}
+                opp_name = opp_obj.get('displayName') or opp_obj.get('name') or 'Opponent'
+                opp_logo = opp_obj.get('logo') or ''
+
+                game_result = ev_info.get('gameResult', '')
+                score_str = ev_info.get('score', '')
+                result_display = f"{game_result} {score_str}".strip() if game_result else score_str
+
+                raw_stats = entry.get('stats') or []
+                stats_dict = {}
+                if isinstance(raw_stats, list):
+                    stats_dict = dict(zip(gl_labels, [str(v) for v in raw_stats]))
+                elif isinstance(raw_stats, dict):
+                    stats_dict = {k: str(v) for k, v in raw_stats.items()}
+
+                app_val = stats_dict.get('APP') or stats_dict.get('MIN') or stats_dict.get('minutes') or '-'
+                formatted_app = format_app_status(app_val)
+
+                yc_val = stats_dict.get('YC') or stats_dict.get('yellowCards') or '0'
+                rc_val = stats_dict.get('RC') or stats_dict.get('redCards') or '0'
+
+                if is_gk:
+                    sv_val = stats_dict.get('SV') or stats_dict.get('saves') or '0'
+                    ga_val = stats_dict.get('GA') or stats_dict.get('goalsConceded') or '0'
+                    shf_val = stats_dict.get('SHOT') or stats_dict.get('shotsFaced') or stats_dict.get('SOG') or '0'
+
+                    gamelogs.append({
+                        "date": formatted_date,
+                        "opponent": opp_name,
+                        "opp_logo": opp_logo,
+                        "result": result_display,
+                        "minutes": formatted_app,
+                        "goals": sv_val,
+                        "assists": ga_val,
+                        "shots": shf_val,
+                        "cards": f"{yc_val}/{rc_val}"
+                    })
+                else:
+                    gls_val = stats_dict.get('G') or stats_dict.get('goals') or '0'
+                    ast_val = stats_dict.get('A') or stats_dict.get('assists') or '0'
+                    shot_val = stats_dict.get('SHOT') or stats_dict.get('shots') or '0'
+
+                    gamelogs.append({
+                        "date": formatted_date,
+                        "opponent": opp_name,
+                        "opp_logo": opp_logo,
+                        "result": result_display,
+                        "minutes": formatted_app,
+                        "goals": gls_val,
+                        "assists": ast_val,
+                        "shots": shot_val,
+                        "cards": f"{yc_val}/{rc_val}"
+                    })
+
+            comp_headers = {
+                "col2": "Saves" if is_gk else "Gls",
+                "col3": "GA" if is_gk else "Ast",
+                "col4": "Shots Faced" if is_gk else "Shots (SOG)"
+            }
+            log_headers = {
+                "col1": "App",
+                "col2": "Saves" if is_gk else "Gls",
+                "col3": "GA" if is_gk else "Ast",
+                "col4": "Shots Faced" if is_gk else "Shots"
+            }
+
+            overview_totals = {
+                "matches": str(tot_apps) if has_overview_data else "-",
+                "goals": str(tot_val2) if has_overview_data else "0",
+                "assists": str(tot_val3) if has_overview_data else "0",
+                "shots": str(tot_val4) if has_overview_data else "0",
+                "label1": "Matches",
+                "label2": "Saves" if is_gk else "Goals",
+                "label3": "Goals Conceded" if is_gk else "Assists",
+                "label4": "Clean Sheets" if is_gk else "Shots"
+            }
+
+            return {
+                "overview_totals": overview_totals,
+                "competition_splits": comp_splits,
+                "gamelogs": gamelogs[:20],
+                "comp_headers": comp_headers,
+                "log_headers": log_headers,
+                "headshot": fetched_headshot
+            }
+    except Exception as e:
         pass
 
-    overview_totals = {
-        "matches": str(tot_apps) if has_overview_data else "-",
-        "goals": str(tot_goals) if has_overview_data else "0",
-        "assists": str(tot_assists) if has_overview_data else "0",
-        "shots": str(tot_shots) if has_overview_data else "0"
-    }
-
-    gamelogs = []
-    try:
-        r_gl = requests.get(gamelog_url, headers=headers, timeout=5)
-        if r_gl.status_code == 200:
-            gl_data = r_gl.json()
-            events_map = gl_data.get('events') or {}
-            labels = gl_data.get('labels') or []
-            
-            season_types = gl_data.get('seasonTypes') or []
-            for stype in season_types:
-                categories = stype.get('categories') or []
-                for cat in categories:
-                    ev_list = cat.get('events') or []
-                    for ev_entry in ev_list:
-                        ev_id = str(ev_entry.get('eventId', ''))
-                        ev_info = events_map.get(ev_id) or {}
-                        
-                        date_str = ev_info.get('gameDate') or ev_info.get('date', '')
-                        try:
-                            dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
-                            formatted_date = dt.strftime('%b %d')
-                        except:
-                            formatted_date = date_str[:10] if date_str else '-'
-                            
-                        opp_obj = ev_info.get('opponent') or {}
-                        opp_name = opp_obj.get('displayName') or opp_obj.get('name') or 'Opponent'
-                        opp_logo = opp_obj.get('logo') or ''
-                        
-                        game_result = ev_info.get('gameResult', '')
-                        score_str = ev_info.get('score', '')
-                        result_display = f"{game_result} {score_str}".strip() if game_result else score_str
-                        
-                        stats_vals = ev_entry.get('stats') or []
-                        stats_dict = {}
-                        if isinstance(stats_vals, list):
-                            for idx, val in enumerate(stats_vals):
-                                if idx < len(labels):
-                                    stats_dict[labels[idx]] = str(val)
-                        elif isinstance(stats_vals, dict):
-                            stats_dict = {k: str(v) for k, v in stats_vals.items()}
-
-                        min_val = stats_dict.get('MIN') or stats_dict.get('minutes') or stats_dict.get('mins') or '-'
-                        gls_val = stats_dict.get('G') or stats_dict.get('goals') or '0'
-                        ast_val = stats_dict.get('A') or stats_dict.get('assists') or '0'
-                        shot_val = stats_dict.get('SHOT') or stats_dict.get('shots') or '0'
-                        yc_val = stats_dict.get('YC') or stats_dict.get('yellowCards') or '0'
-                        rc_val = stats_dict.get('RC') or stats_dict.get('redCards') or '0'
-                        
-                        gamelogs.append({
-                            "date": formatted_date,
-                            "opponent": opp_name,
-                            "opp_logo": opp_logo,
-                            "result": result_display,
-                            "minutes": min_val,
-                            "goals": gls_val,
-                            "assists": ast_val,
-                            "shots": shot_val,
-                            "cards": f"{yc_val}/{rc_val}"
-                        })
-    except Exception:
-        pass
-
-    return {
-        "overview_totals": overview_totals,
-        "competition_splits": comp_splits,
-        "gamelogs": gamelogs[:20]
-    }
+    return default_return
 
 # ====================================================================
 # HELPER UTILITIES & GROUPING
@@ -1026,7 +1121,7 @@ def generate_pitch_html(lineup, default_hex):
         p_slug = f"{create_slug(player.get('name', ''))}-{p_id}"
         
         if photo:
-            avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 2px solid {bg_color}; background-color: #fff;">'
+            avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 2px solid {bg_color}; background-color: #fff;" onerror="this.onerror=null;this.src=\'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png\';">'
         else:
             initial = name[0] if name else ''
             avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; border: 2px solid #fff;">{initial}</div>'
@@ -1176,7 +1271,7 @@ def build_lineup_list(lineup_data):
         p = s.get('player', {})
         p_id = str(p.get('id', ''))
         p_slug = f"{create_slug(p.get('name', ''))}-{p_id}"
-        pho = f'''<img data-src="{p.get('photo', '')}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2 player-headshot">''' if p.get('photo') else '''<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>'''
+        pho = f'''<img data-src="{p.get('photo', '')}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" class="me-2 player-headshot" onerror="this.onerror=null;this.src='https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png';">''' if p.get('photo') else '''<div style="width:22px; height:22px; border-radius:50%; background:#e9ecef;" class="me-2 d-inline-block"></div>'''
         sub = '''<span class="text-primary fw-bold me-1" title="Subbed Out">↻</span>''' if p.get('isSubbedOut') else ''
         items += f'''<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">{p.get('pos','M')}</span>{pho}<a href="/v2/players/{p_slug}/index.html" class="batter-name text-dark text-decoration-none text-truncate">{sub}{shorten_player_name(p.get('name'))}</a><span class="ms-auto text-muted" style="font-size: 0.65rem;">#{p.get('number','')}</span></li>'''
     return f'''<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ {get_formation(lineup_data)}</div><ul class="batting-order w-100 m-0 p-0">{items}</ul>'''
@@ -1291,7 +1386,6 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             if res.status_code != 200: break
             res_json = res.json()
 
-            # Parse root-level leagues array from ESPN API response
             for lg in res_json.get('leagues', []):
                 lg_id = str(lg.get('id', ''))
                 lg_slug = lg.get('slug', '')
@@ -1342,7 +1436,6 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             final_league_name = re.sub(r'^\d{4}-\d{4}\s+', '', raw_name).strip()
             league_slug = create_slug(final_league_name)
 
-            # Triple-redundant pill resolution
             league_pill = (
                 league_pill_map.get(league_id) or 
                 first_league.get('slug') or 
@@ -2075,7 +2168,7 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
             <div class="col-lg-4">
                 <div class="profile-sidebar-card">
                     <div class="player-avatar-wrapper">
-                        <img src="{{ player_photo }}" alt="{{ player_name }}" class="player-avatar">
+                        <img src="{{ player_photo }}" alt="{{ player_name }}" class="player-avatar" onerror="this.onerror=null;this.src='https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png';">
                     </div>
                     <div class="sidebar-player-name">{{ player_name }}</div>
                     <div class="sidebar-player-meta">
@@ -2100,10 +2193,10 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
                 <div class="info-card">
                     <h3>Season Overview</h3>
                     <div class="row g-3">
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.matches }}</div><div class="big-stat-label">Matches</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.goals }}</div><div class="big-stat-label">Goals</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.assists }}</div><div class="big-stat-label">Assists</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.shots }}</div><div class="big-stat-label">Shots</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.matches }}</div><div class="big-stat-label">{{ season_stats.label1 or 'Matches' }}</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.goals }}</div><div class="big-stat-label">{{ season_stats.label2 or 'Goals' }}</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.assists }}</div><div class="big-stat-label">{{ season_stats.label3 or 'Assists' }}</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.shots }}</div><div class="big-stat-label">{{ season_stats.label4 or 'Shots' }}</div></div></div>
                     </div>
                 </div>
 
@@ -2115,9 +2208,9 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
                                 <tr>
                                     <th>Competition</th>
                                     <th class="text-center">STRT</th>
-                                    <th class="text-center">Gls</th>
-                                    <th class="text-center">Ast</th>
-                                    <th class="text-center">Shots (SOG)</th>
+                                    <th class="text-center">{{ comp_headers.col2 if comp_headers else 'Gls' }}</th>
+                                    <th class="text-center">{{ comp_headers.col3 if comp_headers else 'Ast' }}</th>
+                                    <th class="text-center">{{ comp_headers.col4 if comp_headers else 'Shots (SOG)' }}</th>
                                     <th class="text-center">Fouls (Com/Suf)</th>
                                     <th class="text-center">Offsides</th>
                                     <th class="text-center">Cards (Y/R)</th>
@@ -2154,10 +2247,10 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
                                     <th>Date</th>
                                     <th>Opponent</th>
                                     <th class="text-center">Result</th>
-                                    <th class="text-center">Min</th>
-                                    <th class="text-center">Gls</th>
-                                    <th class="text-center">Ast</th>
-                                    <th class="text-center">Shots</th>
+                                    <th class="text-center">{{ log_headers.col1 if log_headers else 'App' }}</th>
+                                    <th class="text-center">{{ log_headers.col2 if log_headers else 'Gls' }}</th>
+                                    <th class="text-center">{{ log_headers.col3 if log_headers else 'Ast' }}</th>
+                                    <th class="text-center">{{ log_headers.col4 if log_headers else 'Shots' }}</th>
                                     <th class="text-center">Cards (Y/R)</th>
                                 </tr>
                             </thead>
@@ -2511,7 +2604,9 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
     </div>
     '''
 
-    player_stats_data = fetch_athlete_overview_and_gamelog(player_data.get('id'))
+    player_stats_data = fetch_athlete_overview_and_gamelog(player_data.get('id'), position=cat)
+    if player_stats_data.get('headshot') and ('nophoto' in p_photo or not p_photo):
+        p_photo = player_stats_data['headshot']
 
     template = Template(PLAYER_HTML_TEMPLATE)
     output = template.render(
@@ -2527,6 +2622,8 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
         season_stats=player_stats_data["overview_totals"],
         competition_splits=player_stats_data["competition_splits"],
         match_gamelogs=player_stats_data["gamelogs"],
+        comp_headers=player_stats_data.get("comp_headers"),
+        log_headers=player_stats_data.get("log_headers"),
         nav_leagues_html=nav_html,
         badge_class=badge_class,
         badge_text=badge_text.upper()
@@ -2672,126 +2769,4 @@ def generate_v2_index():
                 if lineup.get('startXI'): roster.extend(lineup['startXI'])
                 if lineup.get('substitutes'): roster.extend(lineup['substitutes'])
                 
-                for s_obj in roster:
-                    p_info = s_obj.get('player', {})
-                    pid = str(p_info.get('id', ''))
-                    pname = p_info.get('name', '')
-                    if pid and pname:
-                        p_slug = f"{create_slug(pname)}-{pid}"
-                        
-                        if p_slug in player_state:
-                            p_data = player_state[p_slug]
-                            
-                            if not (p_data.get('last_match_id') == match_id and p_data.get('is_final')):
-                                next_match_tuple = find_next_fixture_for_entity(t_slug, upcoming_pool) if is_ft else (None, False)
-                                
-                                build_single_player_page(
-                                    p_slug, p_data, m, 
-                                    is_home=(side=='home'), 
-                                    nav_html=nav_html, 
-                                    today_date_str=day_info["display"]["today"],
-                                    next_match_tuple=next_match_tuple
-                                )
-                                p_data['last_updated'] = datetime.now().timestamp()
-                                p_data['last_match_id'] = match_id
-                                p_data['is_final'] = is_ft
-
-    # 5. Generate ONE Dormant League (14-Day Trickle Round Robin)
-    dormant_leagues = [s for s, d in state.items() if s not in active_slugs and d.get('pill')]
-    if dormant_leagues:
-        dormant_leagues.sort(key=lambda s: state[s].get('last_updated', 0))
-        target_slug = dormant_leagues[0]
-        target_data = state[target_slug]
-        
-        print(f"🔄 TRICKLE UPDATE: Fetching 14-day schedule for dormant league -> {target_data['name']}")
-        
-        est = pytz.timezone('America/New_York')
-        now = datetime.now(est)
-        start_date = now.strftime('%Y%m%d')
-        end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
-        
-        fourteen_day_matches = fetch_espn_scores_for_date(
-            start_date, "", pill=target_data['pill'], end_date_str=end_date, is_today_partition=False
-        )
-        if fourteen_day_matches:
-            sync_team_state(fourteen_day_matches)
-            sync_player_state(fourteen_day_matches)
-            sync_team_squads(fourteen_day_matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=state)
-            
-        build_single_league_page(
-            target_slug, target_data, fourteen_day_matches, 
-            is_today=False, nav_html=nav_html, today_date_str=""
-        )
-        state[target_slug]['last_updated'] = datetime.now().timestamp()
-
-    # 5b. Silent Player Background Trickle Update (Batch Size: 5 dormant players per run)
-    active_player_ids = set()
-    for m in matches_to_process:
-        for side in ['home', 'away']:
-            lineup = m.get(side + 'Lineup') or {}
-            for entry in (lineup.get('startXI', []) + lineup.get('substitutes', [])):
-                p_id = str(entry.get('player', {}).get('id', ''))
-                if p_id: active_player_ids.add(p_id)
-
-    dormant_players = [
-        (p_slug, p_data) for p_slug, p_data in player_state.items()
-        if str(p_data.get('id')) not in active_player_ids
-    ]
-    if dormant_players:
-        dormant_players.sort(key=lambda x: x[1].get('last_updated', 0))
-        target_players = dormant_players[:5]
-        print(f"🔄 SILENT TRICKLE: Refreshing 5 dormant player profiles...")
-        for p_slug, p_data in target_players:
-            t_slug = p_data.get('team_slug', '')
-            next_m, next_is_home = find_next_fixture_for_entity(t_slug, upcoming_pool)
-            dummy_match = next_m if next_m else {
-                "fixture": {"status": {"short": "FT"}},
-                "teams": {"home": {"name": p_data.get('team_name', 'Team')}, "away": {"name": "Opponent"}},
-                "goals": {"home": 0, "away": 0}
-            }
-            build_single_player_page(
-                p_slug, p_data, dummy_match, 
-                is_home=next_is_home, 
-                nav_html=nav_html, 
-                today_date_str=day_info["display"]["today"],
-                next_match_tuple=(next_m, next_is_home) if next_m else None
-            )
-            p_data['last_updated'] = datetime.now().timestamp()
-
-    # Save Registry States
-    with open(state_file, 'w', encoding='utf-8') as f: json.dump(state, f, indent=2, ensure_ascii=False)
-    with open(team_state_file, 'w', encoding='utf-8') as f: json.dump(team_state, f, indent=2, ensure_ascii=False)
-    with open(player_state_file, 'w', encoding='utf-8') as f: json.dump(player_state, f, indent=2, ensure_ascii=False)
-
-    # 6. Build Main Global Homepage
-    leagues_by_day = {
-        day: group_and_sort_matches_by_league(matches)
-        for day, matches in raw_matches_by_day.items()
-    }
-    
-    print(f"\n==================================================")
-    print(f"📊 SSG BUILD SUMMARY:")
-    print(f"  ├─ Yesterday: {len(raw_matches_by_day['yesterday'])} matches")
-    print(f"  ├─ Today:     {len(raw_matches_by_day['today'])} matches")
-    print(f"  └─ Tomorrow:  {len(raw_matches_by_day['tomorrow'])} matches")
-    print(f"  ├─ Active League Pages Generated: {len(active_slugs)}")
-    print(f"  ├─ Crossover Leagues Refreshed: {len(leagues_needing_schedule)}")
-    print(f"  ├─ Silent Player Profiles Synced: {min(5, len(dormant_players))}")
-    print(f"  └─ Dormant Pages Synced: 1 (Round Robin)")
-    print(f"==================================================")
-    
-    template = Template(HTML_TEMPLATE)
-    output_html = template.render(
-        leagues_by_day=leagues_by_day,
-        display_dates=day_info["display"],
-        nav_leagues_html=nav_html
-    )
-    
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(output_html)
-    
-    file_size_kb = round(os.path.getsize(file_path) / 1024, 2)
-    print(f"\n🎉 Successfully compiled TRUE STATIC frontend at {file_path} ({file_size_kb} KB)")
-
-if __name__ == "__main__":
-    generate_v2_index()
+                for sSorry, something went wrong. Please try your request again.
