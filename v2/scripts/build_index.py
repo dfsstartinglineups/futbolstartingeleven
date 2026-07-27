@@ -492,7 +492,6 @@ def fetch_athlete_overview_and_gamelog(player_id, position='M'):
         if r_ov.status_code == 200:
             ov_data = r_ov.json()
             
-            # Extract headshot if present in overview payload
             ath_obj = ov_data.get('athlete') or {}
             hs_obj = ath_obj.get('headshot') or {}
             if isinstance(hs_obj, dict):
@@ -582,7 +581,6 @@ def fetch_athlete_overview_and_gamelog(player_id, position='M'):
                     })
                 has_overview_data = True
 
-            # Extract Recent Match Logs from bundled gameLog payload
             gamelogs = []
             gamelog_data = ov_data.get('gameLog') or {}
             events_map = gamelog_data.get('events') or {}
@@ -2769,4 +2767,126 @@ def generate_v2_index():
                 if lineup.get('startXI'): roster.extend(lineup['startXI'])
                 if lineup.get('substitutes'): roster.extend(lineup['substitutes'])
                 
-                for sSorry, something went wrong. Please try your request again.
+                for s_obj in roster:
+                    p_info = s_obj.get('player', {})
+                    pid = str(p_info.get('id', ''))
+                    pname = p_info.get('name', '')
+                    if pid and pname:
+                        p_slug = f"{create_slug(pname)}-{pid}"
+                        
+                        if p_slug in player_state:
+                            p_data = player_state[p_slug]
+                            
+                            if not (p_data.get('last_match_id') == match_id and p_data.get('is_final')):
+                                next_match_tuple = find_next_fixture_for_entity(t_slug, upcoming_pool) if is_ft else (None, False)
+                                
+                                build_single_player_page(
+                                    p_slug, p_data, m, 
+                                    is_home=(side=='home'), 
+                                    nav_html=nav_html, 
+                                    today_date_str=day_info["display"]["today"],
+                                    next_match_tuple=next_match_tuple
+                                )
+                                p_data['last_updated'] = datetime.now().timestamp()
+                                p_data['last_match_id'] = match_id
+                                p_data['is_final'] = is_ft
+
+    # 5. Generate ONE Dormant League (14-Day Trickle Round Robin)
+    dormant_leagues = [s for s, d in state.items() if s not in active_slugs and d.get('pill')]
+    if dormant_leagues:
+        dormant_leagues.sort(key=lambda s: state[s].get('last_updated', 0))
+        target_slug = dormant_leagues[0]
+        target_data = state[target_slug]
+        
+        print(f"🔄 TRICKLE UPDATE: Fetching 14-day schedule for dormant league -> {target_data['name']}")
+        
+        est = pytz.timezone('America/New_York')
+        now = datetime.now(est)
+        start_date = now.strftime('%Y%m%d')
+        end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
+        
+        fourteen_day_matches = fetch_espn_scores_for_date(
+            start_date, "", pill=target_data['pill'], end_date_str=end_date, is_today_partition=False
+        )
+        if fourteen_day_matches:
+            sync_team_state(fourteen_day_matches)
+            sync_player_state(fourteen_day_matches)
+            sync_team_squads(fourteen_day_matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=state)
+            
+        build_single_league_page(
+            target_slug, target_data, fourteen_day_matches, 
+            is_today=False, nav_html=nav_html, today_date_str=""
+        )
+        state[target_slug]['last_updated'] = datetime.now().timestamp()
+
+    # 5b. Silent Player Background Trickle Update (Batch Size: 5 dormant players per run)
+    active_player_ids = set()
+    for m in matches_to_process:
+        for side in ['home', 'away']:
+            lineup = m.get(side + 'Lineup') or {}
+            for entry in (lineup.get('startXI', []) + lineup.get('substitutes', [])):
+                p_id = str(entry.get('player', {}).get('id', ''))
+                if p_id: active_player_ids.add(p_id)
+
+    dormant_players = [
+        (p_slug, p_data) for p_slug, p_data in player_state.items()
+        if str(p_data.get('id')) not in active_player_ids
+    ]
+    if dormant_players:
+        dormant_players.sort(key=lambda x: x[1].get('last_updated', 0))
+        target_players = dormant_players[:5]
+        print(f"🔄 SILENT TRICKLE: Refreshing 5 dormant player profiles...")
+        for p_slug, p_data in target_players:
+            t_slug = p_data.get('team_slug', '')
+            next_m, next_is_home = find_next_fixture_for_entity(t_slug, upcoming_pool)
+            dummy_match = next_m if next_m else {
+                "fixture": {"status": {"short": "FT"}},
+                "teams": {"home": {"name": p_data.get('team_name', 'Team')}, "away": {"name": "Opponent"}},
+                "goals": {"home": 0, "away": 0}
+            }
+            build_single_player_page(
+                p_slug, p_data, dummy_match, 
+                is_home=next_is_home, 
+                nav_html=nav_html, 
+                today_date_str=day_info["display"]["today"],
+                next_match_tuple=(next_m, next_is_home) if next_m else None
+            )
+            p_data['last_updated'] = datetime.now().timestamp()
+
+    # Save Registry States
+    with open(state_file, 'w', encoding='utf-8') as f: json.dump(state, f, indent=2, ensure_ascii=False)
+    with open(team_state_file, 'w', encoding='utf-8') as f: json.dump(team_state, f, indent=2, ensure_ascii=False)
+    with open(player_state_file, 'w', encoding='utf-8') as f: json.dump(player_state, f, indent=2, ensure_ascii=False)
+
+    # 6. Build Main Global Homepage
+    leagues_by_day = {
+        day: group_and_sort_matches_by_league(matches)
+        for day, matches in raw_matches_by_day.items()
+    }
+    
+    print(f"\n==================================================")
+    print(f"📊 SSG BUILD SUMMARY:")
+    print(f"  ├─ Yesterday: {len(raw_matches_by_day['yesterday'])} matches")
+    print(f"  ├─ Today:     {len(raw_matches_by_day['today'])} matches")
+    print(f"  └─ Tomorrow:  {len(raw_matches_by_day['tomorrow'])} matches")
+    print(f"  ├─ Active League Pages Generated: {len(active_slugs)}")
+    print(f"  ├─ Crossover Leagues Refreshed: {len(leagues_needing_schedule)}")
+    print(f"  ├─ Silent Player Profiles Synced: {min(5, len(dormant_players))}")
+    print(f"  └─ Dormant Pages Synced: 1 (Round Robin)")
+    print(f"==================================================")
+    
+    template = Template(HTML_TEMPLATE)
+    output_html = template.render(
+        leagues_by_day=leagues_by_day,
+        display_dates=day_info["display"],
+        nav_leagues_html=nav_html
+    )
+    
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(output_html)
+    
+    file_size_kb = round(os.path.getsize(file_path) / 1024, 2)
+    print(f"\n🎉 Successfully compiled TRUE STATIC frontend at {file_path} ({file_size_kb} KB)")
+
+if __name__ == "__main__":
+    generate_v2_index()
