@@ -99,6 +99,50 @@ HUMAN_LEAGUE_FLAGS = {
     "usl championship": "https://a.espncdn.com/i/leaguelogos/soccer/500/2292.png",
 }
 
+KNOWN_LEAGUE_PILLS = {
+    "english premier league": "eng.1",
+    "english league championship": "eng.2",
+    "english league one": "eng.3",
+    "english league two": "eng.4",
+    "english fa cup": "eng.fa",
+    "english carabao cup": "eng.league_cup",
+    "spanish laliga": "esp.1",
+    "spanish laliga 2": "esp.2",
+    "spanish copa del rey": "esp.copa_del_rey",
+    "italian serie a": "ita.1",
+    "italian serie b": "ita.2",
+    "coppa italia": "ita.coppa_italia",
+    "german bundesliga": "ger.1",
+    "german 2. bundesliga": "ger.2",
+    "german cup": "ger.dfb_pokal",
+    "french ligue 1": "fra.1",
+    "french ligue 2": "fra.2",
+    "coupe de france": "fra.coupe_de_france",
+    "dutch eredivisie": "ned.1",
+    "portuguese primeira liga": "por.1",
+    "turkish super lig": "tur.1",
+    "scottish premiership": "sco.1",
+    "mls": "usa.1",
+    "usl championship": "usa.usl.1",
+    "nwsl": "usa.w.1",
+    "liga mx": "mex.1",
+    "liga bbva mx": "mex.1",
+    "argentine liga profesional de fútbol": "arg.1",
+    "brazilian serie a": "bra.1",
+    "colombian primera a": "col.1",
+    "chilean primera división": "chi.1",
+    "saudi pro league": "sau.1",
+    "australian a-league men": "aus.1",
+    "japanese j.league": "jpn.1",
+    "chinese super league": "chn.1",
+    "uefa champions league": "uefa.champions",
+    "uefa europa league": "uefa.europa",
+    "uefa conference league": "uefa.europa.conf",
+    "conmebol libertadores": "conmebol.libertadores",
+    "conmebol sudamericana": "conmebol.sudamericana",
+    "concacaf champions cup": "concacaf.champions",
+}
+
 COUNTRY_FLAG_URLS = {
     "belgian": "be", "chilean": "cl", "chinese": "cn", "dutch": "nl",
     "english": "gb-eng", "french": "fr", "german": "de", "bolivian": "bo",
@@ -172,8 +216,11 @@ def sync_league_state(all_active_matches):
         
     for name, flag_url in HUMAN_LEAGUE_FLAGS.items():
         slug = create_slug(name)
+        pill_fallback = KNOWN_LEAGUE_PILLS.get(normalize_text(name), "")
         if slug not in state:
-            state[slug] = {"name": name.title(), "pill": "", "last_updated": 0.0, "flag": flag_url}
+            state[slug] = {"name": name.title(), "pill": pill_fallback, "last_updated": 0.0, "flag": flag_url}
+        elif not state[slug].get('pill') and pill_fallback:
+            state[slug]['pill'] = pill_fallback
 
     for m in all_active_matches:
         l_info = m.get('league', {})
@@ -184,7 +231,7 @@ def sync_league_state(all_active_matches):
         if slug:
             if slug not in state:
                 state[slug] = {"name": l_info.get('name', slug), "pill": pill, "last_updated": 0.0, "flag": flag}
-            elif not state[slug].get('pill') and pill:
+            elif pill:
                 state[slug]['pill'] = pill
             
     return state, state_file
@@ -260,11 +307,22 @@ def sync_player_state(matches):
                         }
     return player_state, state_file
 
-def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html, day_info):
+def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=None):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     
     for m in matches:
-        pill = (m.get('league') or {}).get('pill', '')
+        l_info = m.get('league') or {}
+        l_slug = l_info.get('slug', '')
+        pill = l_info.get('pill', '')
+        
+        # Fallback 1: Check league_state if match object pill is empty
+        if not pill and league_state and l_slug in league_state:
+            pill = league_state[l_slug].get('pill', '')
+            
+        # Fallback 2: Check KNOWN_LEAGUE_PILLS directly
+        if not pill and l_info.get('name'):
+            pill = KNOWN_LEAGUE_PILLS.get(normalize_text(l_info.get('name')), '')
+
         if not pill or pill == 'global':
             continue
             
@@ -1210,6 +1268,7 @@ def group_and_sort_matches_by_league(matches):
 def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None, is_today_partition=False):
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
+    league_pill_map = {}
     seen_ids = set()
     page, max_pages = 1, 10
 
@@ -1222,7 +1281,16 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
         try:
             res = requests.get(url, headers=headers, timeout=10)
             if res.status_code != 200: break
-            events = res.json().get('events', [])
+            res_json = res.json()
+
+            # Parse root-level leagues array from ESPN API response
+            for lg in res_json.get('leagues', []):
+                lg_id = str(lg.get('id', ''))
+                lg_slug = lg.get('slug', '')
+                if lg_id and lg_slug:
+                    league_pill_map[lg_id] = lg_slug
+
+            events = res_json.get('events', [])
             if not events: break
             added_this_page = 0
             for ev in events:
@@ -1257,11 +1325,22 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             home_logo = get_local_image_url(str(h_team.get('logo') or ""), subfolder="images/teams")
             away_logo = get_local_image_url(str(a_team.get('logo') or ""), subfolder="images/teams")
 
-            league_list = event.get('leagues') or [{}]
-            league_obj = event.get('league') or comp.get('league') or league_list[0]
+            league_list = event.get('leagues') or []
+            first_league = league_list[0] if isinstance(league_list, list) and len(league_list) > 0 else {}
+            league_obj = event.get('league') or comp.get('league') or first_league
+            league_id = str(league_obj.get('id', ''))
+
             raw_name = str(comp.get('altGameNote') or league_obj.get('name') or league_obj.get('displayName') or "Global Football")
             final_league_name = re.sub(r'^\d{4}-\d{4}\s+', '', raw_name).strip()
             league_slug = create_slug(final_league_name)
+
+            # Triple-redundant pill resolution
+            league_pill = (
+                league_pill_map.get(league_id) or 
+                first_league.get('slug') or 
+                league_obj.get('slug') or 
+                KNOWN_LEAGUE_PILLS.get(normalize_text(final_league_name), '')
+            )
             
             clean_league = normalize_text(final_league_name)
             league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(clean_league, "")
@@ -1291,7 +1370,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                             "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}},
                             "teams": {"home": {"id": home_id, "name": home_name, "logo": home_logo}, "away": {"id": away_id, "name": away_name, "logo": away_logo}},
                             "goals": {"home": int(home_comp.get('score') or 0), "away": int(away_comp.get('score') or 0)},
-                            "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_obj.get('slug', '')},
+                            "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_pill},
                             "html_card": f"<!-- MATCH_{event_id} -->{card_content}<!-- END_MATCH_{event_id} -->",
                             "is_today_partition": is_today_partition
                         })
@@ -1312,7 +1391,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
 
             match_entry = {
                 "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": status_short, "elapsed": extract_match_clock(fresh_status)}},
-                "league": {"id": event_id, "name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_obj.get('slug', '')},
+                "league": {"id": event_id, "name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_pill},
                 "teams": {
                     "home": {"id": home_id, "name": home_name, "logo": home_logo},
                     "away": {"id": away_id, "name": away_name, "logo": away_logo}
@@ -2544,7 +2623,7 @@ def generate_v2_index():
     # 3c. Squad Auto-Discovery & Immediate Player Page Generation
     print(f"🔄 Running Squad Auto-Discovery & Immediate Player Page Generation...")
     all_matches_for_squads = all_active_matches + fourteen_day_lookahead_matches
-    sync_team_squads(all_matches_for_squads, team_state, player_state, upcoming_pool, nav_html, day_info)
+    sync_team_squads(all_matches_for_squads, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=state)
 
     # 4. Update Team & Player Pages for Active Slate (Today + Crossover Yesterday Matches)
     print(f"🔄 Updating Team Lineups and Player Profiles (Today + Yesterday Crossover)...")
@@ -2629,7 +2708,7 @@ def generate_v2_index():
         if fourteen_day_matches:
             sync_team_state(fourteen_day_matches)
             sync_player_state(fourteen_day_matches)
-            sync_team_squads(fourteen_day_matches, team_state, player_state, upcoming_pool, nav_html, day_info)
+            sync_team_squads(fourteen_day_matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=state)
             
         build_single_league_page(
             target_slug, target_data, fourteen_day_matches, 
