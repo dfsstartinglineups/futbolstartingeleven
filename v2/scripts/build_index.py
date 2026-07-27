@@ -2568,8 +2568,9 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
         try:
             dt = datetime.fromisoformat(match_data['fixture']['date'].replace('Z', '+00:00'))
             dt_local = dt.astimezone(pytz.timezone('America/New_York'))
-            time_str = dt_local.strftime("%I:%M%p").lstrip('0').lower()
-            header_text = f"{dt_local.strftime('%a')} {time_str}"
+            date_fmt = dt_local.strftime("%a, %b %d").upper()
+            time_str = dt_local.strftime("%I:%M%p").lstrip('0').upper()
+            header_text = f"{date_fmt} • {time_str}"
         except: header_text = "Upcoming"
         score_html = '<span class="mx-2 text-muted">vs</span>'
         h_team = match_data['teams']['home']
