@@ -214,7 +214,8 @@ def sync_team_state(matches):
                         "logo": team_info.get('logo', ''),
                         "last_match_id": "",
                         "last_updated": 0.0,
-                        "is_final": False
+                        "is_final": False,
+                        "squad_synced": False
                     }
     return team_state, state_file
 
@@ -258,6 +259,95 @@ def sync_player_state(matches):
                             "is_final": False
                         }
     return player_state, state_file
+
+def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html, day_info):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    
+    for m in matches:
+        pill = (m.get('league') or {}).get('pill', '')
+        if not pill or pill == 'global':
+            continue
+            
+        for side in ['home', 'away']:
+            t_info = (m.get('teams') or {}).get(side) or {}
+            t_id = str(t_info.get('id', ''))
+            t_name = t_info.get('name', '')
+            if not t_id or not t_name:
+                continue
+                
+            t_slug = create_slug(t_name)
+            if t_slug in team_state and team_state[t_slug].get('squad_synced'):
+                continue
+                
+            url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{pill}/teams/{t_id}/roster"
+            try:
+                r = requests.get(url, headers=headers, timeout=5)
+                if r.status_code == 200:
+                    data = r.json()
+                    athletes_groups = data.get('athletes', [])
+                    new_players_count = 0
+                    
+                    for group in athletes_groups:
+                        items = group.get('items', []) if isinstance(group, dict) and 'items' in group else [group]
+                        for p in items:
+                            if not isinstance(p, dict): continue
+                            pid = str(p.get('id', ''))
+                            pname = p.get('displayName') or p.get('fullName') or p.get('name', '')
+                            if not pid or not pname: continue
+                            
+                            p_slug = f"{create_slug(pname)}-{pid}"
+                            pos_obj = p.get('position') or {}
+                            raw_pos = pos_obj.get('abbreviation') or pos_obj.get('name') or 'M'
+                            
+                            headshot = p.get('headshot') or {}
+                            photo_url = headshot.get('href', '') if isinstance(headshot, dict) else str(headshot)
+                            if not photo_url:
+                                photo_url = f"https://a.espncdn.com/i/headshots/soccer/players/full/{pid}.png"
+                                
+                            is_new = p_slug not in player_state
+                            if is_new:
+                                player_state[p_slug] = {
+                                    "id": pid,
+                                    "name": pname,
+                                    "slug": p_slug,
+                                    "team_name": t_name,
+                                    "team_slug": t_slug,
+                                    "position": raw_pos.upper(),
+                                    "photo": photo_url,
+                                    "jersey": str(p.get('jersey', '')),
+                                    "last_match_id": "",
+                                    "last_updated": 0.0,
+                                    "is_final": False
+                                }
+                                new_players_count += 1
+                            else:
+                                if photo_url and not player_state[p_slug].get('photo'):
+                                    player_state[p_slug]['photo'] = photo_url
+                                if not player_state[p_slug].get('team_name'):
+                                    player_state[p_slug]['team_name'] = t_name
+                                    player_state[p_slug]['team_slug'] = t_slug
+                            
+                            p_page_path = os.path.join('v2', 'players', p_slug, 'index.html')
+                            if is_new or not os.path.exists(p_page_path):
+                                next_m, next_is_home = find_next_fixture_for_entity(t_slug, upcoming_pool)
+                                dummy_match = next_m if next_m else {
+                                    "fixture": {"status": {"short": "FT"}},
+                                    "teams": {"home": {"name": t_name}, "away": {"name": "Opponent"}},
+                                    "goals": {"home": 0, "away": 0}
+                                }
+                                build_single_player_page(
+                                    p_slug, player_state[p_slug], dummy_match,
+                                    is_home=next_is_home,
+                                    nav_html=nav_html,
+                                    today_date_str=day_info["display"]["today"],
+                                    next_match_tuple=(next_m, next_is_home) if next_m else None
+                                )
+
+                    if t_slug in team_state:
+                        team_state[t_slug]['squad_synced'] = True
+                    print(f"  └─ Squad auto-discovery for {t_name}: registered {new_players_count} new players and built initial pages.")
+            except Exception as e:
+                print(f"  └─ ⚠️ Failed to fetch squad for {t_name} ({t_id}) via pill '{pill}': {e}")
 
 def generate_nav_leagues_html(state):
     sorted_leagues = sorted(state.items(), key=lambda x: x[1]['name'].lower())
@@ -328,7 +418,6 @@ def fetch_athlete_overview_and_gamelog(player_id):
     tot_apps, tot_goals, tot_assists, tot_shots = 0, 0, 0, 0
     has_overview_data = False
 
-    # 1. Fetch Overview (Competition Breakdown)
     try:
         r_ov = requests.get(overview_url, headers=headers, timeout=5)
         if r_ov.status_code == 200:
@@ -392,7 +481,6 @@ def fetch_athlete_overview_and_gamelog(player_id):
         "shots": str(tot_shots) if has_overview_data else "0"
     }
 
-    # 2. Fetch Gamelog (Match History)
     gamelogs = []
     try:
         r_gl = requests.get(gamelog_url, headers=headers, timeout=5)
@@ -1203,7 +1291,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                             "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}},
                             "teams": {"home": {"id": home_id, "name": home_name, "logo": home_logo}, "away": {"id": away_id, "name": away_name, "logo": away_logo}},
                             "goals": {"home": int(home_comp.get('score') or 0), "away": int(away_comp.get('score') or 0)},
-                            "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag},
+                            "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_obj.get('slug', '')},
                             "html_card": f"<!-- MATCH_{event_id} -->{card_content}<!-- END_MATCH_{event_id} -->",
                             "is_today_partition": is_today_partition
                         })
@@ -2453,10 +2541,14 @@ def generate_v2_index():
     # Pool upcoming matches for Next Match lookups
     upcoming_pool = raw_matches_by_day['tomorrow'] + fourteen_day_lookahead_matches
 
+    # 3c. Squad Auto-Discovery & Immediate Player Page Generation
+    print(f"🔄 Running Squad Auto-Discovery & Immediate Player Page Generation...")
+    all_matches_for_squads = all_active_matches + fourteen_day_lookahead_matches
+    sync_team_squads(all_matches_for_squads, team_state, player_state, upcoming_pool, nav_html, day_info)
+
     # 4. Update Team & Player Pages for Active Slate (Today + Crossover Yesterday Matches)
     print(f"🔄 Updating Team Lineups and Player Profiles (Today + Yesterday Crossover)...")
     
-    # Process both today and yesterday matches to handle active live updates & crossover FT finalization
     matches_to_process = raw_matches_by_day['today'] + raw_matches_by_day['yesterday']
     
     for m in matches_to_process:
@@ -2472,7 +2564,6 @@ def generate_v2_index():
             if t_slug in team_state:
                 t_data = team_state[t_slug]
                 
-                # Run build if match is not finalized or hasn't locked its final state for this match ID
                 if not (t_data.get('last_match_id') == match_id and t_data.get('is_final')):
                     next_match_tuple = find_next_fixture_for_entity(t_slug, upcoming_pool) if is_ft else (None, False)
                     
@@ -2538,6 +2629,7 @@ def generate_v2_index():
         if fourteen_day_matches:
             sync_team_state(fourteen_day_matches)
             sync_player_state(fourteen_day_matches)
+            sync_team_squads(fourteen_day_matches, team_state, player_state, upcoming_pool, nav_html, day_info)
             
         build_single_league_page(
             target_slug, target_data, fourteen_day_matches, 
