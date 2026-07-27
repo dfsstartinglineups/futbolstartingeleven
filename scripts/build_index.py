@@ -10,6 +10,20 @@ import aiohttp
 import hashlib
 from jinja2 import Template
 
+# Load API-Football headshots cache
+HEADSHOTS_CACHE = {}
+if os.path.exists('data/headshots.json'):
+    try:
+        with open('data/headshots.json', 'r') as f:
+            HEADSHOTS_CACHE = json.load(f)
+    except: pass
+
+def get_player_headshot(pid, espn_fallback=""):
+    if not pid: return espn_fallback
+    if str(pid) in HEADSHOTS_CACHE:
+        return HEADSHOTS_CACHE[str(pid)]
+    return espn_fallback or f"https://a.espncdn.com/i/headshots/soccer/players/full/{pid}.png"
+
 HUMAN_LEAGUE_FLAGS = {
     "afc asian cup": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/2243.png",
     "afc asian cup qualifiers": "https://a.espncdn.com/i/leaguelogos/soccer/500/2246.png",
@@ -379,9 +393,8 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
                             raw_pos = pos_obj.get('abbreviation') or pos_obj.get('name') or 'M'
                             
                             headshot = p.get('headshot') or {}
-                            photo_url = headshot.get('href', '') if isinstance(headshot, dict) else str(headshot)
-                            if not photo_url:
-                                photo_url = f"https://a.espncdn.com/i/headshots/soccer/players/full/{pid}.png"
+                            raw_espn_url = headshot.get('href', '') if isinstance(headshot, dict) else str(headshot)
+                            photo_url = get_player_headshot(pid, raw_espn_url)
                                 
                             is_new = p_slug not in player_state
                             if is_new:
@@ -510,10 +523,12 @@ def fetch_athlete_overview_and_gamelog(player_id, position='M'):
             
             ath_obj = ov_data.get('athlete') or {}
             hs_obj = ath_obj.get('headshot') or {}
+            raw_espn_photo = ""
             if isinstance(hs_obj, dict):
-                fetched_headshot = hs_obj.get('href', '')
+                raw_espn_photo = hs_obj.get('href', '')
             elif isinstance(hs_obj, str):
-                fetched_headshot = hs_obj
+                raw_espn_photo = hs_obj
+            fetched_headshot = get_player_headshot(player_id, raw_espn_photo)
 
             stats_obj = ov_data.get('statistics') or {}
             labels = stats_obj.get('labels') or []
@@ -985,9 +1000,10 @@ def parse_espn_summary(event_id):
                     
                     p_stats = extract_player_live_stats(core_stats_cache.get(p_id))
                     
+                    raw_photo = (ath.get('headshot') or {}).get('href', '') if isinstance(ath.get('headshot'), dict) else ''
                     p_obj = {
                         "id": p_id, "name": p_name, "pos": pos.upper(), "category": get_position_category(pos),
-                        "number": str(entry.get('jersey', '')), "photo": (ath.get('headshot') or {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
+                        "number": str(entry.get('jersey', '')), "photo": get_player_headshot(p_id, raw_photo),
                         "live_stats": p_stats,
                         "isSubbedIn": sub_in, "isSubbedOut": sub_out, "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                     }
@@ -1012,9 +1028,10 @@ def parse_espn_summary(event_id):
                     p_stats = extract_player_live_stats(core_stats_cache.get(p_id))
                     
                     if entry.get('didPlay') or entry.get('played') or sub_in or p_stats:
+                        raw_sub_photo = (ath.get('headshot') or {}).get('href', '') if isinstance(ath.get('headshot'), dict) else ''
                         subs.append({"player": {
                             "id": p_id, "name": p_name, "pos": pos.upper(), "category": pos_cat,
-                            "number": str(entry.get('jersey', '')), "photo": (ath.get('headshot') or {}).get('href', '') if isinstance(ath.get('headshot'), dict) else '',
+                            "number": str(entry.get('jersey', '')), "photo": get_player_headshot(p_id, raw_sub_photo),
                             "live_stats": p_stats, "isSubbedIn": sub_in, "isSubbedOut": sub_out, "subMinute": str(entry.get('subbedInMinute') or entry.get('subbedOutMinute') or '')
                         }})
                 
