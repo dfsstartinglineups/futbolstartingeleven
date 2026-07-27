@@ -2724,26 +2724,38 @@ def generate_v2_index():
     # 3b. 14-Day Schedule Fetch for Yesterday's Completed Leagues (Crossover Refresh)
     leagues_needing_schedule = yesterday_slugs - today_slugs
     fourteen_day_lookahead_matches = []
+    
+    # Establish today's date strings once
+    est = pytz.timezone('America/New_York')
+    now = datetime.now(est)
+    current_date_str = now.strftime('%Y-%m-%d')
+    start_date = now.strftime('%Y%m%d')
+    end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
+
     for slug in leagues_needing_schedule:
         if slug in state and state[slug].get('pill'):
-            print(f"🔄 CROSSOVER: Fetching 14-day schedule for completed yesterday league -> {state[slug]['name']}")
-            est = pytz.timezone('America/New_York')
-            now = datetime.now(est)
-            start_date = now.strftime('%Y%m%d')
-            end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
             
-            l_matches = fetch_espn_scores_for_date(
-                start_date, "", pill=state[slug]['pill'], end_date_str=end_date, is_today_partition=False
-            )
-            if l_matches:
-                fourteen_day_lookahead_matches.extend(l_matches)
-                sync_team_state(l_matches)
-                sync_player_state(l_matches)
-                build_single_league_page(
-                    slug, state[slug], l_matches, 
-                    is_today=False, nav_html=nav_html, today_date_str=""
+            # Check the gatekeeper: Did we already fetch this league today?
+            if state[slug].get('last_crossover_date') != current_date_str:
+                print(f"🔄 CROSSOVER: Fetching 14-day schedule for completed yesterday league -> {state[slug]['name']}")
+                
+                l_matches = fetch_espn_scores_for_date(
+                    start_date, "", pill=state[slug]['pill'], end_date_str=end_date, is_today_partition=False
                 )
-                state[slug]['last_updated'] = datetime.now().timestamp()
+                if l_matches:
+                    fourteen_day_lookahead_matches.extend(l_matches)
+                    sync_team_state(l_matches)
+                    sync_player_state(l_matches)
+                    build_single_league_page(
+                        slug, state[slug], l_matches, 
+                        is_today=False, nav_html=nav_html, today_date_str=""
+                    )
+                    state[slug]['last_updated'] = datetime.now().timestamp()
+                
+                # Save the flag to site_pages.json state to skip future runs today
+                state[slug]['last_crossover_date'] = current_date_str
+            else:
+                print(f"⏭️ SKIPPING CROSSOVER: Already fetched today for -> {state[slug]['name']}")
 
     # Pool upcoming matches for Next Match lookups
     upcoming_pool = raw_matches_by_day['tomorrow'] + fourteen_day_lookahead_matches
