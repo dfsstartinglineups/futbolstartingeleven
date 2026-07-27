@@ -295,38 +295,158 @@ async def get_core_stats_concurrently(internal_slug, event_id, player_list):
         results = await asyncio.gather(*tasks)
         return {pid: stats for pid, stats in results if stats}
 
-def fetch_athlete_season_stats(player_id):
+# ====================================================================
+# ESPN COMMON V3 ATHLETE OVERVIEW & GAMELOG FETCHER
+# ====================================================================
+def fetch_athlete_overview_and_gamelog(player_id):
+    default_return = {
+        "overview_totals": {"matches": "-", "goals": "0", "assists": "0", "shots": "0"},
+        "competition_splits": [],
+        "gamelogs": []
+    }
     if not player_id:
-        return {"matches": "-", "goals": "-", "assists": "-", "pass_acc": "-"}
-    url = f"https://sports.core.api.espn.com/v2/sports/soccer/athletes/{player_id}/statistics"
-    headers = {'User-Agent': 'Mozilla/5.0'}
+        return default_return
+
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    overview_url = f"https://site.web.api.espn.com/apis/common/v3/sports/soccer/athletes/{player_id}/overview"
+    gamelog_url = f"https://site.web.api.espn.com/apis/common/v3/sports/soccer/athletes/{player_id}/gamelog"
+
+    comp_splits = []
+    tot_apps, tot_goals, tot_assists, tot_shots = 0, 0, 0, 0
+    has_overview_data = False
+
+    # 1. Fetch Overview (Competition Breakdown)
     try:
-        resp = requests.get(url, headers=headers, timeout=4)
-        if resp.status_code == 200:
-            data = resp.json()
-            splits = data.get('splits') or {}
-            categories = splits.get('categories') or []
-            stats_dict = {}
-            for cat in categories:
-                for stat in cat.get('stats', []):
-                    stats_dict[stat.get('name')] = stat.get('displayValue', stat.get('value', 0))
+        r_ov = requests.get(overview_url, headers=headers, timeout=5)
+        if r_ov.status_code == 200:
+            ov_data = r_ov.json()
+            stats_obj = ov_data.get('statistics') or {}
+            splits = stats_obj.get('splits') or []
             
-            matches = stats_dict.get('appearances') or stats_dict.get('gamesPlayed') or stats_dict.get('gamesStarted') or '-'
-            goals = stats_dict.get('totalGoals') or stats_dict.get('goals') or '0'
-            assists = stats_dict.get('goalAssists') or stats_dict.get('assists') or '0'
-            pass_acc = stats_dict.get('passPct') or stats_dict.get('passingAccuracy') or '-'
-            if pass_acc != '-' and not str(pass_acc).endswith('%'):
-                pass_acc = f"{pass_acc}%"
-                
-            return {
-                "matches": str(matches),
-                "goals": str(goals),
-                "assists": str(assists),
-                "pass_acc": str(pass_acc)
-            }
+            for s in splits:
+                comp_name = s.get('displayName') or (s.get('competition') or {}).get('displayName') or 'Competition'
+                stats_list = s.get('stats') or []
+                s_dict = {}
+                for st in stats_list:
+                    s_name = st.get('name') or st.get('abbreviation')
+                    val = st.get('displayValue', st.get('value', '0'))
+                    s_dict[s_name] = str(val)
+
+                def get_stat(keys, default='0'):
+                    for k in keys:
+                        if k in s_dict: return s_dict[k]
+                    return default
+
+                strt = get_stat(['STRT', 'starts', 'gamesStarted'])
+                gls = get_stat(['G', 'totalGoals', 'goals'])
+                ast = get_stat(['A', 'goalAssists', 'assists'])
+                shot = get_stat(['SHOT', 'totalShots', 'shots'])
+                sog = get_stat(['SOG', 'shotsOnTarget'])
+                of = get_stat(['OF', 'offsides'])
+                fc = get_stat(['FC', 'foulsCommitted'])
+                fa = get_stat(['FA', 'foulsSuffered'])
+                yc = get_stat(['YC', 'yellowCards'])
+                rc = get_stat(['RC', 'redCards'])
+                app = get_stat(['APP', 'appearances', 'gamesPlayed'], strt)
+
+                try: tot_apps += int(app)
+                except: pass
+                try: tot_goals += int(gls)
+                except: pass
+                try: tot_assists += int(ast)
+                except: pass
+                try: tot_shots += int(shot)
+                except: pass
+
+                comp_splits.append({
+                    "competition": comp_name,
+                    "strt": strt,
+                    "goals": gls,
+                    "assists": ast,
+                    "shots_sog": f"{shot} ({sog})",
+                    "fouls": f"{fc}/{fa}",
+                    "offsides": of,
+                    "cards": f"{yc}/{rc}"
+                })
+                has_overview_data = True
     except Exception:
         pass
-    return {"matches": "-", "goals": "-", "assists": "-", "pass_acc": "-"}
+
+    overview_totals = {
+        "matches": str(tot_apps) if has_overview_data else "-",
+        "goals": str(tot_goals) if has_overview_data else "0",
+        "assists": str(tot_assists) if has_overview_data else "0",
+        "shots": str(tot_shots) if has_overview_data else "0"
+    }
+
+    # 2. Fetch Gamelog (Match History)
+    gamelogs = []
+    try:
+        r_gl = requests.get(gamelog_url, headers=headers, timeout=5)
+        if r_gl.status_code == 200:
+            gl_data = r_gl.json()
+            events_map = gl_data.get('events') or {}
+            labels = gl_data.get('labels') or []
+            
+            season_types = gl_data.get('seasonTypes') or []
+            for stype in season_types:
+                categories = stype.get('categories') or []
+                for cat in categories:
+                    ev_list = cat.get('events') or []
+                    for ev_entry in ev_list:
+                        ev_id = str(ev_entry.get('eventId', ''))
+                        ev_info = events_map.get(ev_id) or {}
+                        
+                        date_str = ev_info.get('gameDate') or ev_info.get('date', '')
+                        try:
+                            dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                            formatted_date = dt.strftime('%b %d')
+                        except:
+                            formatted_date = date_str[:10] if date_str else '-'
+                            
+                        opp_obj = ev_info.get('opponent') or {}
+                        opp_name = opp_obj.get('displayName') or opp_obj.get('name') or 'Opponent'
+                        opp_logo = opp_obj.get('logo') or ''
+                        
+                        game_result = ev_info.get('gameResult', '')
+                        score_str = ev_info.get('score', '')
+                        result_display = f"{game_result} {score_str}".strip() if game_result else score_str
+                        
+                        stats_vals = ev_entry.get('stats') or []
+                        stats_dict = {}
+                        if isinstance(stats_vals, list):
+                            for idx, val in enumerate(stats_vals):
+                                if idx < len(labels):
+                                    stats_dict[labels[idx]] = str(val)
+                        elif isinstance(stats_vals, dict):
+                            stats_dict = {k: str(v) for k, v in stats_vals.items()}
+
+                        min_val = stats_dict.get('MIN') or stats_dict.get('minutes') or stats_dict.get('mins') or '-'
+                        gls_val = stats_dict.get('G') or stats_dict.get('goals') or '0'
+                        ast_val = stats_dict.get('A') or stats_dict.get('assists') or '0'
+                        shot_val = stats_dict.get('SHOT') or stats_dict.get('shots') or '0'
+                        yc_val = stats_dict.get('YC') or stats_dict.get('yellowCards') or '0'
+                        rc_val = stats_dict.get('RC') or stats_dict.get('redCards') or '0'
+                        
+                        gamelogs.append({
+                            "date": formatted_date,
+                            "opponent": opp_name,
+                            "opp_logo": opp_logo,
+                            "result": result_display,
+                            "minutes": min_val,
+                            "goals": gls_val,
+                            "assists": ast_val,
+                            "shots": shot_val,
+                            "cards": f"{yc_val}/{rc_val}"
+                        })
+    except Exception:
+        pass
+
+    return {
+        "overview_totals": overview_totals,
+        "competition_splits": comp_splits,
+        "gamelogs": gamelogs[:20]
+    }
 
 # ====================================================================
 # HELPER UTILITIES & GROUPING
@@ -455,6 +575,7 @@ def extract_player_live_stats(core_stats):
         except: return 0.0
 
     field_map = {
+        'minutes': ('minutes', cnum),
         'touches': ('touches', cnum),
         'expectedGoals': ('xg', cflt),
         'expectedAssists': ('xa', cflt),
@@ -1793,7 +1914,7 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
                         <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.matches }}</div><div class="big-stat-label">Matches</div></div></div>
                         <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.goals }}</div><div class="big-stat-label">Goals</div></div></div>
                         <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.assists }}</div><div class="big-stat-label">Assists</div></div></div>
-                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.pass_acc }}</div><div class="big-stat-label">Pass Acc</div></div></div>
+                        <div class="col-6 col-sm-3"><div class="big-stat-box"><div class="big-stat-value">{{ season_stats.shots }}</div><div class="big-stat-label">Shots</div></div></div>
                     </div>
                 </div>
 
@@ -1804,19 +1925,75 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
                             <thead>
                                 <tr>
                                     <th>Competition</th>
-                                    <th class="text-center">MP</th>
-                                    <th class="text-center">Min</th>
+                                    <th class="text-center">STRT</th>
                                     <th class="text-center">Gls</th>
                                     <th class="text-center">Ast</th>
-                                    <th class="text-center">Sh (On)</th>
-                                    <th class="text-center">Pass Acc</th>
-                                    <th class="text-center">Key P</th>
-                                    <th class="text-center">Tkl(Int) / Sav</th>
-                                    <th class="text-center">Yel/Red</th>
+                                    <th class="text-center">Shots (SOG)</th>
+                                    <th class="text-center">Fouls (Com/Suf)</th>
+                                    <th class="text-center">Offsides</th>
+                                    <th class="text-center">Cards (Y/R)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td colspan="10" class="text-center text-muted fst-italic py-3">Detailed season data currently unavailable.</td></tr>
+                                {% if competition_splits %}
+                                    {% for comp in competition_splits %}
+                                    <tr>
+                                        <td><strong>{{ comp.competition }}</strong></td>
+                                        <td class="text-center">{{ comp.strt }}</td>
+                                        <td class="text-center">{{ comp.goals }}</td>
+                                        <td class="text-center">{{ comp.assists }}</td>
+                                        <td class="text-center">{{ comp.shots_sog }}</td>
+                                        <td class="text-center">{{ comp.fouls }}</td>
+                                        <td class="text-center">{{ comp.offsides }}</td>
+                                        <td class="text-center">{{ comp.cards }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="8" class="text-center text-muted fst-italic py-3">Detailed season data currently unavailable.</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>Recent Match Logs</h3>
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Opponent</th>
+                                    <th class="text-center">Result</th>
+                                    <th class="text-center">Min</th>
+                                    <th class="text-center">Gls</th>
+                                    <th class="text-center">Ast</th>
+                                    <th class="text-center">Shots</th>
+                                    <th class="text-center">Cards (Y/R)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if match_gamelogs %}
+                                    {% for log in match_gamelogs %}
+                                    <tr>
+                                        <td>{{ log.date }}</td>
+                                        <td>
+                                            {% if log.opp_logo %}
+                                            <img src="{{ log.opp_logo }}" width="16" height="16" class="me-1" style="object-fit:contain;">
+                                            {% endif %}
+                                            {{ log.opponent }}
+                                        </td>
+                                        <td class="text-center">{{ log.result }}</td>
+                                        <td class="text-center">{{ log.minutes }}</td>
+                                        <td class="text-center">{{ log.goals }}</td>
+                                        <td class="text-center">{{ log.assists }}</td>
+                                        <td class="text-center">{{ log.shots }}</td>
+                                        <td class="text-center">{{ log.cards }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="8" class="text-center text-muted fst-italic py-3">No recent game logs available.</td></tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
@@ -2044,16 +2221,18 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
         g = grps.get(cat, grps['M'])
         v1, v2, v3, v4 = ls.get(g['k'][0],0), ls.get(g['k'][1],0), ls.get(g['k'][2],0), ls.get(g['k'][3],0)
         
+        minutes_played = ls.get('minutes', '-')
+        if minutes_played == 0 and not is_pre:
+            minutes_played = '-'
+
         player_stats_html = f'''
         <div class="mt-2 d-flex justify-content-end">
             <div class="d-flex align-items-center bg-light border rounded px-3 py-1 gap-3 shadow-sm">
-                <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">MIN</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">-</div></div>
+                <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">MIN</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">{minutes_played}</div></div>
                 <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">{g['s'][0]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">{v1}</div></div>
                 <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">{g['s'][1]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">{v2}</div></div>
                 <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">{g['s'][2]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">{v3}</div></div>
                 <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">{g['s'][3]}</div><div class="fw-bold text-dark" style="font-size: 0.85rem;">{v4}</div></div>
-                <div class="border-start" style="height: 20px;"></div>
-                <div class="text-center"><div class="text-muted" style="font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px;">RTG</div><div class="fw-bold text-success" style="font-size: 0.85rem;">-</div></div>
             </div>
         </div>
         '''
@@ -2109,7 +2288,7 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
     </div>
     '''
 
-    season_stats = fetch_athlete_season_stats(player_data.get('id'))
+    player_stats_data = fetch_athlete_overview_and_gamelog(player_data.get('id'))
 
     template = Template(PLAYER_HTML_TEMPLATE)
     output = template.render(
@@ -2122,7 +2301,9 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
         team_slug=t_slug,
         position=p_pos,
         live_widget_html=live_widget_html,
-        season_stats=season_stats,
+        season_stats=player_stats_data["overview_totals"],
+        competition_splits=player_stats_data["competition_splits"],
+        match_gamelogs=player_stats_data["gamelogs"],
         nav_leagues_html=nav_html,
         badge_class=badge_class,
         badge_text=badge_text.upper()
