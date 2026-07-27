@@ -307,6 +307,20 @@ def sync_player_state(matches):
                         }
     return player_state, state_file
 
+def get_league_pill_for_team(team_id):
+    """Fetches a team's official league pill directly from ESPN's Core API."""
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    try:
+        url = f"https://sports.core.api.espn.com/v2/sports/soccer/teams/{team_id}"
+        res = requests.get(url, headers=headers, timeout=5)
+        if res.status_code == 200:
+            ref = res.json().get("defaultLeague", {}).get("$ref", "")
+            if "/leagues/" in ref:
+                return ref.split("/leagues/")[1].split("?")[0]
+    except Exception:
+        pass
+    return None
+
 def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=None, max_rosters=5):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     rosters_fetched = 0
@@ -317,17 +331,14 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
 
         l_info = m.get('league') or {}
         l_slug = l_info.get('slug', '')
-        pill = l_info.get('pill', '')
+        fallback_pill = l_info.get('pill', '')
         
-        if not pill and league_state and l_slug in league_state:
-            pill = league_state[l_slug].get('pill', '')
+        if not fallback_pill and league_state and l_slug in league_state:
+            fallback_pill = league_state[l_slug].get('pill', '')
             
-        if not pill and l_info.get('name'):
-            pill = KNOWN_LEAGUE_PILLS.get(normalize_text(l_info.get('name')), '')
+        if not fallback_pill and l_info.get('name'):
+            fallback_pill = KNOWN_LEAGUE_PILLS.get(normalize_text(l_info.get('name')), '')
 
-        if not pill or pill == 'global':
-            continue
-            
         for side in ['home', 'away']:
             if rosters_fetched >= max_rosters:
                 break
@@ -341,8 +352,13 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
             t_slug = create_slug(t_name)
             if t_slug in team_state and team_state[t_slug].get('squad_synced'):
                 continue
+
+            # Fetch official league pill directly for this team ID
+            team_pill = get_league_pill_for_team(t_id) or fallback_pill
+            if not team_pill or team_pill == 'global':
+                team_pill = 'global'
                 
-            url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{pill}/teams/{t_id}/roster"
+            url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{team_pill}/teams/{t_id}/roster"
             try:
                 r = requests.get(url, headers=headers, timeout=5)
                 if r.status_code == 200:
@@ -409,10 +425,10 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
                     if t_slug in team_state:
                         team_state[t_slug]['squad_synced'] = True
                     rosters_fetched += 1
-                    print(f"  └─ Squad auto-discovery ({rosters_fetched}/{max_rosters}) for {t_name}: registered {new_players_count} players.")
+                    print(f"  └─ Squad auto-discovery ({rosters_fetched}/{max_rosters}) for {t_name} via '{team_pill}': registered {new_players_count} players.")
             except Exception as e:
-                print(f"  └─ ⚠️ Failed to fetch squad for {t_name} ({t_id}) via pill '{pill}': {e}")
-
+                print(f"  └─ ⚠️ Failed to fetch squad for {t_name} ({t_id}) via pill '{team_pill}': {e}")
+                
 def generate_nav_leagues_html(state):
     sorted_leagues = sorted(state.items(), key=lambda x: x[1]['name'].lower())
     html = ""
