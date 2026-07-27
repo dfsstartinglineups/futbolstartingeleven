@@ -1434,7 +1434,17 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             final_league_name = re.sub(r'^\d{4}-\d{4}\s+', '', raw_name).strip()
             league_slug = create_slug(final_league_name)
 
+            # Extract the numeric league ID from the event's UID (e.g., s:600~l:760~e:12345 -> 760)
+            uid = event.get('uid', '')
+            extracted_numeric_pill = ""
+            if uid:
+                for part in uid.split('~'):
+                    if part.startswith('l:'):
+                        extracted_numeric_pill = part.replace('l:', '')
+                        break
+
             league_pill = (
+                extracted_numeric_pill or
                 league_pill_map.get(league_id) or 
                 first_league.get('slug') or 
                 league_obj.get('slug') or 
