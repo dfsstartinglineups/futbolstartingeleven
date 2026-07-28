@@ -1152,28 +1152,36 @@ def generate_pitch_html(lineup, default_hex):
         p_slug = f"{create_slug(player.get('name', ''))}-{p_id}"
         
         if photo:
-            avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 2px solid {bg_color}; background-color: #fff;" onerror="this.onerror=null;this.src=\'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png\';">'
+            avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 3px solid {bg_color}; background-color: #fff;" onerror="this.onerror=null;this.src=\'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png\';">'
         else:
             initial = name[0] if name else ''
-            avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px; border: 2px solid #fff;">{initial}</div>'
+            avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:24px; border: 3px solid #fff;">{initial}</div>'
             
-        return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: 110px; z-index: 10;">
+        return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: 125px; z-index: 10;">
             <a href="/players/{p_slug}/" class="text-decoration-none" style="display:flex; flex-direction:column; align-items:center; color:inherit;">
-                <div style="width: 54px; height: 54px; background: #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">{avatar}</div>
-                <div style="background: rgba(0,0,0,0.7); color: #fff; font-size: 0.75rem; font-weight: bold; padding: 3px 6px; border-radius: 4px; margin-top: 4px; white-space: nowrap; max-width: 110px; overflow: hidden; text-overflow: ellipsis;">{name}</div>
+                <div style="width: 66px; height: 66px; background: #fff; border-radius: 50%; box-shadow: 0 3px 6px rgba(0,0,0,0.5);">{avatar}</div>
+                <div style="background: rgba(0,0,0,0.75); color: #fff; font-size: 0.85rem; font-weight: bold; padding: 4px 8px; border-radius: 6px; margin-top: 5px; white-space: nowrap; max-width: 125px; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">{name}</div>
             </a>
         </div>'''
 
-    html += render_pitch_player(gk, 50, 92, color, contrast)
+    html += render_pitch_player(gk, 50, 88, color, contrast)
     
-    y_step = 82 / (len(rows) + 1)
     player_idx = 0
     for r_idx, count in enumerate(rows):
-        y_pos = 92 - ((r_idx + 1) * y_step)
-        x_step = 100 / (count + 1)
+        # Spread lines vertically between 72% (Defense) and 15% (Attack)
+        if len(rows) > 1:
+            y_pos = 72 - (r_idx * (57 / (len(rows) - 1)))
+        else:
+            y_pos = 45
+            
         for c_idx in range(count):
             if player_idx < len(field_players):
-                x_pos = (c_idx + 1) * x_step
+                # Spread players horizontally across the field width (15% to 85%)
+                if count > 1:
+                    x_pos = 15 + c_idx * (70 / (count - 1))
+                else:
+                    x_pos = 50
+                    
                 html += render_pitch_player(field_players[player_idx], x_pos, y_pos, color, contrast)
                 player_idx += 1
                 
