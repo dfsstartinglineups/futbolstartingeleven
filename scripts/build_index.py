@@ -2800,10 +2800,35 @@ def build_sitemaps(league_state, team_state, player_state):
         
     print(f"  └─ Successfully created sitemap.xml and 4 child maps.")
 
+def ping_indexnow(changed_urls):
+    if not changed_urls:
+        return
+        
+    payload = {
+        "host": "futbolstartingeleven.com",
+        "key": "a3906b30a82f4301be25cdda8e63972b",
+        "keyLocation": "https://futbolstartingeleven.com/a3906b30a82f4301be25cdda8e63972b.txt",
+        "urlList": changed_urls
+    }
+    
+    print(f"\n⚡ Pinging IndexNow with {len(changed_urls)} updated URLs...")
+    try:
+        headers = {'Content-Type': 'application/json; charset=utf-8'}
+        response = requests.post("https://api.indexnow.org/indexnow", json=payload, headers=headers, timeout=10)
+        if response.status_code in [200, 202]:
+            print("  └─ Successfully submitted to IndexNow.")
+        else:
+            print(f"  └─ ⚠️ IndexNow submission returned status {response.status_code}: {response.text}")
+    except Exception as e:
+        print(f"  └─ ⚠️ Failed to ping IndexNow: {e}")
+
 # ====================================================================
 # MAIN GENERATOR PIPELINE
 # ====================================================================
 def generate_v2_index():
+    # Capture exact start time to filter changed URLs for IndexNow
+    script_start_time = datetime.now().timestamp()
+    
     print("\n==================================================")
     print("⏳ STARTING SSG BUILD PIPELINE & LEAGUE/TEAM/PLAYER GENERATOR")
     print("==================================================")
@@ -3071,6 +3096,24 @@ def generate_v2_index():
         
     # Generate Sitemaps using the latest states
     build_sitemaps(state, team_state, player_state)
+    
+    # Gather changed URLs and ping IndexNow
+    base_url = "https://futbolstartingeleven.com"
+    changed_urls = [f"{base_url}/"]  # The homepage always has live updates
+    
+    for slug, data in state.items():
+        if data.get('last_updated', 0) >= script_start_time:
+            changed_urls.append(f"{base_url}/leagues/{slug}/")
+            
+    for slug, data in team_state.items():
+        if data.get('last_updated', 0) >= script_start_time:
+            changed_urls.append(f"{base_url}/teams/{slug}/lineup/")
+            
+    for slug, data in player_state.items():
+        if data.get('last_updated', 0) >= script_start_time:
+            changed_urls.append(f"{base_url}/players/{slug}/")
+            
+    ping_indexnow(changed_urls)
     
     file_size_kb = round(os.path.getsize(file_path) / 1024, 2)
     print(f"\n🎉 Successfully compiled TRUE STATIC frontend at {file_path} ({file_size_kb} KB)")
