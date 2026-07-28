@@ -1155,12 +1155,12 @@ def generate_pitch_html(lineup, default_hex):
             avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 2px solid {bg_color}; background-color: #fff;" onerror="this.onerror=null;this.src=\'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png\';">'
         else:
             initial = name[0] if name else ''
-            avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; border: 2px solid #fff;">{initial}</div>'
+            avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px; border: 2px solid #fff;">{initial}</div>'
             
-        return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: 90px; z-index: 10;">
+        return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: 110px; z-index: 10;">
             <a href="/players/{p_slug}/" class="text-decoration-none" style="display:flex; flex-direction:column; align-items:center; color:inherit;">
-                <div style="width: 34px; height: 34px; background: #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">{avatar}</div>
-                <div style="background: rgba(0,0,0,0.7); color: #fff; font-size: 0.60rem; font-weight: bold; padding: 2px 5px; border-radius: 4px; margin-top: 3px; white-space: nowrap; max-width: 90px; overflow: hidden; text-overflow: ellipsis;">{name}</div>
+                <div style="width: 54px; height: 54px; background: #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">{avatar}</div>
+                <div style="background: rgba(0,0,0,0.7); color: #fff; font-size: 0.75rem; font-weight: bold; padding: 3px 6px; border-radius: 4px; margin-top: 4px; white-space: nowrap; max-width: 110px; overflow: hidden; text-overflow: ellipsis;">{name}</div>
             </a>
         </div>'''
 
