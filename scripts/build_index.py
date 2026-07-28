@@ -1990,6 +1990,7 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
         .glow-subst { animation: glowSub 4s ease-out !important; border: 3px solid #212529 !important; position: relative !important; z-index: 10 !important; }
         .glow-subst .p-2.pb-1 { animation: headerSub 4s ease-out !important; }
     </style>
+    {{ schema_json | safe }}
 </head>
 <body>
 
@@ -2451,6 +2452,9 @@ def build_single_league_page(league_slug, league_data, matches, is_today, nav_ht
                 grouped_matches[date_header] = []
             grouped_matches[date_header].append(m)
 
+    # Generate schema only if it's the today version
+    schema_json = generate_homepage_schema(matches) if is_today else ""
+
     template = Template(LEAGUE_HTML_TEMPLATE)
     output = template.render(
         seo_title=seo_title,
@@ -2460,7 +2464,8 @@ def build_single_league_page(league_slug, league_data, matches, is_today, nav_ht
         league_name=league_name,
         is_today=is_today,
         grouped_matches=grouped_matches,
-        nav_leagues_html=nav_html
+        nav_leagues_html=nav_html,
+        schema_json=schema_json
     )
     
     with open(os.path.join(league_dir, 'index.html'), 'w', encoding='utf-8') as f:
