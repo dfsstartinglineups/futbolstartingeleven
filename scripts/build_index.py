@@ -1704,7 +1704,17 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             fresh_status = summary.get("status_obj") or event.get('status') or {}
             fresh_type = fresh_status.get('type') or {}
             st = fresh_type.get('state', state)
-            status_short = 'NS' if st == 'pre' else ('FT' if st == 'post' else fresh_type.get('shortDetail', 'LIVE'))
+            status_name = fresh_type.get('name', '')
+            
+            # Explicitly catch Postponements/Cancellations before defaulting to FT/NS
+            if status_name == 'STATUS_POSTPONED':
+                status_short = 'PST'
+            elif status_name in ['STATUS_CANCELED', 'STATUS_CANCELLED']:
+                status_short = 'CANC'
+            elif status_name == 'STATUS_ABANDONED':
+                status_short = 'ABD'
+            else:
+                status_short = 'NS' if st == 'pre' else ('FT' if st == 'post' else fresh_type.get('shortDetail', 'LIVE'))
 
             match_entry = {
                 "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": status_short, "elapsed": extract_match_clock(fresh_status)}},
