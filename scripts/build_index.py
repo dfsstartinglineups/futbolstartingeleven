@@ -1682,9 +1682,10 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                 saved_block = re.search(match_pattern, old_html, re.DOTALL)
                 if saved_block:
                     card_content = saved_block.group(1)
-                    if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>']):
+                    # Add >PST</span>, >CANC</span>, and >ABD</span> to the cache list
+                    if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
                         matches.append({
-                            "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}},
+                            "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}}, # Note: this dummy status here is fine since the HTML is pre-rendered
                             "teams": {"home": {"id": home_id, "name": home_name, "logo": home_logo}, "away": {"id": away_id, "name": away_name, "logo": away_logo}},
                             "goals": {"home": int(home_comp.get('score') or 0), "away": int(away_comp.get('score') or 0)},
                             "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_pill},
