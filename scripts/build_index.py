@@ -1667,6 +1667,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .glow-subst { animation: glowSub 4s ease-out !important; border: 3px solid #212529 !important; position: relative !important; z-index: 10 !important; }
         .glow-subst .p-2.pb-1 { animation: headerSub 4s ease-out !important; }
     </style>
+    {{ schema_json | safe }}
 </head>
 <body>
 
@@ -2822,6 +2823,54 @@ def ping_indexnow(changed_urls):
     except Exception as e:
         print(f"  └─ ⚠️ Failed to ping IndexNow: {e}")
 
+def generate_homepage_schema(today_matches):
+    schema_list = []
+    
+    for m in today_matches:
+        home_name = m['teams']['home']['name']
+        away_name = m['teams']['away']['name']
+        match_date = m['fixture'].get('date', '')
+        status_short = m['fixture']['status']['short']
+        
+        # Map your custom status to Schema.org EventStatus
+        if status_short in ['NS', 'TBD']:
+            event_status = "https://schema.org/EventScheduled"
+        elif status_short in ['PST', 'CANC', 'ABD']:
+            event_status = "https://schema.org/EventCancelled"
+        elif status_short in ['FT', 'AET', 'PEN']:
+            event_status = "https://schema.org/EventMovedOnline" # Sometimes used as a fallback, but generally EventPostponed or similar. Better yet, omit or use standard.
+            # Actually, standard for finished is EventScheduled in the past, or we just let Google infer from the date. 
+            # A more accurate mapping for finished events is leaving it as EventScheduled but date is past. 
+            event_status = "https://schema.org/EventScheduled" 
+        else:
+            # LIVE
+            event_status = "https://schema.org/EventScheduled" # Google uses EventScheduled for live events as well, relying on the startDate.
+
+        event_schema = {
+            "@context": "https://schema.org",
+            "@type": "SportsEvent",
+            "name": f"{home_name} vs {away_name}",
+            "sport": "Soccer",
+            "startDate": match_date,
+            "eventStatus": event_status,
+            "homeTeam": {
+                "@type": "SportsOrganization",
+                "name": home_name
+            },
+            "awayTeam": {
+                "@type": "SportsOrganization",
+                "name": away_name
+            }
+        }
+        schema_list.append(event_schema)
+        
+    # Wrap the list in a script tag
+    if not schema_list:
+        return ""
+        
+    json_string = json.dumps(schema_list, indent=2, ensure_ascii=False)
+    return f'<script type="application/ld+json">\n{json_string}\n</script>'
+
 # ====================================================================
 # MAIN GENERATOR PIPELINE
 # ====================================================================
@@ -3084,11 +3133,15 @@ def generate_v2_index():
     print(f"  └─ Dormant Pages Synced: 1 (Round Robin)")
     print(f"==================================================")
     
+    # Generate the JSON-LD schema using ONLY today's matches
+    homepage_schema = generate_homepage_schema(raw_matches_by_day['today'])
+
     template = Template(HTML_TEMPLATE)
     output_html = template.render(
         leagues_by_day=leagues_by_day,
         display_dates=day_info["display"],
-        nav_leagues_html=nav_html
+        nav_leagues_html=nav_html,
+        schema_json=homepage_schema
     )
     
     with open(file_path, 'w', encoding='utf-8') as f:
