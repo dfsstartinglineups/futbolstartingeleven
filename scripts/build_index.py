@@ -2727,6 +2727,79 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
     with open(os.path.join(player_dir, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(output)
 
+def build_sitemaps(league_state, team_state, player_state):
+    base_url = "https://futbolstartingeleven.com"
+    now_iso = datetime.now(pytz.utc).isoformat(timespec='seconds')
+    
+    def format_w3c_date(timestamp):
+        if not timestamp: return now_iso
+        return datetime.fromtimestamp(timestamp, tz=pytz.utc).isoformat(timespec='seconds')
+
+    print("\n🗺️ Generating XML Sitemaps...")
+
+    # 1. Main Sitemap (Homepage)
+    main_xml = f'''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>{base_url}/</loc>
+        <lastmod>{now_iso}</lastmod>
+    </url>
+</urlset>'''
+    with open("sitemap-main.xml", "w", encoding="utf-8") as f:
+        f.write(main_xml)
+
+    # 2. Leagues Sitemap
+    leagues_xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for slug, data in league_state.items():
+        lmod = format_w3c_date(data.get('last_updated', 0))
+        leagues_xml += f'    <url>\n        <loc>{base_url}/leagues/{slug}/</loc>\n        <lastmod>{lmod}</lastmod>\n    </url>\n'
+    leagues_xml += '</urlset>'
+    with open("sitemap-leagues.xml", "w", encoding="utf-8") as f:
+        f.write(leagues_xml)
+
+    # 3. Lineups (Teams) Sitemap
+    lineups_xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for slug, data in team_state.items():
+        lmod = format_w3c_date(data.get('last_updated', 0))
+        lineups_xml += f'    <url>\n        <loc>{base_url}/teams/{slug}/lineup/</loc>\n        <lastmod>{lmod}</lastmod>\n    </url>\n'
+    lineups_xml += '</urlset>'
+    with open("sitemap-lineups.xml", "w", encoding="utf-8") as f:
+        f.write(lineups_xml)
+
+    # 4. Players Sitemap
+    players_xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for slug, data in player_state.items():
+        lmod = format_w3c_date(data.get('last_updated', 0))
+        players_xml += f'    <url>\n        <loc>{base_url}/players/{slug}/</loc>\n        <lastmod>{lmod}</lastmod>\n    </url>\n'
+    players_xml += '</urlset>'
+    with open("sitemap-players.xml", "w", encoding="utf-8") as f:
+        f.write(players_xml)
+
+    # 5. Sitemap Index (The Master File)
+    index_xml = f'''<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <sitemap>
+        <loc>{base_url}/sitemap-main.xml</loc>
+        <lastmod>{now_iso}</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>{base_url}/sitemap-leagues.xml</loc>
+        <lastmod>{now_iso}</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>{base_url}/sitemap-lineups.xml</loc>
+        <lastmod>{now_iso}</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>{base_url}/sitemap-players.xml</loc>
+        <lastmod>{now_iso}</lastmod>
+    </sitemap>
+</sitemapindex>'''
+    with open("sitemap.xml", "w", encoding="utf-8") as f:
+        f.write(index_xml)
+        
+    print(f"  └─ Successfully created sitemap.xml and 4 child maps.")
+
 # ====================================================================
 # MAIN GENERATOR PIPELINE
 # ====================================================================
@@ -2995,6 +3068,9 @@ def generate_v2_index():
     
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(output_html)
+        
+    # Generate Sitemaps using the latest states
+    build_sitemaps(state, team_state, player_state)
     
     file_size_kb = round(os.path.getsize(file_path) / 1024, 2)
     print(f"\n🎉 Successfully compiled TRUE STATIC frontend at {file_path} ({file_size_kb} KB)")
