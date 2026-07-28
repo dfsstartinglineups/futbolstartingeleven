@@ -9,6 +9,163 @@ import asyncio
 import aiohttp
 import hashlib
 from jinja2 import Template
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+CORE_LEAGUES_URL = "https://sports.core.api.espn.com/v2/sports/soccer/leagues?limit=1000"
+
+def safe_get(d, *keys):
+    """Safely traverse nested dicts, guarding against missing keys and null/None values."""
+    for key in keys:
+        if isinstance(d, dict) and d.get(key) is not None:
+            d = d.get(key)
+        else:
+            return None
+    return d
+
+def fetch_single_league_detail(ref_url):
+    """Fetch individual core league detail payload from ESPN $ref URL."""
+    try:
+        res = requests.get(ref_url, timeout=5)
+        if res.status_code == 200:
+            return res.json()
+    except Exception:
+        pass
+    return None
+
+def build_hydrated_core_index():
+    """Builds parallel-hydrated master lookup for IDs, display names, and reverse slug-to-name mappings."""
+    print("🔄 Hydrating Master Core API Directory (Parallel Threads)...")
+    
+    index = {
+        "id_map": {},
+        "name_map": {
+            "club friendly": "club.friendly",
+            "international friendly": "fifa.friendly",
+            "friendly": "club.friendly",
+            "men's international friendly": "fifa.friendly",
+            "asean champ": "aff.championship",
+            "asean championship": "aff.championship"
+        },
+        "slug_to_name": {
+            "club.friendly": "Club Friendly",
+            "fifa.friendly": "International Friendly",
+            "aff.championship": "ASEAN Championship"
+        }
+    }
+    
+    try:
+        master_res = requests.get(CORE_LEAGUES_URL, timeout=10).json()
+        items = master_res.get('items', [])
+        ref_urls = [item['$ref'] for item in items if '$ref' in item]
+        
+        with ThreadPoolExecutor(max_workers=25) as executor:
+            future_to_url = {executor.submit(fetch_single_league_detail, url): url for url in ref_urls}
+            for future in as_completed(future_to_url):
+                data = future.result()
+                if not data:
+                    continue
+                    
+                league_id = str(data.get('id')) if data.get('id') else None
+                slug = data.get('slug')
+                name = data.get('name')
+                short_name = data.get('shortName')
+                abbrev = data.get('abbreviation')
+                
+                if slug:
+                    # Save clean display name for slug
+                    if name:
+                        index["slug_to_name"][slug] = name
+                    elif short_name:
+                        index["slug_to_name"][slug] = short_name
+                        
+                    # Map numeric IDs
+                    if league_id:
+                        index["id_map"][league_id] = slug
+                        
+                    # Map string variations to slug
+                    if name:
+                        index["name_map"][name.lower().strip()] = slug
+                    if short_name:
+                        index["name_map"][short_name.lower().strip()] = slug
+                    if abbrev:
+                        index["name_map"][abbrev.lower().strip()] = slug
+
+        print(f"✅ Core Index Hydrated! Mapped {len(index['id_map'])} League IDs & {len(index['name_map'])} Name Variations.\n")
+    except Exception as e:
+        print(f"⚠️ Warning: Core API Index hydration failed ({e}). Pipeline will fallback to standard resolution.\n")
+        
+    return index
+
+def resolve_event_league(event, core_index):
+    """
+    4-Tier League Resolver:
+    Returns tuple: (league_pill, display_name)
+    """
+    if not core_index:
+        return None, None
+
+    comps = event.get('competitions', [])
+    first_comp = comps[0] if comps else {}
+
+    # Tier 1: Direct league.slug on event object
+    t1_slug = safe_get(event, 'league', 'slug')
+    if t1_slug:
+        disp_name = core_index['slug_to_name'].get(t1_slug) or safe_get(event, 'league', 'name') or t1_slug.replace('.', ' ').title()
+        return t1_slug, disp_name
+
+    # Tier 2: Core API Lookup via numeric league.id
+    league_id = safe_get(event, 'league', 'id') or safe_get(first_comp, 'league', 'id')
+    if league_id and str(league_id) in core_index['id_map']:
+        found_slug = core_index['id_map'][str(league_id)]
+        disp_name = core_index['slug_to_name'].get(found_slug) or safe_get(event, 'league', 'name') or found_slug.replace('.', ' ').title()
+        return found_slug, disp_name
+
+    # Tier 3: Odds tracking tags metadata
+    if comps:
+        odds_list = first_comp.get('odds', [])
+        if odds_list:
+            first_odd = odds_list[0]
+            tags = safe_get(first_odd, 'total', 'over', 'close', 'link', 'tracking', 'tags') or \
+                   safe_get(first_odd, 'moneyline', 'home', 'close', 'link', 'tracking', 'tags')
+            if isinstance(tags, dict) and tags.get('league'):
+                found_slug = tags.get('league')
+                disp_name = core_index['slug_to_name'].get(found_slug) or safe_get(first_comp, 'league', 'name') or found_slug.replace('.', ' ').title()
+                return found_slug, disp_name
+
+    # Tier 4: Normalized Name / altGameNote Matching against Core Directory
+    candidates = []
+    raw_strings = [
+        safe_get(event, 'league', 'name'),
+        safe_get(event, 'league', 'shortName'),
+        safe_get(first_comp, 'league', 'name'),
+        safe_get(first_comp, 'league', 'shortName'),
+        first_comp.get('altGameNote')
+    ]
+    for s in raw_strings:
+        if not s or not isinstance(s, str):
+            continue
+        s_clean = s.strip()
+        candidates.append(s_clean.lower())
+        for delimiter in [',', '-', '|', '–']:
+            if delimiter in s_clean:
+                base_part = s_clean.split(delimiter)[0].strip()
+                if base_part:
+                    candidates.append(base_part.lower())
+
+    for cand in list(dict.fromkeys(candidates)):
+        if cand in core_index['name_map']:
+            found_slug = core_index['name_map'][cand]
+            disp_name = core_index['slug_to_name'].get(found_slug) or cand.title()
+            return found_slug, disp_name
+
+    # Tier 4 Substring Fallback
+    for cand in candidates:
+        for name_key, found_slug in core_index['name_map'].items():
+            if len(name_key) > 3 and name_key in cand:
+                disp_name = core_index['slug_to_name'].get(found_slug) or name_key.title()
+                return found_slug, disp_name
+
+    return None, None
 
 # Load API-Football headshots cache
 HEADSHOTS_CACHE = {}
@@ -1407,7 +1564,7 @@ def group_and_sort_matches_by_league(matches):
     league_list.sort(key=lambda x: x['earliest_date'])
     return league_list
 
-def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None, is_today_partition=False):
+def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None, is_today_partition=False, core_index=None):
     headers = {'User-Agent': 'Mozilla/5.0'}
     raw_events = []
     league_pill_map = {}
@@ -1466,18 +1623,26 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             home_logo = get_local_image_url(str(h_team.get('logo') or ""), subfolder="images/teams")
             away_logo = get_local_image_url(str(a_team.get('logo') or ""), subfolder="images/teams")
 
+            # --- 🎯 NEW 4-TIER RESOLUTION ENGINE ---
+            resolved_pill, resolved_display_name = resolve_event_league(event, core_index)
+
+            # Fallbacks if core resolver is not active
             league_list = event.get('leagues') or []
             first_league = league_list[0] if isinstance(league_list, list) and len(league_list) > 0 else {}
             league_obj = event.get('league') or comp.get('league') or first_league
             league_id = str(league_obj.get('id', ''))
 
-            raw_name = str(comp.get('altGameNote') or league_obj.get('name') or league_obj.get('displayName') or "Global Football")
+            raw_name = resolved_display_name or str(comp.get('altGameNote') or league_obj.get('name') or league_obj.get('displayName') or "Global Football")
             final_league_name = re.sub(r'^\d{4}-\d{4}\s+', '', raw_name).strip()
+            
+            # Clean comma/group clutter for page titles
+            if ',' in final_league_name and not resolved_display_name:
+                final_league_name = final_league_name.split(',')[0].strip()
+
             league_slug = create_slug(final_league_name)
 
-            # Extract the numeric league ID from the event's UID (e.g., s:600~l:760~e:12345 -> 760)
-            uid = event.get('uid', '')
             extracted_numeric_pill = ""
+            uid = event.get('uid', '')
             if uid:
                 for part in uid.split('~'):
                     if part.startswith('l:'):
@@ -1485,13 +1650,15 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                         break
 
             league_pill = (
+                resolved_pill or
                 extracted_numeric_pill or
                 league_pill_map.get(league_id) or 
                 first_league.get('slug') or 
                 league_obj.get('slug') or 
                 KNOWN_LEAGUE_PILLS.get(normalize_text(final_league_name), '')
             )
-            
+            # ----------------------------------------
+
             clean_league = normalize_text(final_league_name)
             league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(clean_league, "")
             if not league_flag: league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(re.sub(r'\s+(qualifying|qualifiers|playoffs?)\b', '', clean_league), "")
@@ -2880,12 +3047,14 @@ def generate_homepage_schema(today_matches):
 # MAIN GENERATOR PIPELINE
 # ====================================================================
 def generate_v2_index():
-    # Capture exact start time to filter changed URLs for IndexNow
     script_start_time = datetime.now().timestamp()
     
     print("\n==================================================")
     print("⏳ STARTING SSG BUILD PIPELINE & LEAGUE/TEAM/PLAYER GENERATOR")
     print("==================================================")
+
+    # 1. HYDRATE CORE DIRECTORY ONCE AT STARTUP
+    core_index = build_hydrated_core_index()
     
     os.makedirs('data', exist_ok=True)
     file_path = 'index.html'
@@ -2895,11 +3064,11 @@ def generate_v2_index():
 
     day_info = get_3day_dates()
     
-    # 1. Fetch Global Core Data
+    # Pass core_index to all daily fetches
     raw_matches_by_day = {
-        "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"], old_html, is_today_partition=False),
-        "today": fetch_espn_scores_for_date(day_info["dates"]["today"], old_html, is_today_partition=True),
-        "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], old_html, is_today_partition=False)
+        "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"], old_html, is_today_partition=False, core_index=core_index),
+        "today": fetch_espn_scores_for_date(day_info["dates"]["today"], old_html, is_today_partition=True, core_index=core_index),
+        "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], old_html, is_today_partition=False, core_index=core_index)
     }
 
     all_active_matches = raw_matches_by_day['yesterday'] + raw_matches_by_day['today'] + raw_matches_by_day['tomorrow']
@@ -2966,7 +3135,7 @@ def generate_v2_index():
                 crossovers_actually_refreshed += 1
                 
                 l_matches = fetch_espn_scores_for_date(
-                    start_date, "", pill=state[slug]['pill'], end_date_str=end_date, is_today_partition=False
+                    start_date, "", pill=state[slug]['pill'], end_date_str=end_date, is_today_partition=False, core_index=core_index
                 )
                 if l_matches:
                     fourteen_day_lookahead_matches.extend(l_matches)
@@ -3069,7 +3238,7 @@ def generate_v2_index():
         end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
         
         fourteen_day_matches = fetch_espn_scores_for_date(
-            start_date, "", pill=target_data['pill'], end_date_str=end_date, is_today_partition=False
+            start_date, "", pill=target_data['pill'], end_date_str=end_date, is_today_partition=False, core_index=core_index
         )
         if fourteen_day_matches:
             sync_team_state(fourteen_day_matches)
