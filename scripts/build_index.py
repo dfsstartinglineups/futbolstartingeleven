@@ -3412,6 +3412,134 @@ def generate_v2_index():
         json.dump(daily_lineups, f, indent=2, ensure_ascii=False)
     # -------------------------------------------------------------------------
 
+    # -------------------------------------------------------------------------
+    # NEW: GENERATE DAILY GOALS JSON FOR TWEET BOT SCENARIOS
+    # -------------------------------------------------------------------------
+    print("🔄 Generating daily_goals.json for the Tweet Bot...")
+    daily_goals = {}
+    
+    def get_actual_minute(time_str):
+        t_str = str(time_str).replace("'", "").strip()
+        if '+' in t_str:
+            parts = t_str.split('+')
+            try: return int(parts[0]) + int(parts[1])
+            except: return int(parts[0]) if parts[0].isdigit() else 90
+        return int(t_str) if t_str.isdigit() else 0
+
+    def get_decimal_odds(american_str):
+        if not american_str or american_str == 'TBD': return 0.0
+        try:
+            val = int(str(american_str).replace('+', ''))
+            if val > 0: return (val / 100.0) + 1.0
+            elif val < 0: return (100.0 / abs(val)) + 1.0
+        except: pass
+        return 0.0
+
+    for m in raw_matches_by_day['today'] + raw_matches_by_day['yesterday']:
+        events = m.get('events', [])
+        # Include all goal variations, filter out substitutions or cards
+        goal_events = [e for e in events if e.get('type') == 'Goal' and e.get('detail') in ['Normal Goal', 'Penalty', 'Own Goal', 'Goal']]
+        if not goal_events: continue
+        
+        # Sort chronologically by the actual minute
+        goal_events.sort(key=lambda x: get_actual_minute(x.get('time', '0')))
+        
+        fixture_id = str(m['fixture'].get('id', ''))
+        match_date = m['fixture'].get('date', iso_today)[:10]
+        
+        h_id = str(m['teams']['home']['id'])
+        a_id = str(m['teams']['away']['id'])
+        h_name = m['teams']['home']['name']
+        a_name = m['teams']['away']['name']
+        
+        home_odds_dec = get_decimal_odds(m.get('odds', {}).get('home', 'TBD'))
+        away_odds_dec = get_decimal_odds(m.get('odds', {}).get('away', 'TBD'))
+        
+        league_name = m['league'].get('name', '')
+        league_slug = m['league'].get('slug', '')
+        league_hashtag = f"#{league_name.replace(' ', '')}"
+        
+        current_home_score = 0
+        current_away_score = 0
+        player_goal_counts = {}
+        
+        for event in goal_events:
+            event_time = get_actual_minute(event.get('time', '0'))
+            team_id = str(event.get('team_id', ''))
+            
+            if team_id == h_id: current_home_score += 1
+            else: current_away_score += 1
+            
+            p_name = event.get('player', 'Unknown')
+            if not p_name or p_name.lower() == 'null': continue
+            
+            # Simple hash fallback if player_id is missing from ESPN's event payload
+            p_id = event.get('player_id') or create_slug(p_name)
+            
+            player_goal_counts[p_id] = player_goal_counts.get(p_id, 0) + 1
+            p_goals = player_goal_counts[p_id]
+            
+            # Scenario Logic Calculations
+            is_stoppage = event_time >= 90
+            is_late = 75 <= event_time < 90
+            is_equalizer = current_home_score == current_away_score
+            is_go_ahead = (team_id == h_id and current_home_score - current_away_score == 1) or (team_id == a_id and current_away_score - current_home_score == 1)
+            is_two_goal_lead = abs(current_home_score - current_away_score) == 2
+            is_blowout = abs(current_home_score - current_away_score) >= 3
+            
+            scorer_odds = home_odds_dec if team_id == h_id else away_odds_dec
+            is_standard_upset = is_go_ahead and (4.00 <= scorer_odds < 7.00)
+            is_massive_upset = is_go_ahead and (scorer_odds >= 7.00)
+            is_tight_clash = abs(current_home_score - current_away_score) <= 1
+            
+            scenario_key = "standard_goal" # Default Fallback
+            if p_goals == 3: scenario_key = "hat_trick"
+            elif p_goals == 2: scenario_key = "brace"
+            elif is_stoppage and (is_standard_upset or is_massive_upset): scenario_key = "stoppage_upset"
+            elif is_late and (is_standard_upset or is_massive_upset): scenario_key = "late_upset"
+            elif is_stoppage and is_go_ahead: scenario_key = "stoppage_go_ahead"
+            elif is_stoppage and is_equalizer: scenario_key = "stoppage_equalizer"
+            elif is_late and is_go_ahead: scenario_key = "late_go_ahead"
+            elif is_late and is_equalizer: scenario_key = "late_equalizer"
+            elif event_time <= 10: scenario_key = "lightning_start"
+            elif is_massive_upset: scenario_key = "massive_upset"
+            elif is_standard_upset: scenario_key = "standard_upset"
+            elif is_blowout: scenario_key = "blowout"
+            elif is_two_goal_lead: scenario_key = "takes_control"
+            elif event_time > 10 and is_tight_clash: scenario_key = "tight_clash_goal"
+            
+            scoring_team_name = h_name if team_id == h_id else a_name
+            conceding_team_name = a_name if team_id == h_id else h_name
+            american_odds_str = m.get('odds', {}).get('home', 'TBD') if team_id == h_id else m.get('odds', {}).get('away', 'TBD')
+            
+            # Deterministic unique key ensuring no duplicate tweets
+            goal_key = f"GOAL_{fixture_id}_{team_id}_{event_time}_{p_id}"
+            
+            daily_goals[goal_key] = {
+                "fixture_id": fixture_id,
+                "date": match_date,
+                "minute": event_time,
+                "display_minute": event.get('time', str(event_time)),
+                "team_id": team_id,
+                "scoring_team": scoring_team_name,
+                "conceding_team": conceding_team_name,
+                "home_team": h_name,
+                "away_team": a_name,
+                "scorer": p_name,
+                "assist": event.get('assist', ''),
+                "is_own_goal": event.get('detail') == 'Own Goal',
+                "home_score": current_home_score,
+                "away_score": current_away_score,
+                "scenario": scenario_key,
+                "american_odds": american_odds_str,
+                "league_name": league_name,
+                "league_hashtag": league_hashtag,
+                "match_url": f"https://futbolstartingeleven.com/leagues/{league_slug}/#match-{fixture_id}"
+            }
+            
+    with open('data/daily_goals.json', 'w', encoding='utf-8') as f:
+        json.dump(daily_goals, f, indent=2, ensure_ascii=False)
+
     # 6. Build Main Global Homepage
     leagues_by_day = {
         day: group_and_sort_matches_by_league(matches)
