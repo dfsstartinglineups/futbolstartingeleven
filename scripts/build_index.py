@@ -2342,6 +2342,22 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
     <meta name="description" content="{{ seo_desc }}">
     <link class="canonical" href="https://futbolstartingeleven.com/teams/{{ team_slug }}/lineup/">
     
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Futbol Starting Eleven">
+    <meta property="og:url" content="https://futbolstartingeleven.com/teams/{{ team_slug }}/lineup/">
+    <meta property="og:title" content="{{ seo_title }}">
+    <meta property="og:description" content="{{ seo_desc }}">
+    <meta property="og:image" content="https://futbolstartingeleven.com/social-share1.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:domain" content="futbolstartingeleven.com">
+    <meta name="twitter:url" content="https://futbolstartingeleven.com/teams/{{ team_slug }}/lineup/">
+    <meta name="twitter:title" content="{{ seo_title }}">
+    <meta name="twitter:description" content="{{ seo_desc }}">
+    <meta name="twitter:image" content="https://futbolstartingeleven.com/social-share1.png">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
