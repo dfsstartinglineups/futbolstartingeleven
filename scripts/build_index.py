@@ -3301,6 +3301,70 @@ def generate_v2_index():
     with open(team_state_file, 'w', encoding='utf-8') as f: json.dump(team_state, f, indent=2, ensure_ascii=False)
     with open(player_state_file, 'w', encoding='utf-8') as f: json.dump(player_state, f, indent=2, ensure_ascii=False)
 
+    # -------------------------------------------------------------------------
+    # NEW: GENERATE DAILY LINEUPS JSON FOR TWEET BOT
+    # -------------------------------------------------------------------------
+    print("🔄 Generating daily_lineups.json for the Tweet Bot...")
+    daily_lineups = {}
+    
+    # Establish today's date for the unique keys (respecting the 3 AM EST crossover)
+    est_tz = pytz.timezone('America/New_York')
+    now_est = datetime.now(est_tz)
+    if now_est.hour < 3: 
+        now_est -= timedelta(days=1)
+    iso_today = now_est.strftime('%Y-%m-%d')
+
+    for m in raw_matches_by_day['today']:
+        home_lineup = m.get('homeLineup')
+        away_lineup = m.get('awayLineup')
+        
+        # Ensure both teams have a populated startXI array
+        if home_lineup and home_lineup.get('startXI') and away_lineup and away_lineup.get('startXI'):
+            fixture_id = str(m['fixture'].get('id', ''))
+            
+            home_name = m['teams']['home']['name']
+            away_name = m['teams']['away']['name']
+            
+            home_slug = create_slug(home_name)
+            away_slug = create_slug(away_name)
+            
+            league_name = m['league'].get('name', '')
+            league_hashtag = f"#{league_name.replace(' ', '')}"
+            
+            # Home Team Entry
+            home_key = f"{fixture_id}_{home_slug}_{iso_today}"
+            daily_lineups[home_key] = {
+                "fixture_id": fixture_id,
+                "date": iso_today,
+                "team_name": home_name,
+                "team_slug": home_slug,
+                "lineup_url": f"https://futbolstartingeleven.com/teams/{home_slug}/lineup/",
+                "opponent_name": away_name,
+                "opponent_slug": away_slug,
+                "side": "home",
+                "league_name": league_name,
+                "league_hashtag": league_hashtag
+            }
+            
+            # Away Team Entry
+            away_key = f"{fixture_id}_{away_slug}_{iso_today}"
+            daily_lineups[away_key] = {
+                "fixture_id": fixture_id,
+                "date": iso_today,
+                "team_name": away_name,
+                "team_slug": away_slug,
+                "lineup_url": f"https://futbolstartingeleven.com/teams/{away_slug}/lineup/",
+                "opponent_name": home_name,
+                "opponent_slug": home_slug,
+                "side": "away",
+                "league_name": league_name,
+                "league_hashtag": league_hashtag
+            }
+            
+    with open('data/daily_lineups.json', 'w', encoding='utf-8') as f:
+        json.dump(daily_lineups, f, indent=2, ensure_ascii=False)
+    # -------------------------------------------------------------------------
+
     # 6. Build Main Global Homepage
     leagues_by_day = {
         day: group_and_sort_matches_by_league(matches)
