@@ -3485,8 +3485,13 @@ def generate_v2_index():
             is_late = 75 <= event_time < 90
             is_equalizer = current_home_score == current_away_score
             is_go_ahead = (team_id == h_id and current_home_score - current_away_score == 1) or (team_id == a_id and current_away_score - current_home_score == 1)
-            is_two_goal_lead = abs(current_home_score - current_away_score) == 2
-            is_blowout = abs(current_home_score - current_away_score) >= 3
+            
+            # FIXED: Only True if the SCORING team is extending their lead
+            is_two_goal_lead = (team_id == h_id and current_home_score - current_away_score == 2) or (team_id == a_id and current_away_score - current_home_score == 2)
+            is_blowout = (team_id == h_id and current_home_score - current_away_score >= 3) or (team_id == a_id and current_away_score - current_home_score >= 3)
+            
+            # NEW: True if the SCORING team is still trailing by 2 or more goals AFTER the goal
+            is_consolation = (team_id == h_id and current_away_score - current_home_score >= 2) or (team_id == a_id and current_home_score - current_away_score >= 2)
             
             scorer_odds = home_odds_dec if team_id == h_id else away_odds_dec
             is_standard_upset = is_go_ahead and (4.00 <= scorer_odds < 7.00)
@@ -3506,6 +3511,7 @@ def generate_v2_index():
             elif is_massive_upset: scenario_key = "massive_upset"
             elif is_standard_upset: scenario_key = "standard_upset"
             elif is_blowout: scenario_key = "blowout"
+            elif is_consolation: scenario_key = "consolation_goal"  # <--- ADDED HERE
             elif is_two_goal_lead: scenario_key = "takes_control"
             elif event_time > 10 and is_tight_clash: scenario_key = "tight_clash_goal"
             
