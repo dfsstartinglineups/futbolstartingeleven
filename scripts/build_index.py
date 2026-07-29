@@ -3318,7 +3318,7 @@ def generate_v2_index():
     with open(player_state_file, 'w', encoding='utf-8') as f: json.dump(player_state, f, indent=2, ensure_ascii=False)
 
     # -------------------------------------------------------------------------
-    # NEW: GENERATE DAILY LINEUPS JSON FOR TWEET BOT
+    # NEW: GENERATE DAILY LINEUPS JSON FOR TWEET BOT WITH PLAYERS
     # -------------------------------------------------------------------------
     print("🔄 Generating daily_lineups.json for the Tweet Bot...")
     daily_lineups = {}
@@ -3329,6 +3329,33 @@ def generate_v2_index():
     if now_est.hour < 3: 
         now_est -= timedelta(days=1)
     iso_today = now_est.strftime('%Y-%m-%d')
+
+    def extract_starting_xi(lineup_data):
+        """Extracts starting XI sorted with Goalkeeper (G) first, then D, M, F."""
+        if not lineup_data or not lineup_data.get('startXI'):
+            return []
+        
+        players = []
+        for s in lineup_data['startXI']:
+            p = s.get('player', {})
+            if not p: continue
+            
+            p_name = p.get('name', 'Unknown')
+            pos = p.get('pos', 'M')
+            cat = p.get('category', get_position_category(pos))
+            
+            players.append({
+                "name": p_name,
+                "short_name": shorten_player_name(p_name),
+                "pos": pos,
+                "category": cat,
+                "number": str(p.get('number', ''))
+            })
+            
+        # Category weights ensure Goalkeeper (G) is always first
+        category_weights = {'G': 0, 'D': 1, 'M': 2, 'F': 3}
+        players.sort(key=lambda x: category_weights.get(x['category'], 4))
+        return players
 
     for m in raw_matches_by_day['today']:
         home_lineup = m.get('homeLineup')
@@ -3359,7 +3386,9 @@ def generate_v2_index():
                 "opponent_slug": away_slug,
                 "side": "home",
                 "league_name": league_name,
-                "league_hashtag": league_hashtag
+                "league_hashtag": league_hashtag,
+                "formation": get_formation(home_lineup),
+                "starting_xi": extract_starting_xi(home_lineup)
             }
             
             # Away Team Entry
@@ -3374,7 +3403,9 @@ def generate_v2_index():
                 "opponent_slug": home_slug,
                 "side": "away",
                 "league_name": league_name,
-                "league_hashtag": league_hashtag
+                "league_hashtag": league_hashtag,
+                "formation": get_formation(away_lineup),
+                "starting_xi": extract_starting_xi(away_lineup)
             }
             
     with open('data/daily_lineups.json', 'w', encoding='utf-8') as f:
