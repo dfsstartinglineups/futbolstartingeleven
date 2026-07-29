@@ -3518,6 +3518,7 @@ def generate_v2_index():
             daily_goals[goal_key] = {
                 "fixture_id": fixture_id,
                 "date": match_date,
+                "timestamp": int(time.time()),
                 "minute": event_time,
                 "display_minute": event.get('time', str(event_time)),
                 "team_id": team_id,
