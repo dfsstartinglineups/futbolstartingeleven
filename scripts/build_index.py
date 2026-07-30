@@ -1656,12 +1656,24 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
         except: break
 
     # --- PRE-FETCH MATCH SUMMARIES IN PARALLEL ---
+    # Load locked lineups to avoid re-fetching pre-game starting XIs
+    locked_fixture_ids = set()
+    if os.path.exists('data/daily_lineups.json'):
+        try:
+            with open('data/daily_lineups.json', 'r', encoding='utf-8') as f:
+                existing_lineups = json.load(f)
+                for entry in existing_lineups.values():
+                    if entry.get('fixture_id'):
+                        locked_fixture_ids.add(str(entry['fixture_id']))
+        except Exception:
+            pass
+
     events_to_fetch = []
     for event in raw_events:
         event_id = str(event.get('id', ''))
         state = ((event.get('status') or {}).get('type') or {}).get('state', 'pre')
         
-        # Check if we already have it cached in old_html
+        # 1. Check if finished match is cached in old_html
         is_cached = False
         if state == 'post' and old_html:
             match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
@@ -1669,7 +1681,10 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             if saved_block and any(badge in saved_block.group(1) for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
                 is_cached = True
 
-        if not is_cached:
+        # 2. Check if pre-game lineup is already locked in daily_lineups.json
+        is_lineup_locked = (state == 'pre' and event_id in locked_fixture_ids)
+
+        if not is_cached and not is_lineup_locked:
             should_fetch, _ = should_fetch_summary(event)
             if should_fetch and event_id:
                 events_to_fetch.append(event_id)
@@ -3304,6 +3319,7 @@ def generate_v2_index():
         match_id = str(m['fixture']['id'])
         status_short = m['fixture']['status']['short']
         is_ft = (status_short in ['FT', 'AET', 'PEN'])
+        is_live = status_short not in ['FT', 'AET', 'PEN', 'NS', 'TBD', 'PST', 'CANC', 'ABD']
         
         for side in ['home', 'away']:
             team_info = m['teams'][side]
@@ -3312,8 +3328,19 @@ def generate_v2_index():
             # TEAM GENERATION
             if t_slug in team_state:
                 t_data = team_state[t_slug]
+                time_since_update = datetime.now().timestamp() - t_data.get('last_updated', 0)
                 
-                if not (t_data.get('last_match_id') == match_id and t_data.get('is_final')):
+                needs_update = False
+                if t_data.get('last_match_id') != match_id:
+                    needs_update = True
+                elif is_live:
+                    needs_update = True
+                elif is_ft and not t_data.get('is_final'):
+                    needs_update = True
+                elif time_since_update > 300 and not is_ft: # 5 min throttle for pre-game/postponed
+                    needs_update = True
+                
+                if needs_update:
                     next_match_tuple = find_next_fixture_for_entity(t_slug, upcoming_pool) if is_ft else (None, False)
                     
                     build_team_lineup_page(
@@ -3343,8 +3370,19 @@ def generate_v2_index():
                         
                         if p_slug in player_state:
                             p_data = player_state[p_slug]
+                            time_since_update = datetime.now().timestamp() - p_data.get('last_updated', 0)
                             
-                            if not (p_data.get('last_match_id') == match_id and p_data.get('is_final')):
+                            needs_update = False
+                            if p_data.get('last_match_id') != match_id:
+                                needs_update = True
+                            elif is_live:
+                                needs_update = True
+                            elif is_ft and not p_data.get('is_final'):
+                                needs_update = True
+                            elif time_since_update > 300 and not is_ft: # 5 min throttle for pre-game/postponed
+                                needs_update = True
+                            
+                            if needs_update:
                                 next_match_tuple = find_next_fixture_for_entity(t_slug, upcoming_pool) if is_ft else (None, False)
                                 
                                 build_single_player_page(
