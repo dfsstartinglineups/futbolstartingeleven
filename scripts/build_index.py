@@ -3410,38 +3410,57 @@ def generate_v2_index():
         players.sort(key=lambda x: category_weights.get(x['category'], 4))
         return players
 
+    def is_valid_starting_xi(xi_players):
+        """Validates that a starting XI has exactly 11 players with proper pitch positions."""
+        # 1. Must have exactly 11 starting players
+        if len(xi_players) != 11:
+            return False
+            
+        valid_categories = {'G', 'D', 'M', 'F'}
+        has_gk = False
+        
+        for p in xi_players:
+            cat = p.get('category')
+            pos = str(p.get('pos', '')).strip().upper()
+            
+            # 2. Reject unassigned positions, sub tags, or broken entries
+            if cat not in valid_categories or pos in ['SUB', 'S', 'SUBSTITUTE', '', 'UNKNOWN', 'NONE']:
+                return False
+                
+            if cat == 'G':
+                has_gk = True
+                
+        # 3. Must have at least 1 designated goalkeeper
+        if not has_gk:
+            return False
+            
+        return True
+
     for m in raw_matches_by_day['today']:
         home_lineup = m.get('homeLineup')
         away_lineup = m.get('awayLineup')
         
-        # Ensure both teams have a populated startXI array
-        if home_lineup and home_lineup.get('startXI') and away_lineup and away_lineup.get('startXI'):
-            fixture_id = str(m['fixture'].get('id', ''))
+        fixture_id = str(m['fixture'].get('id', ''))
+        home_name = m['teams']['home']['name']
+        away_name = m['teams']['away']['name']
+        home_slug = create_slug(home_name)
+        away_slug = create_slug(away_name)
+        
+        league_name_raw = m['league'].get('name', '')
+        l_flag = str(m['league'].get('flag', ''))
+        
+        emoji_flag = ""
+        if l_flag and not l_flag.startswith('http') and not l_flag.startswith('/images/'):
+            emoji_flag = l_flag
+        elif "ca.png" in l_flag or "canadian" in league_name_raw.lower() or "northern super" in league_name_raw.lower():
+            emoji_flag = "🇨🇦"
             
-            home_name = m['teams']['home']['name']
-            away_name = m['teams']['away']['name']
-            
-            home_slug = create_slug(home_name)
-            away_slug = create_slug(away_name)
-            
-            league_name_raw = m['league'].get('name', '')
-            l_flag = str(m['league'].get('flag', ''))
-            
-            # Map emojis for tweet payloads even when using image flags on the site
-            emoji_flag = ""
-            if l_flag and not l_flag.startswith('http') and not l_flag.startswith('/images/'):
-                emoji_flag = l_flag
-            elif "ca.png" in l_flag or "canadian" in league_name_raw.lower() or "northern super" in league_name_raw.lower():
-                emoji_flag = "🇨🇦"
-                
-            if emoji_flag:
-                league_name = f"{emoji_flag} {league_name_raw}"
-            else:
-                league_name = league_name_raw
-                
-            league_hashtag = f"#{league_name_raw.replace(' ', '')}"
-            
-            # Home Team Entry
+        league_name = f"{emoji_flag} {league_name_raw}" if emoji_flag else league_name_raw
+        league_hashtag = f"#{league_name_raw.replace(' ', '')}"
+
+        # Extract & Validate Home Lineup
+        home_xi = extract_starting_xi(home_lineup)
+        if is_valid_starting_xi(home_xi):
             home_key = f"{fixture_id}_{home_slug}_{iso_today}"
             daily_lineups[home_key] = {
                 "fixture_id": fixture_id,
@@ -3455,10 +3474,12 @@ def generate_v2_index():
                 "league_name": league_name,
                 "league_hashtag": league_hashtag,
                 "formation": get_formation(home_lineup),
-                "starting_xi": extract_starting_xi(home_lineup)
+                "starting_xi": home_xi
             }
-            
-            # Away Team Entry
+
+        # Extract & Validate Away Lineup
+        away_xi = extract_starting_xi(away_lineup)
+        if is_valid_starting_xi(away_xi):
             away_key = f"{fixture_id}_{away_slug}_{iso_today}"
             daily_lineups[away_key] = {
                 "fixture_id": fixture_id,
@@ -3472,7 +3493,7 @@ def generate_v2_index():
                 "league_name": league_name,
                 "league_hashtag": league_hashtag,
                 "formation": get_formation(away_lineup),
-                "starting_xi": extract_starting_xi(away_lineup)
+                "starting_xi": away_xi
             }
             
     with open('data/daily_lineups.json', 'w', encoding='utf-8') as f:
