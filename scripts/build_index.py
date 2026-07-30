@@ -1476,6 +1476,38 @@ def build_lineup_list(lineup_data):
         items += f'''<li class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.8rem;"><span class="text-muted fw-bold me-2" style="font-size: 0.65rem; min-width: 32px; display: inline-block; text-align: left;">{p.get('pos','M')}</span>{pho}<a href="/players/{p_slug}/" class="batter-name text-dark text-decoration-none text-truncate">{sub}{shorten_player_name(p.get('name'))}</a><span class="ms-auto text-muted" style="font-size: 0.65rem;">#{p.get('number','')}</span></li>'''
     return f'''<div class="w-100 text-center py-1 fw-bold text-white bg-success" style="font-size: 0.65rem;">✅ {get_formation(lineup_data)}</div><ul class="batting-order w-100 m-0 p-0">{items}</ul>'''
 
+def is_match_live(match):
+    """Returns True if the match is currently in-play (live)."""
+    status_short = str((match.get('fixture', {}) or {}).get('status', {}).get('short', '')).upper()
+    return status_short not in ['FT', 'AET', 'NS', 'TBD', 'PST', 'CANC', 'ABD']
+
+def get_live_sort_weight(match):
+    """
+    Calculates a weight so that matches nearest to the end of the game 
+    have the highest weight and sort to the top.
+    """
+    status_info = match.get('fixture', {}).get('status', {}) or {}
+    status_code = str(status_info.get('short', '')).upper()
+    
+    elapsed_raw = status_info.get('elapsed', 0)
+    try:
+        elapsed = int(re.sub(r'[^0-9]', '', str(elapsed_raw)))
+    except (ValueError, TypeError):
+        elapsed = 0
+
+    if status_code in ['P', 'PEN', 'PENALTY']:
+        return 200 + elapsed
+    elif status_code in ['ET', '2ET', '1ET']:
+        return 100 + elapsed
+    elif status_code == '2H' or (status_code not in ['1H', 'HT'] and elapsed > 45):
+        return 50 + elapsed
+    elif status_code in ['HT', 'BT']:
+        return 46
+    elif status_code in ['1H']:
+        return elapsed
+    else:
+        return elapsed
+
 def build_live_stats_grid(lineup_data, hex_color):
     if not lineup_data or not lineup_data.get('startXI'): return '<div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div>'
     grps = {'F': {'t': 'FWD', 's': ['G','A','xG','SOG'], 'k': ['goals','assists','xg','shots_on_target']}, 'M': {'t': 'MID', 's': ['G','A','PAS','DUEL'], 'k': ['goals','assists','accurate_passes','duels_won']}, 'D': {'t': 'DEF', 's': ['G','DINT','TK','DUEL'], 'k': ['goals','dint','tackles','duels_won']}, 'G': {'t': 'GK', 's': ['SV','GA','xGA','SHF'], 'k': ['saves','conceded','xga','shots_faced']}}
@@ -1497,8 +1529,9 @@ def build_live_stats_grid(lineup_data, hex_color):
             html += f'''<div class="d-flex align-items-center w-100 px-2 py-1 border-bottom" style="font-size: 0.70rem;"><div class="text-start text-truncate" style="flex: 1;"><a href="/players/{p_slug}/" class="text-dark text-decoration-none text-truncate">{pre}{shorten_player_name(p.get('name'))}</a></div><div class="text-muted" style="width: 18px; text-align: center; font-weight: 600;">{st.get(g['k'][0],0)}</div><div class="text-muted" style="width: 22px; text-align: center; font-weight: 600;">{st.get(g['k'][1],0)}</div><div class="text-muted" style="width: 28px; text-align: center; font-weight: 600;">{st.get(g['k'][2],0)}</div><div class="text-muted" style="width: 24px; text-align: center; font-weight: 600;">{st.get(g['k'][3],0)}</div></div>'''
     return html
 
-def pre_render_game_card(data):
+def pre_render_game_card(data, is_live_section=False):
     fix_id = str(data['fixture'].get('id', ''))
+    dom_id = f"live-{fix_id}" if is_live_section else fix_id
     is_pre = (data['fixture']['status'] or {}).get('short', '') in ['NS', 'TBD']
     has_stats = bool(data.get('team_stats'))
     
@@ -1514,38 +1547,38 @@ def pre_render_game_card(data):
     home_lineup_html = f'<a href="/teams/{home_slug}/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
     away_lineup_html = f'<a href="/teams/{away_slug}/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
 
-    return f'''<!-- MATCH_{fix_id} -->
-    <div class="lineup-card shadow-sm" id="card-{fix_id}">
-        <div class="ribbon-view" id="ribbon-{fix_id}" onclick="toggleSingleCard('{fix_id}')">{get_ribbon_html(data)}</div>
-        <div class="full-view d-none" id="full-{fix_id}">
+    return f'''<!-- MATCH_{dom_id} -->
+    <div class="lineup-card shadow-sm" id="card-{dom_id}">
+        <div class="ribbon-view" id="ribbon-{dom_id}" onclick="toggleSingleCard('{dom_id}')">{get_ribbon_html(data)}</div>
+        <div class="full-view d-none" id="full-{dom_id}">
             <div class="p-2 pb-1" style="background-color: #fcfcfc;">
-                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('{fix_id}')">
-                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-{fix_id}" style="white-space: nowrap;">{get_time_badge_html(data)} {get_latest_event_html(data)}</div>
+                <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('{dom_id}')">
+                    <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-{dom_id}" style="white-space: nowrap;">{get_time_badge_html(data)} {get_latest_event_html(data)}</div>
                     <a href="/leagues/{data['league']['slug']}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="{data['league']['name']}">{flag_html} <span class="text-truncate">{data['league']['name']}</span></a>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
                     <div class="text-center" style="width: 30%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['home']['name']}</div>{home_lineup_html}</div>
-                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-{fix_id}">{get_center_column_html(data)}</div>
+                    <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-{dom_id}">{get_center_column_html(data)}</div>
                     <div class="text-center" style="width: 30%;"><img src="{data['teams']['away']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['away']['name']}</div>{away_lineup_html}</div>
                 </div>
-                <div class="w-100" id="events-{fix_id}">{get_events_html(data)}</div>
+                <div class="w-100" id="events-{dom_id}">{get_events_html(data)}</div>
             </div>
-            <div class="w-100" id="odds-{fix_id}">{get_odds_html(data)}</div>
-            <div class="w-100" id="injuries-{fix_id}">{get_injuries_html(data)}</div>
+            <div class="w-100" id="odds-{dom_id}">{get_odds_html(data)}</div>
+            <div class="w-100" id="injuries-{dom_id}">{get_injuries_html(data)}</div>
             <a href="https://weatherfootball.com/teams/{home_slug}/" class="d-block w-100 text-center py-2 border-bottom text-decoration-none fw-bold" style="background-color: #e0f2fe; color: #0284c7; font-size: 0.75rem;">🌤️ Weather Forecast</a>
             <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
                 <div class="d-flex gap-4 w-100">
-                    <div class="lineup-tab {'active' if (not has_stats or is_pre) else ''}" id="tab-xi-{fix_id}" onclick="switchLineupTab(event, '{fix_id}', 'xi')" style="flex: 1; text-align: center;">{'STARTING XI' if is_pre else 'FINAL XI'}</div>
-                    <div class="lineup-tab {'active' if (has_stats and not is_pre) else ''} {'d-none' if not has_stats else ''}" id="tab-stats-{fix_id}" onclick="switchLineupTab(event, '{fix_id}', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                    <div class="lineup-tab {'active' if (not has_stats or is_pre) else ''}" id="tab-xi-{dom_id}" onclick="switchLineupTab(event, '{dom_id}', 'xi')" style="flex: 1; text-align: center;">{'STARTING XI' if is_pre else 'FINAL XI'}</div>
+                    <div class="lineup-tab {'active' if (has_stats and not is_pre) else ''} {'d-none' if not has_stats else ''}" id="tab-stats-{dom_id}" onclick="switchLineupTab(event, '{dom_id}', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
                 </div>
             </div>
-            <div class="collapse show lineup-container" id="lineup-collapse-{fix_id}">
-                <div id="view-xi-{fix_id}" class="{'d-none' if (has_stats and not is_pre) else ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">{build_lineup_list(data.get('homeLineup'))}</div><div class="col-6">{build_lineup_list(data.get('awayLineup'))}</div></div></div>
-                <div id="view-stats-{fix_id}" class="{'d-none' if (not has_stats or is_pre) else ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">{build_live_stats_grid(data.get('homeLineup'), h_col)}</div><div class="col-6">{build_live_stats_grid(data.get('awayLineup'), a_col)}</div></div></div>
+            <div class="collapse show lineup-container" id="lineup-collapse-{dom_id}">
+                <div id="view-xi-{dom_id}" class="{'d-none' if (has_stats and not is_pre) else ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">{build_lineup_list(data.get('homeLineup'))}</div><div class="col-6">{build_lineup_list(data.get('awayLineup'))}</div></div></div>
+                <div id="view-stats-{dom_id}" class="{'d-none' if (not has_stats or is_pre) else ''}"><div class="row g-0 bg-white border-top"><div class="col-6 border-end">{build_live_stats_grid(data.get('homeLineup'), h_col)}</div><div class="col-6">{build_live_stats_grid(data.get('awayLineup'), a_col)}</div></div></div>
             </div>
         </div>
     </div>
-    <!-- END_MATCH_{fix_id} -->'''
+    <!-- END_MATCH_{dom_id} -->'''
 
 def group_and_sort_matches_by_league(matches):
     if not matches: return []
@@ -1886,7 +1919,22 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <div id="games-container" class="row justify-content-start">
         {% for day, leagues in leagues_by_day.items() %}
             <div id="partition-{{ day }}" class="day-partition {{ '' if day == 'today' else 'd-none' }} row w-100 m-0 justify-content-start">
-                {% if leagues | length == 0 %}
+                {% if day == 'today' and live_cards and live_cards | length > 0 %}
+                    <div class="col-12 live-header mt-2 mb-2 px-1" id="live-matches-section">
+                        <div class="d-flex align-items-center p-2 rounded-3 shadow-sm" style="background: #212529; border-left: 4px solid #20c997;">
+                            <span class="live-dot me-2"></span>
+                            <h2 class="h6 mb-0 fw-bold text-white text-uppercase" style="letter-spacing: 0.5px;">🔥 LIVE MATCHES NOW</h2>
+                            <span class="badge bg-success text-white border ms-auto px-2 py-1" style="font-size: 0.65rem;">{{ live_cards | length }} {{ 'Match' if live_cards | length == 1 else 'Matches' }}</span>
+                        </div>
+                    </div>
+                    {% for match in live_cards %}
+                        <div class="col-md-6 col-lg-6 col-xl-4 mb-3 game-card-wrapper" data-search="{{ match.search }}">
+                            {{ match.html_card | safe }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if leagues | length == 0 and (day != 'today' or (live_cards | length == 0)) %}
                     <div class="col-12 text-center mt-5 empty-state">
                         <div class="card p-4 shadow-sm border-0"><div class="h4 text-muted">🏟️ No matches scheduled for this partition.</div></div>
                     </div>
@@ -1999,9 +2047,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const activePartition = document.getElementById('partition-' + ACTIVE_DAY);
         if (!activePartition) return;
         let totalVisibleMatches = 0;
-        activePartition.querySelectorAll('.league-header').forEach(header => {
+        activePartition.querySelectorAll('.league-header, .live-header').forEach(header => {
             let visibleInLeague = 0, sibling = header.nextElementSibling;
-            while (sibling && !sibling.classList.contains('league-header')) {
+            while (sibling && !sibling.classList.contains('league-header') && !sibling.classList.contains('live-header')) {
                 if (sibling.classList.contains('game-card-wrapper')) {
                     if ((sibling.getAttribute('data-search') || '').includes(searchText)) {
                         sibling.classList.remove('d-none'); visibleInLeague++; totalVisibleMatches++;
@@ -3566,6 +3614,21 @@ def generate_v2_index():
     with open('data/daily_goals.json', 'w', encoding='utf-8') as f:
         json.dump(daily_goals, f, indent=2, ensure_ascii=False)
 
+    # Extract & sort live matches for top section
+    live_matches = [m for m in raw_matches_by_day['today'] if is_match_live(m)]
+    live_matches.sort(key=get_live_sort_weight, reverse=True)
+    
+    live_cards = []
+    for m in live_matches:
+        home_n = m['teams']['home']['name'].lower()
+        away_n = m['teams']['away']['name'].lower()
+        lg_n = m['league']['name'].lower()
+        lg_a = m['league']['abbrev'].lower()
+        live_cards.append({
+            "html_card": pre_render_game_card(m, is_live_section=True),
+            "search": f"{home_n} {away_n} {lg_n} {lg_a}"
+        })
+
     # 6. Build Main Global Homepage
     leagues_by_day = {
         day: group_and_sort_matches_by_league(matches)
@@ -3589,6 +3652,7 @@ def generate_v2_index():
     template = Template(HTML_TEMPLATE)
     output_html = template.render(
         leagues_by_day=leagues_by_day,
+        live_cards=live_cards,
         display_dates=day_info["display"],
         nav_leagues_html=nav_html,
         schema_json=homepage_schema
