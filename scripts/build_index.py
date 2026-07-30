@@ -269,6 +269,8 @@ HUMAN_LEAGUE_FLAGS = {
     "uefa conference league": "https://a.espncdn.com/i/leaguelogos/soccer/500/20296.png",
     "uefa europa league": "https://a.espncdn.com/i/leaguelogos/soccer/500/2310.png",
     "usl championship": "https://a.espncdn.com/i/leaguelogos/soccer/500/2292.png",
+    "northern super league": "🇨🇦",
+    "canadian premier league": "🇨🇦",
 }
 
 KNOWN_LEAGUE_PILLS = {
@@ -3373,8 +3375,15 @@ def generate_v2_index():
             home_slug = create_slug(home_name)
             away_slug = create_slug(away_name)
             
-            league_name = m['league'].get('name', '')
-            league_hashtag = f"#{league_name.replace(' ', '')}"
+            league_name_raw = m['league'].get('name', '')
+            l_flag = str(m['league'].get('flag', ''))
+            
+            if l_flag and not l_flag.startswith('http') and not l_flag.startswith('/images/'):
+                league_name = f"{l_flag} {league_name_raw}"
+            else:
+                league_name = league_name_raw
+                
+            league_hashtag = f"#{league_name_raw.replace(' ', '')}"
             
             # Home Team Entry
             home_key = f"{fixture_id}_{home_slug}_{iso_today}"
@@ -3457,9 +3466,16 @@ def generate_v2_index():
         home_odds_dec = get_decimal_odds(m.get('odds', {}).get('home', 'TBD'))
         away_odds_dec = get_decimal_odds(m.get('odds', {}).get('away', 'TBD'))
         
-        league_name = m['league'].get('name', '')
+        league_name_raw = m['league'].get('name', '')
+        l_flag = str(m['league'].get('flag', ''))
+        
+        if l_flag and not l_flag.startswith('http') and not l_flag.startswith('/images/'):
+            league_name = f"{l_flag} {league_name_raw}"
+        else:
+            league_name = league_name_raw
+            
         league_slug = m['league'].get('slug', '')
-        league_hashtag = f"#{league_name.replace(' ', '')}"
+        league_hashtag = f"#{league_name_raw.replace(' ', '')}"
         
         current_home_score = 0
         current_away_score = 0
