@@ -2180,13 +2180,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         else if (tabName === 'stats') { statsTab?.classList.add('active'); xiTab?.classList.remove('active'); statsView?.classList.remove('d-none'); xiView?.classList.add('d-none'); }
     };
 
-    function triggerCardGlow(cardEl, eventTypeOrText) {
-        if (!cardEl) return;
-        const typeLower = (eventTypeOrText || '').toLowerCase();
-        let glowClass = 'glow-goal';
-        if (typeLower.includes('red') || typeLower.includes('🟥')) glowClass = 'glow-red-card';
-        else if (typeLower.includes('yellow') || typeLower.includes('🟨')) glowClass = 'glow-yellow-card';
-        else if (typeLower.includes('sub') || typeLower.includes('🔄')) glowClass = 'glow-subst';
+    function triggerCardGlow(cardEl, newestEventText) {
+        if (!cardEl || !newestEventText) return;
+        const text = newestEventText.toLowerCase();
+        
+        // Simple mapping based ONLY on the single new event string
+        let glowClass = 'glow-goal'; 
+        if (text.includes('🟥') || text.includes('red')) glowClass = 'glow-red-card';
+        else if (text.includes('🟨') || text.includes('yellow')) glowClass = 'glow-yellow-card';
+        else if (text.includes('🔄') || text.includes('sub')) glowClass = 'glow-subst';
 
         cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
         void cardEl.offsetWidth;
@@ -2217,6 +2219,20 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
 
+                let newestEventText = '';
+                if (hasNewEvent) {
+                    const oldRows = Array.from(currentCard.querySelectorAll('.event-expanded .d-flex.align-items-start')).map(el => el.textContent);
+                    const newRows = Array.from(newCard.querySelectorAll('.event-expanded .d-flex.align-items-start'));
+                    
+                    // Grab the first row in the new DOM that isn't in the old DOM (which is the latest event)
+                    for (let row of newRows) {
+                        if (!oldRows.includes(row.textContent)) {
+                            newestEventText = row.textContent;
+                            break;
+                        }
+                    }
+                }
+
                 const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
                 const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
                 const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
@@ -2232,8 +2248,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     window.switchLineupTab(null, fixId, tabName);
                 }
 
-                if (hasNewEvent) {
-                    triggerCardGlow(currentCard, newEventsHtml);
+                if (newestEventText) {
+                    triggerCardGlow(currentCard, newestEventText);
                 }
             });
         } catch (err) {
@@ -2412,20 +2428,20 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
         }
     };
 
-    function triggerCardGlow(cardEl, eventTypeOrText) {
-        if (!cardEl) return;
-        const typeLower = (eventTypeOrText || '').toLowerCase();
-        let glowClass = 'glow-goal';
-        if (typeLower.includes('red') || typeLower.includes('🟥')) glowClass = 'glow-red-card';
-        else if (typeLower.includes('yellow') || typeLower.includes('🟨')) glowClass = 'glow-yellow-card';
-        else if (typeLower.includes('sub') || typeLower.includes('🔄')) glowClass = 'glow-subst';
+    function triggerCardGlow(cardEl, newestEventText) {
+        if (!cardEl || !newestEventText) return;
+        const text = newestEventText.toLowerCase();
+        
+        let glowClass = 'glow-goal'; 
+        if (text.includes('🟥') || text.includes('red')) glowClass = 'glow-red-card';
+        else if (text.includes('🟨') || text.includes('yellow')) glowClass = 'glow-yellow-card';
+        else if (text.includes('🔄') || text.includes('sub')) glowClass = 'glow-subst';
 
         cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
         void cardEl.offsetWidth;
         cardEl.classList.add(glowClass);
         setTimeout(() => { cardEl.classList.remove(glowClass); }, 4000);
     }
-
     async function pollAndUpdateDOM() {
         try {
             const res = await fetch(window.location.href, { cache: 'no-store' });
@@ -2449,6 +2465,18 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
                 const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
                 const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
 
+                let newestEventText = '';
+                if (hasNewEvent) {
+                    const oldRows = Array.from(currentCard.querySelectorAll('.event-expanded .d-flex.align-items-start')).map(el => el.textContent);
+                    const newRows = Array.from(newCard.querySelectorAll('.event-expanded .d-flex.align-items-start'));
+                    for (let row of newRows) {
+                        if (!oldRows.includes(row.textContent)) {
+                            newestEventText = row.textContent;
+                            break;
+                        }
+                    }
+                }
+
                 const isRibbonVisible = !currentCard.querySelector('.ribbon-view')?.classList.contains('d-none');
                 const isFullVisible = !currentCard.querySelector('.full-view')?.classList.contains('d-none');
                 const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
@@ -2464,8 +2492,8 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
                     window.switchLineupTab(null, fixId, tabName);
                 }
 
-                if (hasNewEvent) {
-                    triggerCardGlow(currentCard, newEventsHtml);
+                if (newestEventText) {
+                    triggerCardGlow(currentCard, newestEventText);
                 }
             });
         } catch (err) {
