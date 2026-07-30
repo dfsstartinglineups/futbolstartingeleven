@@ -687,6 +687,20 @@ def fetch_athlete_overview_and_gamelog(player_id, position='M'):
     if not player_id:
         return default_return
 
+    # --- 6-HOUR DISK CACHE FOR PLAYER PROFILES ---
+    cache_dir = 'data/player_cache'
+    os.makedirs(cache_dir, exist_ok=True)
+    cache_file = os.path.join(cache_dir, f"{player_id}.json")
+
+    if os.path.exists(cache_file):
+        if time.time() - os.path.getmtime(cache_file) < 21600: # 6 hours
+            try:
+                with open(cache_file, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception:
+                pass
+    # ----------------------------------------------
+
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     overview_url = f"https://site.web.api.espn.com/apis/common/v3/sports/soccer/athletes/{player_id}/overview"
 
@@ -905,7 +919,7 @@ def fetch_athlete_overview_and_gamelog(player_id, position='M'):
                 "label4": "Clean Sheets" if is_gk else "Shots"
             }
 
-            return {
+            result = {
                 "overview_totals": overview_totals,
                 "competition_splits": comp_splits,
                 "gamelogs": gamelogs[:20],
@@ -913,6 +927,15 @@ def fetch_athlete_overview_and_gamelog(player_id, position='M'):
                 "log_headers": log_headers,
                 "headshot": fetched_headshot
             }
+            
+            # Save successful fetch to disk cache
+            try:
+                with open(cache_file, 'w', encoding='utf-8') as f:
+                    json.dump(result, f, indent=2, ensure_ascii=False)
+            except Exception:
+                pass
+
+            return result
     except Exception as e:
         pass
 
