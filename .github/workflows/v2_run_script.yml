@@ -9,12 +9,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-site:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
-    # Grants permissions required to commit built static files and cache back to the repository
+    # Grants permissions to commit files and publish directly to GitHub Pages via OIDC
     permissions:
       contents: write
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout Repository
@@ -29,12 +35,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install requests pytz jinja2 aiohttp
-          
+
+      - name: Ensure .nojekyll exists
+        run: touch .nojekyll
+
       - name: Run Build Script
         run: |
           python scripts/build_index.py
 
-      - name: Commit and Push Changes
+      - name: Commit and Push Changes to Repo
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -45,7 +54,7 @@ jobs:
           until [ $COUNT -ge $MAX_RETRIES ]; do
             git fetch origin main
             git reset --soft origin/main
-            git add index.html *.xml data/ images/ leagues/ teams/ players/
+            git add index.html .nojekyll *.xml data/ images/ leagues/ teams/ players/
             
             if git diff-index --quiet HEAD; then
               echo "No changes to commit."
@@ -63,3 +72,15 @@ jobs:
             echo "Push collision detected. Retrying ($COUNT/$MAX_RETRIES)..."
             sleep 2
           done
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
