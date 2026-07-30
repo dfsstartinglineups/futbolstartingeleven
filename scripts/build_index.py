@@ -3427,8 +3427,15 @@ def generate_v2_index():
             league_name_raw = m['league'].get('name', '')
             l_flag = str(m['league'].get('flag', ''))
             
+            # Map emojis for tweet payloads even when using image flags on the site
+            emoji_flag = ""
             if l_flag and not l_flag.startswith('http') and not l_flag.startswith('/images/'):
-                league_name = f"{l_flag} {league_name_raw}"
+                emoji_flag = l_flag
+            elif "ca.png" in l_flag or "canadian" in league_name_raw.lower() or "northern super" in league_name_raw.lower():
+                emoji_flag = "🇨🇦"
+                
+            if emoji_flag:
+                league_name = f"{emoji_flag} {league_name_raw}"
             else:
                 league_name = league_name_raw
                 
@@ -3518,8 +3525,15 @@ def generate_v2_index():
         league_name_raw = m['league'].get('name', '')
         l_flag = str(m['league'].get('flag', ''))
         
+        # Map emojis for tweet payloads even when using image flags on the site
+        emoji_flag = ""
         if l_flag and not l_flag.startswith('http') and not l_flag.startswith('/images/'):
-            league_name = f"{l_flag} {league_name_raw}"
+            emoji_flag = l_flag
+        elif "ca.png" in l_flag or "canadian" in league_name_raw.lower() or "northern super" in league_name_raw.lower():
+            emoji_flag = "🇨🇦"
+            
+        if emoji_flag:
+            league_name = f"{emoji_flag} {league_name_raw}"
         else:
             league_name = league_name_raw
             
