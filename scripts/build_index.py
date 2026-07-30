@@ -1529,6 +1529,7 @@ def pre_render_game_card(data):
             </div>
             <div class="w-100" id="odds-{fix_id}">{get_odds_html(data)}</div>
             <div class="w-100" id="injuries-{fix_id}">{get_injuries_html(data)}</div>
+            <a href="https://weatherfootball.com/teams/{home_slug}/" class="d-block w-100 text-center py-2 border-bottom text-decoration-none fw-bold" style="background-color: #e0f2fe; color: #0284c7; font-size: 0.75rem;">🌤️ Weather Forecast</a>
             <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
                 <div class="d-flex gap-4 w-100">
                     <div class="lineup-tab {'active' if (not has_stats or is_pre) else ''}" id="tab-xi-{fix_id}" onclick="switchLineupTab(event, '{fix_id}', 'xi')" style="flex: 1; text-align: center;">{'STARTING XI' if is_pre else 'FINAL XI'}</div>
