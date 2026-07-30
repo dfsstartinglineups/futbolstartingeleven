@@ -326,6 +326,7 @@ COUNTRY_FLAG_URLS = {
     "danish": "dk", "indian": "in", "salvadoran": "sv", "costa rican": "cr",
     "peruvian": "pe", "peru": "pe",
     "uruguay": "uy", "uruguayan": "uy", "uruguaya": "uy",
+    "canadian": "ca", "canada": "ca",
     "brazil": "br",
     "ecuador": "ec", "ecuadorian": "ec",
     "mexico": "mx", "mx": "mx",
