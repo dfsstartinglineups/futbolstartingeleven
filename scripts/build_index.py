@@ -657,27 +657,29 @@ def find_next_fixture_for_entity(team_id_or_slug, upcoming_matches):
 # ====================================================================
 # ASYNC CORE API PLAYER STATS FETCHER
 # ====================================================================
-async def fetch_single_player_core_stats(session, internal_slug, event_id, team_id, player_id):
+async def fetch_single_player_core_stats(session, internal_slug, event_id, team_id, player_id, sem):
     url = f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{internal_slug}/events/{event_id}/competitions/{event_id}/competitors/{team_id}/roster/{player_id}/statistics/0"
-    try:
-        async with session.get(url, timeout=5) as resp:
-            if resp.status == 200:
-                data = await resp.json()
-                stats_dict = {}
-                categories = (data.get('splits') or {}).get('categories') or []
-                for cat in categories:
-                    for stat in cat.get('stats', []):
-                        stats_dict[stat.get('name')] = stat.get('value')
-                return str(player_id), stats_dict
-    except Exception:
-        pass
+    async with sem:
+        try:
+            async with session.get(url, timeout=4) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    stats_dict = {}
+                    categories = (data.get('splits') or {}).get('categories') or []
+                    for cat in categories:
+                        for stat in cat.get('stats', []):
+                            stats_dict[stat.get('name')] = stat.get('value')
+                    return str(player_id), stats_dict
+        except Exception:
+            pass
     return str(player_id), {}
 
 async def get_core_stats_concurrently(internal_slug, event_id, player_list):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    sem = asyncio.Semaphore(8)  # Cap concurrent requests per match to 8
     async with aiohttp.ClientSession(headers=headers) as session:
         tasks = [
-            fetch_single_player_core_stats(session, internal_slug, event_id, tid, pid) 
+            fetch_single_player_core_stats(session, internal_slug, event_id, tid, pid, sem) 
             for tid, pid in player_list
         ]
         results = await asyncio.gather(*tasks)
@@ -1719,7 +1721,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
     pre_fetched_summaries = {}
     if events_to_fetch:
         print(f"    ⚡ Threading {len(events_to_fetch)} Match Summaries...")
-        with ThreadPoolExecutor(max_workers=15) as executor:
+        with ThreadPoolExecutor(max_workers=8) as executor:
             future_to_id = {executor.submit(parse_espn_summary, eid): eid for eid in events_to_fetch}
             for future in as_completed(future_to_id):
                 eid = future_to_id[future]
