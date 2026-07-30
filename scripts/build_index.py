@@ -1655,6 +1655,39 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             page += 1
         except: break
 
+    # --- PRE-FETCH MATCH SUMMARIES IN PARALLEL ---
+    events_to_fetch = []
+    for event in raw_events:
+        event_id = str(event.get('id', ''))
+        state = ((event.get('status') or {}).get('type') or {}).get('state', 'pre')
+        
+        # Check if we already have it cached in old_html
+        is_cached = False
+        if state == 'post' and old_html:
+            match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
+            saved_block = re.search(match_pattern, old_html, re.DOTALL)
+            if saved_block and any(badge in saved_block.group(1) for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
+                is_cached = True
+
+        if not is_cached:
+            should_fetch, _ = should_fetch_summary(event)
+            if should_fetch and event_id:
+                events_to_fetch.append(event_id)
+
+    pre_fetched_summaries = {}
+    if events_to_fetch:
+        print(f"    ⚡ Threading {len(events_to_fetch)} Match Summaries...")
+        with ThreadPoolExecutor(max_workers=15) as executor:
+            future_to_id = {executor.submit(parse_espn_summary, eid): eid for eid in events_to_fetch}
+            for future in as_completed(future_to_id):
+                eid = future_to_id[future]
+                try: 
+                    res = future.result()
+                    if res: pre_fetched_summaries[eid] = res
+                except Exception: 
+                    pass
+    # ---------------------------------------------
+
     matches = []
     for event in raw_events:
         try:
@@ -1751,12 +1784,16 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                         continue
 
             should_fetch, _ = should_fetch_summary(event)
-            summary = parse_espn_summary(event_id) if should_fetch else {
-                "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [], 
-                "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}, 
-                "injuries": {"home": [], "away": []}, 
-                "live_score": {}, "status_obj": None
-            }
+            # Pull from our parallel pre-fetched dictionary instead of making a blocking call
+            summary = pre_fetched_summaries.get(event_id) if should_fetch else None
+            
+            if not summary:
+                summary = {
+                    "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [], 
+                    "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"}, 
+                    "injuries": {"home": [], "away": []}, 
+                    "live_score": {}, "status_obj": None
+                }
 
             fresh_status = summary.get("status_obj") or event.get('status') or {}
             fresh_type = fresh_status.get('type') or {}
