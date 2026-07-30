@@ -186,6 +186,14 @@ def resolve_event_league(event, core_index):
 
     return None, None
 
+# Load Player Stats Cache
+PLAYER_STATS_CACHE = {}
+if os.path.exists('data/player_cache.json'):
+    try:
+        with open('data/player_cache.json', 'r', encoding='utf-8') as f:
+            PLAYER_STATS_CACHE = json.load(f)
+    except: pass
+
 # Load API-Football headshots cache
 HEADSHOTS_CACHE = {}
 if os.path.exists('data/headshots.json'):
@@ -687,19 +695,12 @@ def fetch_athlete_overview_and_gamelog(player_id, position='M'):
     if not player_id:
         return default_return
 
-    # --- 6-HOUR DISK CACHE FOR PLAYER PROFILES ---
-    cache_dir = 'data/player_cache'
-    os.makedirs(cache_dir, exist_ok=True)
-    cache_file = os.path.join(cache_dir, f"{player_id}.json")
-
-    if os.path.exists(cache_file):
-        if time.time() - os.path.getmtime(cache_file) < 21600: # 6 hours
-            try:
-                with open(cache_file, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except Exception:
-                pass
-    # ----------------------------------------------
+    now_ts = time.time()
+    # Check memory cache (6 hours = 21600 seconds)
+    if player_id in PLAYER_STATS_CACHE:
+        cached_entry = PLAYER_STATS_CACHE[player_id]
+        if now_ts - cached_entry.get('fetched_at', 0) < 21600:
+            return cached_entry.get('data', default_return)
 
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     overview_url = f"https://site.web.api.espn.com/apis/common/v3/sports/soccer/athletes/{player_id}/overview"
@@ -928,13 +929,11 @@ def fetch_athlete_overview_and_gamelog(player_id, position='M'):
                 "headshot": fetched_headshot
             }
             
-            # Save successful fetch to disk cache
-            try:
-                with open(cache_file, 'w', encoding='utf-8') as f:
-                    json.dump(result, f, indent=2, ensure_ascii=False)
-            except Exception:
-                pass
-
+            # Save to memory cache
+            PLAYER_STATS_CACHE[player_id] = {
+                'fetched_at': now_ts,
+                'data': result
+            }
             return result
     except Exception as e:
         pass
@@ -3485,6 +3484,9 @@ def generate_v2_index():
     with open(state_file, 'w', encoding='utf-8') as f: json.dump(state, f, indent=2, ensure_ascii=False)
     with open(team_state_file, 'w', encoding='utf-8') as f: json.dump(team_state, f, indent=2, ensure_ascii=False)
     with open(player_state_file, 'w', encoding='utf-8') as f: json.dump(player_state, f, indent=2, ensure_ascii=False)
+    
+    # Save Player Stats Cache
+    with open('data/player_cache.json', 'w', encoding='utf-8') as f: json.dump(PLAYER_STATS_CACHE, f, indent=2, ensure_ascii=False)
 
     # -------------------------------------------------------------------------
     # NEW: GENERATE DAILY LINEUPS JSON FOR TWEET BOT WITH PLAYERS
