@@ -3628,6 +3628,197 @@ def generate_v2_index():
     with open('data/daily_goals.json', 'w', encoding='utf-8') as f:
         json.dump(daily_goals, f, indent=2, ensure_ascii=False)
 
+    # -------------------------------------------------------------------------
+    # NEW: GENERATE GAME SUMMARY JSON FOR TWEET BOT (FULL-TIME RECAPS)
+    # -------------------------------------------------------------------------
+    print("🔄 Generating game_summary.json for the Tweet Bot...")
+    game_summaries = {}
+    summary_file_path = 'data/game_summary.json'
+    
+    # 1. Load existing summaries for O(1) deduplication
+    if os.path.exists(summary_file_path):
+        try:
+            with open(summary_file_path, 'r', encoding='utf-8') as f:
+                game_summaries = json.load(f)
+        except Exception as e:
+            print(f"  └─ ⚠️ Could not read existing {summary_file_path}: {e}")
+            game_summaries = {}
+
+    # 2. 48-Hour Pruning (Keep memory/file size microscopic)
+    now_ts = int(time.time())
+    forty_eight_hours_sec = 48 * 3600
+    game_summaries = {
+        fid: data for fid, data in game_summaries.items()
+        if (now_ts - data.get('created_at', now_ts)) < forty_eight_hours_sec
+    }
+
+    # Helper function to convert American odds to Decimal
+    def parse_decimal_odds(american_str):
+        if not american_str or american_str == 'TBD': return 0.0
+        try:
+            val = int(str(american_str).replace('+', ''))
+            if val > 0: return (val / 100.0) + 1.0
+            elif val < 0: return (100.0 / abs(val)) + 1.0
+        except: pass
+        return 0.0
+
+    # 3. Process Today's and Yesterday's Completed Matches
+    new_summaries_count = 0
+    for m in raw_matches_by_day['today'] + raw_matches_by_day['yesterday']:
+        status_short = str((m.get('fixture', {}) or {}).get('status', {}).get('short', '')).upper()
+        
+        # Only process finalized matches
+        if status_short not in ['FT', 'AET', 'PEN']:
+            continue
+
+        fixture_id = str(m['fixture'].get('id', ''))
+        if not fixture_id or fixture_id in game_summaries:
+            continue  # Instant O(1) skip if already recorded
+
+        h_id = str(m['teams']['home']['id'])
+        a_id = str(m['teams']['away']['id'])
+        h_name = m['teams']['home']['name']
+        a_name = m['teams']['away']['name']
+        h_score = int((m.get('goals') or {}).get('home', 0))
+        a_score = int((m.get('goals') or {}).get('away', 0))
+
+        # Build clean Goalscorer Strings (with Assists and Own Goals)
+        events = m.get('events', [])
+        goal_events = [e for e in events if e.get('type') == 'Goal' and e.get('detail') in ['Normal Goal', 'Penalty', 'Own Goal', 'Goal']]
+        
+        # Sort goals chronologically
+        goal_events.sort(key=lambda x: get_actual_minute(x.get('time', '0')))
+        
+        home_scorers = []
+        away_scorers = []
+        
+        for ge in goal_events:
+            p_name = ge.get('player', 'Unknown')
+            if not p_name or p_name.lower() == 'null':
+                continue
+            
+            p_short = shorten_player_name(p_name)
+            time_str = ge.get('time', "0'")
+            if not time_str.endswith("'"): time_str = f"{time_str}'"
+            
+            detail = ge.get('detail', '')
+            assist_name = ge.get('assist', '')
+            
+            # Format individual entry
+            if detail == 'Own Goal':
+                entry = f"{p_short} {time_str} (OG)"
+            elif assist_name:
+                entry = f"{p_short} {time_str} (Ast: {shorten_player_name(assist_name)})"
+            else:
+                entry = f"{p_short} {time_str}"
+                
+            if str(ge.get('team_id')) == h_id:
+                home_scorers.append(entry)
+            else:
+                away_scorers.append(entry)
+
+        # Odds context
+        h_odds_str = m.get('odds', {}).get('home', 'TBD')
+        a_odds_str = m.get('odds', {}).get('away', 'TBD')
+        d_odds_str = m.get('odds', {}).get('draw', 'TBD')
+        h_dec_odds = parse_decimal_odds(h_odds_str)
+        a_dec_odds = parse_decimal_odds(a_odds_str)
+
+        # Match outcome logic
+        if h_score > a_score:
+            outcome = "home_win"
+            winner_name = h_name
+            loser_name = a_name
+            is_upset = (h_dec_odds >= 3.50)
+        elif a_score > h_score:
+            outcome = "away_win"
+            winner_name = a_name
+            loser_name = h_name
+            is_upset = (a_dec_odds >= 3.50)
+        else:
+            outcome = "draw"
+            winner_name = None
+            loser_name = None
+            is_upset = False
+
+        score_diff = abs(h_score - a_score)
+
+        # Summary Scenario Determination
+        if outcome == "draw":
+            if h_score == 0:
+                scenario_key = "goalless_draw"
+            else:
+                scenario_key = "thrilling_draw" if h_score >= 2 else "standard_draw"
+        elif is_upset:
+            scenario_key = "massive_upset_win" if (h_dec_odds >= 6.0 or a_dec_odds >= 6.0) else "upset_win"
+        elif score_diff >= 3:
+            scenario_key = "blowout_win"
+        elif score_diff == 1:
+            scenario_key = "narrow_win"
+        else:
+            scenario_key = "comfortable_win"
+
+        # Team stats fallback protection
+        t_stats = m.get('team_stats') or {
+            "home": {"possession": 50, "total_shots": 0, "shots_on_target": 0, "yellow_cards": 0, "red_cards": 0},
+            "away": {"possession": 50, "total_shots": 0, "shots_on_target": 0, "yellow_cards": 0, "red_cards": 0}
+        }
+
+        league_name_raw = m['league'].get('name', '')
+        l_flag = str(m['league'].get('flag', ''))
+        emoji_flag = ""
+        if l_flag and not l_flag.startswith('http') and not l_flag.startswith('/images/'):
+            emoji_flag = l_flag
+        elif "ca.png" in l_flag or "canadian" in league_name_raw.lower() or "northern super" in league_name_raw.lower():
+            emoji_flag = "🇨🇦"
+
+        league_name = f"{emoji_flag} {league_name_raw}" if emoji_flag else league_name_raw
+        league_hashtag = f"#{league_name_raw.replace(' ', '')}"
+
+        # Construct Final Object
+        game_summaries[fixture_id] = {
+            "fixture_id": fixture_id,
+            "created_at": now_ts,
+            "match_date": m['fixture'].get('date', iso_today)[:10],
+            "status_short": status_short,
+            "home_team": h_name,
+            "away_team": a_name,
+            "home_score": h_score,
+            "away_score": a_score,
+            "outcome": outcome,
+            "winner_name": winner_name,
+            "loser_name": loser_name,
+            "scenario": scenario_key,
+            "home_scorers": home_scorers,
+            "away_scorers": away_scorers,
+            "stats": {
+                "home_possession": t_stats['home'].get('possession', 50),
+                "away_possession": t_stats['away'].get('possession', 50),
+                "home_shots_on_target": t_stats['home'].get('shots_on_target', 0),
+                "away_shots_on_target": t_stats['away'].get('shots_on_target', 0),
+                "home_total_shots": t_stats['home'].get('total_shots', 0),
+                "away_total_shots": t_stats['away'].get('total_shots', 0),
+                "home_red_cards": t_stats['home'].get('red_cards', 0),
+                "away_red_cards": t_stats['away'].get('red_cards', 0)
+            },
+            "odds": {
+                "home": h_odds_str,
+                "draw": d_odds_str,
+                "away": a_odds_str
+            },
+            "league_name": league_name,
+            "league_hashtag": league_hashtag,
+            "match_url": f"https://futbolstartingeleven.com/leagues/{m['league'].get('slug', '')}/#match-{fixture_id}"
+        }
+        new_summaries_count += 1
+
+    # 4. Save to Disk
+    with open(summary_file_path, 'w', encoding='utf-8') as f:
+        json.dump(game_summaries, f, indent=2, ensure_ascii=False)
+        
+    print(f"  └─ Successfully updated {summary_file_path} ({new_summaries_count} new summaries added, {len(game_summaries)} total stored).")
+    # -------------------------------------------------------------------------
+
     # Extract & sort live matches for top section
     live_matches = [m for m in raw_matches_by_day['today'] if is_match_live(m)]
     live_matches.sort(key=get_live_sort_weight, reverse=True)
