@@ -554,8 +554,13 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
             if t_slug in team_state and team_state[t_slug].get('squad_synced'):
                 continue
 
-            # Fetch official league pill directly for this team ID
-            team_pill = get_league_pill_for_team(t_id) or fallback_pill
+            # Use cached pill from team_state if available, otherwise fetch once
+            team_pill = team_state.get(t_slug, {}).get('league_pill')
+            if not team_pill:
+                team_pill = get_league_pill_for_team(t_id) or fallback_pill
+                if t_slug in team_state:
+                    team_state[t_slug]['league_pill'] = team_pill
+
             if not team_pill or team_pill == 'global':
                 team_pill = 'global'
                 
@@ -3236,12 +3241,29 @@ def generate_v2_index():
 
     day_info = get_3day_dates()
     
-    # Pass core_index to all daily fetches
-    raw_matches_by_day = {
-        "yesterday": fetch_espn_scores_for_date(day_info["dates"]["yesterday"], old_html, is_today_partition=False, core_index=core_index),
-        "today": fetch_espn_scores_for_date(day_info["dates"]["today"], old_html, is_today_partition=True, core_index=core_index),
-        "tomorrow": fetch_espn_scores_for_date(day_info["dates"]["tomorrow"], old_html, is_today_partition=False, core_index=core_index)
-    }
+    # Pass core_index to all daily fetches in parallel
+    dates_to_fetch = [
+        ("yesterday", day_info["dates"]["yesterday"], False),
+        ("today", day_info["dates"]["today"], True),
+        ("tomorrow", day_info["dates"]["tomorrow"], False)
+    ]
+    raw_matches_by_day = {}
+    
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        future_to_day = {
+            executor.submit(
+                fetch_espn_scores_for_date, 
+                d_str, old_html, None, None, is_today, core_index
+            ): day_key
+            for day_key, d_str, is_today in dates_to_fetch
+        }
+        for future in as_completed(future_to_day):
+            day_key = future_to_day[future]
+            try:
+                raw_matches_by_day[day_key] = future.result()
+            except Exception as e:
+                print(f"❌ Error fetching {day_key} scoreboard: {e}")
+                raw_matches_by_day[day_key] = []
 
     all_active_matches = raw_matches_by_day['yesterday'] + raw_matches_by_day['today'] + raw_matches_by_day['tomorrow']
 
