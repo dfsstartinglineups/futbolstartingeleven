@@ -35,6 +35,18 @@ def fetch_single_league_detail(ref_url):
 
 def build_hydrated_core_index():
     """Builds parallel-hydrated master lookup for IDs, display names, and reverse slug-to-name mappings."""
+    cache_file = 'data/core_index.json'
+    
+    # Check cache freshness (24 hours = 86400 seconds)
+    if os.path.exists(cache_file):
+        if time.time() - os.path.getmtime(cache_file) < 86400:
+            try:
+                with open(cache_file, 'r', encoding='utf-8') as f:
+                    print("⚡ Loaded Core Index from local disk cache.")
+                    return json.load(f)
+            except Exception as e:
+                print(f"⚠️ Cache read failed ({e}), rebuilding index...")
+
     print("🔄 Hydrating Master Core API Directory (Parallel Threads)...")
     
     index = {
@@ -92,6 +104,12 @@ def build_hydrated_core_index():
                         index["name_map"][abbrev.lower().strip()] = slug
 
         print(f"✅ Core Index Hydrated! Mapped {len(index['id_map'])} League IDs & {len(index['name_map'])} Name Variations.\n")
+        
+        # Save the successful build to cache
+        os.makedirs('data', exist_ok=True)
+        with open(cache_file, 'w', encoding='utf-8') as f:
+            json.dump(index, f, indent=2)
+            
     except Exception as e:
         print(f"⚠️ Warning: Core API Index hydration failed ({e}). Pipeline will fallback to standard resolution.\n")
         
