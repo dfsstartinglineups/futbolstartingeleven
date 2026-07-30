@@ -269,8 +269,8 @@ HUMAN_LEAGUE_FLAGS = {
     "uefa conference league": "https://a.espncdn.com/i/leaguelogos/soccer/500/20296.png",
     "uefa europa league": "https://a.espncdn.com/i/leaguelogos/soccer/500/2310.png",
     "usl championship": "https://a.espncdn.com/i/leaguelogos/soccer/500/2292.png",
-    "northern super league": "🇨🇦",
-    "canadian premier league": "🇨🇦",
+    "northern super league": "https://flagcdn.com/w40/ca.png",
+    "canadian premier league": "https://flagcdn.com/w40/ca.png",
 }
 
 KNOWN_LEAGUE_PILLS = {
