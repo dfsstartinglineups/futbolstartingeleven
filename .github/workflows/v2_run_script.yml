@@ -38,7 +38,28 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html *.xml data/ images/ leagues/ teams/ players/
-          git commit -m "chore: manual build update, match cache sync, and local image cache [skip ci]" || echo "No changes detected to commit."
-          git pull --rebase origin main
-          git push
+
+          MAX_RETRIES=5
+          COUNT=0
+
+          until [ $COUNT -ge $MAX_RETRIES ]; do
+            git fetch origin main
+            git reset --soft origin/main
+            git add index.html *.xml data/ images/ leagues/ teams/ players/
+            
+            if git diff-index --quiet HEAD; then
+              echo "No changes to commit."
+              break
+            fi
+
+            git commit -m "chore: manual build update, match cache sync, and local image cache [skip ci]"
+            
+            if git push origin main; then
+              echo "Successfully pushed site updates!"
+              break
+            fi
+
+            COUNT=$((COUNT+1))
+            echo "Push collision detected. Retrying ($COUNT/$MAX_RETRIES)..."
+            sleep 2
+          done
