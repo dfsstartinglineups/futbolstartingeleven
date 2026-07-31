@@ -357,7 +357,9 @@ COUNTRY_FLAG_URLS = {
     "ecuador": "ec", "ecuadorian": "ec",
     "mexico": "mx", "mx": "mx",
     "guatemalan": "gt", "guatemala": "gt",
-    "croatian": "hr", "croatia": "hr", "fpd": "hr"
+    "croatian": "hr", "croatia": "hr", "fpd": "hr",
+    "honduran": "hn", "honduras": "hn",
+    "venezuelan": "ve", "venezuela": "ve"
 }
 
 def normalize_text(text):
