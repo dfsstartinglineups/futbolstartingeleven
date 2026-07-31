@@ -1053,8 +1053,8 @@ def should_fetch_summary(event):
                 event_dt = datetime.fromisoformat(event_date_str.replace('Z', '+00:00'))
                 now_utc = datetime.now(pytz.utc)
                 minutes_until_kickoff = (event_dt - now_utc).total_seconds() / 60.0
-                if minutes_until_kickoff <= 60: return True, f"Pre-game, starting in {int(minutes_until_kickoff)} mins"
-                return False, f"Pre-game (>60m)"
+                if minutes_until_kickoff <= 90: return True, f"Pre-game, starting in {int(minutes_until_kickoff)} mins"
+                return False, f"Pre-game (>90m)"
             except Exception as e: return False, f"Date parse error: {e}"
     return False, f"State '{state}' not eligible"
 
@@ -1712,10 +1712,14 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             if saved_block and any(badge in saved_block.group(1) for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
                 is_cached = True
 
-        # 2. Check if pre-game lineup is already locked in daily_lineups.json
-        is_lineup_locked = (state == 'pre' and event_id in locked_fixture_ids)
+        # 2. Check if BOTH pre-game lineups are already locked in daily_lineups.json
+        both_teams_locked = False
+        if state == 'pre' and event_id in locked_fixture_ids:
+            matching_entries = [v for v in existing_lineups.values() if str(v.get('fixture_id')) == str(event_id)]
+            if len(matching_entries) >= 2:
+                both_teams_locked = True
 
-        if not is_cached and not is_lineup_locked:
+        if not is_cached and not both_teams_locked:
             should_fetch, _ = should_fetch_summary(event)
             if should_fetch and event_id:
                 events_to_fetch.append(event_id)
@@ -3389,7 +3393,7 @@ def generate_v2_index():
     # 4. Update Team & Player Pages for Active Slate (Today + Crossover Yesterday Matches)
     print(f"🔄 Updating Team Lineups and Player Profiles (Today + Yesterday Crossover)...")
     
-    matches_to_process = raw_matches_by_day['today'] + raw_matches_by_day['yesterday']
+    matches_to_process = raw_matches_by_day['yesterday'] + raw_matches_by_day['today']
     
     for m in matches_to_process:
         match_id = str(m['fixture']['id'])
