@@ -2556,7 +2556,6 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
         .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .header-brand a { color: inherit; }
         .header-brand span { text-shadow: none !important; background: linear-gradient(to bottom, #20c997 0%, #198754 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6)); }
-        .league-link-pill:hover { background-color: #f8f9fa !important; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important; }
     </style>
 </head>
 <body>
@@ -2565,10 +2564,10 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
 
 <div class="container mt-3 mb-2 text-center">
     <!-- League Banner Top -->
-    <a href="/leagues/{{ league_slug }}/" class="text-decoration-none mb-3 d-inline-flex align-items-center bg-white px-3 py-1 rounded-pill shadow-sm border league-link-pill" style="transition: all 0.2s ease;">
+    <div class="mb-3 d-inline-flex align-items-center bg-white px-3 py-1 rounded-pill shadow-sm border">
         {{ league_logo_html | safe }}
         <span class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">{{ league_name }}</span>
-    </a>
+    </div>
     
     <!-- Team Name with Inline Logo -->
     <div class="d-flex justify-content-center align-items-center mb-1">
@@ -2880,7 +2879,6 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
     opp_logo = match_data['teams'][opp_side]['logo']
     
     league_name = match_data.get('league', {}).get('name', 'Global Football')
-    league_slug = match_data.get('league', {}).get('slug', '')
     l_flag = match_data.get('league', {}).get('flag', '')
     
     if l_flag.startswith('http') or l_flag.startswith('/images/'):
@@ -2925,7 +2923,6 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
         seo_title=seo_title,
         seo_desc=seo_desc,
         league_name=league_name,
-        league_slug=league_slug,
         league_logo_html=league_logo_html,
         team_name=team_name,
         team_slug=team_slug,
