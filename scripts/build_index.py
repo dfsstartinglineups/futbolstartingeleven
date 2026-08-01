@@ -1687,18 +1687,6 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
         except: break
 
     # --- PRE-FETCH MATCH SUMMARIES IN PARALLEL ---
-    # Load locked lineups to avoid re-fetching pre-game starting XIs
-    locked_fixture_ids = set()
-    if os.path.exists('data/daily_lineups.json'):
-        try:
-            with open('data/daily_lineups.json', 'r', encoding='utf-8') as f:
-                existing_lineups = json.load(f)
-                for entry in existing_lineups.values():
-                    if entry.get('fixture_id'):
-                        locked_fixture_ids.add(str(entry['fixture_id']))
-        except Exception:
-            pass
-
     events_to_fetch = []
     for event in raw_events:
         event_id = str(event.get('id', ''))
@@ -1712,14 +1700,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             if saved_block and any(badge in saved_block.group(1) for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
                 is_cached = True
 
-        # 2. Check if BOTH pre-game lineups are already locked in daily_lineups.json
-        both_teams_locked = False
-        if state == 'pre' and event_id in locked_fixture_ids:
-            matching_entries = [v for v in existing_lineups.values() if str(v.get('fixture_id')) == str(event_id)]
-            if len(matching_entries) >= 2:
-                both_teams_locked = True
-
-        if not is_cached and not both_teams_locked:
+        if not is_cached:
             should_fetch, _ = should_fetch_summary(event)
             if should_fetch and event_id:
                 events_to_fetch.append(event_id)
