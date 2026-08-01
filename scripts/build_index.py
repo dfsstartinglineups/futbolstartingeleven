@@ -990,12 +990,13 @@ def extract_match_clock(status_obj):
     detail = status_type.get('detail', '')
     short_detail = status_type.get('shortDetail', '')
     
-    # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8" or "90 + 8")
+    # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8", "90'+8'", or "90 + 8")
     for string_to_check in [detail, short_detail]:
         if string_to_check:
-            stoppage_match = re.search(r"(\d+\s*\+\s*\d+)", string_to_check)
+            # Added [']? to allow for tick marks before and after the plus sign
+            stoppage_match = re.search(r"(\d+[']?\s*\+\s*\d+[']?)", string_to_check)
             if stoppage_match:
-                return stoppage_match.group(1).replace(" ", "")
+                return stoppage_match.group(1).replace("'", "").replace(" ", "")
 
     # If no stoppage time, check for standard tick marks (e.g. "82'")
     if short_detail:
@@ -1022,7 +1023,7 @@ def extract_match_clock(status_obj):
     if raw_clock > 0:
         return str(int(raw_clock // 60) + 1)
     return "LIVE"
-
+    
 def generate_league_abbrev(name):
     if not name or name == "Global Football": return "GLB"
     name_upper = name.upper()
