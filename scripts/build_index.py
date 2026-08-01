@@ -990,62 +990,37 @@ def extract_match_clock(status_obj):
     detail = status_type.get('detail', '')
     short_detail = status_type.get('shortDetail', '')
     
-    # 1. Look for explicit + sign (e.g., "90+5", "90'+6'", "90' + 5'") in ESPN's text
+    # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8" or "90 + 8")
     for string_to_check in [detail, short_detail]:
         if string_to_check:
-            stoppage_match = re.search(r"(\d+[']?\s*\+\s*\d+[']?)", string_to_check)
+            stoppage_match = re.search(r"(\d+\s*\+\s*\d+)", string_to_check)
             if stoppage_match:
-                nums = re.findall(r"\d+", stoppage_match.group(1))
-                if len(nums) == 2:
-                    return f"{nums[0]}' + {nums[1]}'"
+                return stoppage_match.group(1).replace(" ", "")
 
-    # 2. Look for a standalone "+X" (e.g. "+5'") which ESPN sometimes uses
-    for string_to_check in [detail, short_detail]:
-        if string_to_check:
-            plus_match = re.search(r"\+\s*(\d+)[']?", string_to_check)
-            if plus_match:
-                added = plus_match.group(1)
-                base = "90" if "2nd" in detail or "Half" not in detail else "45"
-                if "ET" in detail or "Extra" in detail:
-                    base = "120" if "2nd" in detail else "105"
-                return f"{base}' + {added}'"
-
-    # 3. IF ESPN CAPPED THE TEXT AT "90'", FORCE THE MATH USING THE RAW CLOCK
-    display_clock = status_obj.get('displayClock', '')
-    if display_clock and ':' in str(display_clock):
-        try:
-            mins, secs = map(int, display_clock.split(':'))
-            total_mins = mins + (1 if secs > 0 else 0)
-            
-            # If the clock pushes past standard halves, calculate the stoppage manually
-            if total_mins > 90 and total_mins < 105 and "ET" not in detail and "Extra" not in detail:
-                return f"90' + {total_mins - 90}'"
-            elif total_mins > 45 and total_mins < 55 and ("1st" in detail or "Half" in detail):
-                return f"45' + {total_mins - 45}'"
-            
-            return str(total_mins)
-        except: pass
-
-    # 4. Fallback to standard tick marks if not in stoppage (e.g., "82'")
+    # If no stoppage time, check for standard tick marks (e.g. "82'")
     if short_detail:
         tick_match = re.search(r"(\d+)\'", short_detail)
         if tick_match: 
             return tick_match.group(1)
         
+        # Fallback for a standalone number
         nums = re.findall(r"\d+", short_detail)
         if len(nums) == 1 and "Half" not in short_detail: 
             return nums[0]
 
-    # 5. Ultimate fallback to raw seconds
+    display_clock = status_obj.get('displayClock', '')
+    if display_clock:
+        if ':' in str(display_clock):
+            try:
+                mins, secs = map(int, display_clock.split(':'))
+                total_mins = mins + (1 if secs > 0 else 0)
+                return str(total_mins)
+            except: pass
+        return str(display_clock).replace("'", "")
+
     raw_clock = status_obj.get('clock') if status_obj.get('clock') is not None else 0
     if raw_clock > 0:
-        mins = int(raw_clock // 60) + 1
-        if mins > 90 and "ET" not in detail and "Extra" not in detail:
-            return f"90' + {mins - 90}'"
-        if mins > 45 and mins < 55 and ("1st" in detail or "Half" in detail):
-            return f"45' + {mins - 45}'"
-        return str(mins)
-
+        return str(int(raw_clock // 60) + 1)
     return "LIVE"
 
 def generate_league_abbrev(name):
@@ -1504,35 +1479,22 @@ def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
 
 def get_time_badge_html(data):
     status = str((data['fixture']['status'] or {}).get('short', ''))
-    elapsed = str((data['fixture']['status'] or {}).get('elapsed', '')).strip()
+    elapsed = (data['fixture']['status'] or {}).get('elapsed')
     date_str = str(data['fixture'].get('date', ''))
-    
     try:
         dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
         dt_local = dt.astimezone(pytz.timezone('America/New_York'))
         time_str = dt_local.strftime("%I:%M%p").lstrip('0').lower()
         match_time = f"{dt_local.strftime('%a')} {time_str}"
-    except: 
-        match_time = date_str
+    except: match_time = date_str
 
-    if status in ['PST', 'CANC', 'ABD']: 
-        return f'<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">{status}</span>'
-    elif status in ['FT', 'AET', 'FT-PENS', 'PEN']: 
-        display_stat = 'FT-PENS' if status == 'PEN' else status
-        return f'<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">{display_stat}</span>'
-    elif status in ['NS', 'TBD']:
-        return f'<span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="{date_str}" style="font-size: 0.65rem; white-space: nowrap;">{match_time}</span>'
-    else:
-        # It's a live match. Display whatever `extract_match_clock` calculated.
-        # Add a tick mark ONLY if it's a plain number (e.g. "45") and doesn't already have one.
-        if elapsed and elapsed != 'LIVE':
-            disp_time = elapsed if "'" in elapsed else f"{elapsed}'"
-        else:
-            disp_time = "LIVE"
-            
-        if status == 'HT': disp_time = 'HT'
-        
-        return f'<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>{disp_time}</span>'
+    if status in ['PST', 'CANC', 'ABD']: return f'<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">{status}</span>'
+    elif status in ['FT', 'AET', 'PEN']: return f'<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>'
+    elif status not in ['NS', 'TBD']:
+        display_min = str(elapsed) if (elapsed and elapsed != 'LIVE' and str(elapsed).endswith("'")) else (f"{elapsed}'" if elapsed and elapsed != 'LIVE' else 'LIVE')
+        if status == 'HT': display_min = 'HT'
+        return f'<span class="badge bg-success text-white border px-2 py-1" style="font-size: 0.75rem;"><span class="live-dot"></span>{display_min}</span>'
+    else: return f'<span class="badge bg-white text-dark border px-1 py-1 local-time-badge" data-utc="{date_str}" style="font-size: 0.65rem; white-space: nowrap;">{match_time}</span>'
 
 def get_latest_event_html(data, is_ribbon=False):
     events = data.get('events', [])
