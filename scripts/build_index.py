@@ -3402,6 +3402,30 @@ def generate_v2_index():
                     needs_update = True
                 
                 if needs_update:
+                    # CHECK: Prevent overwriting a good lineup with a blank one.
+                    # Bypassed ONLY if it's a brand new match OR if the match is Full Time AND is no longer on today's schedule.
+                    is_new_match = (t_data.get('last_match_id') != match_id)
+                    is_past_ft = (is_ft and not m.get('is_today_partition'))
+                    
+                    if not is_new_match and not is_past_ft:
+                        current_lineup = m.get(side + 'Lineup')
+                        has_new_lineup = bool(current_lineup and current_lineup.get('startXI'))
+                        
+                        index_file = os.path.join('teams', t_slug, 'lineup', 'index.html')
+                        page_already_has_lineup = False
+                        
+                        if os.path.exists(index_file):
+                            try:
+                                with open(index_file, 'r', encoding='utf-8') as f:
+                                    if "Awaiting Live Lineup Data" not in f.read():
+                                        page_already_has_lineup = True
+                            except: pass
+                            
+                        # If the page has a lineup, and the API payload is empty, preserve the page!
+                        if page_already_has_lineup and not has_new_lineup:
+                            t_data['last_updated'] = datetime.now().timestamp()
+                            continue
+                            
                     next_match_tuple = find_next_fixture_for_entity(t_slug, upcoming_pool) if is_ft else (None, False)
                     
                     build_team_lineup_page(
