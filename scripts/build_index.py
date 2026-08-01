@@ -1286,6 +1286,35 @@ def parse_espn_summary(event_id):
                     "player_out": p_in if ev_type == "subst" else (p_out if p_out else None), "assist": p_out if ev_type == "Goal" else None
                 })
 
+        # --- SHOOTOUT SHOTS PARSER ---
+        shootout_raw = data.get('shootout', [])
+        if isinstance(shootout_raw, list) and shootout_raw:
+            for t_obj in shootout_raw:
+                t_name = t_obj.get('team', '')
+                
+                # Match team_id from header competitors
+                t_id = ""
+                for comp in comp_head.get('competitors', []):
+                    comp_t_name = (comp.get('team') or {}).get('displayName', '') or (comp.get('team') or {}).get('name', '')
+                    if t_name.lower() in comp_t_name.lower() or comp_t_name.lower() in t_name.lower():
+                        t_id = str((comp.get('team') or {}).get('id', ''))
+                        break
+                
+                for shot in t_obj.get('shots', []):
+                    p_name = shot.get('player', 'Unknown')
+                    s_num = shot.get('shotNumber', '')
+                    did_score = shot.get('didScore', False)
+                    
+                    summary_data["events"].append({
+                        "time": f"P{s_num}",
+                        "team_id": t_id,
+                        "type": "Goal" if did_score else "Pen Miss",
+                        "detail": "Shootout Goal" if did_score else "Shootout Miss",
+                        "player": p_name,
+                        "player_out": None,
+                        "assist": None
+                    })
+        
         pickcenter = data.get('pickcenter', []) or data.get('odds', [])
         if isinstance(pickcenter, list) and pickcenter:
             odds_item = pickcenter[0]
@@ -1529,6 +1558,16 @@ def get_ribbon_html(data):
     h_score = '-' if is_pre else (data.get('goals') or {}).get('home', 0)
     a_score = '-' if is_pre else (data.get('goals') or {}).get('away', 0)
     
+    h_pen = (data.get('goals') or {}).get('home_pen')
+    a_pen = (data.get('goals') or {}).get('away_pen')
+
+    if not is_pre and h_pen is not None and a_pen is not None:
+        h_score_disp = f"{h_score} <small class='text-muted'>({h_pen})</small>"
+        a_score_disp = f"{a_score} <small class='text-muted'>({a_pen})</small>"
+    else:
+        h_score_disp = f"{h_score}"
+        a_score_disp = f"{a_score}"
+    
     l_flag = str(data["league"].get("flag") or "")
     flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">' if l_flag.startswith('http') or l_flag.startswith('/images/') else f'<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
     
@@ -1536,8 +1575,8 @@ def get_ribbon_html(data):
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
         <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">{get_time_badge_html(data)}</div><a href="/leagues/{data["league"]["slug"]}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="{data["league"]["name"]}">{flag_html}{data["league"]["abbrev"]}</a></div>
         <div class="col-5 px-2">
-            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['home']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{h_score}</span></div></div>
-            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['away']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['away']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{a_score}</span></div></div>
+            <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['home']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{h_score_disp}</span></div></div>
+            <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['away']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['away']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{a_score_disp}</span></div></div>
         </div>
         <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">{get_latest_event_html(data, True)}</div>
     </div>'''
@@ -1546,8 +1585,16 @@ def get_center_column_html(data):
     is_pre = (data['fixture']['status'] or {}).get('short') in ['NS', 'TBD', 'PST', 'CANC', 'ABD']
     h_score = (data.get('goals') or {}).get('home', 0)
     a_score = (data.get('goals') or {}).get('away', 0)
+    
+    h_pen = (data.get('goals') or {}).get('home_pen')
+    a_pen = (data.get('goals') or {}).get('away_pen')
+
+    pen_badge = ""
+    if h_pen is not None and a_pen is not None:
+        pen_badge = f'<div class="text-muted fw-bold" style="font-size: 0.65rem; margin-top: -3px; margin-bottom: 2px;">({h_pen} - {a_pen} SO)</div>'
+
     if is_pre or not data.get('team_stats'): 
-        return f'<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">{"vs" if is_pre else f"{h_score} - {a_score}"}</div>'
+        return f'<div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">{"vs" if is_pre else f"{h_score} - {a_score}"}</div>{pen_badge}'
     
     t_stats = data['team_stats']
     h_color = get_team_color(data.get('homeLineup'), '#0d6efd')
@@ -1559,7 +1606,7 @@ def get_center_column_html(data):
         a_pct = (a_val / tot * 100) if tot > 0 else 50
         return f'''<div class="text-center w-100 px-1"><div class="stat-label-tiny">{label}</div><div class="stat-bar-container"><div class="stat-bar-segment" style="width: {h_pct}%; background-color: {h_color}; color: {get_contrast_color(h_color)};">{f"{h_val}%" if is_pct else h_val}</div><div class="stat-bar-segment" style="width: {a_pct}%; background-color: {a_color}; color: {get_contrast_color(a_color)};">{f"{a_val}%" if is_pct else a_val}</div></div></div>'''
 
-    return f'''<div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">{h_score} - {a_score}</div>{build_bar("Possession", t_stats['home'].get('possession',0), t_stats['away'].get('possession',0), True)}{build_bar("Total Shots", t_stats['home'].get('total_shots',0), t_stats['away'].get('total_shots',0))}{build_bar("Shots on Target", t_stats['home'].get('shots_on_target',0), t_stats['away'].get('shots_on_target',0))}{build_bar("Corners", t_stats['home'].get('corners',0), t_stats['away'].get('corners',0))}<div class="text-center w-100 px-1 mt-1"><div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div><div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;"><span>🟨 {t_stats['home'].get('yellow_cards',0)} 🟥 {t_stats['home'].get('red_cards',0)}</span><span>🟨 {t_stats['away'].get('yellow_cards',0)} 🟥 {t_stats['away'].get('red_cards',0)}</span></div></div>'''
+    return f'''<div class="fw-bold text-dark mx-2 mb-1" style="font-size: 1.1rem; line-height: 1;">{h_score} - {a_score}</div>{pen_badge}{build_bar("Possession", t_stats['home'].get('possession',0), t_stats['away'].get('possession',0), True)}{build_bar("Total Shots", t_stats['home'].get('total_shots',0), t_stats['away'].get('total_shots',0))}{build_bar("Shots on Target", t_stats['home'].get('shots_on_target',0), t_stats['away'].get('shots_on_target',0))}{build_bar("Corners", t_stats['home'].get('corners',0), t_stats['away'].get('corners',0))}<div class="text-center w-100 px-1 mt-1"><div class="stat-label-tiny" style="margin-bottom: 0px;">Cards</div><div class="d-flex justify-content-between text-muted" style="font-size: 0.65rem; font-weight: 700;"><span>🟨 {t_stats['home'].get('yellow_cards',0)} 🟥 {t_stats['home'].get('red_cards',0)}</span><span>🟨 {t_stats['away'].get('yellow_cards',0)} 🟥 {t_stats['away'].get('red_cards',0)}</span></div></div>'''
 
 def get_events_html(data):
     if not data.get('events'): return ''
@@ -1569,9 +1616,11 @@ def get_events_html(data):
     
     def fmt_ev(e, team_name):
         if e.get('type') == 'subst': return f'''<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">{e.get('time', '')}'</div><div style="width: 16px; text-align: center;" class="me-1">🔄</div><div class="text-truncate"><span class="text-dark fw-bold">{shorten_player_name(e.get('player_out'))}</span> IN<br><span class="text-muted" style="font-size: 0.55rem;">({shorten_player_name(e.get('player'))} OUT)</span></div></div>'''
-        icon = '⚽' if e.get('type') == 'Goal' else ('🟥' if e.get('type') == 'Red Card' else '🟨')
+        
+        icon = '⚽' if e.get('type') == 'Goal' else ('❌' if e.get('type') == 'Pen Miss' else ('🟥' if e.get('type') == 'Red Card' else '🟨'))
         ast = f'''<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 {shorten_player_name(e.get('assist'))}</span>''' if e.get('type') == 'Goal' and e.get('assist') else ''
-        return f'''<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">{e.get('time', '')}'</div><div style="width: 16px; text-align: center;" class="me-1">{icon}</div><div class="text-truncate"><span class="text-dark fw-bold">{shorten_player_name(e.get('player') or team_name)}</span>{ast}</div></div>'''
+        time_label = f"{e.get('time', '')}'" if not str(e.get('time', '')).startswith('P') else e.get('time', '')
+        return f'''<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">{time_label}</div><div style="width: 16px; text-align: center;" class="me-1">{icon}</div><div class="text-truncate"><span class="text-dark fw-bold">{shorten_player_name(e.get('player') or team_name)}</span>{ast}</div></div>'''
 
     needs_col = max(len(h_evs), len(a_evs)) > 1
     h_first = fmt_ev(h_evs[0], data['teams']['home']['name']) if h_evs else ''
@@ -1921,6 +1970,12 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             else:
                 status_short = 'NS' if st == 'pre' else ('FT' if st == 'post' else fresh_type.get('shortDetail', 'LIVE'))
 
+            # Safely extract penalty scores from header competitors
+            h_so_raw = home_comp.get('shootoutScore')
+            a_so_raw = away_comp.get('shootoutScore')
+            h_pen = int(float(h_so_raw)) if h_so_raw is not None else None
+            a_pen = int(float(a_so_raw)) if a_so_raw is not None else None
+
             match_entry = {
                 "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": status_short, "elapsed": extract_match_clock(fresh_status)}},
                 "league": {"id": event_id, "name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_pill},
@@ -1930,7 +1985,9 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                 },
                 "goals": {
                     "home": int((summary.get('live_score') or {}).get('home') or home_comp.get('score') or 0), 
-                    "away": int((summary.get('live_score') or {}).get('away') or away_comp.get('score') or 0)
+                    "away": int((summary.get('live_score') or {}).get('away') or away_comp.get('score') or 0),
+                    "home_pen": h_pen,
+                    "away_pen": a_pen
                 },
                 "team_stats": summary["team_stats"], "homeLineup": summary["homeLineup"], "awayLineup": summary["awayLineup"],
                 "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"],
