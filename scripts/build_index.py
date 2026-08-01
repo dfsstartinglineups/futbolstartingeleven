@@ -1413,19 +1413,41 @@ def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
         </div>'''
     html += render_pitch_player(gk, 50, 88, color, contrast)
     
-    def get_x_weight(pos_str):
-        pos = str(pos_str).upper()
-        # Wide Left (LB, LM, LW, LWB)
+    # --- WEIGHTING LOGIC ---
+    def get_y_weight(player):
+        pos = str(player.get('pos', '')).upper()
+        cat = str(player.get('category', 'M')).upper()
+        
+        # 1. Defenders (Lowest Y / Bottom of pitch)
+        if cat == 'D' or 'B' in pos or 'CD' in pos: return 10
+        # 2. Defensive Mids
+        if 'DM' in pos: return 20
+        # 3. Standard Mids
+        if cat == 'M' and 'AM' not in pos: return 30
+        # 4. Attacking Mids / Wingers
+        if 'AM' in pos or 'W' in pos: return 40
+        # 5. Strikers / Forwards (Highest Y / Top of pitch)
+        if cat == 'F' or 'F' in pos or 'ST' in pos: return 50
+        
+        return 30 # Safe fallback for unknown tags
+
+    def get_x_weight(player):
+        pos = str(player.get('pos', '')).upper()
+        # Wide Left
         if pos.startswith('L') and '-' not in pos: return -2
-        # Inner Left (CD-L, CM-L, CF-L)
+        # Inner Left
         if pos.endswith('-L'): return -1
-        # Inner Right (CD-R, CM-R, CF-R)
+        # Inner Right
         if pos.endswith('-R'): return 1
-        # Wide Right (RB, RM, RW, RWB)
+        # Wide Right
         if pos.startswith('R') and '-' not in pos: return 2
-        # Center (C, CD, CM, F, ST)
+        # Center
         return 0
 
+    # Sort all field players from Defense to Attack before doing anything
+    field_players.sort(key=get_y_weight)
+    
+    # --- RENDERING LOGIC ---
     player_idx = 0
     for r_idx, count in enumerate(rows):
         # Spread lines vertically between 72% (Defense) and 15% (Attack)
@@ -1434,17 +1456,17 @@ def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
         else:
             y_pos = 45
             
-        # Extract the exact number of players for this row
+        # 1. Extract the exact number of players for this row
         row_players = []
         for _ in range(count):
             if player_idx < len(field_players):
                 row_players.append(field_players[player_idx])
                 player_idx += 1
                 
-        # Sort them Left-to-Right based on our weighting function
-        row_players.sort(key=lambda p: get_x_weight(p.get('pos', '')))
+        # 2. Sort this specific row Left-to-Right
+        row_players.sort(key=get_x_weight)
             
-        # Render the sorted row
+        # 3. Render the sorted row
         for c_idx, player in enumerate(row_players):
             # Spread players horizontally across the field width (15% to 85%)
             if count > 1:
@@ -1456,7 +1478,6 @@ def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
                 
     html += '</div>'
     return html
-
 def get_time_badge_html(data):
     status = str((data['fixture']['status'] or {}).get('short', ''))
     elapsed = (data['fixture']['status'] or {}).get('elapsed')
