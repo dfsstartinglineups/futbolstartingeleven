@@ -983,44 +983,40 @@ def extract_match_clock(status_obj):
     if not status_obj: return "LIVE"
     status_type = status_obj.get('type') or {}
     state = status_type.get('state', 'pre')
+    
     if state == 'pre': return "NS"
     if state == 'post': return "FT"
     if status_type.get('name') == 'STATUS_HALFTIME' or status_type.get('shortDetail') == 'HT': return "HT"
 
-    detail = status_type.get('detail', '')
-    short_detail = status_type.get('shortDetail', '')
+    display_clock = str(status_obj.get('displayClock', ''))
+    short_detail = str(status_type.get('shortDetail', ''))
     
-    # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8" or "90 + 8")
-    for string_to_check in [detail, short_detail]:
-        if string_to_check:
-            stoppage_match = re.search(r"(\d+\s*\+\s*\d+)", string_to_check)
-            if stoppage_match:
-                return stoppage_match.group(1).replace(" ", "")
-
-    # If no stoppage time, check for standard tick marks (e.g. "82'")
-    if short_detail:
-        tick_match = re.search(r"(\d+)\'", short_detail)
-        if tick_match: 
-            return tick_match.group(1)
+    # 1. STRICT SUMMARY CHECK: Take the string exactly as the summary API gives it.
+    if '+' in display_clock:
+        clean_str = display_clock.replace(' ', '').replace('+', ' + ')
+        if "'" not in clean_str:
+            parts = clean_str.split(' + ')
+            if len(parts) == 2:
+                return f"{parts[0]}' + {parts[1]}'"
+        return clean_str
         
-        # Fallback for a standalone number
-        nums = re.findall(r"\d+", short_detail)
-        if len(nums) == 1 and "Half" not in short_detail: 
-            return nums[0]
+    if '+' in short_detail:
+        clean_str = short_detail.replace(' ', '').replace('+', ' + ')
+        if "'" not in clean_str:
+            parts = clean_str.split(' + ')
+            if len(parts) == 2:
+                return f"{parts[0]}' + {parts[1]}'"
+        return clean_str
 
-    display_clock = status_obj.get('displayClock', '')
-    if display_clock:
-        if ':' in str(display_clock):
-            try:
-                mins, secs = map(int, display_clock.split(':'))
-                total_mins = mins + (1 if secs > 0 else 0)
-                return str(total_mins)
-            except: pass
-        return str(display_clock).replace("'", "")
+    # 2. Regular time fallback (e.g., extracting "45" from "45'")
+    tick_match = re.search(r"(\d+)\'", short_detail)
+    if tick_match: 
+        return tick_match.group(1)
+        
+    nums = re.findall(r"\d+", short_detail)
+    if len(nums) == 1 and "Half" not in short_detail: 
+        return nums[0]
 
-    raw_clock = status_obj.get('clock') if status_obj.get('clock') is not None else 0
-    if raw_clock > 0:
-        return str(int(raw_clock // 60) + 1)
     return "LIVE"
 
 def generate_league_abbrev(name):
@@ -1905,7 +1901,15 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                     "live_score": {}, "status_obj": None
                 }
 
-            fresh_status = summary.get("status_obj") or event.get('status') or {}
+            # Force the display text to ONLY come from the Summary Endpoint for live games
+        scoreboard_status = event.get('status') or {}
+        summary_status = summary.get("status_obj") or {}
+        
+        fresh_status = scoreboard_status.copy()
+        if summary_status.get('displayClock'):
+            fresh_status['displayClock'] = summary_status['displayClock']
+        if summary_status.get('type'):
+            fresh_status['type'] = summary_status['type']
             fresh_type = fresh_status.get('type') or {}
             st = fresh_type.get('state', state)
             status_name = fresh_type.get('name', '')
