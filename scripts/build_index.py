@@ -983,44 +983,55 @@ def extract_match_clock(status_obj):
     if not status_obj: return "LIVE"
     status_type = status_obj.get('type') or {}
     state = status_type.get('state', 'pre')
+    
     if state == 'pre': return "NS"
     if state == 'post': return "FT"
     if status_type.get('name') == 'STATUS_HALFTIME' or status_type.get('shortDetail') == 'HT': return "HT"
 
-    detail = status_type.get('detail', '')
-    short_detail = status_type.get('shortDetail', '')
+    detail = str(status_type.get('detail', ''))
+    short_detail = str(status_type.get('shortDetail', ''))
+    display_clock = str(status_obj.get('displayClock', ''))
     
-    # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8" or "90 + 8")
-    for string_to_check in [detail, short_detail]:
-        if string_to_check:
-            stoppage_match = re.search(r"(\d+\s*\+\s*\d+)", string_to_check)
-            if stoppage_match:
-                return stoppage_match.group(1).replace(" ", "")
+    # 1. DEAD SIMPLE STRING MATCH: Look for "+" anywhere in ESPN's text
+    # This grabs "90'+7'" or "90+7", strips the garbage, and guarantees "90' + 7'"
+    for string_to_check in [display_clock, short_detail, detail]:
+        if '+' in string_to_check:
+            clean_str = string_to_check.replace(' ', '').replace("'", "").replace('+', " + ")
+            parts = clean_str.split(" + ")
+            if len(parts) == 2:
+                return f"{parts[0]}' + {parts[1]}'"
+            return string_to_check
 
-    # If no stoppage time, check for standard tick marks (e.g. "82'")
+    # 2. RUNNING CLOCK MATH (Summary API Fallback)
+    if display_clock and ':' in display_clock:
+        try:
+            mins, secs = map(int, display_clock.split(':'))
+            total_mins = mins + (1 if secs > 0 else 0)
+            if total_mins > 90 and total_mins < 105 and "ET" not in detail and "Extra" not in detail:
+                return f"90' + {total_mins - 90}'"
+            elif total_mins > 45 and total_mins < 55 and ("1st" in detail or "Half" in detail):
+                return f"45' + {total_mins - 45}'"
+            return str(total_mins)
+        except: pass
+
+    # 3. RAW SECONDS MATH (Scoreboard API Fallback)
+    raw_clock = status_obj.get('clock', 0) or 0
+    if raw_clock > 0:
+        total_mins = int(raw_clock // 60) + 1
+        if total_mins > 90 and total_mins < 105 and "ET" not in detail and "Extra" not in detail:
+            return f"90' + {total_mins - 90}'"
+        elif total_mins > 45 and total_mins < 55 and ("1st" in detail or "Half" in detail):
+            return f"45' + {total_mins - 45}'"
+
+    # 4. FINAL CLEANUP IF NO STOPPAGE TIME EXISTS
     if short_detail:
-        tick_match = re.search(r"(\d+)\'", short_detail)
-        if tick_match: 
-            return tick_match.group(1)
-        
-        # Fallback for a standalone number
-        nums = re.findall(r"\d+", short_detail)
-        if len(nums) == 1 and "Half" not in short_detail: 
-            return nums[0]
+        clean_short = short_detail.replace("'", "").replace("Half", "").strip()
+        if clean_short.isdigit():
+            return clean_short
 
-    display_clock = status_obj.get('displayClock', '')
-    if display_clock:
-        if ':' in str(display_clock):
-            try:
-                mins, secs = map(int, display_clock.split(':'))
-                total_mins = mins + (1 if secs > 0 else 0)
-                return str(total_mins)
-            except: pass
-        return str(display_clock).replace("'", "")
-
-    raw_clock = status_obj.get('clock') if status_obj.get('clock') is not None else 0
     if raw_clock > 0:
         return str(int(raw_clock // 60) + 1)
+
     return "LIVE"
 
 def generate_league_abbrev(name):
