@@ -2562,10 +2562,10 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
 
 <div class="container mt-3 mb-2 text-center">
     <!-- League Banner Top -->
-    <div class="mb-3 d-inline-flex align-items-center bg-white px-3 py-1 rounded-pill shadow-sm border">
+    <a href="/leagues/{{ league_slug }}/" class="text-decoration-none mb-3 d-inline-flex align-items-center bg-white px-3 py-1 rounded-pill shadow-sm border league-link-pill" style="transition: all 0.2s ease;">
         {{ league_logo_html | safe }}
         <span class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">{{ league_name }}</span>
-    </div>
+    </a>
     
     <!-- Team Name with Inline Logo -->
     <div class="d-flex justify-content-center align-items-center mb-1">
@@ -2877,6 +2877,7 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
     opp_logo = match_data['teams'][opp_side]['logo']
     
     league_name = match_data.get('league', {}).get('name', 'Global Football')
+    league_slug = match_data.get('league', {}).get('slug', '')
     l_flag = match_data.get('league', {}).get('flag', '')
     
     if l_flag.startswith('http') or l_flag.startswith('/images/'):
@@ -2921,6 +2922,7 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
         seo_title=seo_title,
         seo_desc=seo_desc,
         league_name=league_name,
+        league_slug=league_slug,
         league_logo_html=league_logo_html,
         team_name=team_name,
         team_slug=team_slug,
