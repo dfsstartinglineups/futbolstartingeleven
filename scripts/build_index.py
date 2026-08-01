@@ -3985,6 +3985,11 @@ def generate_v2_index():
         h_score = int((m.get('goals') or {}).get('home', 0))
         a_score = int((m.get('goals') or {}).get('away', 0))
 
+        # Extract Penalty Shootout Scores
+        h_pen = (m.get('goals') or {}).get('home_pen')
+        a_pen = (m.get('goals') or {}).get('away_pen')
+        went_to_penalties = (h_pen is not None and a_pen is not None and h_pen != a_pen)
+
         # Build clean Goalscorer Strings (with Assists and Own Goals)
         events = m.get('events', [])
         goal_events = [e for e in events if e.get('type') == 'Goal' and e.get('detail') in ['Normal Goal', 'Penalty', 'Own Goal', 'Goal']]
@@ -4007,7 +4012,6 @@ def generate_v2_index():
             detail = ge.get('detail', '')
             assist_name = ge.get('assist', '')
             
-            # Format individual entry
             if detail == 'Own Goal':
                 entry = f"{p_short} {time_str} (OG)"
             elif assist_name:
@@ -4027,7 +4031,7 @@ def generate_v2_index():
         h_dec_odds = parse_decimal_odds(h_odds_str)
         a_dec_odds = parse_decimal_odds(a_odds_str)
 
-        # Match outcome logic
+        # Match outcome logic (now accounts for penalty shootout winner)
         if h_score > a_score:
             outcome = "home_win"
             winner_name = h_name
@@ -4038,6 +4042,18 @@ def generate_v2_index():
             winner_name = a_name
             loser_name = h_name
             is_upset = (a_dec_odds >= 3.50)
+        elif went_to_penalties:
+            # Tied on goals, but decided by penalty shootout!
+            if h_pen > a_pen:
+                outcome = "home_win_penalties"
+                winner_name = h_name
+                loser_name = a_name
+                is_upset = (h_dec_odds >= 3.50)
+            else:
+                outcome = "away_win_penalties"
+                winner_name = a_name
+                loser_name = h_name
+                is_upset = (a_dec_odds >= 3.50)
         else:
             outcome = "draw"
             winner_name = None
@@ -4047,7 +4063,9 @@ def generate_v2_index():
         score_diff = abs(h_score - a_score)
 
         # Summary Scenario Determination
-        if outcome == "draw":
+        if went_to_penalties:
+            scenario_key = "penalty_shootout_upset" if is_upset else "penalty_shootout_win"
+        elif outcome == "draw":
             if h_score == 0:
                 scenario_key = "goalless_draw"
             else:
@@ -4078,7 +4096,7 @@ def generate_v2_index():
         league_name = f"{emoji_flag} {league_name_raw}" if emoji_flag else league_name_raw
         league_hashtag = f"#{league_name_raw.replace(' ', '')}"
 
-        # Construct Final Object
+        # Construct Final Object with Penalty Details
         game_summaries[fixture_id] = {
             "fixture_id": fixture_id,
             "created_at": now_ts,
@@ -4088,6 +4106,9 @@ def generate_v2_index():
             "away_team": a_name,
             "home_score": h_score,
             "away_score": a_score,
+            "went_to_penalties": went_to_penalties,
+            "home_penalties": h_pen if went_to_penalties else None,
+            "away_penalties": a_pen if went_to_penalties else None,
             "outcome": outcome,
             "winner_name": winner_name,
             "loser_name": loser_name,
