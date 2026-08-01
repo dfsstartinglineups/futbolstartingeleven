@@ -991,11 +991,16 @@ def extract_match_clock(status_obj):
     short_detail = status_type.get('shortDetail', '')
     
     # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8" or "90 + 8")
+    # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8", "90'+10'", or "90' + 5'")
     for string_to_check in [detail, short_detail]:
         if string_to_check:
-            stoppage_match = re.search(r"(\d+\s*\+\s*\d+)", string_to_check)
+            stoppage_match = re.search(r"(\d+[']?\s*\+\s*\d+[']?)", string_to_check)
             if stoppage_match:
-                return stoppage_match.group(1).replace(" ", "")
+                # Extract just the numbers and format nicely as "90' + 5'"
+                nums = re.findall(r"\d+", stoppage_match.group(1))
+                if len(nums) == 2:
+                    return f"{nums[0]}' + {nums[1]}'"
+                return stoppage_match.group(1)
 
     # If no stoppage time, check for standard tick marks (e.g. "82'")
     if short_detail:
@@ -1489,7 +1494,7 @@ def get_time_badge_html(data):
     except: match_time = date_str
 
     if status in ['PST', 'CANC', 'ABD']: return f'<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">{status}</span>'
-    elif status in ['FT', 'AET', 'PEN']: return f'<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>'
+    elif status in ['FT', 'AET', 'FT-PENS', 'PEN']: return f'<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">{status if status != "PEN" else "FT-PENS"}</span>'
     elif status not in ['NS', 'TBD']:
         display_min = str(elapsed) if (elapsed and elapsed != 'LIVE' and str(elapsed).endswith("'")) else (f"{elapsed}'" if elapsed and elapsed != 'LIVE' else 'LIVE')
         if status == 'HT': display_min = 'HT'
@@ -1776,7 +1781,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
         if state == 'post' and old_html:
             match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
             saved_block = re.search(match_pattern, old_html, re.DOTALL)
-            if saved_block and any(badge in saved_block.group(1) for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
+            if saved_block and any(badge in saved_block.group(1) for badge in ['>FT</span>', '>AET</span>', '>FT-PENS</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
                 is_cached = True
 
         if not is_cached:
@@ -1882,7 +1887,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                 if saved_block:
                     card_content = saved_block.group(1)
                     # Add >PST</span>, >CANC</span>, and >ABD</span> to the cache list
-                    if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
+                    if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>FT-PENS</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
                         matches.append({
                             "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}}, # Note: this dummy status here is fine since the HTML is pre-rendered
                             "teams": {"home": {"id": home_id, "name": home_name, "logo": home_logo}, "away": {"id": away_id, "name": away_name, "logo": away_logo}},
@@ -1917,8 +1922,16 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                 status_short = 'CANC'
             elif status_name == 'STATUS_ABANDONED':
                 status_short = 'ABD'
+            elif st == 'post':
+                sd = fresh_type.get('shortDetail', '').upper()
+                if 'PEN' in sd or 'FT-PENS' in sd or 'PEN' in status_name.upper():
+                    status_short = 'FT-PENS'
+                elif 'AET' in sd:
+                    status_short = 'AET'
+                else:
+                    status_short = 'FT'
             else:
-                status_short = 'NS' if st == 'pre' else ('FT' if st == 'post' else fresh_type.get('shortDetail', 'LIVE'))
+                status_short = 'NS' if st == 'pre' else fresh_type.get('shortDetail', 'LIVE')
 
             match_entry = {
                 "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": status_short, "elapsed": extract_match_clock(fresh_status)}},
