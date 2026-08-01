@@ -1322,13 +1322,13 @@ def get_team_color(lineup, default_hex):
 # ====================================================================
 # TACTICAL PITCH HTML GENERATOR (PYTHON RENDERING)
 # ====================================================================
-def generate_pitch_html(lineup, default_hex):
+def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
     if not lineup or not lineup.get('startXI'):
         return '''<div class="d-flex align-items-center justify-content-center" style="width:100%; aspect-ratio: 2/3; background: #2e8b57; margin: 0 auto; border-radius: 8px;">
             <span class="text-white fw-bold" style="font-size: 1.2rem; text-align: center; padding: 20px;">Awaiting Live Lineup Data</span>
         </div>'''
         
-    formation = get_formation(lineup)
+    formation = get_formation(lineup) if not formation_str else formation_str
     color = get_team_color(lineup, default_hex)
     contrast = get_contrast_color(color)
     
@@ -1350,30 +1350,52 @@ def generate_pitch_html(lineup, default_hex):
         else:
             field_players.append(p)
             
-    html = '<div class="pitch-container" style="position:relative; width: 100%; max-width: 500px; aspect-ratio: 2/3; background: #2e8b57; margin: 0 auto; border: 2px solid #fff; border-radius: 8px; overflow: hidden;">'
-    html += '<div style="position:absolute; top:50%; left:0; width:100%; height:2px; background:rgba(255,255,255,0.4);"></div>'
-    html += '<div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:60px; height:60px; border:2px solid rgba(255,255,255,0.4); border-radius:50%;"></div>'
+    # Mowed Grass effect + Chalk lines
+    html = f'''<div class="pitch-container shadow-lg" style="position:relative; width: 100%; max-width: 500px; aspect-ratio: 2/3; margin: 0 auto; border: 3px solid #fff; border-radius: 12px; overflow: hidden; background: repeating-linear-gradient(0deg, #2e8b57, #2e8b57 10%, #297d4e 10%, #297d4e 20%);">'''
     
+    # Watermark Logo
+    if team_logo:
+        html += f'<div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:65%; height:65%; opacity: 0.15; background-image: url(\'{team_logo}\'); background-size: contain; background-position: center; background-repeat: no-repeat; z-index: 1;"></div>'
+
+    # Pitch Markings
+    html += '<div style="position:absolute; top:50%; left:0; width:100%; height:2px; background:rgba(255,255,255,0.4); z-index: 2;"></div>' # Center Line
+    html += '<div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:80px; height:80px; border:2px solid rgba(255,255,255,0.4); border-radius:50%; z-index: 2;"></div>' # Center Circle
+    html += '<div style="position:absolute; top:0; left:20%; width:60%; height:16%; border:2px solid rgba(255,255,255,0.4); border-top:none; z-index: 2;"></div>' # Top Penalty Box
+    html += '<div style="position:absolute; top:0; left:35%; width:30%; height:6%; border:2px solid rgba(255,255,255,0.4); border-top:none; z-index: 2;"></div>' # Top Goalie Box
+    html += '<div style="position:absolute; bottom:0; left:20%; width:60%; height:16%; border:2px solid rgba(255,255,255,0.4); border-bottom:none; z-index: 2;"></div>' # Bottom Penalty Box
+    html += '<div style="position:absolute; bottom:0; left:35%; width:30%; height:6%; border:2px solid rgba(255,255,255,0.4); border-bottom:none; z-index: 2;"></div>' # Bottom Goalie Box
+    
+    # Formation integrated on field
+    if formation:
+        html += f'<div style="position:absolute; top:15px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:4px 12px; border-radius:12px; font-size:0.75rem; font-weight:bold; z-index: 3; box-shadow:0 2px 4px rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.2); backdrop-filter: blur(2px);">Formation: {formation}</div>'
+
     def render_pitch_player(player, x, y, bg_color, text_color):
         if not player: return ""
         name = shorten_player_name(player.get('name'))
         photo = player.get('photo', '')
+        number = str(player.get('number', ''))
         p_id = str(player.get('id', ''))
         p_slug = f"{create_slug(player.get('name', ''))}-{p_id}"
         
         if photo:
-            avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 3px solid {bg_color}; background-color: #fff;" onerror="this.onerror=null;this.src=\'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png\';">'
+            avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 3px solid {bg_color}; background-color: #f8f9fa; box-shadow: 0 4px 8px rgba(0,0,0,0.4);">'
         else:
             initial = name[0] if name else ''
-            avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:24px; border: 3px solid #fff;">{initial}</div>'
+            avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.2rem; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.4);">{initial}</div>'
             
-        return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: 125px; z-index: 10;">
-            <a href="/players/{p_slug}/" class="text-decoration-none" style="display:flex; flex-direction:column; align-items:center; color:inherit;">
-                <div style="width: 66px; height: 66px; background: #fff; border-radius: 50%; box-shadow: 0 3px 6px rgba(0,0,0,0.5);">{avatar}</div>
-                <div style="background: rgba(0,0,0,0.75); color: #fff; font-size: 0.85rem; font-weight: bold; padding: 4px 8px; border-radius: 6px; margin-top: 5px; white-space: nowrap; max-width: 125px; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">{name}</div>
+        badge_html = ""
+        if number:
+            badge_html = f'<div style="position:absolute; bottom:-4px; right:-4px; background:#fff; color:#000; font-size:0.6rem; font-weight:bold; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid #ccc; box-shadow:0 2px 4px rgba(0,0,0,0.4); z-index:15;">{number}</div>'
+            
+        return f'''<div class="pitch-player" style="position:absolute; left:{x}%; top:{y}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; width: clamp(60px, 15vw, 100px); z-index: 10;">
+            <a href="/players/{p_slug}/" class="text-decoration-none" style="display:flex; flex-direction:column; align-items:center; color:inherit; width:100%;">
+                <div style="position:relative; width: clamp(45px, 11vw, 66px); height: clamp(45px, 11vw, 66px); border-radius: 50%;">
+                    {avatar}
+                    {badge_html}
+                </div>
+                <div style="background: rgba(255,255,255,0.95); color: #000; font-size: clamp(0.55rem, 2vw, 0.75rem); font-weight: 800; padding: 3px 6px; border-radius: 4px; margin-top: 6px; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 1px solid {bg_color}; text-align:center;">{name}</div>
             </a>
         </div>'''
-
     html += render_pitch_player(gk, 50, 88, color, contrast)
     
     player_idx = 0
@@ -2538,11 +2560,21 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
 
 """ + BASE_HEADER + """
 
-<div class="container mt-4 mb-3 text-center">
-    <img src="{{ team_logo }}" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px;">
-    <h1 class="h3 fw-bold text-dark mb-1">{{ team_name }} Starting Lineup</h1>
-    <h2 class="h6 text-muted mb-2">{{ header_state }}</h2>
-    <span class="badge bg-success px-3 py-2" style="font-size: 0.8rem; letter-spacing: 0.5px;">Formation: {{ formation }}</span>
+<div class="container mt-3 mb-2 text-center">
+    <!-- League Banner Top -->
+    <div class="mb-3 d-inline-flex align-items-center bg-white px-3 py-1 rounded-pill shadow-sm border">
+        {{ league_logo_html | safe }}
+        <span class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">{{ league_name }}</span>
+    </div>
+    
+    <!-- Team Name with Inline Logo -->
+    <div class="d-flex justify-content-center align-items-center mb-1">
+        <img src="{{ team_logo }}" style="width: 45px; height: 45px; object-fit: contain; margin-right: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+        <h1 class="h3 fw-bold text-dark mb-0">{{ team_name }} Lineup</h1>
+    </div>
+    
+    <!-- Opponent and Date (Logo handled in Python logic) -->
+    <h2 class="h6 text-muted mt-2 mb-3 d-flex justify-content-center align-items-center">{{ header_state | safe }}</h2>
 </div>
 
 <div class="container pb-5">
@@ -2842,6 +2874,15 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
     
     opp_side = 'away' if is_home else 'home'
     opp_name = match_data['teams'][opp_side]['name']
+    opp_logo = match_data['teams'][opp_side]['logo']
+    
+    league_name = match_data.get('league', {}).get('name', 'Global Football')
+    l_flag = match_data.get('league', {}).get('flag', '')
+    
+    if l_flag.startswith('http') or l_flag.startswith('/images/'):
+        league_logo_html = f'<img src="{l_flag}" style="width: 20px; height: 20px; object-fit: contain; margin-right: 8px; border-radius: 2px;">'
+    else:
+        league_logo_html = f'<span style="font-size: 1.1rem; margin-right: 8px;">{l_flag}</span>'
     
     status_short = match_data['fixture']['status']['short']
     is_final = status_short in ['FT', 'AET', 'PEN']
@@ -2854,35 +2895,37 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
         if next_m:
             next_opp_side = 'away' if next_is_home else 'home'
             next_opp_name = next_m['teams'][next_opp_side]['name']
+            next_opp_logo = next_m['teams'][next_opp_side]['logo']
             try:
                 dt = datetime.fromisoformat(next_m['fixture']['date'].replace('Z', '+00:00'))
                 dt_local = dt.astimezone(pytz.timezone('America/New_York'))
                 date_str = dt_local.strftime('%a, %b %d • %I:%M%p').replace(' 0', ' ').lower()
             except:
                 date_str = "Upcoming"
-            header_state = f"Next Match: vs {next_opp_name} • {date_str}"
+            header_state = f'Next Match: vs <img src="{next_opp_logo}" style="width:18px; height:18px; object-fit:contain; margin-bottom:2px; margin-right: 4px; margin-left: 4px;"> {next_opp_name} • {date_str}'
             seo_title = f"{team_name} Next Match & Starting Lineup vs {next_opp_name}"
             seo_desc = f"Upcoming starting lineup and match details for {team_name} vs {next_opp_name}."
         else:
-            header_state = f"Last Match: vs {opp_name}"
+            header_state = f'Last Match: vs <img src="{opp_logo}" style="width:18px; height:18px; object-fit:contain; margin-bottom:2px; margin-right: 4px; margin-left: 4px;"> {opp_name}'
             seo_title = f"{team_name} Starting Lineup - Tactical Formation"
             seo_desc = f"View the latest starting lineup and tactical formation for {team_name}."
     else:
-        header_state = f"vs {opp_name} • {today_date_str}"
+        header_state = f'vs <img src="{opp_logo}" style="width:18px; height:18px; object-fit:contain; margin-bottom:2px; margin-right: 4px;"> {opp_name} • {today_date_str}'
         seo_title = f"{team_name} Starting Lineup vs {opp_name} - {today_date_str}"
         seo_desc = f"Official starting lineup and tactical formation for {team_name} vs {opp_name} on {today_date_str}."
 
-    pitch_html = generate_pitch_html(lineup, '#333333')
+    pitch_html = generate_pitch_html(lineup, '#333333', team_logo=team_logo, formation_str=formation_str)
 
     template = Template(TEAM_HTML_TEMPLATE)
     output = template.render(
         seo_title=seo_title,
         seo_desc=seo_desc,
+        league_name=league_name,
+        league_logo_html=league_logo_html,
         team_name=team_name,
         team_slug=team_slug,
         team_logo=team_logo,
         header_state=header_state,
-        formation=formation_str,
         pitch_html=pitch_html,
         nav_leagues_html=nav_html
     )
