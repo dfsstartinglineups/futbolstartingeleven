@@ -990,13 +990,12 @@ def extract_match_clock(status_obj):
     detail = status_type.get('detail', '')
     short_detail = status_type.get('shortDetail', '')
     
-    # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8", "90'+8'", or "90 + 8")
+    # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8" or "90 + 8")
     for string_to_check in [detail, short_detail]:
         if string_to_check:
-            # Added [']? to allow for tick marks before and after the plus sign
-            stoppage_match = re.search(r"(\d+[']?\s*\+\s*\d+[']?)", string_to_check)
+            stoppage_match = re.search(r"(\d+\s*\+\s*\d+)", string_to_check)
             if stoppage_match:
-                return stoppage_match.group(1).replace("'", "").replace(" ", "")
+                return stoppage_match.group(1).replace(" ", "")
 
     # If no stoppage time, check for standard tick marks (e.g. "82'")
     if short_detail:
@@ -1023,7 +1022,7 @@ def extract_match_clock(status_obj):
     if raw_clock > 0:
         return str(int(raw_clock // 60) + 1)
     return "LIVE"
-    
+
 def generate_league_abbrev(name):
     if not name or name == "Global Football": return "GLB"
     name_upper = name.upper()
@@ -1490,7 +1489,7 @@ def get_time_badge_html(data):
     except: match_time = date_str
 
     if status in ['PST', 'CANC', 'ABD']: return f'<span class="badge bg-danger text-white border px-2 py-1" style="font-size: 0.75rem;">{status}</span>'
-    elif status in ['FT', 'AET', 'PEN', 'FT-PENS']: return f'<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">{status}</span>'
+    elif status in ['FT', 'AET', 'PEN']: return f'<span class="badge bg-dark text-white border px-2 py-1" style="font-size: 0.75rem;">FT</span>'
     elif status not in ['NS', 'TBD']:
         display_min = str(elapsed) if (elapsed and elapsed != 'LIVE' and str(elapsed).endswith("'")) else (f"{elapsed}'" if elapsed and elapsed != 'LIVE' else 'LIVE')
         if status == 'HT': display_min = 'HT'
@@ -1777,7 +1776,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
         if state == 'post' and old_html:
             match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
             saved_block = re.search(match_pattern, old_html, re.DOTALL)
-            if saved_block and any(badge in saved_block.group(1) for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>FT-PENS</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
+            if saved_block and any(badge in saved_block.group(1) for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
                 is_cached = True
 
         if not is_cached:
@@ -1883,7 +1882,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                 if saved_block:
                     card_content = saved_block.group(1)
                     # Add >PST</span>, >CANC</span>, and >ABD</span> to the cache list
-                    if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>FT-PENS</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
+                    if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
                         matches.append({
                             "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}}, # Note: this dummy status here is fine since the HTML is pre-rendered
                             "teams": {"home": {"id": home_id, "name": home_name, "logo": home_logo}, "away": {"id": away_id, "name": away_name, "logo": away_logo}},
@@ -1911,17 +1910,13 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             st = fresh_type.get('state', state)
             status_name = fresh_type.get('name', '')
             
-            # Explicitly catch Postponements/Cancellations/Penalties before defaulting to FT/NS
+            # Explicitly catch Postponements/Cancellations before defaulting to FT/NS
             if status_name == 'STATUS_POSTPONED':
                 status_short = 'PST'
             elif status_name in ['STATUS_CANCELED', 'STATUS_CANCELLED']:
                 status_short = 'CANC'
             elif status_name == 'STATUS_ABANDONED':
                 status_short = 'ABD'
-            elif h_pen is not None and a_pen is not None:
-                status_short = 'FT-PENS'
-            elif 'PEN' in fresh_type.get('shortDetail', '').upper() or 'PEN' in status_name.upper():
-                status_short = 'FT-PENS'
             else:
                 status_short = 'NS' if st == 'pre' else ('FT' if st == 'post' else fresh_type.get('shortDetail', 'LIVE'))
 
@@ -3989,11 +3984,6 @@ def generate_v2_index():
         h_score = int((m.get('goals') or {}).get('home', 0))
         a_score = int((m.get('goals') or {}).get('away', 0))
 
-        # Extract Penalty Shootout Scores
-        h_pen = (m.get('goals') or {}).get('home_pen')
-        a_pen = (m.get('goals') or {}).get('away_pen')
-        went_to_penalties = (h_pen is not None and a_pen is not None and h_pen != a_pen)
-
         # Build clean Goalscorer Strings (with Assists and Own Goals)
         events = m.get('events', [])
         goal_events = [e for e in events if e.get('type') == 'Goal' and e.get('detail') in ['Normal Goal', 'Penalty', 'Own Goal', 'Goal']]
@@ -4016,6 +4006,7 @@ def generate_v2_index():
             detail = ge.get('detail', '')
             assist_name = ge.get('assist', '')
             
+            # Format individual entry
             if detail == 'Own Goal':
                 entry = f"{p_short} {time_str} (OG)"
             elif assist_name:
@@ -4035,7 +4026,7 @@ def generate_v2_index():
         h_dec_odds = parse_decimal_odds(h_odds_str)
         a_dec_odds = parse_decimal_odds(a_odds_str)
 
-        # Match outcome logic (now accounts for penalty shootout winner)
+        # Match outcome logic
         if h_score > a_score:
             outcome = "home_win"
             winner_name = h_name
@@ -4046,18 +4037,6 @@ def generate_v2_index():
             winner_name = a_name
             loser_name = h_name
             is_upset = (a_dec_odds >= 3.50)
-        elif went_to_penalties:
-            # Tied on goals, but decided by penalty shootout!
-            if h_pen > a_pen:
-                outcome = "home_win_penalties"
-                winner_name = h_name
-                loser_name = a_name
-                is_upset = (h_dec_odds >= 3.50)
-            else:
-                outcome = "away_win_penalties"
-                winner_name = a_name
-                loser_name = h_name
-                is_upset = (a_dec_odds >= 3.50)
         else:
             outcome = "draw"
             winner_name = None
@@ -4067,9 +4046,7 @@ def generate_v2_index():
         score_diff = abs(h_score - a_score)
 
         # Summary Scenario Determination
-        if went_to_penalties:
-            scenario_key = "penalty_shootout_upset" if is_upset else "penalty_shootout_win"
-        elif outcome == "draw":
+        if outcome == "draw":
             if h_score == 0:
                 scenario_key = "goalless_draw"
             else:
@@ -4100,7 +4077,7 @@ def generate_v2_index():
         league_name = f"{emoji_flag} {league_name_raw}" if emoji_flag else league_name_raw
         league_hashtag = f"#{league_name_raw.replace(' ', '')}"
 
-        # Construct Final Object with Penalty Details
+        # Construct Final Object
         game_summaries[fixture_id] = {
             "fixture_id": fixture_id,
             "created_at": now_ts,
@@ -4110,9 +4087,6 @@ def generate_v2_index():
             "away_team": a_name,
             "home_score": h_score,
             "away_score": a_score,
-            "went_to_penalties": went_to_penalties,
-            "home_penalties": h_pen if went_to_penalties else None,
-            "away_penalties": a_pen if went_to_penalties else None,
             "outcome": outcome,
             "winner_name": winner_name,
             "loser_name": loser_name,
