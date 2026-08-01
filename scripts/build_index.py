@@ -1378,7 +1378,9 @@ def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
         p_slug = f"{create_slug(player.get('name', ''))}-{p_id}"
         
         if photo:
-            avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 3px solid {bg_color}; background-color: #f8f9fa; box-shadow: 0 4px 8px rgba(0,0,0,0.4);">'
+            # We add an onload check: if ESPN returns a 1x1 transparent pixel, swap it to the silhouette.
+            # Note: We use {{ and }} to escape the curly braces for the JavaScript inside the Python f-string.
+            avatar = f'<img src="{photo}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border: 3px solid {bg_color}; background-color: #f8f9fa; box-shadow: 0 4px 8px rgba(0,0,0,0.4);" onload="if(this.naturalWidth <= 1) {{ this.onload=null; this.src=\'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png\'; }}" onerror="this.onerror=null;this.src=\'https://a.espncdn.com/combiner/i?img=/i/headshots/nophoto.png\';">'
         else:
             initial = name[0] if name else ''
             avatar = f'<div style="width:100%; height:100%; border-radius:50%; background:{bg_color}; color:{text_color}; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.2rem; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.4);">{initial}</div>'
