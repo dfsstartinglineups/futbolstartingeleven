@@ -979,53 +979,48 @@ def is_valid_sub_minute(minute_val):
     cleaned = re.sub(r'[^0-9]', '', str(minute_val))
     return int(cleaned) > 0 if cleaned else False
 
-import re
-
 def extract_match_clock(status_obj):
     if not status_obj: return "LIVE"
     status_type = status_obj.get('type') or {}
     state = status_type.get('state', 'pre')
-    
     if state == 'pre': return "NS"
     if state == 'post': return "FT"
     if status_type.get('name') == 'STATUS_HALFTIME' or status_type.get('shortDetail') == 'HT': return "HT"
 
-    display_clock = str(status_obj.get('displayClock', ''))
-    short_detail = str(status_type.get('shortDetail', ''))
+    detail = status_type.get('detail', '')
+    short_detail = status_type.get('shortDetail', '')
     
-    # 1. DEAD SIMPLE CHECK: If ESPN hands us a string with a '+', take it exactly as is.
-    # We remove existing spaces and add our own so "90'+6'", "90' + 6'", and "90+6" all become "90' + 6'"
-    if '+' in display_clock:
-        clean_str = display_clock.replace(' ', '').replace('+', ' + ')
-        # Ensure tick marks exist for consistency if they were missing
-        if "'" not in clean_str:
-            parts = clean_str.split(' + ')
-            if len(parts) == 2:
-                return f"{parts[0]}' + {parts[1]}'"
-        return clean_str
-        
-    if '+' in short_detail:
-        clean_str = short_detail.replace(' ', '').replace('+', ' + ')
-        if "'" not in clean_str:
-            parts = clean_str.split(' + ')
-            if len(parts) == 2:
-                return f"{parts[0]}' + {parts[1]}'"
-        return clean_str
+    # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8" or "90 + 8")
+    for string_to_check in [detail, short_detail]:
+        if string_to_check:
+            stoppage_match = re.search(r"(\d+\s*\+\s*\d+)", string_to_check)
+            if stoppage_match:
+                return stoppage_match.group(1).replace(" ", "")
 
-    # 2. Regular time fallback (e.g., extracting "45" from "45'")
-    tick_match = re.search(r"(\d+)\'", short_detail)
-    if tick_match: 
-        return tick_match.group(1)
+    # If no stoppage time, check for standard tick marks (e.g. "82'")
+    if short_detail:
+        tick_match = re.search(r"(\d+)\'", short_detail)
+        if tick_match: 
+            return tick_match.group(1)
         
-    nums = re.findall(r"\d+", short_detail)
-    if len(nums) == 1 and "Half" not in short_detail: 
-        return nums[0]
+        # Fallback for a standalone number
+        nums = re.findall(r"\d+", short_detail)
+        if len(nums) == 1 and "Half" not in short_detail: 
+            return nums[0]
 
-    # 3. Ultimate fallback to raw seconds if text is completely missing
-    raw_clock = status_obj.get('clock', 0) or 0
+    display_clock = status_obj.get('displayClock', '')
+    if display_clock:
+        if ':' in str(display_clock):
+            try:
+                mins, secs = map(int, display_clock.split(':'))
+                total_mins = mins + (1 if secs > 0 else 0)
+                return str(total_mins)
+            except: pass
+        return str(display_clock).replace("'", "")
+
+    raw_clock = status_obj.get('clock') if status_obj.get('clock') is not None else 0
     if raw_clock > 0:
         return str(int(raw_clock // 60) + 1)
-
     return "LIVE"
 
 def generate_league_abbrev(name):
