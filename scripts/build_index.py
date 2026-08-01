@@ -1413,6 +1413,19 @@ def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
         </div>'''
     html += render_pitch_player(gk, 50, 88, color, contrast)
     
+    def get_x_weight(pos_str):
+        pos = str(pos_str).upper()
+        # Wide Left (LB, LM, LW, LWB)
+        if pos.startswith('L') and '-' not in pos: return -2
+        # Inner Left (CD-L, CM-L, CF-L)
+        if pos.endswith('-L'): return -1
+        # Inner Right (CD-R, CM-R, CF-R)
+        if pos.endswith('-R'): return 1
+        # Wide Right (RB, RM, RW, RWB)
+        if pos.startswith('R') and '-' not in pos: return 2
+        # Center (C, CD, CM, F, ST)
+        return 0
+
     player_idx = 0
     for r_idx, count in enumerate(rows):
         # Spread lines vertically between 72% (Defense) and 15% (Attack)
@@ -1421,16 +1434,25 @@ def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
         else:
             y_pos = 45
             
-        for c_idx in range(count):
+        # Extract the exact number of players for this row
+        row_players = []
+        for _ in range(count):
             if player_idx < len(field_players):
-                # Spread players horizontally across the field width (15% to 85%)
-                if count > 1:
-                    x_pos = 15 + c_idx * (70 / (count - 1))
-                else:
-                    x_pos = 50
-                    
-                html += render_pitch_player(field_players[player_idx], x_pos, y_pos, color, contrast)
+                row_players.append(field_players[player_idx])
                 player_idx += 1
+                
+        # Sort them Left-to-Right based on our weighting function
+        row_players.sort(key=lambda p: get_x_weight(p.get('pos', '')))
+            
+        # Render the sorted row
+        for c_idx, player in enumerate(row_players):
+            # Spread players horizontally across the field width (15% to 85%)
+            if count > 1:
+                x_pos = 15 + c_idx * (70 / (count - 1))
+            else:
+                x_pos = 50
+                
+            html += render_pitch_player(player, x_pos, y_pos, color, contrast)
                 
     html += '</div>'
     return html
