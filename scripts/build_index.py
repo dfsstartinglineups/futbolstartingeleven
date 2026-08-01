@@ -987,13 +987,26 @@ def extract_match_clock(status_obj):
     if state == 'post': return "FT"
     if status_type.get('name') == 'STATUS_HALFTIME' or status_type.get('shortDetail') == 'HT': return "HT"
 
+    detail = status_type.get('detail', '')
     short_detail = status_type.get('shortDetail', '')
+    
+    # First, check both detail and shortDetail for the stoppage time pattern (e.g. "90+8" or "90 + 8")
+    for string_to_check in [detail, short_detail]:
+        if string_to_check:
+            stoppage_match = re.search(r"(\d+\s*\+\s*\d+)", string_to_check)
+            if stoppage_match:
+                return stoppage_match.group(1).replace(" ", "")
+
+    # If no stoppage time, check for standard tick marks (e.g. "82'")
     if short_detail:
-        tick_match = re.search(r"(\d+\+?\d*)\'", short_detail)
-        if tick_match: return tick_match.group(1)
+        tick_match = re.search(r"(\d+)\'", short_detail)
+        if tick_match: 
+            return tick_match.group(1)
+        
+        # Fallback for a standalone number
         nums = re.findall(r"\d+", short_detail)
-        if len(nums) > 1: return nums[-1]
-        elif len(nums) == 1 and "Half" not in short_detail: return nums[0]
+        if len(nums) == 1 and "Half" not in short_detail: 
+            return nums[0]
 
     display_clock = status_obj.get('displayClock', '')
     if display_clock:
