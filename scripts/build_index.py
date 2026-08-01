@@ -1413,6 +1413,23 @@ def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
         </div>'''
     html += render_pitch_player(gk, 50, 88, color, contrast)
     
+    def get_y_weight(player):
+        pos = str(player.get('pos', '')).upper()
+        cat = str(player.get('category', 'M')).upper()
+        
+        # 1. Defenders / Wing-Backs (Lowest Y / Bottom of pitch)
+        if cat == 'D' or 'B' in pos or 'CD' in pos: return 10
+        # 2. Defensive Mids
+        if 'DM' in pos: return 20
+        # 3. Standard Mids
+        if cat == 'M' and 'AM' not in pos: return 30
+        # 4. Attacking Mids / Wingers
+        if 'AM' in pos or 'W' in pos: return 40
+        # 5. Strikers / Forwards (Highest Y / Top of pitch)
+        if cat == 'F' or 'F' in pos or 'ST' in pos: return 50
+        
+        return 30 # Safe fallback
+        
     def get_x_weight(pos_str):
         pos = str(pos_str).upper()
         # Wide Left (LB, LM, LW, LWB)
@@ -1426,6 +1443,9 @@ def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
         # Center (C, CD, CM, F, ST)
         return 0
 
+    # PRE-SORT VERTICALLY FIRST to prevent ESPN's array scrambling
+    field_players.sort(key=get_y_weight)
+
     player_idx = 0
     for r_idx, count in enumerate(rows):
         # Spread lines vertically between 72% (Defense) and 15% (Attack)
@@ -1434,17 +1454,17 @@ def generate_pitch_html(lineup, default_hex, team_logo="", formation_str=""):
         else:
             y_pos = 45
             
-        # Extract the exact number of players for this row
+        # 1. Extract the exact number of players for this row
         row_players = []
         for _ in range(count):
             if player_idx < len(field_players):
                 row_players.append(field_players[player_idx])
                 player_idx += 1
                 
-        # Sort them Left-to-Right based on our weighting function
+        # 2. Sort this specific row Left-to-Right
         row_players.sort(key=lambda p: get_x_weight(p.get('pos', '')))
             
-        # Render the sorted row
+        # 3. Render the sorted row
         for c_idx, player in enumerate(row_players):
             # Spread players horizontally across the field width (15% to 85%)
             if count > 1:
