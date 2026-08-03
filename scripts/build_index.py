@@ -3157,14 +3157,14 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
                 {live_indicator} {header_text}
             </span>
             <div class="d-flex align-items-center" style="font-size: 1rem; font-weight: 700;">
-                <a href="/teams/{create_slug(h_team['name'])}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
+                <a href="/teams/{create_team_slug_and_name(h_team['name'], match_data.get('league'))[0]}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
                     <img src="{h_team.get('logo', '')}" width="18" height="18" class="me-1" style="object-fit:contain;">
-                    {h_team['name']} 
+                    {create_team_slug_and_name(h_team['name'], match_data.get('league'))[1]} 
                 </a>
                 {score_html} 
-                <a href="/teams/{create_slug(a_team['name'])}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
+                <a href="/teams/{create_team_slug_and_name(a_team['name'], match_data.get('league'))[0]}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
                     <img src="{a_team.get('logo', '')}" width="18" height="18" class="me-1" style="object-fit:contain;">
-                    {a_team['name']}
+                    {create_team_slug_and_name(a_team['name'], match_data.get('league'))[1]}
                 </a>
             </div>
         </div>
@@ -3829,8 +3829,8 @@ def generate_v2_index():
         
         h_id = str(m['teams']['home']['id'])
         a_id = str(m['teams']['away']['id'])
-        h_name = m['teams']['home']['name']
-        a_name = m['teams']['away']['name']
+        _, h_name = create_team_slug_and_name(m['teams']['home']['name'], m.get('league'))
+        _, a_name = create_team_slug_and_name(m['teams']['away']['name'], m.get('league'))
         
         home_odds_dec = get_decimal_odds(m.get('odds', {}).get('home', 'TBD'))
         away_odds_dec = get_decimal_odds(m.get('odds', {}).get('away', 'TBD'))
@@ -3990,8 +3990,8 @@ def generate_v2_index():
 
         h_id = str(m['teams']['home']['id'])
         a_id = str(m['teams']['away']['id'])
-        h_name = m['teams']['home']['name']
-        a_name = m['teams']['away']['name']
+        _, h_name = create_team_slug_and_name(m['teams']['home']['name'], m.get('league'))
+        _, a_name = create_team_slug_and_name(m['teams']['away']['name'], m.get('league'))
         h_score = int((m.get('goals') or {}).get('home', 0))
         a_score = int((m.get('goals') or {}).get('away', 0))
 
