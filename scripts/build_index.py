@@ -2941,7 +2941,7 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
     team_logo = team_data.get('logo', '')
     
     opp_side = 'away' if is_home else 'home'
-    opp_name = match_data['teams'][opp_side]['name']
+    _, opp_name = create_team_slug_and_name(match_data['teams'][opp_side]['name'], match_data.get('league'))
     opp_logo = match_data['teams'][opp_side]['logo']
     
     league_name = match_data.get('league', {}).get('name', 'Global Football')
