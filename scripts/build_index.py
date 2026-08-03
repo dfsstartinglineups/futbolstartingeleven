@@ -406,6 +406,49 @@ def create_slug(name):
     slug = re.sub(r'[\s-]+', '-', slug)
     return slug.strip('-')
 
+def is_womens_context(team_name="", league_info=None):
+    """Detects if a match or team belongs to a women's league/team context."""
+    t_lower = str(team_name).lower()
+    if any(kw in t_lower for kw in ['women', ' wfc', 'femenino', 'femeni', ' w.f.c.']):
+        return True
+        
+    if league_info and isinstance(league_info, dict):
+        l_name = str(league_info.get('name', '')).lower()
+        l_pill = str(league_info.get('pill', '')).lower()
+        l_slug = str(league_info.get('slug', '')).lower()
+        
+        if any(kw in l_name for kw in ['women', 'vrouwen', 'nwsl', 'wsl', 'femenino', 'femeni', 'w championship']):
+            return True
+        if any(kw in l_pill for kw in ['.w.', 'w.1', 'nwsl', 'wsl']):
+            return True
+        if any(kw in l_slug for kw in ['women', 'nwsl', 'wsl']):
+            return True
+            
+    return False
+
+def create_team_slug_and_name(team_name, league_info=None):
+    """Generates a disambiguated slug and display name for women's teams while leaving men's teams standard."""
+    if not team_name:
+        return "", ""
+        
+    is_women = is_womens_context(team_name, league_info)
+    clean_name = str(team_name).strip()
+    
+    # 1. Format Display Name
+    if is_women and not any(kw in clean_name.lower() for kw in ['women', 'wfc', 'femenino', 'femeni']):
+        display_name = f"{clean_name} Women"
+    else:
+        display_name = clean_name
+        
+    # 2. Format Team Slug
+    base_slug = create_slug(clean_name)
+    if is_women and not base_slug.endswith('-women') and 'women' not in base_slug:
+        team_slug = f"{base_slug}-women"
+    else:
+        team_slug = base_slug
+        
+    return team_slug, display_name
+
 def sync_league_state(all_active_matches):
     state_file = 'data/site_pages.json'
     os.makedirs('data', exist_ok=True)
@@ -3150,6 +3193,10 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
         h_team = match_data['teams']['home']
         a_team = match_data['teams']['away']
 
+    active_league = match_data.get('league') if match_data else None
+    h_slug, h_display = create_team_slug_and_name(h_team.get('name', ''), active_league)
+    a_slug, a_display = create_team_slug_and_name(a_team.get('name', ''), active_league)
+
     live_widget_html = f'''
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3" style="width: 100%;">
         <div class="d-flex flex-column align-items-start">
@@ -3157,14 +3204,14 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
                 {live_indicator} {header_text}
             </span>
             <div class="d-flex align-items-center" style="font-size: 1rem; font-weight: 700;">
-                <a href="/teams/{create_team_slug_and_name(h_team['name'], match_data.get('league'))[0]}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
+                <a href="/teams/{h_slug}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
                     <img src="{h_team.get('logo', '')}" width="18" height="18" class="me-1" style="object-fit:contain;">
-                    {create_team_slug_and_name(h_team['name'], match_data.get('league'))[1]} 
+                    {h_display} 
                 </a>
                 {score_html} 
-                <a href="/teams/{create_team_slug_and_name(a_team['name'], match_data.get('league'))[0]}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
+                <a href="/teams/{a_slug}/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
                     <img src="{a_team.get('logo', '')}" width="18" height="18" class="me-1" style="object-fit:contain;">
-                    {create_team_slug_and_name(a_team['name'], match_data.get('league'))[1]}
+                    {a_display}
                 </a>
             </div>
         </div>
