@@ -406,49 +406,6 @@ def create_slug(name):
     slug = re.sub(r'[\s-]+', '-', slug)
     return slug.strip('-')
 
-def is_womens_context(team_name="", league_info=None):
-    """Detects if a match or team belongs to a women's league/team context."""
-    t_lower = str(team_name).lower()
-    if any(kw in t_lower for kw in ['women', ' wfc', 'femenino', 'femeni', ' w.f.c.']):
-        return True
-        
-    if league_info and isinstance(league_info, dict):
-        l_name = str(league_info.get('name', '')).lower()
-        l_pill = str(league_info.get('pill', '')).lower()
-        l_slug = str(league_info.get('slug', '')).lower()
-        
-        if any(kw in l_name for kw in ['women', 'vrouwen', 'nwsl', 'wsl', 'femenino', 'femeni', 'w championship']):
-            return True
-        if any(kw in l_pill for kw in ['.w.', 'w.1', 'nwsl', 'wsl']):
-            return True
-        if any(kw in l_slug for kw in ['women', 'nwsl', 'wsl']):
-            return True
-            
-    return False
-
-def create_team_slug_and_name(team_name, league_info=None):
-    """Generates a disambiguated slug and display name for women's teams while leaving men's teams standard."""
-    if not team_name:
-        return "", ""
-        
-    is_women = is_womens_context(team_name, league_info)
-    clean_name = str(team_name).strip()
-    
-    # 1. Format Display Name
-    if is_women and not any(kw in clean_name.lower() for kw in ['women', 'wfc', 'femenino', 'femeni']):
-        display_name = f"{clean_name} Women"
-    else:
-        display_name = clean_name
-        
-    # 2. Format Team Slug
-    base_slug = create_slug(clean_name)
-    if is_women and not base_slug.endswith('-women') and 'women' not in base_slug:
-        team_slug = f"{base_slug}-women"
-    else:
-        team_slug = base_slug
-        
-    return team_slug, display_name
-
 def sync_league_state(all_active_matches):
     state_file = 'data/site_pages.json'
     os.makedirs('data', exist_ok=True)
@@ -493,17 +450,16 @@ def sync_team_state(matches):
         except: pass
 
     for m in matches:
-        l_info = m.get('league', {})
         for t_side in ['home', 'away']:
             team_info = m['teams'].get(t_side, {})
             team_id = str(team_info.get('id', ''))
             team_name = team_info.get('name', '')
             if team_id and team_name:
-                slug, display_name = create_team_slug_and_name(team_name, l_info)
+                slug = create_slug(team_name)
                 if slug not in team_state:
                     team_state[slug] = {
                         "id": team_id,
-                        "name": display_name,
+                        "name": team_name,
                         "slug": slug,
                         "logo": team_info.get('logo', ''),
                         "last_match_id": "",
@@ -524,12 +480,10 @@ def sync_player_state(matches):
         except: pass
 
     for m in matches:
-        l_info = m.get('league', {})
         for side in ['home', 'away']:
             lineup = m.get(side + 'Lineup')
             if not lineup: continue
             team_info = m['teams'][side]
-            t_slug, t_display_name = create_team_slug_and_name(team_info.get('name', ''), l_info)
             
             players = []
             if lineup.get('startXI'): players.extend(lineup['startXI'])
@@ -546,8 +500,8 @@ def sync_player_state(matches):
                             "id": pid,
                             "name": pname,
                             "slug": slug,
-                            "team_name": t_display_name,
-                            "team_slug": t_slug,
+                            "team_name": team_info.get('name', ''),
+                            "team_slug": create_slug(team_info.get('name', '')),
                             "position": p.get('pos', 'M'),
                             "photo": p.get('photo', ''),
                             "last_match_id": "",
@@ -598,7 +552,7 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
             if not t_id or not t_name:
                 continue
                 
-            t_slug, t_display_name = create_team_slug_and_name(t_name, l_info)
+            t_slug = create_slug(t_name)
             if t_slug in team_state and team_state[t_slug].get('squad_synced'):
                 continue
 
@@ -642,7 +596,7 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
                                     "id": pid,
                                     "name": pname,
                                     "slug": p_slug,
-                                    "team_name": t_display_name,
+                                    "team_name": t_name,
                                     "team_slug": t_slug,
                                     "position": raw_pos.upper(),
                                     "photo": photo_url,
@@ -694,8 +648,8 @@ def find_next_fixture_for_entity(team_id_or_slug, upcoming_matches):
     for m in upcoming_matches:
         h_id = str(m['teams']['home'].get('id', '')).lower()
         a_id = str(m['teams']['away'].get('id', '')).lower()
-        h_slug, _ = create_team_slug_and_name(m['teams']['home'].get('name', ''), m.get('league'))
-        a_slug, _ = create_team_slug_and_name(m['teams']['away'].get('name', ''), m.get('league'))
+        h_slug = create_slug(m['teams']['home'].get('name', '')).lower()
+        a_slug = create_slug(m['teams']['away'].get('name', '')).lower()
         
         if target in [h_id, a_id, h_slug, a_slug]:
             is_home = (target in [h_id, h_slug])
@@ -1726,8 +1680,8 @@ def pre_render_game_card(data, is_live_section=False):
     h_col = get_team_color(data.get('homeLineup'), '#0d6efd')
     a_col = get_team_color(data.get('awayLineup'), '#dc3545')
     
-    home_slug, _ = create_team_slug_and_name(data['teams']['home']['name'], data.get('league'))
-    away_slug, _ = create_team_slug_and_name(data['teams']['away']['name'], data.get('league'))
+    home_slug = create_slug(data['teams']['home']['name'])
+    away_slug = create_slug(data['teams']['away']['name'])
     
     home_lineup_html = f'<a href="/teams/{home_slug}/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
     away_lineup_html = f'<a href="/teams/{away_slug}/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a>' if data.get('is_today_partition') else ''
@@ -3541,7 +3495,7 @@ def generate_v2_index():
         
         for side in ['home', 'away']:
             team_info = m['teams'][side]
-            t_slug, t_display_name = create_team_slug_and_name(team_info['name'], m.get('league'))
+            t_slug = create_slug(team_info['name'])
             
             # TEAM GENERATION
             if t_slug in team_state:
@@ -3779,10 +3733,10 @@ def generate_v2_index():
         away_lineup = m.get('awayLineup')
         
         fixture_id = str(m['fixture'].get('id', ''))
-        raw_home_name = m['teams']['home']['name']
-        raw_away_name = m['teams']['away']['name']
-        home_slug, home_name = create_team_slug_and_name(raw_home_name, m.get('league'))
-        away_slug, away_name = create_team_slug_and_name(raw_away_name, m.get('league'))
+        home_name = m['teams']['home']['name']
+        away_name = m['teams']['away']['name']
+        home_slug = create_slug(home_name)
+        away_slug = create_slug(away_name)
         
         league_name_raw = m['league'].get('name', '')
         l_flag = str(m['league'].get('flag', ''))
