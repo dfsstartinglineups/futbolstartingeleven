@@ -1974,12 +1974,16 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             else:
                 status_short = 'NS' if st == 'pre' else ('FT' if st == 'post' else fresh_type.get('shortDetail', 'LIVE'))
 
+            temp_league_dict = {"name": final_league_name, "pill": league_pill, "slug": league_slug}
+            _, display_home_name = create_team_slug_and_name(home_name, temp_league_dict)
+            _, display_away_name = create_team_slug_and_name(away_name, temp_league_dict)
+
             match_entry = {
                 "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": status_short, "elapsed": extract_match_clock(fresh_status)}},
                 "league": {"id": event_id, "name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_pill},
                 "teams": {
-                    "home": {"id": home_id, "name": home_name, "logo": home_logo},
-                    "away": {"id": away_id, "name": away_name, "logo": away_logo}
+                    "home": {"id": home_id, "name": display_home_name, "logo": home_logo},
+                    "away": {"id": away_id, "name": display_away_name, "logo": away_logo}
                 },
                 "goals": {
                     "home": int((summary.get('live_score') or {}).get('home') or home_comp.get('score') or 0), 
