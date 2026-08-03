@@ -2358,6 +2358,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
 
                 currentCard.innerHTML = newCard.innerHTML;
+                
+                // RE-RUN TIMEZONE FORMATTER ON NEWLY INJECTED HTML
+                currentCard.querySelectorAll('.local-time-badge').forEach(badge => {
+                    const utcStr = badge.getAttribute('data-utc');
+                    if (utcStr) {
+                        const dt = new Date(utcStr);
+                        const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+                        let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+                        badge.textContent = `${day} ${time}`;
+                    }
+                });
 
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
@@ -2602,6 +2613,17 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
                 const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
 
                 currentCard.innerHTML = newCard.innerHTML;
+                
+                // RE-RUN TIMEZONE FORMATTER ON NEWLY INJECTED HTML
+                currentCard.querySelectorAll('.local-time-badge').forEach(badge => {
+                    const utcStr = badge.getAttribute('data-utc');
+                    if (utcStr) {
+                        const dt = new Date(utcStr);
+                        const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+                        let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+                        badge.textContent = `${day} ${time}`;
+                    }
+                });
 
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
