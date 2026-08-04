@@ -385,7 +385,11 @@ def get_local_image_url(url, subfolder="images/teams"):
     web_path = f"/{subfolder}/{filename}"
     if not os.path.exists(local_file_path):
         try:
-            headers = {'User-Agent': 'Mozilla/5.0'}
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'en-US,en;q=0.9'
+            }
             resp = requests.get(url, headers=headers, timeout=5)
             if resp.status_code == 200:
                 with open(local_file_path, 'wb') as f:
@@ -556,7 +560,11 @@ def sync_player_state(matches):
 
 def get_league_pill_for_team(team_id):
     """Fetches a team's official league pill directly from ESPN's Core API."""
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'en-US,en;q=0.9'
+    }
     try:
         url = f"https://sports.core.api.espn.com/v2/sports/soccer/teams/{team_id}"
         res = requests.get(url, headers=headers, timeout=5)
@@ -721,7 +729,11 @@ async def fetch_single_player_core_stats(session, internal_slug, event_id, team_
     return str(player_id), {}
 
 async def get_core_stats_concurrently(internal_slug, event_id, player_list):
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'en-US,en;q=0.9'
+    }
     sem = asyncio.Semaphore(8)  # Cap concurrent requests per match to 8
     async with aiohttp.ClientSession(headers=headers) as session:
         tasks = [
@@ -755,7 +767,11 @@ def fetch_athlete_overview_and_gamelog(player_id, position='M'):
         if now_ts - cached_entry.get('fetched_at', 0) < 21600:
             return cached_entry.get('data', default_return)
 
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'en-US,en;q=0.9'
+    }
     overview_url = f"https://site.web.api.espn.com/apis/common/v3/sports/soccer/athletes/{player_id}/overview"
 
     comp_splits = []
@@ -1172,7 +1188,11 @@ def extract_player_live_stats(core_stats):
     return live_stats
 
 def parse_espn_summary(event_id):
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'en-US,en;q=0.9'
+    }
     summary_data = {
         "team_stats": None, "homeLineup": None, "awayLineup": None, "events": [],
         "odds": {"home": "TBD", "draw": "TBD", "away": "TBD", "total": "TBD", "over": "TBD", "under": "TBD"},
@@ -1786,7 +1806,11 @@ def group_and_sort_matches_by_league(matches):
     return league_list
 
 def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None, is_today_partition=False, core_index=None):
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'en-US,en;q=0.9'
+    }
     raw_events = []
     league_pill_map = {}
     seen_ids = set()
