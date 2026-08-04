@@ -1792,8 +1792,6 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
     seen_ids = set()
     page, max_pages = 1, 10
 
-    print(f"\n🔍 [DIAGNOSTIC] Fetching scores for date: {date_str} (Pill: {pill})...")
-
     while page <= max_pages:
         if pill and end_date_str:
             url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{pill}/scoreboard?dates={date_str}-{end_date_str}&limit=1000&page={page}"
@@ -1801,51 +1799,26 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={date_str}&limit=1000&page={page}"
             
         try:
-            print(f"  └─ Requesting Page {page}: {url}")
             res = requests.get(url, headers=headers, timeout=10)
-            
-            # DIAGNOSTIC PRINT: HTTP Status Code
-            print(f"  └─ HTTP Status Code: {res.status_code}")
-
-            if res.status_code != 200:
-                print(f"  ❌ [DIAGNOSTIC ERROR] ESPN returned non-200 status code ({res.status_code})! Content preview: {res.text[:200]}")
-                break
-
+            if res.status_code != 200: break
             res_json = res.json()
-            
-            leagues = res_json.get('leagues', [])
-            events = res_json.get('events', [])
-            print(f"  └─ Response OK. Found {len(leagues)} leagues and {len(events)} events in payload.")
 
-            for lg in leagues:
+            for lg in res_json.get('leagues', []):
                 lg_id = str(lg.get('id', ''))
                 lg_slug = lg.get('slug', '')
                 if lg_id and lg_slug:
                     league_pill_map[lg_id] = lg_slug
 
-            if not events:
-                print(f"  ⚠️ [DIAGNOSTIC] No events found on page {page}. Stopping page loop.")
-                break
-
+            events = res_json.get('events', [])
+            if not events: break
             added_this_page = 0
             for ev in events:
                 ev_id = str(ev.get('id', ''))
                 if ev_id and ev_id not in seen_ids:
-                    seen_ids.add(ev_id)
-                    raw_events.append(ev)
-                    added_this_page += 1
-
-            print(f"  └─ Added {added_this_page} new unique events (Total collected so far: {len(raw_events)})")
-
-            if added_this_page == 0:
-                break
+                    seen_ids.add(ev_id); raw_events.append(ev); added_this_page += 1
+            if added_this_page == 0: break
             page += 1
-
-        except Exception as e:
-            print(f"  ❌ [DIAGNOSTIC EXCEPTION] Request failed on page {page}: {e}")
-            break
-
-    print(f"✅ [DIAGNOSTIC SUMMARY] Finished fetching for {date_str}. Total raw events gathered: {len(raw_events)}\n")
+        except: break
 
     # --- PRE-FETCH MATCH SUMMARIES IN PARALLEL ---
     events_to_fetch = []
@@ -1878,6 +1851,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                     if res: pre_fetched_summaries[eid] = res
                 except Exception: 
                     pass
+    # ---------------------------------------------
 
     matches = []
     for event in raw_events:
@@ -1903,8 +1877,10 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             home_logo = get_local_image_url(str(h_team.get('logo') or ""), subfolder="images/teams")
             away_logo = get_local_image_url(str(a_team.get('logo') or ""), subfolder="images/teams")
 
+            # --- 🎯 NEW 4-TIER RESOLUTION ENGINE ---
             resolved_pill, resolved_display_name = resolve_event_league(event, core_index)
 
+            # Fallbacks if core resolver is not active
             league_list = event.get('leagues') or []
             first_league = league_list[0] if isinstance(league_list, list) and len(league_list) > 0 else {}
             league_obj = event.get('league') or comp.get('league') or first_league
@@ -1913,6 +1889,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             raw_name = resolved_display_name or str(comp.get('altGameNote') or league_obj.get('name') or league_obj.get('displayName') or "Global Football")
             final_league_name = re.sub(r'^\d{4}-\d{4}\s+', '', raw_name).strip()
             
+            # Clean comma/group clutter for page titles
             if ',' in final_league_name and not resolved_display_name:
                 final_league_name = final_league_name.split(',')[0].strip()
 
@@ -1934,6 +1911,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                 league_obj.get('slug') or 
                 KNOWN_LEAGUE_PILLS.get(normalize_text(final_league_name), '')
             )
+            # ----------------------------------------
 
             clean_league = normalize_text(final_league_name)
             league_flag = NORMALIZED_HUMAN_LEAGUE_FLAGS.get(clean_league, "")
@@ -1958,9 +1936,10 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                 saved_block = re.search(match_pattern, old_html, re.DOTALL)
                 if saved_block:
                     card_content = saved_block.group(1)
+                    # Add >PST</span>, >CANC</span>, and >ABD</span> to the cache list
                     if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
                         matches.append({
-                            "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}},
+                            "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}}, # Note: this dummy status here is fine since the HTML is pre-rendered
                             "teams": {"home": {"id": home_id, "name": home_name, "logo": home_logo}, "away": {"id": away_id, "name": away_name, "logo": away_logo}},
                             "goals": {"home": int(home_comp.get('score') or 0), "away": int(away_comp.get('score') or 0)},
                             "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_pill},
@@ -1970,6 +1949,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                         continue
 
             should_fetch, _ = should_fetch_summary(event)
+            # Pull from our parallel pre-fetched dictionary instead of making a blocking call
             summary = pre_fetched_summaries.get(event_id) if should_fetch else None
             
             if not summary:
@@ -1985,6 +1965,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             st = fresh_type.get('state', state)
             status_name = fresh_type.get('name', '')
             
+            # Explicitly catch Postponements/Cancellations before defaulting to FT/NS
             if status_name == 'STATUS_POSTPONED':
                 status_short = 'PST'
             elif status_name in ['STATUS_CANCELED', 'STATUS_CANCELLED']:
