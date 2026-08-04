@@ -26,8 +26,13 @@ def safe_get(d, *keys):
 
 def fetch_single_league_detail(ref_url):
     """Fetch individual core league detail payload from ESPN $ref URL."""
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en;q=0.9'
+    }
     try:
-        res = requests.get(ref_url, timeout=5)
+        res = requests.get(ref_url, headers=headers, timeout=5)
         if res.status_code == 200:
             return res.json()
     except Exception:
@@ -67,8 +72,13 @@ def build_hydrated_core_index():
         }
     }
     
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en;q=0.9'
+    }
     try:
-        master_res = requests.get(CORE_LEAGUES_URL, timeout=10).json()
+        master_res = requests.get(CORE_LEAGUES_URL, headers=headers, timeout=10).json()
         items = master_res.get('items', [])
         ref_urls = [item['$ref'] for item in items if '$ref' in item]
         
@@ -577,7 +587,11 @@ def get_league_pill_for_team(team_id):
     return None
 
 def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=None, max_rosters=5):
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en;q=0.9'
+    }
     rosters_fetched = 0
     
     for m in matches:
