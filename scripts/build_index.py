@@ -205,6 +205,14 @@ if os.path.exists('data/player_cache.json'):
     try:
         with open('data/player_cache.json', 'r', encoding='utf-8') as f:
             PLAYER_STATS_CACHE = json.load(f)
+            
+        # --- GARBAGE COLLECTION: Time-To-Live (TTL) Sweep (48 Hours) ---
+        current_ts = time.time()
+        stale_players = [pid for pid, data in PLAYER_STATS_CACHE.items() if current_ts - data.get('fetched_at', 0) > 172800]
+        for pid in stale_players:
+            del PLAYER_STATS_CACHE[pid]
+        if stale_players:
+            print(f"🧹 GC: Swept {len(stale_players)} stale players from memory to prevent bloat.")
     except: pass
 
 # Load API-Football headshots cache
@@ -3506,7 +3514,142 @@ def generate_v2_index():
         with open(file_path, 'r', encoding='utf-8') as f: old_html = f.read()
 
     day_info = get_3day_dates()
-    
+
+    # ====================================================================
+    # THE SELF-AWARE WAKE-UP ROUTINE (HIBERNATION & SCHEDULE GC)
+    # ====================================================================
+    schedule_cache_file = 'data/schedule_cache.json'
+    schedule_cache = {}
+    if os.path.exists(schedule_cache_file):
+        try:
+            with open(schedule_cache_file, 'r', encoding='utf-8') as f:
+                schedule_cache = json.load(f)
+        except: pass
+
+    # A. GC: The Rolling Window (Delete days older than Yesterday)
+    yesterday_str = day_info["dates"]["yesterday"]
+    stale_dates = [k for k in schedule_cache.keys() if k < yesterday_str]
+    for k in stale_dates:
+        del schedule_cache[k]
+        print(f"🧹 GC: Swept {k} from Schedule Cache.")
+
+    # B. Check Unfinished Business & Next Kickoff
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'}
+    now_ts = time.time()
+    now_utc = datetime.now(pytz.utc)
+    has_live_games = False
+    next_kickoff_mins = 99999
+
+    for day_key, d_str in [("yesterday", yesterday_str), ("today", day_info["dates"]["today"]), ("tomorrow", day_info["dates"]["tomorrow"])]:
+        needs_fetch = False
+        
+        if d_str not in schedule_cache:
+            needs_fetch = True
+            schedule_cache[d_str] = {"is_locked": False, "last_fetched": 0, "raw_events": []}
+        else:
+            c_data = schedule_cache[d_str]
+            if c_data.get("is_locked"):
+                pass # Never fetch again
+            elif day_key == "today":
+                needs_fetch = True # Today is always active
+            elif day_key == "tomorrow" and (now_ts - c_data.get("last_fetched", 0) > 14400):
+                needs_fetch = True # Fetch tomorrow every 4 hours
+            elif day_key == "yesterday" and (now_ts - c_data.get("last_fetched", 0) > 3600):
+                needs_fetch = True # Check yesterday every hour if not locked yet
+
+        if needs_fetch:
+            print(f"📡 WAKE-UP: Fetching schedule state for {d_str}...")
+            try:
+                url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={d_str}&limit=1000"
+                r = requests.get(url, headers=headers, impersonate="chrome", timeout=5)
+                if r.status_code == 200:
+                    events = r.json().get('events', [])
+                    schedule_cache[d_str]["raw_events"] = events
+                    schedule_cache[d_str]["last_fetched"] = now_ts
+                    
+                    if day_key == "yesterday" and events:
+                        all_finished = all(((e.get('status') or {}).get('type') or {}).get('state', 'pre') == 'post' for e in events)
+                        if all_finished:
+                            schedule_cache[d_str]["is_locked"] = True
+                            print(f"🔒 {d_str} is now LOCKED. Will never fetch this date again.")
+            except: pass
+
+    # Evaluate Hibernation Conditions
+    for d_str in [day_info["dates"]["today"], day_info["dates"]["tomorrow"]]:
+        for ev in schedule_cache.get(d_str, {}).get("raw_events", []):
+            state = ((ev.get('status') or {}).get('type') or {}).get('state', 'pre')
+            if state == 'in':
+                has_live_games = True
+            elif state == 'pre':
+                date_str = ev.get('date')
+                if date_str:
+                    try:
+                        dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                        mins = (dt - now_utc).total_seconds() / 60.0
+                        if 0 < mins < next_kickoff_mins:
+                            next_kickoff_mins = mins
+                    except: pass
+
+    # Save state
+    with open(schedule_cache_file, 'w', encoding='utf-8') as f:
+        json.dump(schedule_cache, f, indent=2)
+
+    # C. The Early Exit (Downtime Mode)
+    if not has_live_games and next_kickoff_mins > 90:
+        print(f"💤 DOWNTIME MODE ACTIVE: No live games. Next kickoff in {int(next_kickoff_mins)} mins.")
+        print(f"🔄 Executing background Trickle Updates before hibernating...")
+        
+        state_file = 'data/site_pages.json'
+        state = json.load(open(state_file, 'r')) if os.path.exists(state_file) else {}
+        team_state_file = 'data/site_teams.json'
+        team_state = json.load(open(team_state_file, 'r')) if os.path.exists(team_state_file) else {}
+        player_state_file = 'data/site_players.json'
+        player_state = json.load(open(player_state_file, 'r')) if os.path.exists(player_state_file) else {}
+        nav_html = generate_nav_leagues_html(state)
+        upcoming_pool = schedule_cache.get(day_info["dates"]["tomorrow"], {}).get("raw_events", [])
+        
+        # --- TRICKLE LEAGUE ---
+        dormant_leagues = [s for s, d in state.items() if d.get('pill')]
+        if dormant_leagues:
+            dormant_leagues.sort(key=lambda s: state[s].get('last_updated', 0))
+            target_slug = dormant_leagues[0]
+            target_data = state[target_slug]
+            print(f"  └─ Trickle Schedule: {target_data['name']}")
+            
+            est = pytz.timezone('America/New_York')
+            now = datetime.now(est)
+            start_date = now.strftime('%Y%m%d')
+            end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
+            
+            fourteen_day_matches = fetch_espn_scores_for_date(start_date, "", pill=target_data['pill'], end_date_str=end_date, is_today_partition=False, core_index=core_index)
+            if fourteen_day_matches:
+                sync_team_state(fourteen_day_matches)
+                sync_player_state(fourteen_day_matches)
+                sync_team_squads(fourteen_day_matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=state)
+            build_single_league_page(target_slug, target_data, fourteen_day_matches, is_today=False, nav_html=nav_html, today_date_str="")
+            state[target_slug]['last_updated'] = time.time()
+        
+        # --- TRICKLE PLAYERS ---
+        dormant_players = list(player_state.items())
+        if dormant_players:
+            dormant_players.sort(key=lambda x: x[1].get('last_updated', 0))
+            print(f"  └─ Trickle Players: Refreshing 5 dormant profiles.")
+            for p_slug, p_data in dormant_players[:5]:
+                t_slug = p_data.get('team_slug', '')
+                next_m, next_is_home = find_next_fixture_for_entity(t_slug, upcoming_pool)
+                dummy_match = next_m if next_m else {"fixture": {"status": {"short": "FT"}},"teams": {"home": {"name": p_data.get('team_name', 'Team')}, "away": {"name": "Opponent"}},"goals": {"home": 0, "away": 0}}
+                build_single_player_page(p_slug, p_data, dummy_match, is_home=next_is_home, nav_html=nav_html, today_date_str=day_info["display"]["today"], next_match_tuple=(next_m, next_is_home) if next_m else None)
+                p_data['last_updated'] = time.time()
+        
+        # Save Registries & Exit gracefully
+        with open(state_file, 'w', encoding='utf-8') as f: json.dump(state, f, indent=2, ensure_ascii=False)
+        with open(team_state_file, 'w', encoding='utf-8') as f: json.dump(team_state, f, indent=2, ensure_ascii=False)
+        with open(player_state_file, 'w', encoding='utf-8') as f: json.dump(player_state, f, indent=2, ensure_ascii=False)
+        with open('data/player_cache.json', 'w', encoding='utf-8') as f: json.dump(PLAYER_STATS_CACHE, f, indent=2, ensure_ascii=False)
+        
+        print("💤 Downtime Mode complete. Scripts safely exited.")
+        return
+
     # Pass core_index to all daily fetches in parallel
     dates_to_fetch = [
         ("yesterday", day_info["dates"]["yesterday"], False),
