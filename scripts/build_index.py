@@ -1,14 +1,16 @@
 #WHY NOT SAVING?
+from curl_cffi import requests
+from curl_cffi.requests import AsyncSession
 import os
 import time
 import re
 import json
-import requests
+#import requests
 import unicodedata
 from datetime import datetime, timedelta
 import pytz
 import asyncio
-import aiohttp
+#import aiohttp
 import hashlib
 from jinja2 import Template
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -32,7 +34,7 @@ def fetch_single_league_detail(ref_url):
         'Accept-Language': 'en-US,en;q=0.9'
     }
     try:
-        res = requests.get(ref_url, headers=headers, timeout=5)
+        res = requests.get(ref_url, headers=headers, impersonate="chrome", timeout=5)
         if res.status_code == 200:
             return res.json()
     except Exception:
@@ -78,7 +80,7 @@ def build_hydrated_core_index():
         'Accept-Language': 'en-US,en;q=0.9'
     }
     try:
-        master_res = requests.get(CORE_LEAGUES_URL, headers=headers, timeout=10).json()
+        master_res = requests.get(CORE_LEAGUES_URL, headers=headers,impersonate="chrome", timeout=10).json()
         items = master_res.get('items', [])
         ref_urls = [item['$ref'] for item in items if '$ref' in item]
         
@@ -577,7 +579,7 @@ def get_league_pill_for_team(team_id):
     }
     try:
         url = f"https://sports.core.api.espn.com/v2/sports/soccer/teams/{team_id}"
-        res = requests.get(url, headers=headers, timeout=5)
+        res = requests.get(url, headers=headers, impersonate="chrome", timeout=5)
         if res.status_code == 200:
             ref = res.json().get("defaultLeague", {}).get("$ref", "")
             if "/leagues/" in ref:
@@ -723,33 +725,36 @@ def find_next_fixture_for_entity(team_id_or_slug, upcoming_matches):
     return None, False
 
 # ====================================================================
-# ASYNC CORE API PLAYER STATS FETCHER
+# ASYNC CORE API PLAYER STATS FETCHER (curl_cffi update)
 # ====================================================================
 async def fetch_single_player_core_stats(session, internal_slug, event_id, team_id, player_id, sem):
     url = f"https://sports.core.api.espn.com/v2/sports/soccer/leagues/{internal_slug}/events/{event_id}/competitions/{event_id}/competitors/{team_id}/roster/{player_id}/statistics/0"
     async with sem:
         try:
-            async with session.get(url, timeout=4) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    stats_dict = {}
-                    categories = (data.get('splits') or {}).get('categories') or []
-                    for cat in categories:
-                        for stat in cat.get('stats', []):
-                            stats_dict[stat.get('name')] = stat.get('value')
-                    return str(player_id), stats_dict
+            # curl_cffi uses 'await session.get' directly instead of 'async with'
+            resp = await session.get(url, timeout=4)
+            if resp.status_code == 200:
+                data = resp.json() # json() is synchronous in curl_cffi
+                stats_dict = {}
+                categories = (data.get('splits') or {}).get('categories') or []
+                for cat in categories:
+                    for stat in cat.get('stats', []):
+                        stats_dict[stat.get('name')] = stat.get('value')
+                return str(player_id), stats_dict
         except Exception:
             pass
     return str(player_id), {}
 
 async def get_core_stats_concurrently(internal_slug, event_id, player_list):
     headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'en-US,en;q=0.9'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en;q=0.9'
     }
-    sem = asyncio.Semaphore(8)  # Cap concurrent requests per match to 8
-    async with aiohttp.ClientSession(headers=headers) as session:
+    sem = asyncio.Semaphore(8)
+    
+    # Replaced aiohttp with curl_cffi AsyncSession
+    async with AsyncSession(headers=headers, impersonate="chrome") as session:
         tasks = [
             fetch_single_player_core_stats(session, internal_slug, event_id, tid, pid, sem) 
             for tid, pid in player_list
@@ -1840,7 +1845,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             
         try:
             print(f"  └─ Requesting Page {page}: {url}")
-            res = requests.get(url, headers=headers, timeout=10)
+            res = requests.get(url, headers=headers, impersonate="chrome", timeout=10)
             
             # DIAGNOSTIC PRINT: HTTP Status Code
             print(f"  └─ HTTP Status Code: {res.status_code}")
