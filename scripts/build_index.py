@@ -402,7 +402,7 @@ def get_local_image_url(url, subfolder="images/teams"):
                 'Accept': 'application/json, text/plain, */*',
                 'Accept-Language': 'en-US,en;q=0.9'
             }
-            resp = requests.get(url, headers=headers, timeout=5)
+            resp = requests.get(url, headers=headers,impersonate="chrome", timeout=5)
             if resp.status_code == 200:
                 with open(local_file_path, 'wb') as f:
                     f.write(resp.content)
@@ -636,7 +636,7 @@ def sync_team_squads(matches, team_state, player_state, upcoming_pool, nav_html,
                 
             url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{team_pill}/teams/{t_id}/roster"
             try:
-                r = requests.get(url, headers=headers, timeout=5)
+                r = requests.get(url, headers=headers,impersonate="chrome", timeout=5)
                 if r.status_code == 200:
                     data = r.json()
                     athletes_groups = data.get('athletes', [])
@@ -799,7 +799,7 @@ def fetch_athlete_overview_and_gamelog(player_id, position='M'):
     fetched_headshot = ""
 
     try:
-        r_ov = requests.get(overview_url, headers=headers, timeout=5)
+        r_ov = requests.get(overview_url, headers=headers,impersonate="chrome", timeout=5)
         if r_ov.status_code == 200:
             ov_data = r_ov.json()
             
@@ -1220,7 +1220,7 @@ def parse_espn_summary(event_id):
     
     url = f"https://site.web.api.espn.com/apis/site/v2/sports/soccer/all/summary?event={event_id}"
     try:
-        r = requests.get(url, headers=headers, timeout=6)
+        r = requests.get(url, headers=headers,impersonate="chrome", timeout=6)
         if r.status_code != 200: return summary_data
         data = r.json()
     except:
