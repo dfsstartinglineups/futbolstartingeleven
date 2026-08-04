@@ -223,6 +223,24 @@ if os.path.exists('data/headshots.json'):
             HEADSHOTS_CACHE = json.load(f)
     except: pass
 
+# --- NEW: LOAD LIVE STATS CACHE & RUN 24-HOUR GC ---
+LIVE_STATS_CACHE = {}
+if os.path.exists('data/live_stats.json'):
+    try:
+        with open('data/live_stats.json', 'r', encoding='utf-8') as f:
+            LIVE_STATS_CACHE = json.load(f)
+            
+        # GC: 24 Hour TTL (86400 seconds) Sweep
+        current_ts = time.time()
+        stale_matches = [eid for eid, data in LIVE_STATS_CACHE.items() if current_ts - data.get('last_updated', 0) > 86400]
+        for eid in stale_matches:
+            del LIVE_STATS_CACHE[eid]
+        if stale_matches:
+            print(f"🧹 GC: Swept {len(stale_matches)} stale matches from live stats cache.")
+    except: pass
+
+
+
 def get_player_headshot(pid, espn_fallback=""):
     if not pid: return espn_fallback
     if str(pid) in HEADSHOTS_CACHE:
@@ -1301,10 +1319,44 @@ def parse_espn_summary(event_id):
                                 active_player_list.append((t_id, p_id))
 
                 if active_player_list:
-                    try:
-                        core_stats_cache = asyncio.run(get_core_stats_concurrently(internal_slug, event_id, active_player_list))
-                    except Exception:
-                        pass
+                    # --- FAST LANE / SLOW LANE CACHE LOGIC ---
+                    global LIVE_STATS_CACHE
+                    if 'LIVE_STATS_CACHE' not in globals():
+                        LIVE_STATS_CACHE = {}
+                        
+                    current_time = time.time()
+                    cached_match = LIVE_STATS_CACHE.get(str(event_id), {})
+                    last_updated = cached_match.get('last_updated', 0)
+                    is_locked = cached_match.get('is_final', False)
+                    match_status_short = (summary_data["status_obj"].get('type') or {}).get('shortDetail', '')
+                    
+                    needs_update = False
+                    if not cached_match:
+                        needs_update = True
+                    elif not is_locked:
+                        if game_state == 'post':
+                            needs_update = True # Final fetch to lock it
+                        elif match_status_short == 'HT':
+                            needs_update = False # Pause network calls at halftime
+                        elif current_time - last_updated > 300: # 5 minute throttle (300 seconds)
+                            needs_update = True
+
+                    if needs_update:
+                        try:
+                            # 1. Fetch new stats
+                            core_stats_cache = asyncio.run(get_core_stats_concurrently(internal_slug, event_id, active_player_list))
+                            # 2. Update cache memory
+                            LIVE_STATS_CACHE[str(event_id)] = {
+                                'last_updated': current_time,
+                                'is_final': (game_state == 'post'),
+                                'stats': core_stats_cache
+                            }
+                        except Exception:
+                            core_stats_cache = cached_match.get('stats', {})
+                    else:
+                        # Use the 5-min cached stats (Skip API)
+                        core_stats_cache = cached_match.get('stats', {})
+                    # -----------------------------------------
 
             for r_data in rosters:
                 ha = r_data.get('homeAway', 'home')
@@ -3942,6 +3994,9 @@ def generate_v2_index():
     
     # Save Player Stats Cache
     with open('data/player_cache.json', 'w', encoding='utf-8') as f: json.dump(PLAYER_STATS_CACHE, f, indent=2, ensure_ascii=False)
+    
+    # --- ADD THIS LINE TO SAVE LIVE STATS CACHE ---
+    with open('data/live_stats.json', 'w', encoding='utf-8') as f: json.dump(LIVE_STATS_CACHE, f, indent=2, ensure_ascii=False)
 
     # -------------------------------------------------------------------------
     # NEW: GENERATE DAILY LINEUPS JSON FOR TWEET BOT WITH PLAYERS
