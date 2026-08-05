@@ -18573,7 +18573,7 @@
   },
   "20260804": {
     "is_locked": false,
-    "last_fetched": 1785903514.2914727,
+    "last_fetched": 1785903638.64147,
     "raw_events": [
       {
         "id": "401863555",
@@ -21846,13 +21846,13 @@
               "displayClock": "95'",
               "period": 5,
               "type": {
-                "id": "44",
-                "name": "STATUS_SHOOTOUT",
-                "state": "in",
-                "completed": false,
-                "description": "Shootout",
-                "detail": "Penalties",
-                "shortDetail": "Pens"
+                "id": "47",
+                "name": "STATUS_FINAL_PEN",
+                "state": "post",
+                "completed": true,
+                "description": "Final Score - After Penalties",
+                "detail": "FT-Pens",
+                "shortDetail": "FT-Pens"
               }
             },
             "venue": {
@@ -21863,27 +21863,19 @@
                 "country": "USA"
               }
             },
-            "tickets": [
-              {
-                "summary": "Tickets as low as $14",
-                "numberAvailable": 20,
-                "links": [
-                  {
-                    "href": "https://www.vividseats.com/leagues-cup-tickets-america-first-field-8-4-2026--sports-mls/production/6752494?wsUser=717"
-                  },
-                  {
-                    "href": "https://www.vividseats.com/venues/america-first-field-tickets.html?wsUser=717"
-                  }
-                ]
-              }
-            ],
             "format": {
               "regulation": {
                 "periods": 2
               }
             },
             "altGameNote": "Leagues Cup, Liga MX",
-            "notes": [],
+            "notes": [
+              {
+                "text": "Tigres UANL win 6-5 on penalties",
+                "headline": "Tigres UANL win 6-5 on penalties",
+                "type": "event"
+              }
+            ],
             "geoBroadcasts": [
               {
                 "type": {
@@ -21933,15 +21925,16 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "LDLLL",
+                "winner": true,
+                "advance": true,
+                "form": "WLDLL",
                 "score": "1",
-                "shootoutScore": 5,
+                "shootoutScore": 6,
                 "records": [
                   {
                     "name": "All Splits",
                     "type": "total",
-                    "summary": "0-0-0",
+                    "summary": "0-1-0",
                     "abbreviation": "Total"
                   }
                 ],
@@ -22105,14 +22098,15 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "DLLDW",
+                "advance": false,
+                "form": "LDLLD",
                 "score": "1",
                 "shootoutScore": 5,
                 "records": [
                   {
                     "name": "All Splits",
                     "type": "total",
-                    "summary": "0-0-0",
+                    "summary": "0-1-0",
                     "abbreviation": "Total"
                   }
                 ],
@@ -22935,141 +22929,54 @@
                     "position": "SUB"
                   }
                 ]
+              },
+              {
+                "type": {
+                  "id": "104",
+                  "text": "Penalty - Scored"
+                },
+                "clock": {
+                  "value": 5995.0,
+                  "displayValue": "100'"
+                },
+                "team": {
+                  "id": "232"
+                },
+                "scoreValue": 1,
+                "scoringPlay": true,
+                "redCard": false,
+                "yellowCard": false,
+                "penaltyKick": true,
+                "ownGoal": false,
+                "shootout": true,
+                "athletesInvolved": [
+                  {
+                    "id": "276557",
+                    "displayName": "Jes\u00fas Garza",
+                    "shortName": "J. Garza",
+                    "fullName": "Jes\u00fas Garza",
+                    "jersey": "14",
+                    "team": {
+                      "id": "232"
+                    },
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/276557/jesus-garza",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "RB"
+                  }
+                ]
               }
             ],
             "odds": [
-              {
-                "overUnder": 2.5,
-                "link": {
-                  "language": "en-US",
-                  "rel": [
-                    "game",
-                    "desktop",
-                    "bets"
-                  ],
-                  "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34475249",
-                  "text": "Game",
-                  "shortText": "Game",
-                  "isExternal": true,
-                  "isPremium": false,
-                  "isHidden": false
-                },
-                "provider": {
-                  "id": "100",
-                  "name": "DraftKings",
-                  "priority": 1,
-                  "displayName": "DraftKings",
-                  "logos": [
-                    {
-                      "href": "https://a.espncdn.com/i/betting/Draftkings_Light.svg",
-                      "rel": [
-                        "light"
-                      ]
-                    },
-                    {
-                      "href": "https://a.espncdn.com/i/betting/Draftkings_Dark.svg",
-                      "rel": [
-                        "dark"
-                      ]
-                    }
-                  ]
-                },
-                "drawOdds": {
-                  "moneyLine": 250,
-                  "link": {
-                    "language": "en-US",
-                    "rel": [
-                      "draw",
-                      "desktop",
-                      "bets",
-                      "draftkings"
-                    ],
-                    "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34475249%3Foutcomes%3D0ML85742589_2",
-                    "text": "Draw Bet",
-                    "shortText": "Draw Bet",
-                    "isExternal": true,
-                    "isPremium": false,
-                    "isHidden": false
-                  }
-                },
-                "total": {
-                  "displayName": "Total",
-                  "shortDisplayName": "Total",
-                  "over": {
-                    "open": {
-                      "line": "o2.5",
-                      "odds": "-165"
-                    },
-                    "close": {
-                      "line": "o2.5",
-                      "odds": "-170"
-                    }
-                  },
-                  "under": {
-                    "open": {
-                      "line": "u2.5",
-                      "odds": "+130"
-                    },
-                    "close": {
-                      "line": "u2.5",
-                      "odds": "+135"
-                    }
-                  }
-                },
-                "pointSpread": {
-                  "displayName": "Spread",
-                  "shortDisplayName": "Spread",
-                  "home": {
-                    "open": {
-                      "line": "+0.5",
-                      "odds": "-145"
-                    },
-                    "close": {
-                      "line": "-0.5",
-                      "odds": "+120"
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "line": "-0.5",
-                      "odds": "+105"
-                    },
-                    "close": {
-                      "line": "+0.5",
-                      "odds": "-165"
-                    }
-                  }
-                },
-                "moneyline": {
-                  "displayName": "Moneyline",
-                  "shortDisplayName": "ML",
-                  "home": {
-                    "open": {
-                      "odds": "+185"
-                    },
-                    "close": {
-                      "odds": "+120"
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "odds": "+110"
-                    },
-                    "close": {
-                      "odds": "+190"
-                    }
-                  },
-                  "draw": {
-                    "open": {
-                      "odds": "+290"
-                    },
-                    "close": {
-                      "odds": "+250"
-                    }
-                  }
-                },
-                "details": "UANL +120"
-              }
+              null
             ],
             "wasSuspended": false,
             "playByPlayAvailable": true,
@@ -23081,13 +22988,13 @@
           "displayClock": "95'",
           "period": 5,
           "type": {
-            "id": "44",
-            "name": "STATUS_SHOOTOUT",
-            "state": "in",
-            "completed": false,
-            "description": "Shootout",
-            "detail": "Penalties",
-            "shortDetail": "Pens"
+            "id": "47",
+            "name": "STATUS_FINAL_PEN",
+            "state": "post",
+            "completed": true,
+            "description": "Final Score - After Penalties",
+            "detail": "FT-Pens",
+            "shortDetail": "FT-Pens"
           }
         },
         "venue": {
@@ -23097,13 +23004,13 @@
           {
             "language": "en-US",
             "rel": [
-              "live",
+              "summary",
               "desktop",
               "event"
             ],
-            "href": "https://www.espn.com/soccer/match/_/gameId/401863557",
-            "text": "Gamecast",
-            "shortText": "Live",
+            "href": "https://www.espn.com/soccer/match/_/gameId/401863557/real-salt-lake-tigres-uanl",
+            "text": "Summary",
+            "shortText": "Summary",
             "isExternal": false,
             "isPremium": false,
             "isHidden": false
@@ -23145,8 +23052,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 4620.0,
-              "displayClock": "77'",
+              "clock": 4740.0,
+              "displayClock": "79'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -23154,8 +23061,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "77'",
-                "shortDetail": "77'"
+                "detail": "79'",
+                "shortDetail": "79'"
               }
             },
             "venue": {
@@ -23331,7 +23238,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "9"
+                    "displayValue": "10"
                   },
                   {
                     "name": "wonCorners",
@@ -23346,7 +23253,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "69.8"
+                    "displayValue": "69.1"
                   },
                   {
                     "name": "shotAssists",
@@ -23501,7 +23408,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "12"
+                    "displayValue": "13"
                   },
                   {
                     "name": "wonCorners",
@@ -23516,7 +23423,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "30.2"
+                    "displayValue": "30.9"
                   },
                   {
                     "name": "shotAssists",
@@ -23607,7 +23514,22 @@
                 "provider": {
                   "id": "100",
                   "name": "DraftKings",
-                  "priority": 1
+                  "priority": 1,
+                  "displayName": "DraftKings",
+                  "logos": [
+                    {
+                      "href": "https://a.espncdn.com/i/betting/Draftkings_Light.svg",
+                      "rel": [
+                        "light"
+                      ]
+                    },
+                    {
+                      "href": "https://a.espncdn.com/i/betting/Draftkings_Dark.svg",
+                      "rel": [
+                        "dark"
+                      ]
+                    }
+                  ]
                 },
                 "drawOdds": {
                   "moneyLine": 425,
@@ -23641,7 +23563,7 @@
                     },
                     "current": {
                       "line": "o1.5",
-                      "odds": "-125",
+                      "odds": "-108",
                       "link": {
                         "rel": [
                           "over",
@@ -23673,7 +23595,7 @@
                     },
                     "current": {
                       "line": "u1.5",
-                      "odds": "+101",
+                      "odds": "-115",
                       "link": {
                         "rel": [
                           "under",
@@ -23709,7 +23631,7 @@
                     },
                     "current": {
                       "line": "+0.5",
-                      "odds": "+130",
+                      "odds": "+145",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -23741,7 +23663,7 @@
                     },
                     "current": {
                       "line": "-0.5",
-                      "odds": "-195",
+                      "odds": "-215",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -23774,7 +23696,7 @@
                       "odds": "-280"
                     },
                     "current": {
-                      "odds": "+800",
+                      "odds": "+1000",
                       "link": {
                         "rel": [
                           "home",
@@ -23802,7 +23724,7 @@
                       "odds": "+550"
                     },
                     "current": {
-                      "odds": "-165",
+                      "odds": "-190",
                       "link": {
                         "rel": [
                           "away",
@@ -23830,7 +23752,7 @@
                       "odds": "+425"
                     },
                     "current": {
-                      "odds": "+205",
+                      "odds": "+220",
                       "link": {
                         "rel": [
                           "draw",
@@ -23860,8 +23782,8 @@
           }
         ],
         "status": {
-          "clock": 4620.0,
-          "displayClock": "77'",
+          "clock": 4740.0,
+          "displayClock": "79'",
           "period": 2,
           "type": {
             "id": "26",
@@ -23869,8 +23791,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "77'",
-            "shortDetail": "77'"
+            "detail": "79'",
+            "shortDetail": "79'"
           }
         },
         "venue": {
