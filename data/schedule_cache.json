@@ -32380,7 +32380,7 @@
   },
   "20260805": {
     "is_locked": false,
-    "last_fetched": 1785949646.0493157,
+    "last_fetched": 1785949762.8223667,
     "raw_events": [
       {
         "id": "401863561",
@@ -48132,16 +48132,16 @@
             "recent": true,
             "status": {
               "clock": 7200.0,
-              "displayClock": "120'",
+              "displayClock": "120'+1'",
               "period": 4,
               "type": {
-                "id": "24",
-                "name": "STATUS_OVERTIME",
-                "state": "in",
-                "completed": false,
-                "description": "Overtime",
-                "detail": "120'",
-                "shortDetail": "120'"
+                "id": "45",
+                "name": "STATUS_FINAL_AET",
+                "state": "post",
+                "completed": true,
+                "description": "Final Score - After Extra Time",
+                "detail": "AET",
+                "shortDetail": "AET"
               }
             },
             "format": {
@@ -48162,7 +48162,7 @@
                 "order": 0,
                 "homeAway": "home",
                 "winner": false,
-                "form": "DLD",
+                "form": "LLD",
                 "score": "2",
                 "team": {
                   "id": "131638",
@@ -48320,8 +48320,8 @@
                 "type": "team",
                 "order": 1,
                 "homeAway": "away",
-                "winner": false,
-                "form": "DWW",
+                "winner": true,
+                "form": "WWW",
                 "score": "3",
                 "team": {
                   "id": "131834",
@@ -48917,123 +48917,7 @@
               }
             ],
             "odds": [
-              {
-                "overUnder": 2.5,
-                "link": {
-                  "language": "en-US",
-                  "rel": [
-                    "game",
-                    "desktop",
-                    "bets"
-                  ],
-                  "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34482877",
-                  "text": "Game",
-                  "shortText": "Game",
-                  "isExternal": true,
-                  "isPremium": false,
-                  "isHidden": false
-                },
-                "provider": {
-                  "id": "100",
-                  "name": "DraftKings",
-                  "priority": 1
-                },
-                "drawOdds": {
-                  "moneyLine": 275,
-                  "link": {
-                    "language": "en-US",
-                    "rel": [
-                      "draw",
-                      "desktop",
-                      "bets",
-                      "draftkings"
-                    ],
-                    "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34482877%3Foutcomes%3D0ML85764242_2",
-                    "text": "Draw Bet",
-                    "shortText": "Draw Bet",
-                    "isExternal": true,
-                    "isPremium": false,
-                    "isHidden": false
-                  }
-                },
-                "total": {
-                  "displayName": "Total",
-                  "shortDisplayName": "Total",
-                  "over": {
-                    "open": {
-                      "line": "o2.5",
-                      "odds": "-165"
-                    },
-                    "close": {
-                      "line": "o2.5",
-                      "odds": "-170"
-                    }
-                  },
-                  "under": {
-                    "open": {
-                      "line": "u2.5",
-                      "odds": "+110"
-                    },
-                    "close": {
-                      "line": "u2.5",
-                      "odds": "+125"
-                    }
-                  }
-                },
-                "pointSpread": {
-                  "displayName": "Spread",
-                  "shortDisplayName": "Spread",
-                  "home": {
-                    "open": {
-                      "line": "OFF",
-                      "odds": "OFF"
-                    },
-                    "close": {
-                      "line": "OFF",
-                      "odds": "OFF"
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "line": "OFF",
-                      "odds": "OFF"
-                    },
-                    "close": {
-                      "line": "OFF",
-                      "odds": "OFF"
-                    }
-                  }
-                },
-                "moneyline": {
-                  "displayName": "Moneyline",
-                  "shortDisplayName": "ML",
-                  "home": {
-                    "open": {
-                      "odds": "-140"
-                    },
-                    "close": {
-                      "odds": "-105"
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "odds": "+300"
-                    },
-                    "close": {
-                      "odds": "+225"
-                    }
-                  },
-                  "draw": {
-                    "open": {
-                      "odds": "+265"
-                    },
-                    "close": {
-                      "odds": "+275"
-                    }
-                  }
-                },
-                "details": "FER -105"
-              }
+              null
             ],
             "wasSuspended": false,
             "playByPlayAvailable": true,
@@ -49042,29 +48926,29 @@
         ],
         "status": {
           "clock": 7200.0,
-          "displayClock": "120'",
+          "displayClock": "120'+1'",
           "period": 4,
           "type": {
-            "id": "24",
-            "name": "STATUS_OVERTIME",
-            "state": "in",
-            "completed": false,
-            "description": "Overtime",
-            "detail": "120'",
-            "shortDetail": "120'"
+            "id": "45",
+            "name": "STATUS_FINAL_AET",
+            "state": "post",
+            "completed": true,
+            "description": "Final Score - After Extra Time",
+            "detail": "AET",
+            "shortDetail": "AET"
           }
         },
         "links": [
           {
             "language": "en-US",
             "rel": [
-              "live",
+              "summary",
               "desktop",
               "event"
             ],
-            "href": "https://www.espn.com/soccer/match/_/gameId/401900980",
-            "text": "Gamecast",
-            "shortText": "Live",
+            "href": "https://www.espn.com/soccer/match/_/gameId/401900980/paok-ferencvaros",
+            "text": "Summary",
+            "shortText": "Summary",
             "isExternal": false,
             "isPremium": false,
             "isHidden": false
@@ -49106,8 +48990,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2820.0,
-              "displayClock": "47'",
+              "clock": 2940.0,
+              "displayClock": "49'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -49115,8 +48999,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "47'",
-                "shortDetail": "47'"
+                "detail": "49'",
+                "shortDetail": "49'"
               }
             },
             "venue": {
@@ -49733,7 +49617,7 @@
                     },
                     "current": {
                       "line": "o5.5",
-                      "odds": "+115",
+                      "odds": "+122",
                       "link": {
                         "rel": [
                           "over",
@@ -49765,7 +49649,7 @@
                     },
                     "current": {
                       "line": "u5.5",
-                      "odds": "-173",
+                      "odds": "-185",
                       "link": {
                         "rel": [
                           "under",
@@ -49950,8 +49834,8 @@
           }
         ],
         "status": {
-          "clock": 2820.0,
-          "displayClock": "47'",
+          "clock": 2940.0,
+          "displayClock": "49'",
           "period": 2,
           "type": {
             "id": "26",
@@ -49959,8 +49843,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "47'",
-            "shortDetail": "47'"
+            "detail": "49'",
+            "shortDetail": "49'"
           }
         },
         "venue": {
@@ -50018,17 +49902,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2700.0,
-              "displayClock": "45'+3'",
-              "period": 1,
+              "clock": 2820.0,
+              "displayClock": "47'",
+              "period": 2,
               "type": {
-                "id": "23",
-                "name": "STATUS_HALFTIME",
+                "id": "26",
+                "name": "STATUS_SECOND_HALF",
                 "state": "in",
                 "completed": false,
-                "description": "Halftime",
-                "detail": "HT",
-                "shortDetail": "HT"
+                "description": "Second Half",
+                "detail": "47'",
+                "shortDetail": "47'"
               }
             },
             "venue": {
@@ -50545,7 +50429,7 @@
                     },
                     "current": {
                       "line": "u1.5",
-                      "odds": "-195",
+                      "odds": "-196",
                       "link": {
                         "rel": [
                           "under",
@@ -50644,7 +50528,7 @@
                       "odds": "+115"
                     },
                     "current": {
-                      "odds": "+165",
+                      "odds": "+170",
                       "link": {
                         "rel": [
                           "home",
@@ -50672,7 +50556,7 @@
                       "odds": "+180"
                     },
                     "current": {
-                      "odds": "+225",
+                      "odds": "+230",
                       "link": {
                         "rel": [
                           "away",
@@ -50700,7 +50584,7 @@
                       "odds": "+290"
                     },
                     "current": {
-                      "odds": "+140",
+                      "odds": "+135",
                       "link": {
                         "rel": [
                           "draw",
@@ -50730,17 +50614,17 @@
           }
         ],
         "status": {
-          "clock": 2700.0,
-          "displayClock": "45'+3'",
-          "period": 1,
+          "clock": 2820.0,
+          "displayClock": "47'",
+          "period": 2,
           "type": {
-            "id": "23",
-            "name": "STATUS_HALFTIME",
+            "id": "26",
+            "name": "STATUS_SECOND_HALF",
             "state": "in",
             "completed": false,
-            "description": "Halftime",
-            "detail": "HT",
-            "shortDetail": "HT"
+            "description": "Second Half",
+            "detail": "47'",
+            "shortDetail": "47'"
           }
         },
         "venue": {
@@ -50798,8 +50682,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 360.0,
-              "displayClock": "6'",
+              "clock": 480.0,
+              "displayClock": "8'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -50807,8 +50691,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "6'",
-                "shortDetail": "6'"
+                "detail": "8'",
+                "shortDetail": "8'"
               }
             },
             "venue": {
@@ -51203,8 +51087,8 @@
           }
         ],
         "status": {
-          "clock": 360.0,
-          "displayClock": "6'",
+          "clock": 480.0,
+          "displayClock": "8'",
           "period": 1,
           "type": {
             "id": "25",
@@ -51212,8 +51096,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "6'",
-            "shortDetail": "6'"
+            "detail": "8'",
+            "shortDetail": "8'"
           }
         },
         "venue": {
@@ -51271,8 +51155,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 420.0,
-              "displayClock": "7'",
+              "clock": 540.0,
+              "displayClock": "9'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -51280,8 +51164,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "7'",
-                "shortDetail": "7'"
+                "detail": "9'",
+                "shortDetail": "9'"
               }
             },
             "venue": {
@@ -51677,8 +51561,8 @@
           }
         ],
         "status": {
-          "clock": 420.0,
-          "displayClock": "7'",
+          "clock": 540.0,
+          "displayClock": "9'",
           "period": 1,
           "type": {
             "id": "25",
@@ -51686,8 +51570,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "7'",
-            "shortDetail": "7'"
+            "detail": "9'",
+            "shortDetail": "9'"
           }
         },
         "venue": {
@@ -51745,8 +51629,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 420.0,
-              "displayClock": "7'",
+              "clock": 540.0,
+              "displayClock": "9'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -51754,8 +51638,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "7'",
-                "shortDetail": "7'"
+                "detail": "9'",
+                "shortDetail": "9'"
               }
             },
             "venue": {
@@ -52149,7 +52033,7 @@
                     },
                     "current": {
                       "line": "o3.5",
-                      "odds": "+117",
+                      "odds": "+128",
                       "link": {
                         "rel": [
                           "over",
@@ -52181,7 +52065,7 @@
                     },
                     "current": {
                       "line": "u3.5",
-                      "odds": "-178",
+                      "odds": "-196",
                       "link": {
                         "rel": [
                           "under",
@@ -52366,8 +52250,8 @@
           }
         ],
         "status": {
-          "clock": 420.0,
-          "displayClock": "7'",
+          "clock": 540.0,
+          "displayClock": "9'",
           "period": 1,
           "type": {
             "id": "25",
@@ -52375,8 +52259,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "7'",
-            "shortDetail": "7'"
+            "detail": "9'",
+            "shortDetail": "9'"
           }
         },
         "venue": {
@@ -59840,8 +59724,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 360.0,
-              "displayClock": "6'",
+              "clock": 540.0,
+              "displayClock": "9'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -59849,8 +59733,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "6'",
-                "shortDetail": "6'"
+                "detail": "9'",
+                "shortDetail": "9'"
               }
             },
             "venue": {
@@ -60279,7 +60163,7 @@
                     },
                     "current": {
                       "line": "o2.5",
-                      "odds": "-175",
+                      "odds": "-153",
                       "link": {
                         "rel": [
                           "over",
@@ -60311,7 +60195,7 @@
                     },
                     "current": {
                       "line": "u2.5",
-                      "odds": "+122",
+                      "odds": "+107",
                       "link": {
                         "rel": [
                           "under",
@@ -60410,7 +60294,7 @@
                       "odds": "-155"
                     },
                     "current": {
-                      "odds": "-140",
+                      "odds": "-105",
                       "link": {
                         "rel": [
                           "home",
@@ -60438,7 +60322,7 @@
                       "odds": "+390"
                     },
                     "current": {
-                      "odds": "+320",
+                      "odds": "+245",
                       "link": {
                         "rel": [
                           "away",
@@ -60466,7 +60350,7 @@
                       "odds": "+270"
                     },
                     "current": {
-                      "odds": "+290",
+                      "odds": "+255",
                       "link": {
                         "rel": [
                           "draw",
@@ -60496,8 +60380,8 @@
           }
         ],
         "status": {
-          "clock": 360.0,
-          "displayClock": "6'",
+          "clock": 540.0,
+          "displayClock": "9'",
           "period": 1,
           "type": {
             "id": "25",
@@ -60505,8 +60389,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "6'",
-            "shortDetail": "6'"
+            "detail": "9'",
+            "shortDetail": "9'"
           }
         },
         "venue": {
@@ -73056,7 +72940,7 @@
                   "priority": 1
                 },
                 "drawOdds": {
-                  "moneyLine": 255,
+                  "moneyLine": 270,
                   "link": {
                     "language": "en-US",
                     "rel": [
@@ -73083,7 +72967,7 @@
                     },
                     "close": {
                       "line": "o2.5",
-                      "odds": "-105",
+                      "odds": "-110",
                       "link": {
                         "rel": [
                           "over",
@@ -73111,7 +72995,7 @@
                     },
                     "close": {
                       "line": "u2.5",
-                      "odds": "-140",
+                      "odds": "-135",
                       "link": {
                         "rel": [
                           "under",
@@ -73143,7 +73027,7 @@
                     },
                     "close": {
                       "line": "-0.5",
-                      "odds": "-175",
+                      "odds": "-185",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -73171,7 +73055,7 @@
                     },
                     "close": {
                       "line": "+0.5",
-                      "odds": "+120",
+                      "odds": "+125",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -73201,7 +73085,7 @@
                       "odds": "-165"
                     },
                     "close": {
-                      "odds": "-165",
+                      "odds": "-175",
                       "link": {
                         "rel": [
                           "home",
@@ -73226,7 +73110,7 @@
                       "odds": "+425"
                     },
                     "close": {
-                      "odds": "+425",
+                      "odds": "+450",
                       "link": {
                         "rel": [
                           "away",
@@ -73251,7 +73135,7 @@
                       "odds": "+245"
                     },
                     "close": {
-                      "odds": "+255",
+                      "odds": "+270",
                       "link": {
                         "rel": [
                           "draw",
@@ -73272,7 +73156,7 @@
                     }
                   }
                 },
-                "details": "SFE -165"
+                "details": "SFE -175"
               }
             ],
             "wasSuspended": false,
