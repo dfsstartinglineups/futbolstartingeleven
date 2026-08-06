@@ -16,5 +16,5 @@ jobs:
           # Loops 5 times, deleting the 100 newest runs in each batch
           for i in {1..5}; do
             echo "Processing batch $i..."
-            gh run list --repo ${{ github.repository }} --limit 100 --json databaseId -q '.[].databaseId' | xargs -r -I{} gh run delete "{}"
+            gh run list --repo ${{ github.repository }} --limit 100 --json databaseId -q '.[].databaseId' | xargs -r -I{} gh run delete "{}" --repo ${{ github.repository }}
           done
