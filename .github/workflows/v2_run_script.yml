@@ -3,7 +3,7 @@ name: Site Manual Build Generator
 on:
   workflow_dispatch: # Triggers strictly on demand from the Actions tab
 
-# Prevents overlapping runs when pinged rapidly
+# Prevents overlapping runs for the overall workflow
 concurrency:
   group: futbol-site-build
   cancel-in-progress: true
@@ -21,6 +21,11 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+      
+    # ADDED THIS: Forces the internal GitHub Pages queue to drop the ghost lock
+    concurrency:
+      group: "pages"
+      cancel-in-progress: true
 
     steps:
       - name: Checkout Repository
