@@ -81,10 +81,15 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Prepare Pages Directory
+        run: |
+          mkdir _site
+          cp -r index.html .nojekyll *.xml data/ images/ leagues/ teams/ players/ _site/ 2>/dev/null || true
+
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
