@@ -3,7 +3,7 @@ name: Site Manual Build Generator
 on:
   workflow_dispatch: # Triggers strictly on demand from the Actions tab
 
-# Prevents overlapping runs for the overall workflow
+# Prevents overlapping runs when pinged rapidly
 concurrency:
   group: futbol-site-build
   cancel-in-progress: true
@@ -21,11 +21,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      
-    # ADDED THIS: Forces the internal GitHub Pages queue to drop the ghost lock
-    concurrency:
-      group: "pages"
-      cancel-in-progress: true
 
     steps:
       - name: Checkout Repository
@@ -81,15 +76,10 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Prepare Pages Directory
-        run: |
-          mkdir _site
-          cp -r index.html .nojekyll *.xml data/ images/ teams/ lineup/  _site/ 2>/dev/null || true
-          
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '_site'
+          path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
