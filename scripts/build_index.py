@@ -3658,7 +3658,11 @@ def generate_v2_index():
         player_state_file = 'data/site_players.json'
         player_state = json.load(open(player_state_file, 'r')) if os.path.exists(player_state_file) else {}
         nav_html = generate_nav_leagues_html(state)
-        upcoming_pool = schedule_cache.get(day_info["dates"]["tomorrow"], {}).get("raw_events", [])
+        
+        # FIX: Provide an empty pool during Downtime Mode so raw ESPN events 
+        # aren't accidentally passed into the parsed match functions.
+        # This safely triggers the 'dummy_match' fallback for dormant players.
+        upcoming_pool = []
         
         # --- TRICKLE LEAGUE ---
         dormant_leagues = [s for s, d in state.items() if d.get('pill')]
