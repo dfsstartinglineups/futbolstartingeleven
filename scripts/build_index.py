@@ -3646,15 +3646,8 @@ def generate_v2_index():
     with open(schedule_cache_file, 'w', encoding='utf-8') as f:
         json.dump(schedule_cache, f, indent=2)
 
-    # Check if the UI is stuck on a previous day by looking for today's date in the old HTML
-    ui_needs_date_rollover = False
-    if old_html and day_info["display"]["today"] not in old_html:
-        ui_needs_date_rollover = True
-        print("🌅 UI ROLLOVER DETECTED: Forcing a full build to update site dates.")
-
     # C. The Early Exit (Downtime Mode)
-    # Bypass hibernation if the HTML needs to roll over to a new day
-    if not has_live_games and next_kickoff_mins > 90 and not ui_needs_date_rollover:
+    if not has_live_games and next_kickoff_mins > 90:
         print(f"💤 DOWNTIME MODE ACTIVE: No live games. Next kickoff in {int(next_kickoff_mins)} mins.")
         print(f"🔄 Executing background Trickle Updates before hibernating...")
         
