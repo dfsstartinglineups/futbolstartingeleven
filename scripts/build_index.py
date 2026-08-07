@@ -3627,11 +3627,24 @@ def generate_v2_index():
             except: pass
 
     # Evaluate Hibernation Conditions
-    for d_str in [day_info["dates"]["today"], day_info["dates"]["tomorrow"]]:
+    has_unfinalized_games = False
+
+    for d_str in [day_info["dates"]["yesterday"], day_info["dates"]["today"], day_info["dates"]["tomorrow"]]:
         for ev in schedule_cache.get(d_str, {}).get("raw_events", []):
             state = ((ev.get('status') or {}).get('type') or {}).get('state', 'pre')
             if state == 'in':
                 has_live_games = True
+            elif state == 'post':
+                # Check if this finished game has been rendered as FT/AET/PEN in old_html
+                ev_id = str(ev.get('id', ''))
+                if ev_id:
+                    if old_html:
+                        match_pattern = f"<!-- MATCH_{ev_id} -->(.*?)<!-- END_MATCH_{ev_id} -->"
+                        saved_block = re.search(match_pattern, old_html, re.DOTALL)
+                        if not saved_block or not any(badge in saved_block.group(1) for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
+                            has_unfinalized_games = True
+                    else:
+                        has_unfinalized_games = True
             elif state == 'pre':
                 date_str = ev.get('date')
                 if date_str:
@@ -3653,8 +3666,8 @@ def generate_v2_index():
         print("🌅 UI ROLLOVER DETECTED: Forcing a full build to update site dates.")
 
     # C. The Early Exit (Downtime Mode)
-    # Bypass hibernation if the HTML needs to roll over to a new day
-    if not has_live_games and next_kickoff_mins > 90 and not ui_needs_date_rollover:
+    # Bypass hibernation if there are live games, unfinalized games waiting for FT render, next kickoff < 90m, or UI rollover
+    if not has_live_games and not has_unfinalized_games and next_kickoff_mins > 90 and not ui_needs_date_rollover:
         print(f"💤 DOWNTIME MODE ACTIVE: No live games. Next kickoff in {int(next_kickoff_mins)} mins.")
         print(f"🔄 Executing background Trickle Updates before hibernating...")
         
@@ -3666,9 +3679,6 @@ def generate_v2_index():
         player_state = json.load(open(player_state_file, 'r')) if os.path.exists(player_state_file) else {}
         nav_html = generate_nav_leagues_html(state)
         
-        # FIX: Provide an empty pool during Downtime Mode so raw ESPN events 
-        # aren't accidentally passed into the parsed match functions.
-        # This safely triggers the 'dummy_match' fallback for dormant players.
         upcoming_pool = []
         
         # --- TRICKLE LEAGUE ---
