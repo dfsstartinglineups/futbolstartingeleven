@@ -4354,7 +4354,7 @@ def generate_v2_index():
 
         # Build clean Goalscorer Strings (with Assists and Own Goals)
         events = m.get('events', [])
-        goal_events = [e for e in events if e.get('type') == 'Goal' and e.get('detail') in ['Normal Goal', 'Penalty', 'Own Goal', 'Goal']]
+        goal_events = [e for e in events if e.get('type') == 'Goal']
         
         # Sort goals chronologically
         goal_events.sort(key=lambda x: get_actual_minute(x.get('time', '0')))
