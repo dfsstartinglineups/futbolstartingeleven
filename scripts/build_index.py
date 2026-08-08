@@ -1685,6 +1685,8 @@ def get_ribbon_html(data):
     l_flag = str(data["league"].get("flag") or "")
     flag_html = f'<img src="{l_flag}" loading="lazy" decoding="async" style="width: 20px; height: 20px; object-fit: contain; margin-right: 6px; vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">' if l_flag.startswith('http') or l_flag.startswith('/images/') else f'<span style="font-size: 1.1rem; margin-right: 6px; vertical-align: middle; line-height: 1;">{l_flag or "🏆"}</span>'
     
+    home_slug = create_slug(data['teams']['home']['name'])
+    
     return f'''
     <div class="row g-0 align-items-center py-2" style="transition: background-color 0.2s;">
         <div class="col-3 text-center d-flex flex-column justify-content-center align-items-center border-end pe-1 ps-1"><div style="margin-bottom: 3px;">{get_time_badge_html(data)}</div><a href="/leagues/{data["league"]["slug"]}/" onclick="event.stopPropagation();" class="text-decoration-none text-muted fw-bold text-truncate w-100 px-1 d-inline-block" style="font-size: 0.65rem; letter-spacing: 0.5px; text-transform: uppercase;" title="{data["league"]["name"]}">{flag_html}{data["league"]["abbrev"]}</a></div>
@@ -1692,7 +1694,10 @@ def get_ribbon_html(data):
             <div class="d-flex justify-content-between align-items-center mb-1"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['home']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{h_score}</span></div></div>
             <div class="d-flex justify-content-between align-items-center"><span class="text-truncate fw-bold" style="font-size: 0.8rem; max-width: 88%;"><img src="{data['teams']['away']['logo']}" loading="lazy" decoding="async" width="14" height="14" class="me-1" style="object-fit:contain;">{data['teams']['away']['name']}</span><div class="text-end" style="min-width: fit-content; white-space: nowrap;"><span class="fw-bold text-dark" style="font-size: 0.85rem;">{a_score}</span></div></div>
         </div>
-        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center">{get_latest_event_html(data, True)}</div>
+        <div class="col-4 text-center border-start d-flex justify-content-center align-items-center position-relative">
+            <a href="/teams/{home_slug}/match/" class="match-link-icon text-muted position-absolute" style="top: 2px; right: 4px; padding: 4px;" onclick="event.stopPropagation();" title="View Match Center"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg></a>
+            {get_latest_event_html(data, True)}
+        </div>
     </div>'''
 
 def get_center_column_html(data):
@@ -1837,6 +1842,7 @@ def pre_render_game_card(data, is_live_section=False):
                 <div class="d-flex align-items-center mb-2 w-100 pb-1 border-bottom" style="cursor: pointer;" onclick="toggleSingleCard('{dom_id}')">
                     <div class="pe-2 d-flex align-items-center flex-shrink-0" id="time-{dom_id}" style="white-space: nowrap;">{get_time_badge_html(data)} {get_latest_event_html(data)}</div>
                     <a href="/leagues/{data['league']['slug']}/" class="text-decoration-none text-muted fw-bold text-uppercase text-end ms-auto text-truncate d-flex align-items-center justify-end" style="font-size: 0.75rem; min-width: 0;" title="{data['league']['name']}">{flag_html} <span class="text-truncate">{data['league']['name']}</span></a>
+                    <a href="/teams/{home_slug}/match/" class="match-link-icon text-muted ms-2 d-flex align-items-center" onclick="event.stopPropagation();" title="View Match Center"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg></a>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
                     <div class="text-center" style="width: 30%;"><img src="{data['teams']['home']['logo']}" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">{data['teams']['home']['name']}</div>{home_lineup_html}</div>
@@ -3661,6 +3667,9 @@ def build_single_match_page(team_slug, match_data, is_home, nav_html):
     match_card_html = match_data['html_card']
     match_card_html = match_card_html.replace('class="full-view d-none"', 'class="full-view d-block"')
     match_card_html = match_card_html.replace('class="ribbon-view"', 'class="ribbon-view d-none"')
+    
+    # Hide the match-link icons on the match page itself
+    match_card_html = match_card_html.replace('class="match-link-icon', 'class="match-link-icon d-none')
 
     schema_json = generate_match_schema(match_data)
     
