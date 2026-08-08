@@ -2506,6 +2506,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
                     currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
+                    
+                    // Re-trigger lazy loading if the card remains expanded after DOM refresh
+                    if (isFullVisible) {
+                        currentCard.querySelectorAll('img[data-src]').forEach(img => { 
+                            img.src = img.getAttribute('data-src'); 
+                            img.removeAttribute('data-src'); 
+                        });
+                    }
                 }
                 if (activeTab) {
                     const tabName = activeTab.includes('stats') ? 'stats' : 'xi';
@@ -2761,6 +2769,14 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
                     currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
+                    
+                    // Re-trigger lazy loading if the card remains expanded after DOM refresh
+                    if (isFullVisible) {
+                        currentCard.querySelectorAll('img[data-src]').forEach(img => { 
+                            img.src = img.getAttribute('data-src'); 
+                            img.removeAttribute('data-src'); 
+                        });
+                    }
                 }
                 if (activeTab) {
                     const tabName = activeTab.includes('stats') ? 'stats' : 'xi';
@@ -3670,6 +3686,9 @@ def build_single_match_page(team_slug, match_data, is_home, nav_html):
     
     # Hide the match-link icons on the match page itself
     match_card_html = match_card_html.replace('class="match-link-icon', 'class="match-link-icon d-none')
+    
+    # Swap lazy-load data-src to src since the card is permanently open
+    match_card_html = match_card_html.replace('data-src="', 'src="')
 
     schema_json = generate_match_schema(match_data)
     
