@@ -585,6 +585,14 @@
                 if (isRibbonVisible !== undefined && isFullVisible !== undefined) {
                     currentCard.querySelector('.ribbon-view')?.classList.toggle('d-none', !isRibbonVisible);
                     currentCard.querySelector('.full-view')?.classList.toggle('d-none', !isFullVisible);
+                    
+                    // Re-trigger lazy loading if the card remains expanded after DOM refresh
+                    if (isFullVisible) {
+                        currentCard.querySelectorAll('img[data-src]').forEach(img => { 
+                            img.src = img.getAttribute('data-src'); 
+                            img.removeAttribute('data-src'); 
+                        });
+                    }
                 }
                 if (activeTab) {
                     const tabName = activeTab.includes('stats') ? 'stats' : 'xi';
