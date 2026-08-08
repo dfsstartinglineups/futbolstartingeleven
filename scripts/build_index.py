@@ -2062,6 +2062,13 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
 
             league_flag = get_local_image_url(str(league_flag or ""), subfolder="images/leagues")
 
+            # NEW: Resolve the proper display names BEFORE the caching check!
+            # This prevents the raw string from bypassing the women's check 
+            # and overwriting the men's folder when the women's match goes FT.
+            temp_league_dict = {"name": final_league_name, "pill": league_pill, "slug": league_slug}
+            _, display_home_name = create_team_slug_and_name(home_name, temp_league_dict)
+            _, display_away_name = create_team_slug_and_name(away_name, temp_league_dict)
+
             if state == 'post' and old_html:
                 match_pattern = f"<!-- MATCH_{event_id} -->(.*?)<!-- END_MATCH_{event_id} -->"
                 saved_block = re.search(match_pattern, old_html, re.DOTALL)
@@ -2070,7 +2077,7 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                     if any(badge in card_content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
                         matches.append({
                             "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": "FT"}},
-                            "teams": {"home": {"id": home_id, "name": home_name, "logo": home_logo}, "away": {"id": away_id, "name": away_name, "logo": away_logo}},
+                            "teams": {"home": {"id": home_id, "name": display_home_name, "logo": home_logo}, "away": {"id": away_id, "name": display_away_name, "logo": away_logo}},
                             "goals": {"home": int(home_comp.get('score') or 0), "away": int(away_comp.get('score') or 0)},
                             "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_pill},
                             "html_card": f"<!-- MATCH_{event_id} -->{card_content}<!-- END_MATCH_{event_id} -->",
@@ -2102,10 +2109,6 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                 status_short = 'ABD'
             else:
                 status_short = 'NS' if st == 'pre' else ('FT' if st == 'post' else fresh_type.get('shortDetail', 'LIVE'))
-
-            temp_league_dict = {"name": final_league_name, "pill": league_pill, "slug": league_slug}
-            _, display_home_name = create_team_slug_and_name(home_name, temp_league_dict)
-            _, display_away_name = create_team_slug_and_name(away_name, temp_league_dict)
 
             match_entry = {
                 "fixture": {"id": event_id, "date": event.get('date', ''), "status": {"short": status_short, "elapsed": extract_match_clock(fresh_status)}},
