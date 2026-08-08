@@ -2534,7 +2534,7 @@ LEAGUE_HTML_TEMPLATE = """<!DOCTYPE html>
     </script>
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
-    <link class="canonical" href="https://futbolstartingeleven.com/leagues/{{ league_slug }}/">
+    <link rel="canonical" href="https://futbolstartingeleven.com/leagues/{{ league_slug }}/">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -2789,7 +2789,7 @@ TEAM_HTML_TEMPLATE = """<!DOCTYPE html>
     </script>
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
-    <link class="canonical" href="https://futbolstartingeleven.com/teams/{{ team_slug }}/lineup/">
+    <link rel="canonical" href="https://futbolstartingeleven.com/teams/{{ team_slug }}/lineup/">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -2875,7 +2875,7 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
     <meta name="robots" content="index, follow">
-    <link class="canonical" href="https://futbolstartingeleven.com/players/{{ player_slug }}/">
+    <link rel="canonical" href="https://futbolstartingeleven.com/players/{{ player_slug }}/">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -3091,7 +3091,7 @@ MATCH_HTML_TEMPLATE = """<!DOCTYPE html>
     </script>
     <title>{{ seo_title }}</title>
     <meta name="description" content="{{ seo_desc }}">
-    <link class="canonical" href="https://futbolstartingeleven.com/teams/{{ team_slug }}/match/">
+    <link rel="canonical" href="https://futbolstartingeleven.com/teams/{{ team_slug }}/match/">
     
     <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website">
