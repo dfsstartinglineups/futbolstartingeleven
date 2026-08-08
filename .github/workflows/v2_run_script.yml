@@ -6,7 +6,7 @@ on:
 # Prevents overlapping runs when pinged rapidly
 concurrency:
   group: futbol-site-build
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
