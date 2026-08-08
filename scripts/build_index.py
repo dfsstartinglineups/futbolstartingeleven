@@ -3076,6 +3076,194 @@ PLAYER_HTML_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
+MATCH_HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#212529">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKSS7R4E02"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WKSS7R4E02');
+    </script>
+    <title>{{ seo_title }}</title>
+    <meta name="description" content="{{ seo_desc }}">
+    <link class="canonical" href="https://futbolstartingeleven.com/teams/{{ team_slug }}/match/">
+    
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ seo_title }}">
+    <meta property="og:description" content="{{ seo_desc }}">
+    <meta property="og:image" content="https://futbolstartingeleven.com/social-share1.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ seo_title }}">
+    <meta name="twitter:description" content="{{ seo_desc }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body { background-color: #f1f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .header-brand { font-weight: 900; letter-spacing: -1px; font-size: 2rem; color: #fff; font-style: italic; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .header-brand a { color: inherit; }
+        .header-brand span { text-shadow: none !important; background: linear-gradient(to bottom, #20c997 0%, #198754 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 12px rgba(32, 201, 151, 0.6)); }
+        
+        .lineup-card { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 24px; }
+        .team-logo { width: 60px; height: 60px; object-fit: contain; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1)); }
+        .batting-order { padding-left: 0; list-style-type: none; margin-bottom: 0; }
+        .batting-order li { padding: 8px 12px; font-size: 0.95rem; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; align-items: center; }
+        .batting-order li:last-child { border-bottom: none; }
+        .batter-name { font-weight: 600; color: #495057; }
+        
+        .live-dot { display: inline-block; width: 8px; height: 8px; background-color: #fff; border-radius: 50%; margin-right: 6px; margin-bottom: 1px; animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(32, 201, 151, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(32, 201, 151, 0); } }
+        .stat-bar-container { display: flex; width: 100%; height: 16px; background-color: #e9ecef; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+        .stat-bar-segment { display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 800; padding: 0 4px; transition: width 0.5s ease-in-out; }
+        .stat-label-tiny { font-size: 0.6rem; text-transform: uppercase; font-weight: 700; color: #6c757d; margin-top: 6px; }
+        .lineup-tab { font-size: 0.75rem; font-weight: 700; padding: 8px 6px; color: #adb5bd; cursor: pointer; transition: all 0.2s ease; border-bottom: 2px solid transparent; text-transform: uppercase; }
+        .lineup-tab.active { color: #20c997; border-bottom: 2px solid #20c997; }
+
+        @keyframes glowGoal { 0% { border-color: #20c997; box-shadow: 0 0 25px rgba(32, 201, 151, 0.8); transform: scale(1.02); } 100% { border-color: #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transform: scale(1); } }
+        @keyframes headerGoal { 0% { background-color: #d1e7dd !important; } 100% { background-color: #fcfcfc !important; } }
+        .glow-goal { animation: glowGoal 4s ease-out !important; border: 3px solid #20c997 !important; position: relative !important; z-index: 10 !important; }
+        .glow-goal .p-2.pb-1 { animation: headerGoal 4s ease-out !important; }
+    </style>
+    {{ schema_json | safe }}
+</head>
+<body>
+
+""" + BASE_HEADER + """
+
+<div class="container mt-4 mb-3 text-center">
+    <div class="badge bg-dark px-3 py-2 mb-2 text-uppercase shadow-sm" style="font-size: 0.75rem; letter-spacing: 0.5px;">{{ league_name }}</div>
+    <h1 class="h4 fw-bold text-dark mb-3">{{ page_h1 }}</h1>
+</div>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+            {{ match_card_html | safe }}
+            
+            <div class="mt-4 text-center">
+                <a href="/teams/{{ team_slug }}/lineup/" class="btn btn-outline-dark fw-bold px-4 py-2 shadow-sm rounded-pill" style="font-size: 0.85rem;">View Full Team Lineup Page &rarr;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('leagueSearchNavInput')?.addEventListener('input', function(e) {
+            const text = e.target.value.toLowerCase();
+            document.querySelectorAll('#leagueSearchList li').forEach(li => {
+                const leagueName = li.textContent.toLowerCase();
+                li.style.display = leagueName.includes(text) ? '' : 'none';
+            });
+        });
+
+        document.querySelectorAll('.local-time-badge').forEach(badge => {
+            const utcStr = badge.getAttribute('data-utc');
+            if (utcStr) {
+                const dt = new Date(utcStr);
+                const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+                let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+                badge.textContent = `${day} ${time}`;
+            }
+        });
+
+        setInterval(pollAndUpdateDOM, 30000);
+    });
+
+    window.switchLineupTab = function(event, fixId, tabName) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        const xiTab = document.getElementById(`tab-xi-${fixId}`), statsTab = document.getElementById(`tab-stats-${fixId}`);
+        const xiView = document.getElementById(`view-xi-${fixId}`), statsView = document.getElementById(`view-stats-${fixId}`);
+        if (tabName === 'xi') {
+            xiTab?.classList.add('active'); statsTab?.classList.remove('active');
+            xiView?.classList.remove('d-none'); statsView?.classList.add('d-none');
+        } else if (tabName === 'stats') {
+            statsTab?.classList.add('active'); xiTab?.classList.remove('active');
+            statsView?.classList.remove('d-none'); xiView?.classList.add('d-none');
+        }
+    };
+
+    function triggerCardGlow(cardEl, newestEventText) {
+        if (!cardEl || !newestEventText) return;
+        
+        let glowClass = 'glow-goal'; 
+        cardEl.classList.remove('glow-goal');
+        void cardEl.offsetWidth;
+        cardEl.classList.add(glowClass);
+        setTimeout(() => { cardEl.classList.remove(glowClass); }, 4000);
+    }
+    
+    async function pollAndUpdateDOM() {
+        try {
+            const res = await fetch(window.location.href, { cache: 'no-store' });
+            if (!res.ok) return;
+            const htmlText = await res.text();
+            
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(htmlText, 'text/html');
+
+            document.querySelectorAll('.lineup-card').forEach(currentCard => {
+                const cardId = currentCard.id;
+                if (!cardId) return;
+                const fixId = cardId.replace('card-', '');
+                const newCard = newDoc.getElementById(cardId);
+                if (!newCard) return;
+                if (currentCard.innerHTML === newCard.innerHTML) return;
+
+                const currentEventsHtml = currentCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
+                const newEventsHtml = newCard.querySelector(`#events-${fixId}`)?.innerHTML || '';
+                const hasNewEvent = currentEventsHtml !== newEventsHtml && newEventsHtml.trim() !== '';
+
+                let newestEventText = '';
+                if (hasNewEvent) {
+                    const oldRows = Array.from(currentCard.querySelectorAll('.event-expanded .d-flex.align-items-start')).map(el => el.textContent);
+                    const newRows = Array.from(newCard.querySelectorAll('.event-expanded .d-flex.align-items-start'));
+                    for (let row of newRows) {
+                        if (!oldRows.includes(row.textContent)) {
+                            newestEventText = row.textContent;
+                            break;
+                        }
+                    }
+                }
+
+                const activeTab = currentCard.querySelector('.lineup-tab.active')?.id;
+                currentCard.innerHTML = newCard.innerHTML;
+                
+                // Re-run time formatter
+                currentCard.querySelectorAll('.local-time-badge').forEach(badge => {
+                    const utcStr = badge.getAttribute('data-utc');
+                    if (utcStr) {
+                        const dt = new Date(utcStr);
+                        const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+                        let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+                        badge.textContent = `${day} ${time}`;
+                    }
+                });
+                
+                if (activeTab) {
+                    const tabName = activeTab.includes('stats') ? 'stats' : 'xi';
+                    window.switchLineupTab(null, fixId, tabName);
+                }
+
+                if (newestEventText) {
+                    triggerCardGlow(currentCard, newestEventText);
+                }
+            });
+        } catch (err) {
+            console.error("DOM update failed:", err);
+        }
+    }
+</script>
+</body>
+</html>
+"""
+
 def build_single_league_page(league_slug, league_data, matches, is_today, nav_html, today_date_str):
     league_dir = os.path.join('leagues', league_slug)
     os.makedirs(league_dir, exist_ok=True)
@@ -3403,6 +3591,94 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
     with open(os.path.join(player_dir, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(output)
 
+def generate_match_schema(match_data):
+    home_name = match_data['teams']['home']['name']
+    away_name = match_data['teams']['away']['name']
+    match_date = match_data['fixture'].get('date', '')
+    status_short = match_data['fixture']['status']['short']
+    
+    if status_short in ['NS', 'TBD']:
+        event_status = "https://schema.org/EventScheduled"
+    elif status_short in ['PST', 'CANC', 'ABD']:
+        event_status = "https://schema.org/EventCancelled"
+    else:
+        event_status = "https://schema.org/EventScheduled"
+        
+    event_schema = {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        "name": f"{home_name} vs {away_name}",
+        "sport": "Soccer",
+        "startDate": match_date,
+        "eventStatus": event_status,
+        "homeTeam": {
+            "@type": "SportsOrganization",
+            "name": home_name
+        },
+        "awayTeam": {
+            "@type": "SportsOrganization",
+            "name": away_name
+        }
+    }
+    
+    json_string = json.dumps(event_schema, indent=2, ensure_ascii=False)
+    return f'<script type="application/ld+json">\n{json_string}\n</script>'
+
+def build_single_match_page(team_slug, match_data, is_home, nav_html):
+    match_dir = os.path.join('teams', team_slug, 'match')
+    os.makedirs(match_dir, exist_ok=True)
+    
+    h_team = match_data['teams']['home']
+    a_team = match_data['teams']['away']
+    league_name = match_data['league']['name']
+    
+    status_short = match_data['fixture']['status']['short']
+    is_final = status_short in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']
+    
+    # Meta Tags Logic
+    if is_final:
+        h_score = match_data['goals']['home']
+        a_score = match_data['goals']['away']
+        if is_home:
+            seo_title = f"{h_team['name']} {h_score} - {a_score} {a_team['name']}: Final Score, Match Recap & Stats"
+            page_h1 = f"{h_team['name']} vs {a_team['name']} - Final Match Recap"
+            seo_desc = f"Full-time match recap and final score for {h_team['name']} vs {a_team['name']}. View the final tactical lineups, goalscorers, cards, and team possession stats."
+        else:
+            seo_title = f"{a_team['name']} {a_score} - {h_score} {h_team['name']}: Final Score, Match Recap & Stats"
+            page_h1 = f"{a_team['name']} at {h_team['name']} - Final Match Recap"
+            seo_desc = f"Full-time match recap and final score for {a_team['name']} at {h_team['name']}. View the final tactical lineups, goalscorers, cards, and team possession stats."
+    else:
+        if is_home:
+            seo_title = f"{h_team['name']} vs {a_team['name']} Starting XI, Live Score & Odds | {league_name}"
+            page_h1 = f"{h_team['name']} vs {a_team['name']} - Live Match Center & Lineups"
+            seo_desc = f"Official {h_team['name']} starting lineup, live match clock, goalscorers, betting odds, and tactical pitch view vs {a_team['name']}."
+        else:
+            seo_title = f"{a_team['name']} at {h_team['name']} Starting XI, Live Score & Odds | {league_name}"
+            page_h1 = f"{a_team['name']} at {h_team['name']} - Live Match Center & Lineups"
+            seo_desc = f"Official {a_team['name']} starting lineup, live match clock, goalscorers, betting odds, and tactical pitch view at {h_team['name']}."
+
+    # Process Expanded Card HTML (Force Full-View Open, Hide Ribbon)
+    match_card_html = match_data['html_card']
+    match_card_html = match_card_html.replace('class="full-view d-none"', 'class="full-view d-block"')
+    match_card_html = match_card_html.replace('class="ribbon-view"', 'class="ribbon-view d-none"')
+
+    schema_json = generate_match_schema(match_data)
+    
+    template = Template(MATCH_HTML_TEMPLATE)
+    output = template.render(
+        seo_title=seo_title,
+        seo_desc=seo_desc,
+        page_h1=page_h1,
+        team_slug=team_slug,
+        league_name=league_name,
+        match_card_html=match_card_html,
+        nav_leagues_html=nav_html,
+        schema_json=schema_json
+    )
+    
+    with open(os.path.join(match_dir, 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(output)
+
 def build_sitemaps(league_state, team_state, player_state):
     base_url = "https://futbolstartingeleven.com"
     now_iso = datetime.now(pytz.utc).isoformat(timespec='seconds')
@@ -3442,7 +3718,7 @@ def build_sitemaps(league_state, team_state, player_state):
     with open("sitemap-lineups.xml", "w", encoding="utf-8") as f:
         f.write(lineups_xml)
 
-    # 4. Players Sitemap
+   # 4. Players Sitemap
     players_xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     for slug, data in player_state.items():
         lmod = format_w3c_date(data.get('last_updated', 0))
@@ -3451,9 +3727,24 @@ def build_sitemaps(league_state, team_state, player_state):
     with open("sitemap-players.xml", "w", encoding="utf-8") as f:
         f.write(players_xml)
 
-    # 5. Sitemap Index (The Master File)
+    # 5. Matches Sitemap
+    matches_xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for slug, data in team_state.items():
+        match_file = os.path.join('teams', slug, 'match', 'index.html')
+        if os.path.exists(match_file):
+            lmod = format_w3c_date(os.path.getmtime(match_file))
+            matches_xml += f'    <url>\n        <loc>{base_url}/teams/{slug}/match/</loc>\n        <lastmod>{lmod}</lastmod>\n    </url>\n'
+    matches_xml += '</urlset>'
+    with open("sitemap-matches.xml", "w", encoding="utf-8") as f:
+        f.write(matches_xml)
+
+    # 6. Sitemap Index (The Master File)
     index_xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <sitemap>
+        <loc>{base_url}/sitemap-matches.xml</loc>
+        <lastmod>{now_iso}</lastmod>
+    </sitemap>
     <sitemap>
         <loc>{base_url}/sitemap-main.xml</loc>
         <lastmod>{now_iso}</lastmod>
@@ -3946,6 +4237,48 @@ def generate_v2_index():
                                 p_data['last_match_id'] = match_id
                                 p_data['is_final'] = is_ft
 
+    # 4b. GENERATE MATCH PAGES FOR ALL MATCHES ON TODAY'S SLATE
+    print(f"🔄 Generating Match Pages for Today's Slate...")
+    for m in raw_matches_by_day['today']:
+        status_short = m['fixture']['status']['short']
+        is_ft = status_short in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']
+        is_live = not is_ft and status_short not in ['NS', 'TBD']
+
+        for side in ['home', 'away']:
+            team_info = m['teams'][side]
+            t_slug = create_slug(team_info['name'])
+            if not t_slug:
+                continue
+
+            match_file = os.path.join('teams', t_slug, 'match', 'index.html')
+            needs_match_build = False
+
+            if not os.path.exists(match_file):
+                needs_match_build = True
+            elif is_live:
+                needs_match_build = True
+            elif is_ft:
+                # Guarantee FT Lock-In: Check if the file on disk is missing the final FT badge
+                try:
+                    with open(match_file, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        if not any(badge in content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
+                            needs_match_build = True
+                except Exception:
+                    needs_match_build = True
+            else:
+                # Pre-game / Scheduled: Refresh if file is older than 5 minutes
+                time_since_file = time.time() - os.path.getmtime(match_file)
+                if time_since_file > 300:
+                    needs_match_build = True
+
+            if needs_match_build:
+                build_single_match_page(
+                    t_slug, m,
+                    is_home=(side == 'home'),
+                    nav_html=nav_html
+                )
+    
     # 5. Generate ONE Dormant League (14-Day Trickle Round Robin)
     dormant_leagues = [s for s, d in state.items() if s not in active_slugs and d.get('pill')]
     if dormant_leagues:
@@ -4550,6 +4883,9 @@ def generate_v2_index():
     for slug, data in team_state.items():
         if data.get('last_updated', 0) >= script_start_time:
             changed_urls.append(f"{base_url}/teams/{slug}/lineup/")
+            match_file = os.path.join('teams', slug, 'match', 'index.html')
+            if os.path.exists(match_file):
+                changed_urls.append(f"{base_url}/teams/{slug}/match/")
             
     for slug, data in player_state.items():
         if data.get('last_updated', 0) >= script_start_time:
