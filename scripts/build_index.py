@@ -4346,38 +4346,41 @@ def generate_v2_index():
         state[target_slug]['last_updated'] = datetime.now().timestamp()
 
     # 5b. Silent Player Background Trickle Update (Batch Size: 5 dormant players per run)
-    active_player_ids = set()
-    for m in matches_to_process:
-        for side in ['home', 'away']:
-            lineup = m.get(side + 'Lineup') or {}
-            for entry in (lineup.get('startXI', []) + lineup.get('substitutes', [])):
-                p_id = str(entry.get('player', {}).get('id', ''))
-                if p_id: active_player_ids.add(p_id)
+    if has_live_games:
+        print("⚡ LIVE GAMES ACTIVE: Skipping 5-player silent trickle to maximize execution speed.")
+    else:
+        active_player_ids = set()
+        for m in matches_to_process:
+            for side in ['home', 'away']:
+                lineup = m.get(side + 'Lineup') or {}
+                for entry in (lineup.get('startXI', []) + lineup.get('substitutes', [])):
+                    p_id = str(entry.get('player', {}).get('id', ''))
+                    if p_id: active_player_ids.add(p_id)
 
-    dormant_players = [
-        (p_slug, p_data) for p_slug, p_data in player_state.items()
-        if str(p_data.get('id')) not in active_player_ids
-    ]
-    if dormant_players:
-        dormant_players.sort(key=lambda x: x[1].get('last_updated', 0))
-        target_players = dormant_players[:5]
-        print(f"🔄 SILENT TRICKLE: Refreshing 5 dormant player profiles...")
-        for p_slug, p_data in target_players:
-            t_slug = p_data.get('team_slug', '')
-            next_m, next_is_home = find_next_fixture_for_entity(t_slug, upcoming_pool)
-            dummy_match = next_m if next_m else {
-                "fixture": {"status": {"short": "FT"}},
-                "teams": {"home": {"name": p_data.get('team_name', 'Team')}, "away": {"name": "Opponent"}},
-                "goals": {"home": 0, "away": 0}
-            }
-            build_single_player_page(
-                p_slug, p_data, dummy_match, 
-                is_home=next_is_home, 
-                nav_html=nav_html, 
-                today_date_str=day_info["display"]["today"],
-                next_match_tuple=(next_m, next_is_home) if next_m else None
-            )
-            p_data['last_updated'] = datetime.now().timestamp()
+        dormant_players = [
+            (p_slug, p_data) for p_slug, p_data in player_state.items()
+            if str(p_data.get('id')) not in active_player_ids
+        ]
+        if dormant_players:
+            dormant_players.sort(key=lambda x: x[1].get('last_updated', 0))
+            target_players = dormant_players[:5]
+            print(f"🔄 SILENT TRICKLE: Refreshing 5 dormant player profiles...")
+            for p_slug, p_data in target_players:
+                t_slug = p_data.get('team_slug', '')
+                next_m, next_is_home = find_next_fixture_for_entity(t_slug, upcoming_pool)
+                dummy_match = next_m if next_m else {
+                    "fixture": {"status": {"short": "FT"}},
+                    "teams": {"home": {"name": p_data.get('team_name', 'Team')}, "away": {"name": "Opponent"}},
+                    "goals": {"home": 0, "away": 0}
+                }
+                build_single_player_page(
+                    p_slug, p_data, dummy_match, 
+                    is_home=next_is_home, 
+                    nav_html=nav_html, 
+                    today_date_str=day_info["display"]["today"],
+                    next_match_tuple=(next_m, next_is_home) if next_m else None
+                )
+                p_data['last_updated'] = datetime.now().timestamp()
 
     # Save Registry States
     with open(state_file, 'w', encoding='utf-8') as f: json.dump(state, f, indent=2, ensure_ascii=False)
