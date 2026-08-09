@@ -3981,11 +3981,18 @@ def generate_v2_index():
     with open(schedule_cache_file, 'w', encoding='utf-8') as f:
         json.dump(schedule_cache, f, indent=2)
 
-    # Check if the UI is stuck on a previous day by looking for today's date in the old HTML
+    # Check if the UI is stuck on a previous day by inspecting the 'today' button date in old HTML
     ui_needs_date_rollover = False
-    if old_html and day_info["display"]["today"] not in old_html:
-        ui_needs_date_rollover = True
-        print("🌅 UI ROLLOVER DETECTED: Forcing a full build to update site dates.")
+    if old_html:
+        today_button_match = re.search(r'data-day="today">Today<br><small[^>]*>(.*?)</small>', old_html)
+        if today_button_match:
+            rendered_today_date = today_button_match.group(1).strip()
+            if rendered_today_date != day_info["display"]["today"]:
+                ui_needs_date_rollover = True
+                print(f"🌅 UI ROLLOVER DETECTED: Site currently shows '{rendered_today_date}' for Today, but today is '{day_info['display']['today']}'. Forcing full crossover build!")
+        elif day_info["display"]["today"] not in old_html:
+            ui_needs_date_rollover = True
+            print("🌅 UI ROLLOVER DETECTED: Forcing a full build to update site dates.")
 
     # C. The Early Exit (Downtime Mode)
     # Bypass hibernation if there are live games, unfinalized games waiting for FT render, next kickoff < 90m, or UI rollover
