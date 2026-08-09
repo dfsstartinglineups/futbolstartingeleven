@@ -4346,6 +4346,8 @@ def generate_v2_index():
         state[target_slug]['last_updated'] = datetime.now().timestamp()
 
     # 5b. Silent Player Background Trickle Update (Batch Size: 5 dormant players per run)
+    dormant_players = [] # <-- FIX: Initialize the empty list right here
+    
     if has_live_games:
         print("⚡ LIVE GAMES ACTIVE: Skipping 5-player silent trickle to maximize execution speed.")
     else:
