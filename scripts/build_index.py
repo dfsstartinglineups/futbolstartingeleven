@@ -2276,6 +2276,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <!-- PARTITION_{{ day }} -->
             {% if day == 'yesterday' and pre_rendered_yesterday %}
                 {{ pre_rendered_yesterday | safe }}
+            {% elif day == 'tomorrow' and pre_rendered_tomorrow %}
+                {{ pre_rendered_tomorrow | safe }}
             {% else %}
                 {% set leagues = leagues_by_day.get(day, []) %}
                 <div id="partition-{{ day }}" class="day-partition {{ '' if day == 'today' else 'd-none' }} row w-100 m-0 justify-content-start">
@@ -4070,12 +4072,25 @@ def generate_v2_index():
             yesterday_html_cache = match.group(1).strip()
             print("🚀 FAST PATH: Injected Yesterday's matches entirely from HTML cache.")
 
+    # Determine if we are in the "Pre-Crossover Window" (1:00 AM - 2:59 AM EST)
+    est = pytz.timezone('America/New_York')
+    now_est = datetime.now(est)
+    is_pre_crossover = now_est.hour in [1, 2]
+
+    tomorrow_html_cache = ""
+    if has_live_games and not is_pre_crossover and not ui_needs_date_rollover and old_html:
+        match = re.search(r"<!-- PARTITION_tomorrow -->(.*?)<!-- END_PARTITION_tomorrow -->", old_html, re.DOTALL)
+        if match:
+            tomorrow_html_cache = match.group(1).strip()
+            print("🚀 FAST PATH: Injected Tomorrow's matches entirely from HTML cache.")
+
     dates_to_fetch = [
-        ("today", day_info["dates"]["today"], True),
-        ("tomorrow", day_info["dates"]["tomorrow"], False)
+        ("today", day_info["dates"]["today"], True)
     ]
     if not yesterday_html_cache:
         dates_to_fetch.insert(0, ("yesterday", day_info["dates"]["yesterday"], False))
+    if not tomorrow_html_cache:
+        dates_to_fetch.append(("tomorrow", day_info["dates"]["tomorrow"], False))
         
     raw_matches_by_day = {'yesterday': [], 'today': [], 'tomorrow': []}
     
@@ -4929,7 +4944,8 @@ def generate_v2_index():
         display_dates=day_info["display"],
         nav_leagues_html=nav_html,
         schema_json=homepage_schema,
-        pre_rendered_yesterday=yesterday_html_cache
+        pre_rendered_yesterday=yesterday_html_cache,
+        pre_rendered_tomorrow=tomorrow_html_cache
     )
     
     with open(file_path, 'w', encoding='utf-8') as f:
