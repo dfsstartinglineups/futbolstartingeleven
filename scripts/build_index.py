@@ -2272,9 +2272,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 <div class="container pb-5">
     <div id="games-container" class="row justify-content-start">
-        {% for day, leagues in leagues_by_day.items() %}
-            <div id="partition-{{ day }}" class="day-partition {{ '' if day == 'today' else 'd-none' }} row w-100 m-0 justify-content-start">
-                {% if day == 'today' and live_cards and live_cards | length > 0 %}
+        {% for day in ['yesterday', 'today', 'tomorrow'] %}
+            <!-- PARTITION_{{ day }} -->
+            {% if day == 'yesterday' and pre_rendered_yesterday %}
+                {{ pre_rendered_yesterday | safe }}
+            {% else %}
+                {% set leagues = leagues_by_day.get(day, []) %}
+                <div id="partition-{{ day }}" class="day-partition {{ '' if day == 'today' else 'd-none' }} row w-100 m-0 justify-content-start">
+                    {% if day == 'today' and live_cards and live_cards | length > 0 %}
                     <div class="col-12 live-header mt-2 mb-2 px-1" id="live-matches-section">
                         <div class="d-flex align-items-center p-2 rounded-3 shadow-sm" style="background: #212529; border-left: 4px solid #20c997;">
                             <span class="live-dot me-2"></span>
@@ -2317,6 +2322,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     {% endfor %}
                 {% endif %}
             </div>
+            {% endif %}
+            <!-- END_PARTITION_{{ day }} -->
         {% endfor %}
     </div>
 </div>
@@ -4053,12 +4060,24 @@ def generate_v2_index():
         return
 
     # Pass core_index to all daily fetches in parallel
+    yesterday_str = day_info["dates"]["yesterday"]
+    yesterday_locked = schedule_cache.get(yesterday_str, {}).get("is_locked", False)
+    yesterday_html_cache = ""
+
+    if yesterday_locked and not ui_needs_date_rollover and old_html:
+        match = re.search(r"<!-- PARTITION_yesterday -->(.*?)<!-- END_PARTITION_yesterday -->", old_html, re.DOTALL)
+        if match:
+            yesterday_html_cache = match.group(1).strip()
+            print("🚀 FAST PATH: Injected Yesterday's matches entirely from HTML cache.")
+
     dates_to_fetch = [
-        ("yesterday", day_info["dates"]["yesterday"], False),
         ("today", day_info["dates"]["today"], True),
         ("tomorrow", day_info["dates"]["tomorrow"], False)
     ]
-    raw_matches_by_day = {}
+    if not yesterday_html_cache:
+        dates_to_fetch.insert(0, ("yesterday", day_info["dates"]["yesterday"], False))
+        
+    raw_matches_by_day = {'yesterday': [], 'today': [], 'tomorrow': []}
     
     with ThreadPoolExecutor(max_workers=3) as executor:
         future_to_day = {
@@ -4909,7 +4928,8 @@ def generate_v2_index():
         live_cards=live_cards,
         display_dates=day_info["display"],
         nav_leagues_html=nav_html,
-        schema_json=homepage_schema
+        schema_json=homepage_schema,
+        pre_rendered_yesterday=yesterday_html_cache
     )
     
     with open(file_path, 'w', encoding='utf-8') as f:
