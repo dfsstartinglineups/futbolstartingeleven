@@ -4317,33 +4317,36 @@ def generate_v2_index():
                     nav_html=nav_html
                 )
     
-    # 5. Generate ONE Dormant League (14-Day Trickle Round Robin)
-    dormant_leagues = [s for s, d in state.items() if s not in active_slugs and d.get('pill')]
-    if dormant_leagues:
-        dormant_leagues.sort(key=lambda s: state[s].get('last_updated', 0))
-        target_slug = dormant_leagues[0]
-        target_data = state[target_slug]
-        
-        print(f"🔄 TRICKLE UPDATE: Fetching 14-day schedule for dormant league -> {target_data['name']}")
-        
-        est = pytz.timezone('America/New_York')
-        now = datetime.now(est)
-        start_date = now.strftime('%Y%m%d')
-        end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
-        
-        fourteen_day_matches = fetch_espn_scores_for_date(
-            start_date, "", pill=target_data['pill'], end_date_str=end_date, is_today_partition=False, core_index=core_index
-        )
-        if fourteen_day_matches:
-            sync_team_state(fourteen_day_matches)
-            sync_player_state(fourteen_day_matches)
-            sync_team_squads(fourteen_day_matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=state)
+# 5. Generate ONE Dormant League (14-Day Trickle Round Robin)
+    if has_live_games:
+        print("⚡ LIVE GAMES ACTIVE: Skipping dormant league 14-day schedule trickle.")
+    else:
+        dormant_leagues = [s for s, d in state.items() if s not in active_slugs and d.get('pill')]
+        if dormant_leagues:
+            dormant_leagues.sort(key=lambda s: state[s].get('last_updated', 0))
+            target_slug = dormant_leagues[0]
+            target_data = state[target_slug]
             
-        build_single_league_page(
-            target_slug, target_data, fourteen_day_matches, 
-            is_today=False, nav_html=nav_html, today_date_str=""
-        )
-        state[target_slug]['last_updated'] = datetime.now().timestamp()
+            print(f"🔄 TRICKLE UPDATE: Fetching 14-day schedule for dormant league -> {target_data['name']}")
+            
+            est = pytz.timezone('America/New_York')
+            now = datetime.now(est)
+            start_date = now.strftime('%Y%m%d')
+            end_date = (now + timedelta(days=14)).strftime('%Y%m%d')
+            
+            fourteen_day_matches = fetch_espn_scores_for_date(
+                start_date, "", pill=target_data['pill'], end_date_str=end_date, is_today_partition=False, core_index=core_index
+            )
+            if fourteen_day_matches:
+                sync_team_state(fourteen_day_matches)
+                sync_player_state(fourteen_day_matches)
+                sync_team_squads(fourteen_day_matches, team_state, player_state, upcoming_pool, nav_html, day_info, league_state=state)
+                
+            build_single_league_page(
+                target_slug, target_data, fourteen_day_matches, 
+                is_today=False, nav_html=nav_html, today_date_str=""
+            )
+            state[target_slug]['last_updated'] = datetime.now().timestamp()
 
     # 5b. Silent Player Background Trickle Update (Batch Size: 5 dormant players per run)
     dormant_players = [] # <-- FIX: Initialize the empty list right here
