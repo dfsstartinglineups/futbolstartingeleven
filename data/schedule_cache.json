@@ -47588,7 +47588,7 @@
   },
   "20260812": {
     "is_locked": false,
-    "last_fetched": 1786554069.9035978,
+    "last_fetched": 1786554260.485885,
     "raw_events": [
       {
         "id": "401863614",
@@ -60350,6 +60350,14 @@
                 "shortDetail": "Scheduled"
               }
             },
+            "venue": {
+              "id": "11120",
+              "fullName": "Croke Park",
+              "address": {
+                "city": "Dublin",
+                "country": "Republic of Ireland"
+              }
+            },
             "format": {
               "regulation": {
                 "periods": 2
@@ -60472,7 +60480,7 @@
                     }
                   ],
                   "venue": {
-                    "id": "250"
+                    "id": "11120"
                   }
                 },
                 "statistics": []
@@ -60854,6 +60862,9 @@
             "detail": "Wed, August 12th at 2:30 PM EDT",
             "shortDetail": "Scheduled"
           }
+        },
+        "venue": {
+          "displayName": "Croke Park"
         },
         "links": [
           {
@@ -62181,6 +62192,13 @@
                 "shortDetail": "Scheduled"
               }
             },
+            "venue": {
+              "id": "9651",
+              "fullName": "Stadio Teofilo Patini",
+              "address": {
+                "country": "Italy"
+              }
+            },
             "format": {
               "regulation": {
                 "periods": 2
@@ -62301,7 +62319,10 @@
                       "isPremium": false,
                       "isHidden": false
                     }
-                  ]
+                  ],
+                  "venue": {
+                    "id": "9651"
+                  }
                 },
                 "statistics": []
               },
@@ -62443,6 +62464,9 @@
             "detail": "Wed, August 12th at 3:00 PM EDT",
             "shortDetail": "Scheduled"
           }
+        },
+        "venue": {
+          "displayName": "Stadio Teofilo Patini"
         },
         "links": [
           {
@@ -68511,16 +68535,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 240.0,
+              "displayClock": "4'",
+              "period": 1,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
+                "id": "25",
+                "name": "STATUS_FIRST_HALF",
+                "state": "in",
                 "completed": false,
-                "description": "Scheduled",
-                "detail": "Wed, August 12th at 1:00 PM EDT",
-                "shortDetail": "Scheduled"
+                "description": "First Half",
+                "detail": "4'",
+                "shortDetail": "4'"
               }
             },
             "venue": {
@@ -68662,7 +68687,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "0"
+                    "displayValue": "1"
                   },
                   {
                     "name": "wonCorners",
@@ -68677,7 +68702,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "0"
+                    "displayValue": "64.1"
                   },
                   {
                     "name": "shotAssists",
@@ -68687,7 +68712,7 @@
                   {
                     "name": "shotsOnTarget",
                     "abbreviation": "SOG",
-                    "displayValue": "0"
+                    "displayValue": "1"
                   },
                   {
                     "name": "totalGoals",
@@ -68697,89 +68722,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "0"
-                  }
-                ],
-                "leaders": [
-                  {
-                    "name": "goals",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "2",
-                        "value": 2.0,
-                        "athlete": {
-                          "id": "347079",
-                          "displayName": "Marine Dafeur",
-                          "shortName": "M. Dafeur",
-                          "fullName": "Marine Dafeur",
-                          "jersey": "21",
-                          "active": true,
-                          "team": {
-                            "id": "21302"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/347079/marine-dafeur",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "M"
-                          }
-                        },
-                        "team": {
-                          "id": "21302"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "goalsLeaders",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "2",
-                        "value": 2.0,
-                        "athlete": {
-                          "id": "347079",
-                          "displayName": "Marine Dafeur",
-                          "shortName": "M. Dafeur",
-                          "fullName": "Marine Dafeur",
-                          "jersey": "21",
-                          "active": true,
-                          "team": {
-                            "id": "21302"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/347079/marine-dafeur",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "M"
-                          }
-                        },
-                        "team": {
-                          "id": "21302"
-                        }
-                      }
-                    ]
+                    "displayValue": "1"
                   }
                 ]
               },
@@ -68906,7 +68849,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "0"
+                    "displayValue": "1"
                   },
                   {
                     "name": "wonCorners",
@@ -68921,7 +68864,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "0"
+                    "displayValue": "35.9"
                   },
                   {
                     "name": "shotAssists",
@@ -68943,90 +68886,6 @@
                     "abbreviation": "SHOT",
                     "displayValue": "0"
                   }
-                ],
-                "leaders": [
-                  {
-                    "name": "goals",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "4",
-                        "value": 4.0,
-                        "athlete": {
-                          "id": "379824",
-                          "displayName": "Temwa Chawinga",
-                          "shortName": "T. Chawinga",
-                          "fullName": "Temwa Chawinga",
-                          "jersey": "10",
-                          "active": true,
-                          "team": {
-                            "id": "22060"
-                          },
-                          "headshot": "https://a.espncdn.com/i/headshots/soccer/players/full/379824.png",
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/379824/temwa-chawinga",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "F"
-                          }
-                        },
-                        "team": {
-                          "id": "22060"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "goalsLeaders",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "4",
-                        "value": 4.0,
-                        "athlete": {
-                          "id": "379824",
-                          "displayName": "Temwa Chawinga",
-                          "shortName": "T. Chawinga",
-                          "fullName": "Temwa Chawinga",
-                          "jersey": "10",
-                          "active": true,
-                          "team": {
-                            "id": "22060"
-                          },
-                          "headshot": "https://a.espncdn.com/i/headshots/soccer/players/full/379824.png",
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/379824/temwa-chawinga",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "F"
-                          }
-                        },
-                        "team": {
-                          "id": "22060"
-                        }
-                      }
-                    ]
-                  }
                 ]
               }
             ],
@@ -69040,16 +68899,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 240.0,
+          "displayClock": "4'",
+          "period": 1,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
+            "id": "25",
+            "name": "STATUS_FIRST_HALF",
+            "state": "in",
             "completed": false,
-            "description": "Scheduled",
-            "detail": "Wed, August 12th at 1:00 PM EDT",
-            "shortDetail": "Scheduled"
+            "description": "First Half",
+            "detail": "4'",
+            "shortDetail": "4'"
           }
         },
         "venue": {
@@ -69059,13 +68919,13 @@
           {
             "language": "en-US",
             "rel": [
-              "summary",
+              "live",
               "desktop",
               "event"
             ],
-            "href": "https://www.espn.com/soccer/match/_/gameId/401907389/malawi-algeria",
-            "text": "Summary",
-            "shortText": "Summary",
+            "href": "https://www.espn.com/soccer/match/_/gameId/401907389",
+            "text": "Gamecast",
+            "shortText": "Live",
             "isExternal": false,
             "isPremium": false,
             "isHidden": false
@@ -69609,17 +69469,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2700.0,
-              "displayClock": "45'+1'",
-              "period": 1,
+              "clock": 2820.0,
+              "displayClock": "47'",
+              "period": 2,
               "type": {
-                "id": "23",
-                "name": "STATUS_HALFTIME",
+                "id": "26",
+                "name": "STATUS_SECOND_HALF",
                 "state": "in",
                 "completed": false,
-                "description": "Halftime",
-                "detail": "HT",
-                "shortDetail": "HT"
+                "description": "Second Half",
+                "detail": "47'",
+                "shortDetail": "47'"
               }
             },
             "venue": {
@@ -69834,7 +69694,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "57.9"
+                    "displayValue": "56.6"
                   },
                   {
                     "name": "shotAssists",
@@ -69994,7 +69854,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "42.1"
+                    "displayValue": "43.4"
                   },
                   {
                     "name": "shotAssists",
@@ -70119,7 +69979,7 @@
                     },
                     "current": {
                       "line": "o2.5",
-                      "odds": "-183",
+                      "odds": "-168",
                       "link": {
                         "rel": [
                           "over",
@@ -70151,7 +70011,7 @@
                     },
                     "current": {
                       "line": "u2.5",
-                      "odds": "+127",
+                      "odds": "+117",
                       "link": {
                         "rel": [
                           "under",
@@ -70336,17 +70196,17 @@
           }
         ],
         "status": {
-          "clock": 2700.0,
-          "displayClock": "45'+1'",
-          "period": 1,
+          "clock": 2820.0,
+          "displayClock": "47'",
+          "period": 2,
           "type": {
-            "id": "23",
-            "name": "STATUS_HALFTIME",
+            "id": "26",
+            "name": "STATUS_SECOND_HALF",
             "state": "in",
             "completed": false,
-            "description": "Halftime",
-            "detail": "HT",
-            "shortDetail": "HT"
+            "description": "Second Half",
+            "detail": "47'",
+            "shortDetail": "47'"
           }
         },
         "venue": {
@@ -71199,17 +71059,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2700.0,
-              "displayClock": "45'+1'",
-              "period": 1,
+              "clock": 2880.0,
+              "displayClock": "48'",
+              "period": 2,
               "type": {
-                "id": "23",
-                "name": "STATUS_HALFTIME",
+                "id": "26",
+                "name": "STATUS_SECOND_HALF",
                 "state": "in",
                 "completed": false,
-                "description": "Halftime",
-                "detail": "HT",
-                "shortDetail": "HT"
+                "description": "Second Half",
+                "detail": "48'",
+                "shortDetail": "48'"
               }
             },
             "venue": {
@@ -71399,7 +71259,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "67.3"
+                    "displayValue": "67.4"
                   },
                   {
                     "name": "shotAssists",
@@ -71559,7 +71419,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "32.7"
+                    "displayValue": "32.6"
                   },
                   {
                     "name": "shotAssists",
@@ -71728,7 +71588,7 @@
                     },
                     "current": {
                       "line": "o2.5",
-                      "odds": "-155",
+                      "odds": "-142",
                       "link": {
                         "rel": [
                           "over",
@@ -71760,7 +71620,7 @@
                     },
                     "current": {
                       "line": "u2.5",
-                      "odds": "+109",
+                      "odds": "-101",
                       "link": {
                         "rel": [
                           "under",
@@ -71945,17 +71805,17 @@
           }
         ],
         "status": {
-          "clock": 2700.0,
-          "displayClock": "45'+1'",
-          "period": 1,
+          "clock": 2880.0,
+          "displayClock": "48'",
+          "period": 2,
           "type": {
-            "id": "23",
-            "name": "STATUS_HALFTIME",
+            "id": "26",
+            "name": "STATUS_SECOND_HALF",
             "state": "in",
             "completed": false,
-            "description": "Halftime",
-            "detail": "HT",
-            "shortDetail": "HT"
+            "description": "Second Half",
+            "detail": "48'",
+            "shortDetail": "48'"
           }
         },
         "venue": {
@@ -77179,7 +77039,7 @@
                     },
                     "close": {
                       "line": "o1.5",
-                      "odds": "-200",
+                      "odds": "-195",
                       "link": {
                         "rel": [
                           "over",
@@ -77207,7 +77067,7 @@
                     },
                     "close": {
                       "line": "u1.5",
-                      "odds": "+150",
+                      "odds": "+145",
                       "link": {
                         "rel": [
                           "under",
@@ -78004,7 +77864,7 @@
                   "priority": 1
                 },
                 "drawOdds": {
-                  "moneyLine": 190,
+                  "moneyLine": 185,
                   "link": {
                     "language": "en-US",
                     "rel": [
@@ -78031,7 +77891,7 @@
                     },
                     "close": {
                       "line": "o1.5",
-                      "odds": "-170",
+                      "odds": "-175",
                       "link": {
                         "rel": [
                           "over",
@@ -78091,7 +77951,7 @@
                     },
                     "close": {
                       "line": "-0.5",
-                      "odds": "+160",
+                      "odds": "+155",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -78119,7 +77979,7 @@
                     },
                     "close": {
                       "line": "+0.5",
-                      "odds": "-225",
+                      "odds": "-220",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -78149,7 +78009,7 @@
                       "odds": "+165"
                     },
                     "close": {
-                      "odds": "+170",
+                      "odds": "+165",
                       "link": {
                         "rel": [
                           "home",
@@ -78174,7 +78034,7 @@
                       "odds": "+195"
                     },
                     "close": {
-                      "odds": "+175",
+                      "odds": "+180",
                       "link": {
                         "rel": [
                           "away",
@@ -78199,7 +78059,7 @@
                       "odds": "+160"
                     },
                     "close": {
-                      "odds": "+190",
+                      "odds": "+185",
                       "link": {
                         "rel": [
                           "draw",
@@ -78220,7 +78080,7 @@
                     }
                   }
                 },
-                "details": "DUR +170"
+                "details": "DUR +165"
               }
             ],
             "wasSuspended": false,
@@ -78856,7 +78716,7 @@
                   "priority": 1
                 },
                 "drawOdds": {
-                  "moneyLine": 190,
+                  "moneyLine": 195,
                   "link": {
                     "language": "en-US",
                     "rel": [
@@ -78943,7 +78803,7 @@
                     },
                     "close": {
                       "line": "-0.5",
-                      "odds": "-115",
+                      "odds": "-110",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -78971,7 +78831,7 @@
                     },
                     "close": {
                       "line": "+0.5",
-                      "odds": "-120",
+                      "odds": "-125",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -79001,7 +78861,7 @@
                       "odds": "-120"
                     },
                     "close": {
-                      "odds": "-110",
+                      "odds": "-105",
                       "link": {
                         "rel": [
                           "home",
@@ -79026,7 +78886,7 @@
                       "odds": "+350"
                     },
                     "close": {
-                      "odds": "+370",
+                      "odds": "+340",
                       "link": {
                         "rel": [
                           "away",
@@ -79051,7 +78911,7 @@
                       "odds": "+205"
                     },
                     "close": {
-                      "odds": "+190",
+                      "odds": "+195",
                       "link": {
                         "rel": [
                           "draw",
@@ -79072,7 +78932,7 @@
                     }
                   }
                 },
-                "details": "KAI -110"
+                "details": "KAI -105"
               }
             ],
             "wasSuspended": false,
@@ -79708,7 +79568,7 @@
                   "priority": 1
                 },
                 "drawOdds": {
-                  "moneyLine": 180,
+                  "moneyLine": 185,
                   "link": {
                     "language": "en-US",
                     "rel": [
@@ -79763,7 +79623,7 @@
                     },
                     "close": {
                       "line": "u1.5",
-                      "odds": "+135",
+                      "odds": "+140",
                       "link": {
                         "rel": [
                           "under",
@@ -79794,14 +79654,14 @@
                       "odds": "-220"
                     },
                     "close": {
-                      "line": "+0.5",
-                      "odds": "-215",
+                      "line": "-0.5",
+                      "odds": "+165",
                       "link": {
                         "rel": [
                           "homeSpread",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34511417%3Foutcomes%3D0HC85844987P50_1",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34511417%3Foutcomes%3D0HC85844987N50_1",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -79810,7 +79670,7 @@
                             "gameId": 401902073,
                             "betSide": "home",
                             "betType": "straight",
-                            "betDetails": "Spread:MIL+0.5"
+                            "betDetails": "Spread:MIL-0.5"
                           }
                         }
                       }
@@ -79822,14 +79682,14 @@
                       "odds": "+145"
                     },
                     "close": {
-                      "line": "-0.5",
-                      "odds": "+155",
+                      "line": "+0.5",
+                      "odds": "-235",
                       "link": {
                         "rel": [
                           "awaySpread",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34511417%3Foutcomes%3D0HC85844987N50_3",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34511417%3Foutcomes%3D0HC85844987P50_3",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -79838,7 +79698,7 @@
                             "gameId": 401902073,
                             "betSide": "away",
                             "betType": "straight",
-                            "betDetails": "Spread:SIW-0.5"
+                            "betDetails": "Spread:SIW+0.5"
                           }
                         }
                       }
@@ -79853,7 +79713,7 @@
                       "odds": "+190"
                     },
                     "close": {
-                      "odds": "+195",
+                      "odds": "+175",
                       "link": {
                         "rel": [
                           "home",
@@ -79878,7 +79738,7 @@
                       "odds": "+155"
                     },
                     "close": {
-                      "odds": "+165",
+                      "odds": "+175",
                       "link": {
                         "rel": [
                           "away",
@@ -79903,7 +79763,7 @@
                       "odds": "+175"
                     },
                     "close": {
-                      "odds": "+180",
+                      "odds": "+185",
                       "link": {
                         "rel": [
                           "draw",
@@ -79924,7 +79784,7 @@
                     }
                   }
                 },
-                "details": "SIW +165"
+                "details": "MIL +175"
               }
             ],
             "wasSuspended": false,
@@ -80000,8 +79860,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 4287.0,
-              "displayClock": "72'",
+              "clock": 4511.0,
+              "displayClock": "76'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -80009,8 +79869,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "72'",
-                "shortDetail": "72'"
+                "detail": "76'",
+                "shortDetail": "76'"
               }
             },
             "venue": {
@@ -80202,8 +80062,8 @@
           }
         ],
         "status": {
-          "clock": 4287.0,
-          "displayClock": "72'",
+          "clock": 4511.0,
+          "displayClock": "76'",
           "period": 2,
           "type": {
             "id": "26",
@@ -80211,8 +80071,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "72'",
-            "shortDetail": "72'"
+            "detail": "76'",
+            "shortDetail": "76'"
           }
         },
         "venue": {
