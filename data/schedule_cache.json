@@ -17386,7 +17386,7 @@
   },
   "20260811": {
     "is_locked": false,
-    "last_fetched": 1786508514.870314,
+    "last_fetched": 1786508884.9014888,
     "raw_events": [
       {
         "id": "401863611",
@@ -21665,13 +21665,13 @@
               "displayClock": "97'",
               "period": 5,
               "type": {
-                "id": "44",
-                "name": "STATUS_SHOOTOUT",
-                "state": "in",
-                "completed": false,
-                "description": "Shootout",
-                "detail": "Penalties",
-                "shortDetail": "Pens"
+                "id": "47",
+                "name": "STATUS_FINAL_PEN",
+                "state": "post",
+                "completed": true,
+                "description": "Final Score - After Penalties",
+                "detail": "FT-Pens",
+                "shortDetail": "FT-Pens"
               }
             },
             "venue": {
@@ -21688,7 +21688,13 @@
               }
             },
             "altGameNote": "Leagues Cup, Liga MX",
-            "notes": [],
+            "notes": [
+              {
+                "text": "Tigres UANL win 5-4 on penalties",
+                "headline": "Tigres UANL win 5-4 on penalties",
+                "type": "event"
+              }
+            ],
             "geoBroadcasts": [
               {
                 "type": {
@@ -21722,15 +21728,16 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "WWLDL",
+                "winner": true,
+                "advance": true,
+                "form": "WWWLD",
                 "score": "1",
-                "shootoutScore": 4,
+                "shootoutScore": 5,
                 "records": [
                   {
                     "name": "All Splits",
                     "type": "total",
-                    "summary": "0-2-0",
+                    "summary": "0-3-0",
                     "abbreviation": "Total"
                   }
                 ],
@@ -21863,7 +21870,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "45.8"
+                    "displayValue": "45.9"
                   },
                   {
                     "name": "shotAssists",
@@ -21894,14 +21901,15 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "LLDDL",
+                "advance": false,
+                "form": "LLLDD",
                 "score": "1",
                 "shootoutScore": 4,
                 "records": [
                   {
                     "name": "All Splits",
                     "type": "total",
-                    "summary": "0-0-2",
+                    "summary": "0-1-2",
                     "abbreviation": "Total"
                   }
                 ],
@@ -22034,7 +22042,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "54.2"
+                    "displayValue": "54.1"
                   },
                   {
                     "name": "shotAssists",
@@ -22765,266 +22773,54 @@
                     "position": "SUB"
                   }
                 ]
+              },
+              {
+                "type": {
+                  "id": "104",
+                  "text": "Penalty - Scored"
+                },
+                "clock": {
+                  "value": 6041.0,
+                  "displayValue": "101'"
+                },
+                "team": {
+                  "id": "232"
+                },
+                "scoreValue": 1,
+                "scoringPlay": true,
+                "redCard": false,
+                "yellowCard": false,
+                "penaltyKick": true,
+                "ownGoal": false,
+                "shootout": true,
+                "athletesInvolved": [
+                  {
+                    "id": "319520",
+                    "displayName": "Joaquim",
+                    "shortName": "Joaquim",
+                    "fullName": "Joaquim",
+                    "jersey": "28",
+                    "team": {
+                      "id": "232"
+                    },
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/319520/joaquim",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "CD-R"
+                  }
+                ]
               }
             ],
             "odds": [
-              {
-                "overUnder": 2.5,
-                "link": {
-                  "language": "en-US",
-                  "rel": [
-                    "game",
-                    "desktop",
-                    "bets"
-                  ],
-                  "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504300",
-                  "text": "Game",
-                  "shortText": "Game",
-                  "isExternal": true,
-                  "isPremium": false,
-                  "isHidden": false
-                },
-                "provider": {
-                  "id": "100",
-                  "name": "DraftKings",
-                  "priority": 1,
-                  "displayName": "DraftKings",
-                  "logos": [
-                    {
-                      "href": "https://a.espncdn.com/i/betting/Draftkings_Light.svg",
-                      "rel": [
-                        "light"
-                      ]
-                    },
-                    {
-                      "href": "https://a.espncdn.com/i/betting/Draftkings_Dark.svg",
-                      "rel": [
-                        "dark"
-                      ]
-                    }
-                  ]
-                },
-                "drawOdds": {
-                  "moneyLine": 340,
-                  "link": {
-                    "language": "en-US",
-                    "rel": [
-                      "draw",
-                      "desktop",
-                      "bets",
-                      "draftkings"
-                    ],
-                    "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504300%3Foutcomes%3D0ML85825334_2",
-                    "text": "Draw Bet",
-                    "shortText": "Draw Bet",
-                    "isExternal": true,
-                    "isPremium": false,
-                    "isHidden": false
-                  }
-                },
-                "total": {
-                  "displayName": "Total",
-                  "shortDisplayName": "Total",
-                  "over": {
-                    "open": {
-                      "line": "o2.5",
-                      "odds": "-140"
-                    },
-                    "close": {
-                      "line": "o2.5",
-                      "odds": "-170"
-                    },
-                    "current": {
-                      "line": "OFF",
-                      "odds": "OFF",
-                      "link": {
-                        "rel": [
-                          "over",
-                          "bets"
-                        ],
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "concacaf.leagues.cup",
-                            "sport": "soccer",
-                            "gameId": 401863613,
-                            "betSide": "over",
-                            "betType": "straight",
-                            "betDetails": "Over:null"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "under": {
-                    "open": {
-                      "line": "u2.5",
-                      "odds": "+110"
-                    },
-                    "close": {
-                      "line": "u2.5",
-                      "odds": "+135"
-                    },
-                    "current": {
-                      "line": "OFF",
-                      "odds": "OFF",
-                      "link": {
-                        "rel": [
-                          "under",
-                          "bets"
-                        ],
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "concacaf.leagues.cup",
-                            "sport": "soccer",
-                            "gameId": 401863613,
-                            "betSide": "under",
-                            "betType": "straight",
-                            "betDetails": "Under:null"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "pointSpread": {
-                  "displayName": "Spread",
-                  "shortDisplayName": "Spread",
-                  "home": {
-                    "open": {
-                      "line": "-0.5",
-                      "odds": "-125"
-                    },
-                    "close": {
-                      "line": "-1.5",
-                      "odds": "+115"
-                    },
-                    "current": {
-                      "line": "+0.5",
-                      "odds": "-20000",
-                      "link": {
-                        "rel": [
-                          "homeSpread",
-                          "bets"
-                        ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504300%3Foutcomes%3D0HC85825449P50_1",
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "concacaf.leagues.cup",
-                            "sport": "soccer",
-                            "gameId": 401863613,
-                            "betSide": "home",
-                            "betType": "straight",
-                            "betDetails": "Spread:UANL+0.5"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "line": "+0.5",
-                      "odds": "-110"
-                    },
-                    "close": {
-                      "line": "+1.5",
-                      "odds": "-160"
-                    },
-                    "current": {
-                      "line": "-0.5",
-                      "odds": "+950",
-                      "link": {
-                        "rel": [
-                          "awaySpread",
-                          "bets"
-                        ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504300%3Foutcomes%3D0HC85825449N50_3",
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "concacaf.leagues.cup",
-                            "sport": "soccer",
-                            "gameId": 401863613,
-                            "betSide": "away",
-                            "betType": "straight",
-                            "betDetails": "Spread:VAN-0.5"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "moneyline": {
-                  "displayName": "Moneyline",
-                  "shortDisplayName": "ML",
-                  "home": {
-                    "open": {
-                      "odds": "-120"
-                    },
-                    "close": {
-                      "odds": "-225"
-                    },
-                    "current": {
-                      "odds": "+2200",
-                      "link": {
-                        "rel": [
-                          "home",
-                          "bets"
-                        ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504300%3Foutcomes%3D0ML85825443_1",
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "concacaf.leagues.cup",
-                            "sport": "soccer",
-                            "gameId": 401863613,
-                            "betSide": "home",
-                            "betType": "straight"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "odds": "+265"
-                    },
-                    "close": {
-                      "odds": "+500"
-                    },
-                    "current": {
-                      "odds": "OFF",
-                      "link": {
-                        "rel": [
-                          "away",
-                          "bets"
-                        ],
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "concacaf.leagues.cup",
-                            "sport": "soccer",
-                            "gameId": 401863613,
-                            "betSide": "away",
-                            "betType": "straight"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "draw": {
-                    "open": {
-                      "odds": "+285"
-                    },
-                    "close": {
-                      "odds": "+340"
-                    }
-                  }
-                },
-                "details": "UANL -225"
-              }
+              null
             ],
             "wasSuspended": false,
             "playByPlayAvailable": true,
@@ -23036,13 +22832,13 @@
           "displayClock": "97'",
           "period": 5,
           "type": {
-            "id": "44",
-            "name": "STATUS_SHOOTOUT",
-            "state": "in",
-            "completed": false,
-            "description": "Shootout",
-            "detail": "Penalties",
-            "shortDetail": "Pens"
+            "id": "47",
+            "name": "STATUS_FINAL_PEN",
+            "state": "post",
+            "completed": true,
+            "description": "Final Score - After Penalties",
+            "detail": "FT-Pens",
+            "shortDetail": "FT-Pens"
           }
         },
         "venue": {
@@ -23052,13 +22848,13 @@
           {
             "language": "en-US",
             "rel": [
-              "live",
+              "summary",
               "desktop",
               "event"
             ],
-            "href": "https://www.espn.com/soccer/match/_/gameId/401863613",
-            "text": "Gamecast",
-            "shortText": "Live",
+            "href": "https://www.espn.com/soccer/match/_/gameId/401863613/vancouver-whitecaps-tigres-uanl",
+            "text": "Summary",
+            "shortText": "Summary",
             "isExternal": false,
             "isPremium": false,
             "isHidden": false
