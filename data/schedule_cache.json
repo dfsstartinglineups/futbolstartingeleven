@@ -17386,7 +17386,7 @@
   },
   "20260811": {
     "is_locked": false,
-    "last_fetched": 1786498797.7351434,
+    "last_fetched": 1786498988.955858,
     "raw_events": [
       {
         "id": "401863611",
@@ -17409,17 +17409,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 5400.0,
-              "displayClock": "90'+7'",
-              "period": 2,
+              "clock": 6000.0,
+              "displayClock": "100'",
+              "period": 5,
               "type": {
-                "id": "26",
-                "name": "STATUS_SECOND_HALF",
+                "id": "44",
+                "name": "STATUS_SHOOTOUT",
                 "state": "in",
                 "completed": false,
-                "description": "Second Half",
-                "detail": "90'+7'",
-                "shortDetail": "90'+7'"
+                "description": "Shootout",
+                "detail": "Penalties",
+                "shortDetail": "Pens"
               }
             },
             "venue": {
@@ -17487,6 +17487,7 @@
                 "winner": false,
                 "form": "WWDWL",
                 "score": "1",
+                "shootoutScore": 0,
                 "records": [
                   {
                     "name": "All Splits",
@@ -17609,7 +17610,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "6"
+                    "displayValue": "7"
                   },
                   {
                     "name": "wonCorners",
@@ -17624,12 +17625,12 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "60.5"
+                    "displayValue": "60.7"
                   },
                   {
                     "name": "shotAssists",
                     "abbreviation": "SHAST",
-                    "displayValue": "6"
+                    "displayValue": "7"
                   },
                   {
                     "name": "shotsOnTarget",
@@ -17644,7 +17645,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "10"
+                    "displayValue": "11"
                   }
                 ]
               },
@@ -17657,6 +17658,7 @@
                 "winner": false,
                 "form": "LLWWL",
                 "score": "1",
+                "shootoutScore": 0,
                 "records": [
                   {
                     "name": "All Splits",
@@ -17779,7 +17781,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "13"
+                    "displayValue": "14"
                   },
                   {
                     "name": "wonCorners",
@@ -17794,7 +17796,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "39.5"
+                    "displayValue": "39.3"
                   },
                   {
                     "name": "shotAssists",
@@ -18173,6 +18175,51 @@
                     "position": "SUB"
                   }
                 ]
+              },
+              {
+                "type": {
+                  "id": "94",
+                  "text": "Yellow Card"
+                },
+                "clock": {
+                  "value": 5400.0,
+                  "displayValue": "90'+8'"
+                },
+                "team": {
+                  "id": "233"
+                },
+                "scoreValue": 0,
+                "scoringPlay": false,
+                "redCard": false,
+                "yellowCard": true,
+                "penaltyKick": false,
+                "ownGoal": false,
+                "shootout": false,
+                "athletesInvolved": [
+                  {
+                    "id": "297150",
+                    "displayName": "Pedro Vite",
+                    "shortName": "P. Vite",
+                    "fullName": "Pedro Vite",
+                    "jersey": "45",
+                    "team": {
+                      "id": "233"
+                    },
+                    "headshot": "https://a.espncdn.com/i/headshots/soccer/players/full/297150.png",
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/297150/pedro-vite",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "SUB"
+                  }
+                ]
               }
             ],
             "odds": [
@@ -18244,7 +18291,7 @@
                     },
                     "current": {
                       "line": "o2.5",
-                      "odds": "+506",
+                      "odds": "+850",
                       "link": {
                         "rel": [
                           "over",
@@ -18276,7 +18323,7 @@
                     },
                     "current": {
                       "line": "u2.5",
-                      "odds": "-790",
+                      "odds": "-1820",
                       "link": {
                         "rel": [
                           "under",
@@ -18312,7 +18359,7 @@
                     },
                     "current": {
                       "line": "-0.5",
-                      "odds": "+500",
+                      "odds": "+800",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -18344,7 +18391,7 @@
                     },
                     "current": {
                       "line": "+0.5",
-                      "odds": "-1200",
+                      "odds": "-4000",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -18377,7 +18424,7 @@
                       "odds": "-135"
                     },
                     "current": {
-                      "odds": "+600",
+                      "odds": "+1200",
                       "link": {
                         "rel": [
                           "home",
@@ -18405,7 +18452,7 @@
                       "odds": "+295"
                     },
                     "current": {
-                      "odds": "+3000",
+                      "odds": "+4000",
                       "link": {
                         "rel": [
                           "away",
@@ -18433,7 +18480,7 @@
                       "odds": "+295"
                     },
                     "current": {
-                      "odds": "-700",
+                      "odds": "-2000",
                       "link": {
                         "rel": [
                           "draw",
@@ -18463,17 +18510,17 @@
           }
         ],
         "status": {
-          "clock": 5400.0,
-          "displayClock": "90'+7'",
-          "period": 2,
+          "clock": 6000.0,
+          "displayClock": "100'",
+          "period": 5,
           "type": {
-            "id": "26",
-            "name": "STATUS_SECOND_HALF",
+            "id": "44",
+            "name": "STATUS_SHOOTOUT",
             "state": "in",
             "completed": false,
-            "description": "Second Half",
-            "detail": "90'+7'",
-            "shortDetail": "90'+7'"
+            "description": "Shootout",
+            "detail": "Penalties",
+            "shortDetail": "Pens"
           }
         },
         "venue": {
@@ -18531,8 +18578,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 4200.0,
-              "displayClock": "70'",
+              "clock": 4380.0,
+              "displayClock": "73'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -18540,8 +18587,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "70'",
-                "shortDetail": "70'"
+                "detail": "73'",
+                "shortDetail": "73'"
               }
             },
             "venue": {
@@ -18752,7 +18799,7 @@
                   {
                     "name": "wonCorners",
                     "abbreviation": "CW",
-                    "displayValue": "9"
+                    "displayValue": "8"
                   },
                   {
                     "name": "goalAssists",
@@ -18762,12 +18809,12 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "57.9"
+                    "displayValue": "55.9"
                   },
                   {
                     "name": "shotAssists",
                     "abbreviation": "SHAST",
-                    "displayValue": "12"
+                    "displayValue": "13"
                   },
                   {
                     "name": "shotsOnTarget",
@@ -18782,7 +18829,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "13"
+                    "displayValue": "14"
                   }
                 ]
               },
@@ -18932,7 +18979,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "42.1"
+                    "displayValue": "44.1"
                   },
                   {
                     "name": "shotAssists",
@@ -18952,7 +18999,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "2"
+                    "displayValue": "3"
                   }
                 ]
               }
@@ -19102,7 +19149,7 @@
                     },
                     "current": {
                       "line": "o1.5",
-                      "odds": "-168",
+                      "odds": "-136",
                       "link": {
                         "rel": [
                           "over",
@@ -19134,7 +19181,7 @@
                     },
                     "current": {
                       "line": "u1.5",
-                      "odds": "+135",
+                      "odds": "+110",
                       "link": {
                         "rel": [
                           "under",
@@ -19170,7 +19217,7 @@
                     },
                     "current": {
                       "line": "-1.5",
-                      "odds": "+135",
+                      "odds": "+155",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -19202,7 +19249,7 @@
                     },
                     "current": {
                       "line": "+1.5",
-                      "odds": "-200",
+                      "odds": "-230",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -19263,7 +19310,7 @@
                       "odds": "+550"
                     },
                     "current": {
-                      "odds": "+3000",
+                      "odds": "+4000",
                       "link": {
                         "rel": [
                           "away",
@@ -19289,6 +19336,26 @@
                     },
                     "close": {
                       "odds": "+360"
+                    },
+                    "current": {
+                      "odds": "+550",
+                      "link": {
+                        "rel": [
+                          "draw",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34508853%3Foutcomes%3D0ML85837099_2",
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "concacaf.leagues.cup",
+                            "sport": "soccer",
+                            "gameId": 401863610,
+                            "betSide": "draw",
+                            "betType": "straight"
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -19301,8 +19368,8 @@
           }
         ],
         "status": {
-          "clock": 4200.0,
-          "displayClock": "70'",
+          "clock": 4380.0,
+          "displayClock": "73'",
           "period": 2,
           "type": {
             "id": "26",
@@ -19310,8 +19377,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "70'",
-            "shortDetail": "70'"
+            "detail": "73'",
+            "shortDetail": "73'"
           }
         },
         "venue": {
@@ -19570,7 +19637,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "58.6"
+                    "displayValue": "58.2"
                   },
                   {
                     "name": "shotAssists",
@@ -19740,7 +19807,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "41.4"
+                    "displayValue": "41.8"
                   },
                   {
                     "name": "shotAssists",
@@ -20876,16 +20943,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 120.0,
+              "displayClock": "2'",
+              "period": 1,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
+                "id": "25",
+                "name": "STATUS_FIRST_HALF",
+                "state": "in",
                 "completed": false,
-                "description": "Scheduled",
-                "detail": "Tue, August 11th at 9:30 PM EDT",
-                "shortDetail": "Scheduled"
+                "description": "First Half",
+                "detail": "2'",
+                "shortDetail": "2'"
               }
             },
             "venue": {
@@ -21076,7 +21144,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "0"
+                    "displayValue": "66.7"
                   },
                   {
                     "name": "shotAssists",
@@ -21097,90 +21165,6 @@
                     "name": "totalShots",
                     "abbreviation": "SHOT",
                     "displayValue": "0"
-                  }
-                ],
-                "leaders": [
-                  {
-                    "name": "goals",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "2",
-                        "value": 2.0,
-                        "athlete": {
-                          "id": "228390",
-                          "displayName": "Pablo Ruiz",
-                          "shortName": "P. Ruiz",
-                          "fullName": "Pablo Ruiz",
-                          "jersey": "7",
-                          "active": true,
-                          "team": {
-                            "id": "4771"
-                          },
-                          "headshot": "https://a.espncdn.com/i/headshots/soccer/players/full/228390.png",
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/228390/pablo-ruiz",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "M"
-                          }
-                        },
-                        "team": {
-                          "id": "4771"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "goalsLeaders",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "2",
-                        "value": 2.0,
-                        "athlete": {
-                          "id": "228390",
-                          "displayName": "Pablo Ruiz",
-                          "shortName": "P. Ruiz",
-                          "fullName": "Pablo Ruiz",
-                          "jersey": "7",
-                          "active": true,
-                          "team": {
-                            "id": "4771"
-                          },
-                          "headshot": "https://a.espncdn.com/i/headshots/soccer/players/full/228390.png",
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/228390/pablo-ruiz",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "M"
-                          }
-                        },
-                        "team": {
-                          "id": "4771"
-                        }
-                      }
-                    ]
                   }
                 ]
               },
@@ -21330,7 +21314,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "0"
+                    "displayValue": "33.3"
                   },
                   {
                     "name": "shotAssists",
@@ -21352,94 +21336,276 @@
                     "abbreviation": "SHOT",
                     "displayValue": "0"
                   }
-                ],
-                "leaders": [
-                  {
-                    "name": "goals",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "2",
-                        "value": 2.0,
-                        "athlete": {
-                          "id": "219158",
-                          "displayName": "\u00d3scar Estupi\u00f1\u00e1n",
-                          "shortName": "\u00d3. Estupi\u00f1\u00e1n",
-                          "fullName": "\u00d3scar Estupi\u00f1\u00e1n",
-                          "jersey": "19",
-                          "active": true,
-                          "team": {
-                            "id": "17851"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/219158/oscar-estupinan",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "F"
-                          }
-                        },
-                        "team": {
-                          "id": "17851"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "goalsLeaders",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "2",
-                        "value": 2.0,
-                        "athlete": {
-                          "id": "219158",
-                          "displayName": "\u00d3scar Estupi\u00f1\u00e1n",
-                          "shortName": "\u00d3. Estupi\u00f1\u00e1n",
-                          "fullName": "\u00d3scar Estupi\u00f1\u00e1n",
-                          "jersey": "19",
-                          "active": true,
-                          "team": {
-                            "id": "17851"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/219158/oscar-estupinan",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "F"
-                          }
-                        },
-                        "team": {
-                          "id": "17851"
-                        }
-                      }
-                    ]
-                  }
                 ]
               }
             ],
             "details": [],
             "odds": [
-              null
+              {
+                "overUnder": 3.5,
+                "link": {
+                  "language": "en-US",
+                  "rel": [
+                    "game",
+                    "desktop",
+                    "bets"
+                  ],
+                  "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504299",
+                  "text": "Game",
+                  "shortText": "Game",
+                  "isExternal": true,
+                  "isPremium": false,
+                  "isHidden": false
+                },
+                "provider": {
+                  "id": "100",
+                  "name": "DraftKings",
+                  "priority": 1
+                },
+                "drawOdds": {
+                  "moneyLine": 285,
+                  "link": {
+                    "language": "en-US",
+                    "rel": [
+                      "draw",
+                      "desktop",
+                      "bets",
+                      "draftkings"
+                    ],
+                    "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504299%3Foutcomes%3D0ML85825336_2",
+                    "text": "Draw Bet",
+                    "shortText": "Draw Bet",
+                    "isExternal": true,
+                    "isPremium": false,
+                    "isHidden": false
+                  }
+                },
+                "total": {
+                  "displayName": "Total",
+                  "shortDisplayName": "Total",
+                  "over": {
+                    "open": {
+                      "line": "o2.5",
+                      "odds": "-175"
+                    },
+                    "close": {
+                      "line": "o3.5",
+                      "odds": "+125"
+                    },
+                    "current": {
+                      "line": "o2.5",
+                      "odds": "-171",
+                      "link": {
+                        "rel": [
+                          "over",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504299%3Foutcomes%3D0OU85825420O250_1",
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "concacaf.leagues.cup",
+                            "sport": "soccer",
+                            "gameId": 401863608,
+                            "betSide": "over",
+                            "betType": "straight",
+                            "betDetails": "Over:2.5"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "under": {
+                    "open": {
+                      "line": "u2.5",
+                      "odds": "+135"
+                    },
+                    "close": {
+                      "line": "u3.5",
+                      "odds": "-160"
+                    },
+                    "current": {
+                      "line": "u2.5",
+                      "odds": "+136",
+                      "link": {
+                        "rel": [
+                          "under",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504299%3Foutcomes%3D0OU85825420U250_3",
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "concacaf.leagues.cup",
+                            "sport": "soccer",
+                            "gameId": 401863608,
+                            "betSide": "under",
+                            "betType": "straight",
+                            "betDetails": "Under:2.5"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "pointSpread": {
+                  "displayName": "Spread",
+                  "shortDisplayName": "Spread",
+                  "home": {
+                    "open": {
+                      "line": "-0.5",
+                      "odds": "-135"
+                    },
+                    "close": {
+                      "line": "-0.5",
+                      "odds": "-140"
+                    },
+                    "current": {
+                      "line": "-0.5",
+                      "odds": "-150",
+                      "link": {
+                        "rel": [
+                          "homeSpread",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504299%3Foutcomes%3D0HC85825421N50_1",
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "concacaf.leagues.cup",
+                            "sport": "soccer",
+                            "gameId": 401863608,
+                            "betSide": "home",
+                            "betType": "straight",
+                            "betDetails": "Spread:RSL-0.5"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "away": {
+                    "open": {
+                      "line": "+0.5",
+                      "odds": "-105"
+                    },
+                    "close": {
+                      "line": "+0.5",
+                      "odds": "+100"
+                    },
+                    "current": {
+                      "line": "+0.5",
+                      "odds": "+105",
+                      "link": {
+                        "rel": [
+                          "awaySpread",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504299%3Foutcomes%3D0HC85825421P50_3",
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "concacaf.leagues.cup",
+                            "sport": "soccer",
+                            "gameId": 401863608,
+                            "betSide": "away",
+                            "betType": "straight",
+                            "betDetails": "Spread:JUA+0.5"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "moneyline": {
+                  "displayName": "Moneyline",
+                  "shortDisplayName": "ML",
+                  "home": {
+                    "open": {
+                      "odds": "-125"
+                    },
+                    "close": {
+                      "odds": "-135"
+                    },
+                    "current": {
+                      "odds": "-125",
+                      "link": {
+                        "rel": [
+                          "home",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504299%3Foutcomes%3D0ML85825415_1",
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "concacaf.leagues.cup",
+                            "sport": "soccer",
+                            "gameId": 401863608,
+                            "betSide": "home",
+                            "betType": "straight"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "away": {
+                    "open": {
+                      "odds": "+340"
+                    },
+                    "close": {
+                      "odds": "+300"
+                    },
+                    "current": {
+                      "odds": "+300",
+                      "link": {
+                        "rel": [
+                          "away",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504299%3Foutcomes%3D0ML85825415_3",
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "concacaf.leagues.cup",
+                            "sport": "soccer",
+                            "gameId": 401863608,
+                            "betSide": "away",
+                            "betType": "straight"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "draw": {
+                    "open": {
+                      "odds": "+245"
+                    },
+                    "close": {
+                      "odds": "+285"
+                    },
+                    "current": {
+                      "odds": "+300",
+                      "link": {
+                        "rel": [
+                          "draw",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34504299%3Foutcomes%3D0ML85825415_2",
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "concacaf.leagues.cup",
+                            "sport": "soccer",
+                            "gameId": 401863608,
+                            "betSide": "draw",
+                            "betType": "straight"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "details": "RSL -135"
+              }
             ],
             "wasSuspended": false,
             "playByPlayAvailable": true,
@@ -21447,16 +21613,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 120.0,
+          "displayClock": "2'",
+          "period": 1,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
+            "id": "25",
+            "name": "STATUS_FIRST_HALF",
+            "state": "in",
             "completed": false,
-            "description": "Scheduled",
-            "detail": "Tue, August 11th at 9:30 PM EDT",
-            "shortDetail": "Scheduled"
+            "description": "First Half",
+            "detail": "2'",
+            "shortDetail": "2'"
           }
         },
         "venue": {
@@ -21466,13 +21633,13 @@
           {
             "language": "en-US",
             "rel": [
-              "summary",
+              "live",
               "desktop",
               "event"
             ],
-            "href": "https://www.espn.com/soccer/match/_/gameId/401863608/fc-juarez-real-salt-lake",
-            "text": "Summary",
-            "shortText": "Summary",
+            "href": "https://www.espn.com/soccer/match/_/gameId/401863608",
+            "text": "Gamecast",
+            "shortText": "Live",
             "isExternal": false,
             "isPremium": false,
             "isHidden": false
@@ -22097,7 +22264,7 @@
                   "priority": 1
                 },
                 "drawOdds": {
-                  "moneyLine": 370,
+                  "moneyLine": 350,
                   "link": {
                     "language": "en-US",
                     "rel": [
@@ -22152,7 +22319,7 @@
                     },
                     "close": {
                       "line": "u2.5",
-                      "odds": "+140",
+                      "odds": "+135",
                       "link": {
                         "rel": [
                           "under",
@@ -22184,7 +22351,7 @@
                     },
                     "close": {
                       "line": "-1.5",
-                      "odds": "+105",
+                      "odds": "+110",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -22212,7 +22379,7 @@
                     },
                     "close": {
                       "line": "+1.5",
-                      "odds": "-150",
+                      "odds": "-155",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -22242,7 +22409,7 @@
                       "odds": "-120"
                     },
                     "close": {
-                      "odds": "-240",
+                      "odds": "-230",
                       "link": {
                         "rel": [
                           "home",
@@ -22267,7 +22434,7 @@
                       "odds": "+265"
                     },
                     "close": {
-                      "odds": "+500",
+                      "odds": "+550",
                       "link": {
                         "rel": [
                           "away",
@@ -22292,7 +22459,7 @@
                       "odds": "+285"
                     },
                     "close": {
-                      "odds": "+370",
+                      "odds": "+350",
                       "link": {
                         "rel": [
                           "draw",
@@ -22313,7 +22480,7 @@
                     }
                   }
                 },
-                "details": "UANL -240"
+                "details": "UANL -230"
               }
             ],
             "wasSuspended": false,
@@ -26287,17 +26454,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 3000.0,
-              "displayClock": "50'",
+              "clock": 3180.0,
+              "displayClock": "53'",
               "period": 2,
               "type": {
-                "id": "2",
-                "name": "STATUS_IN_PROGRESS",
+                "id": "26",
+                "name": "STATUS_SECOND_HALF",
                 "state": "in",
                 "completed": false,
-                "description": "In Progress",
-                "detail": "50'",
-                "shortDetail": "50'"
+                "description": "Second Half",
+                "detail": "53'",
+                "shortDetail": "53'"
               }
             },
             "venue": {
@@ -26469,7 +26636,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "7"
+                    "displayValue": "8"
                   },
                   {
                     "name": "wonCorners",
@@ -26484,12 +26651,12 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "45.9"
+                    "displayValue": "46"
                   },
                   {
                     "name": "shotAssists",
                     "abbreviation": "SHAST",
-                    "displayValue": "5"
+                    "displayValue": "6"
                   },
                   {
                     "name": "shotsOnTarget",
@@ -26504,7 +26671,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "8"
+                    "displayValue": "9"
                   }
                 ]
               },
@@ -26646,7 +26813,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "54.1"
+                    "displayValue": "54"
                   },
                   {
                     "name": "shotAssists",
@@ -26815,7 +26982,7 @@
                     },
                     "current": {
                       "line": "o1.5",
-                      "odds": "-233",
+                      "odds": "-223",
                       "link": {
                         "rel": [
                           "over",
@@ -26847,7 +27014,7 @@
                     },
                     "current": {
                       "line": "u1.5",
-                      "odds": "+158",
+                      "odds": "+151",
                       "link": {
                         "rel": [
                           "under",
@@ -26883,7 +27050,7 @@
                     },
                     "current": {
                       "line": "-1.5",
-                      "odds": "+110",
+                      "odds": "+130",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -26915,7 +27082,7 @@
                     },
                     "current": {
                       "line": "+1.5",
-                      "odds": "-160",
+                      "odds": "-190",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -26948,7 +27115,7 @@
                       "odds": "-140"
                     },
                     "current": {
-                      "odds": "-750",
+                      "odds": "-700",
                       "link": {
                         "rel": [
                           "home",
@@ -26976,7 +27143,7 @@
                       "odds": "+450"
                     },
                     "current": {
-                      "odds": "+3000",
+                      "odds": "+2800",
                       "link": {
                         "rel": [
                           "away",
@@ -27034,17 +27201,17 @@
           }
         ],
         "status": {
-          "clock": 3000.0,
-          "displayClock": "50'",
+          "clock": 3180.0,
+          "displayClock": "53'",
           "period": 2,
           "type": {
-            "id": "2",
-            "name": "STATUS_IN_PROGRESS",
+            "id": "26",
+            "name": "STATUS_SECOND_HALF",
             "state": "in",
             "completed": false,
-            "description": "In Progress",
-            "detail": "50'",
-            "shortDetail": "50'"
+            "description": "Second Half",
+            "detail": "53'",
+            "shortDetail": "53'"
           }
         },
         "venue": {
@@ -53601,8 +53768,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2940.0,
-              "displayClock": "49'",
+              "clock": 3180.0,
+              "displayClock": "53'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -53610,8 +53777,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "49'",
-                "shortDetail": "49'"
+                "detail": "53'",
+                "shortDetail": "53'"
               }
             },
             "venue": {
@@ -53798,7 +53965,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "60.2"
+                    "displayValue": "59.3"
                   },
                   {
                     "name": "shotAssists",
@@ -53945,12 +54112,12 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "3"
+                    "displayValue": "4"
                   },
                   {
                     "name": "wonCorners",
                     "abbreviation": "CW",
-                    "displayValue": "3"
+                    "displayValue": "4"
                   },
                   {
                     "name": "goalAssists",
@@ -53960,12 +54127,12 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "39.8"
+                    "displayValue": "40.7"
                   },
                   {
                     "name": "shotAssists",
                     "abbreviation": "SHAST",
-                    "displayValue": "5"
+                    "displayValue": "6"
                   },
                   {
                     "name": "shotsOnTarget",
@@ -53980,7 +54147,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "7"
+                    "displayValue": "8"
                   }
                 ]
               }
@@ -54027,6 +54194,50 @@
                       }
                     ],
                     "position": "CD-R"
+                  }
+                ]
+              },
+              {
+                "type": {
+                  "id": "94",
+                  "text": "Yellow Card"
+                },
+                "clock": {
+                  "value": 2986.0,
+                  "displayValue": "50'"
+                },
+                "team": {
+                  "id": "2026"
+                },
+                "scoreValue": 0,
+                "scoringPlay": false,
+                "redCard": false,
+                "yellowCard": true,
+                "penaltyKick": false,
+                "ownGoal": false,
+                "shootout": false,
+                "athletesInvolved": [
+                  {
+                    "id": "252800",
+                    "displayName": "Iago",
+                    "shortName": "Iago",
+                    "fullName": "Iago",
+                    "jersey": "12",
+                    "team": {
+                      "id": "2026"
+                    },
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/252800/iago",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "LB"
                   }
                 ]
               }
@@ -54085,7 +54296,7 @@
                     },
                     "current": {
                       "line": "o2.5",
-                      "odds": "+142",
+                      "odds": "+154",
                       "link": {
                         "rel": [
                           "over",
@@ -54117,7 +54328,7 @@
                     },
                     "current": {
                       "line": "u2.5",
-                      "odds": "-208",
+                      "odds": "-227",
                       "link": {
                         "rel": [
                           "under",
@@ -54153,7 +54364,7 @@
                     },
                     "current": {
                       "line": "+0.5",
-                      "odds": "-110",
+                      "odds": "-105",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -54185,7 +54396,7 @@
                     },
                     "current": {
                       "line": "-0.5",
-                      "odds": "-135",
+                      "odds": "-140",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -54218,7 +54429,7 @@
                       "odds": "-125"
                     },
                     "current": {
-                      "odds": "+450",
+                      "odds": "+475",
                       "link": {
                         "rel": [
                           "home",
@@ -54246,7 +54457,7 @@
                       "odds": "+360"
                     },
                     "current": {
-                      "odds": "-125",
+                      "odds": "-130",
                       "link": {
                         "rel": [
                           "away",
@@ -54272,26 +54483,6 @@
                     },
                     "close": {
                       "odds": "+255"
-                    },
-                    "current": {
-                      "odds": "+200",
-                      "link": {
-                        "rel": [
-                          "draw",
-                          "bets"
-                        ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34465370%3Foutcomes%3D0ML85714833_2",
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "conmebol.sudamericana",
-                            "sport": "soccer",
-                            "gameId": 401903296,
-                            "betSide": "draw",
-                            "betType": "straight"
-                          }
-                        }
-                      }
                     }
                   }
                 },
@@ -54304,8 +54495,8 @@
           }
         ],
         "status": {
-          "clock": 2940.0,
-          "displayClock": "49'",
+          "clock": 3180.0,
+          "displayClock": "53'",
           "period": 2,
           "type": {
             "id": "26",
@@ -54313,8 +54504,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "49'",
-            "shortDetail": "49'"
+            "detail": "53'",
+            "shortDetail": "53'"
           }
         },
         "venue": {
@@ -54372,8 +54563,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 4860.0,
-              "displayClock": "81'",
+              "clock": 5100.0,
+              "displayClock": "85'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -54381,8 +54572,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "81'",
-                "shortDetail": "81'"
+                "detail": "85'",
+                "shortDetail": "85'"
               }
             },
             "venue": {
@@ -54550,17 +54741,17 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "60.6"
+                    "displayValue": "60.2"
                   },
                   {
                     "name": "shotAssists",
                     "abbreviation": "SHAST",
-                    "displayValue": "9"
+                    "displayValue": "11"
                   },
                   {
                     "name": "shotsOnTarget",
                     "abbreviation": "SOG",
-                    "displayValue": "4"
+                    "displayValue": "5"
                   },
                   {
                     "name": "totalGoals",
@@ -54570,7 +54761,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "12"
+                    "displayValue": "14"
                   }
                 ]
               },
@@ -54710,7 +54901,7 @@
                   {
                     "name": "wonCorners",
                     "abbreviation": "CW",
-                    "displayValue": "4"
+                    "displayValue": "5"
                   },
                   {
                     "name": "goalAssists",
@@ -54720,17 +54911,17 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "39.4"
+                    "displayValue": "39.8"
                   },
                   {
                     "name": "shotAssists",
                     "abbreviation": "SHAST",
-                    "displayValue": "11"
+                    "displayValue": "12"
                   },
                   {
                     "name": "shotsOnTarget",
                     "abbreviation": "SOG",
-                    "displayValue": "5"
+                    "displayValue": "6"
                   },
                   {
                     "name": "totalGoals",
@@ -54740,7 +54931,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "19"
+                    "displayValue": "20"
                   }
                 ]
               }
@@ -55021,7 +55212,7 @@
                     },
                     "current": {
                       "line": "o2.5",
-                      "odds": "+167",
+                      "odds": "+226",
                       "link": {
                         "rel": [
                           "over",
@@ -55053,7 +55244,7 @@
                     },
                     "current": {
                       "line": "u2.5",
-                      "odds": "-248",
+                      "odds": "-357",
                       "link": {
                         "rel": [
                           "under",
@@ -55089,7 +55280,7 @@
                     },
                     "current": {
                       "line": "+1.5",
-                      "odds": "+350",
+                      "odds": "+450",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -55121,7 +55312,7 @@
                     },
                     "current": {
                       "line": "-1.5",
-                      "odds": "-650",
+                      "odds": "-1000",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -55154,7 +55345,7 @@
                       "odds": "+135"
                     },
                     "current": {
-                      "odds": "+4500",
+                      "odds": "+20000",
                       "link": {
                         "rel": [
                           "home",
@@ -55209,7 +55400,7 @@
                       "odds": "+185"
                     },
                     "current": {
-                      "odds": "+2200",
+                      "odds": "+3000",
                       "link": {
                         "rel": [
                           "draw",
@@ -55239,8 +55430,8 @@
           }
         ],
         "status": {
-          "clock": 4860.0,
-          "displayClock": "81'",
+          "clock": 5100.0,
+          "displayClock": "85'",
           "period": 2,
           "type": {
             "id": "26",
@@ -55248,8 +55439,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "81'",
-            "shortDetail": "81'"
+            "detail": "85'",
+            "shortDetail": "85'"
           }
         },
         "venue": {
@@ -56876,8 +57067,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 4440.0,
-              "displayClock": "74'",
+              "clock": 4620.0,
+              "displayClock": "77'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -56885,8 +57076,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "74'",
-                "shortDetail": "74'"
+                "detail": "77'",
+                "shortDetail": "77'"
               }
             },
             "venue": {
@@ -57036,7 +57227,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "6"
+                    "displayValue": "7"
                   },
                   {
                     "name": "wonCorners",
@@ -57051,7 +57242,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "55.2"
+                    "displayValue": "56.4"
                   },
                   {
                     "name": "shotAssists",
@@ -57221,7 +57412,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "44.8"
+                    "displayValue": "43.6"
                   },
                   {
                     "name": "shotAssists",
@@ -57730,6 +57921,50 @@
                     "position": "LM"
                   }
                 ]
+              },
+              {
+                "type": {
+                  "id": "97",
+                  "text": "Own Goal"
+                },
+                "clock": {
+                  "value": 4555.0,
+                  "displayValue": "76'"
+                },
+                "team": {
+                  "id": "8317"
+                },
+                "scoreValue": 1,
+                "scoringPlay": true,
+                "redCard": false,
+                "yellowCard": false,
+                "penaltyKick": false,
+                "ownGoal": true,
+                "shootout": false,
+                "athletesInvolved": [
+                  {
+                    "id": "412976",
+                    "displayName": "Ricardo M\u00e1rquez",
+                    "shortName": "R. M\u00e1rquez",
+                    "fullName": "Ricardo M\u00e1rquez",
+                    "jersey": "24",
+                    "team": {
+                      "id": "7259"
+                    },
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/412976/ricardo-marquez",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "SUB"
+                  }
+                ]
               }
             ],
             "odds": [
@@ -57786,7 +58021,7 @@
                     },
                     "current": {
                       "line": "o6.5",
-                      "odds": "-156",
+                      "odds": "-122",
                       "link": {
                         "rel": [
                           "over",
@@ -57818,7 +58053,7 @@
                     },
                     "current": {
                       "line": "u6.5",
-                      "odds": "+109",
+                      "odds": "-117",
                       "link": {
                         "rel": [
                           "under",
@@ -57854,7 +58089,7 @@
                     },
                     "current": {
                       "line": "-2.5",
-                      "odds": "+205",
+                      "odds": "+220",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -57886,13 +58121,12 @@
                     },
                     "current": {
                       "line": "+2.5",
-                      "odds": "-320",
+                      "odds": "OFF",
                       "link": {
                         "rel": [
                           "awaySpread",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34508699%3Foutcomes%3D0HC85836605P250_3",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -57919,13 +58153,12 @@
                       "odds": "+100"
                     },
                     "current": {
-                      "odds": "-20000",
+                      "odds": "OFF",
                       "link": {
                         "rel": [
                           "home",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34508699%3Foutcomes%3D0ML85836596_1",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -57947,13 +58180,12 @@
                       "odds": "+220"
                     },
                     "current": {
-                      "odds": "+4500",
+                      "odds": "OFF",
                       "link": {
                         "rel": [
                           "away",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34508699%3Foutcomes%3D0ML85836596_3",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -57985,8 +58217,8 @@
           }
         ],
         "status": {
-          "clock": 4440.0,
-          "displayClock": "74'",
+          "clock": 4620.0,
+          "displayClock": "77'",
           "period": 2,
           "type": {
             "id": "26",
@@ -57994,8 +58226,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "74'",
-            "shortDetail": "74'"
+            "detail": "77'",
+            "shortDetail": "77'"
           }
         },
         "venue": {
