@@ -1666,7 +1666,7 @@
     "side": "home",
     "league_name": "UEFA Europa League Qualifying",
     "league_hashtag": "#UEFAEuropaLeagueQualifying",
-    "formation": "4-3-3",
+    "formation": "3-5-2",
     "starting_xi": [
       {
         "name": "Fedor Lapoukhov",
@@ -1674,6 +1674,13 @@
         "pos": "G",
         "category": "G",
         "number": "21"
+      },
+      {
+        "name": "Jean-Philippe Gbamin",
+        "short_name": "J. Gbamin",
+        "pos": "CD",
+        "category": "D",
+        "number": "5"
       },
       {
         "name": "Facundo Rodríguez",
@@ -1690,58 +1697,51 @@
         "number": "14"
       },
       {
+        "name": "Stefano Sensi",
+        "short_name": "S. Sensi",
+        "pos": "CM-L",
+        "category": "M",
+        "number": "8"
+      },
+      {
+        "name": "Max Ebong",
+        "short_name": "M. Ebong",
+        "pos": "CM-R",
+        "category": "M",
+        "number": "7"
+      },
+      {
         "name": "Andrey Yordanov",
         "short_name": "A. Yordanov",
-        "pos": "LB",
-        "category": "D",
+        "pos": "LM",
+        "category": "M",
         "number": "19"
       },
       {
         "name": "Pastor",
         "short_name": "Pastor",
-        "pos": "RB",
-        "category": "D",
+        "pos": "RM",
+        "category": "M",
         "number": "2"
       },
       {
         "name": "Bruno Jordão",
         "short_name": "B. Jordão",
-        "pos": "CM",
-        "category": "M",
+        "pos": "AM",
+        "category": "F",
         "number": "6"
-      },
-      {
-        "name": "Stefano Sensi",
-        "short_name": "S. Sensi",
-        "pos": "LM",
-        "category": "M",
-        "number": "8"
-      },
-      {
-        "name": "Jean-Philippe Gbamin",
-        "short_name": "J. Gbamin",
-        "pos": "RM",
-        "category": "M",
-        "number": "5"
       },
       {
         "name": "Ioannis Pittas",
         "short_name": "I. Pittas",
-        "pos": "LF",
-        "category": "M",
+        "pos": "CF-L",
+        "category": "F",
         "number": "28"
-      },
-      {
-        "name": "Max Ebong",
-        "short_name": "M. Ebong",
-        "pos": "RF",
-        "category": "M",
-        "number": "7"
       },
       {
         "name": "Santiago Godoy",
         "short_name": "S. Godoy",
-        "pos": "F",
+        "pos": "CF-R",
         "category": "F",
         "number": "9"
       }
@@ -1860,18 +1860,18 @@
         "number": "26"
       },
       {
-        "name": "Giulian Biancone",
-        "short_name": "G. Biancone",
-        "pos": "CD-L",
-        "category": "D",
-        "number": "4"
-      },
-      {
         "name": "Léo Pétrot",
         "short_name": "L. Pétrot",
-        "pos": "CD-R",
+        "pos": "CD-L",
         "category": "D",
         "number": "27"
+      },
+      {
+        "name": "Giulian Biancone",
+        "short_name": "G. Biancone",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "4"
       },
       {
         "name": "N'Diaye Moussa",
@@ -1888,18 +1888,18 @@
         "number": "79"
       },
       {
-        "name": "Lukás Ambros",
-        "short_name": "L. Ambros",
-        "pos": "CM",
-        "category": "M",
-        "number": "18"
-      },
-      {
         "name": "Marco Kana",
         "short_name": "M. Kana",
-        "pos": "LM",
+        "pos": "CM",
         "category": "M",
         "number": "55"
+      },
+      {
+        "name": "Joshua-Williame Nga Kana",
+        "short_name": "J. Nga Kana",
+        "pos": "LM",
+        "category": "M",
+        "number": "61"
       },
       {
         "name": "Enric Llansana",
@@ -1909,25 +1909,25 @@
         "number": "24"
       },
       {
-        "name": "Joshua-Williame Nga Kana",
-        "short_name": "J. Nga Kana",
+        "name": "Danylo Sikan",
+        "short_name": "D. Sikan",
         "pos": "LF",
         "category": "M",
-        "number": "61"
+        "number": "14"
+      },
+      {
+        "name": "Lukás Ambros",
+        "short_name": "L. Ambros",
+        "pos": "RF",
+        "category": "M",
+        "number": "18"
       },
       {
         "name": "Mihajlo Cvetkovic",
         "short_name": "M. Cvetkovic",
-        "pos": "RF",
-        "category": "M",
-        "number": "9"
-      },
-      {
-        "name": "Danylo Sikan",
-        "short_name": "D. Sikan",
         "pos": "F",
         "category": "F",
-        "number": "14"
+        "number": "9"
       }
     ]
   },
@@ -4988,13 +4988,6 @@
         "number": "1"
       },
       {
-        "name": "Aleksandar Dragovic",
-        "short_name": "A. Dragovic",
-        "pos": "CD",
-        "category": "D",
-        "number": "15"
-      },
-      {
         "name": "Jonas Feddersen",
         "short_name": "J. Feddersen",
         "pos": "CD-L",
@@ -5002,58 +4995,65 @@
         "number": "4"
       },
       {
+        "name": "Aleksandar Dragovic",
+        "short_name": "A. Dragovic",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "15"
+      },
+      {
+        "name": "Matteo Schablas",
+        "short_name": "M. Schablas",
+        "pos": "LB",
+        "category": "D",
+        "number": "21"
+      },
+      {
         "name": "Daniel Nnodim",
         "short_name": "D. Nnodim",
-        "pos": "CD-R",
+        "pos": "RB",
         "category": "D",
         "number": "40"
       },
       {
         "name": "Philipp Maybach",
         "short_name": "P. Maybach",
-        "pos": "CM-L",
+        "pos": "LM",
         "category": "M",
         "number": "6"
       },
       {
         "name": "Vasilije Markovic",
         "short_name": "V. Markovic",
-        "pos": "CM-R",
+        "pos": "RM",
         "category": "M",
         "number": "7"
       },
       {
-        "name": "Moritz Wels",
-        "short_name": "M. Wels",
-        "pos": "LM",
-        "category": "M",
-        "number": "37"
-      },
-      {
-        "name": "Matteo Schablas",
-        "short_name": "M. Schablas",
-        "pos": "RM",
-        "category": "M",
-        "number": "21"
-      },
-      {
         "name": "Julian Hettwer",
         "short_name": "J. Hettwer",
-        "pos": "F",
+        "pos": "AM",
         "category": "F",
         "number": "20"
       },
       {
         "name": "Kelvin Boateng",
         "short_name": "K. Boateng",
-        "pos": "CF-L",
+        "pos": "F",
         "category": "F",
         "number": "14"
       },
       {
+        "name": "Moritz Wels",
+        "short_name": "M. Wels",
+        "pos": "AM-L",
+        "category": "F",
+        "number": "37"
+      },
+      {
         "name": "Manfred Fischer",
         "short_name": "M. Fischer",
-        "pos": "CF-R",
+        "pos": "AM-R",
         "category": "F",
         "number": "30"
       }
@@ -5264,67 +5264,53 @@
         "number": "91"
       },
       {
-        "name": "Raivis Andris Jurkovskis",
-        "short_name": "R. Andris Jurkovskis",
-        "pos": "D",
-        "category": "D",
-        "number": "13"
-      },
-      {
-        "name": "Baba Musah",
-        "short_name": "B. Musah",
-        "pos": "D",
-        "category": "D",
-        "number": "21"
-      },
-      {
         "name": "Paulo",
         "short_name": "Paulo",
-        "pos": "D",
+        "pos": "CD-L",
         "category": "D",
         "number": "33"
       },
       {
+        "name": "Baba Musah",
+        "short_name": "B. Musah",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "21"
+      },
+      {
         "name": "Andrés Salazar",
         "short_name": "A. Salazar",
-        "pos": "D",
+        "pos": "LB",
         "category": "D",
         "number": "17"
       },
       {
-        "name": "Iago Siqueira",
-        "short_name": "I. Siqueira",
-        "pos": "M",
-        "category": "M",
-        "number": "8"
-      },
-      {
-        "name": "Raki Aouani",
-        "short_name": "R. Aouani",
-        "pos": "M",
-        "category": "M",
-        "number": "7"
-      },
-      {
-        "name": "Meissa Diop",
-        "short_name": "M. Diop",
-        "pos": "M",
-        "category": "M",
-        "number": "22"
-      },
-      {
-        "name": "Karl Wassom",
-        "short_name": "K. Wassom",
-        "pos": "M",
-        "category": "M",
-        "number": "5"
+        "name": "Raivis Andris Jurkovskis",
+        "short_name": "R. Andris Jurkovskis",
+        "pos": "RB",
+        "category": "D",
+        "number": "13"
       },
       {
         "name": "Ahmed Ankrah",
         "short_name": "A. Ankrah",
-        "pos": "M",
+        "pos": "LM",
         "category": "M",
         "number": "40"
+      },
+      {
+        "name": "Karl Wassom",
+        "short_name": "K. Wassom",
+        "pos": "RM",
+        "category": "M",
+        "number": "5"
+      },
+      {
+        "name": "Iago Siqueira",
+        "short_name": "I. Siqueira",
+        "pos": "AM",
+        "category": "F",
+        "number": "8"
       },
       {
         "name": "Reginaldo Ramires",
@@ -5332,6 +5318,20 @@
         "pos": "F",
         "category": "F",
         "number": "10"
+      },
+      {
+        "name": "Raki Aouani",
+        "short_name": "R. Aouani",
+        "pos": "AM-L",
+        "category": "F",
+        "number": "7"
+      },
+      {
+        "name": "Meissa Diop",
+        "short_name": "M. Diop",
+        "pos": "AM-R",
+        "category": "F",
+        "number": "22"
       }
     ]
   },
@@ -5448,18 +5448,18 @@
         "number": "12"
       },
       {
-        "name": "August Erlingmark",
-        "short_name": "A. Erlingmark",
-        "pos": "CD-L",
-        "category": "D",
-        "number": "3"
-      },
-      {
         "name": "Hjörtur Hermannsson",
         "short_name": "H. Hermannsson",
-        "pos": "CD-R",
+        "pos": "CD-L",
         "category": "D",
         "number": "6"
+      },
+      {
+        "name": "August Erlingmark",
+        "short_name": "A. Erlingmark",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "3"
       },
       {
         "name": "Noah Tolf",
@@ -5476,11 +5476,11 @@
         "number": "17"
       },
       {
-        "name": "Oliver Månsson",
-        "short_name": "O. Månsson",
+        "name": "David Kruse",
+        "short_name": "D. Kruse",
         "pos": "CM",
         "category": "M",
-        "number": "24"
+        "number": "15"
       },
       {
         "name": "Sam Larsson",
@@ -5490,11 +5490,11 @@
         "number": "8"
       },
       {
-        "name": "David Kruse",
-        "short_name": "D. Kruse",
+        "name": "Oliver Månsson",
+        "short_name": "O. Månsson",
         "pos": "RM",
         "category": "M",
-        "number": "15"
+        "number": "24"
       },
       {
         "name": "Tobias Heintz",
