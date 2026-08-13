@@ -1,4 +1,3 @@
-#WHY NOT SAVING?
 from curl_cffi import requests
 from curl_cffi.requests import AsyncSession
 import os
@@ -409,6 +408,24 @@ def normalize_text(text):
 NORMALIZED_HUMAN_LEAGUE_FLAGS = {
     normalize_text(key): val for key, val in HUMAN_LEAGUE_FLAGS.items()
 }
+
+def write_if_changed(filepath, new_content):
+    """Writes content ONLY if changed or missing to preserve accurate file modification times."""
+    if os.path.exists(filepath):
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                if f.read() == new_content:
+                    return False
+        except Exception:
+            pass
+
+    dir_path = os.path.dirname(filepath)
+    if dir_path:
+        os.makedirs(dir_path, exist_ok=True)
+
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(new_content)
+    return True
 
 def get_local_image_url(url, subfolder="images/teams"):
     if not url or not url.startswith('http'):
@@ -3343,8 +3360,7 @@ def build_single_league_page(league_slug, league_data, matches, is_today, nav_ht
         schema_json=schema_json
     )
     
-    with open(os.path.join(league_dir, 'index.html'), 'w', encoding='utf-8') as f:
-        f.write(output)
+    write_if_changed(os.path.join(league_dir, 'index.html'), output)
 
 
 def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, today_date_str, next_match_tuple=None):
@@ -3414,8 +3430,7 @@ def build_team_lineup_page(team_slug, team_data, match_data, is_home, nav_html, 
         nav_leagues_html=nav_html
     )
     
-    with open(os.path.join(team_dir, 'index.html'), 'w', encoding='utf-8') as f:
-        f.write(output)
+    write_if_changed(os.path.join(team_dir, 'index.html'), output)
 
 
 def build_single_player_page(player_slug, player_data, match_data, is_home, nav_html, today_date_str, next_match_tuple=None):
@@ -3622,18 +3637,16 @@ def build_single_player_page(player_slug, player_data, match_data, is_home, nav_
         badge_text=badge_text.upper()
     )
     
-    with open(os.path.join(player_dir, 'index.html'), 'w', encoding='utf-8') as f:
-        f.write(output)
+    write_if_changed(os.path.join(player_dir, 'index.html'), output)
 
 def generate_match_schema(match_data):
     home_name = match_data['teams']['home']['name']
     away_name = match_data['teams']['away']['name']
     match_date = match_data['fixture'].get('date', '')
     status_short = match_data['fixture']['status']['short']
+    venue_name = match_data.get('stadium', {}).get('name') if isinstance(match_data.get('stadium'), dict) else None
     
-    if status_short in ['NS', 'TBD']:
-        event_status = "https://schema.org/EventScheduled"
-    elif status_short in ['PST', 'CANC', 'ABD']:
+    if status_short in ['PST', 'CANC', 'ABD']:
         event_status = "https://schema.org/EventCancelled"
     else:
         event_status = "https://schema.org/EventScheduled"
@@ -3643,7 +3656,6 @@ def generate_match_schema(match_data):
         "@type": "SportsEvent",
         "name": f"{home_name} vs {away_name}",
         "sport": "Soccer",
-        "startDate": match_date,
         "eventStatus": event_status,
         "homeTeam": {
             "@type": "SportsOrganization",
@@ -3654,6 +3666,15 @@ def generate_match_schema(match_data):
             "name": away_name
         }
     }
+    
+    if match_date:
+        event_schema["startDate"] = match_date
+        
+    if venue_name:
+        event_schema["location"] = {
+            "@type": "Place",
+            "name": venue_name
+        }
     
     json_string = json.dumps(event_schema, indent=2, ensure_ascii=False)
     return f'<script type="application/ld+json">\n{json_string}\n</script>'
@@ -3716,9 +3737,8 @@ def build_single_match_page(team_slug, match_data, is_home, nav_html):
         schema_json=schema_json
     )
     
-    with open(os.path.join(match_dir, 'index.html'), 'w', encoding='utf-8') as f:
-        f.write(output)
-
+    write_if_changed(os.path.join(match_dir, 'index.html'), output)
+    
 def build_sitemaps(league_state, team_state, player_state):
     base_url = "https://futbolstartingeleven.com"
     now_iso = datetime.now(pytz.utc).isoformat(timespec='seconds')
@@ -3857,7 +3877,6 @@ def generate_homepage_schema(today_matches):
             "@type": "SportsEvent",
             "name": f"{home_name} vs {away_name}",
             "sport": "Soccer",
-            "startDate": match_date,
             "eventStatus": event_status,
             "homeTeam": {
                 "@type": "SportsOrganization",
@@ -3868,6 +3887,15 @@ def generate_homepage_schema(today_matches):
                 "name": away_name
             }
         }
+        if match_date:
+            event_schema["startDate"] = match_date
+            
+        venue_name = m.get('stadium', {}).get('name') if isinstance(m.get('stadium'), dict) else None
+        if venue_name:
+            event_schema["location"] = {
+                "@type": "Place",
+                "name": venue_name
+            }
         schema_list.append(event_schema)
         
     # Wrap the list in a script tag
