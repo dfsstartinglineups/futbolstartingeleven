@@ -179742,7 +179742,7 @@
   },
   "20260816": {
     "is_locked": false,
-    "last_fetched": 1786876273.6322818,
+    "last_fetched": 1786876449.6172395,
     "raw_events": [
       {
         "id": "401882920",
@@ -192282,7 +192282,7 @@
                     },
                     "close": {
                       "line": "-0.5",
-                      "odds": "-150",
+                      "odds": "-145",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -193428,16 +193428,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 60.0,
+              "displayClock": "1'",
+              "period": 1,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
+                "id": "25",
+                "name": "STATUS_FIRST_HALF",
+                "state": "in",
                 "completed": false,
-                "description": "Scheduled",
-                "detail": "Sun, August 16th at 6:30 AM EDT",
-                "shortDetail": "Scheduled"
+                "description": "First Half",
+                "detail": "1'",
+                "shortDetail": "1'"
               }
             },
             "format": {
@@ -193783,29 +193784,30 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 60.0,
+          "displayClock": "1'",
+          "period": 1,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
+            "id": "25",
+            "name": "STATUS_FIRST_HALF",
+            "state": "in",
             "completed": false,
-            "description": "Scheduled",
-            "detail": "Sun, August 16th at 6:30 AM EDT",
-            "shortDetail": "Scheduled"
+            "description": "First Half",
+            "detail": "1'",
+            "shortDetail": "1'"
           }
         },
         "links": [
           {
             "language": "en-US",
             "rel": [
-              "summary",
+              "live",
               "desktop",
               "event"
             ],
-            "href": "https://www.espn.com/soccer/match/_/gameId/401911290/como-liverpool",
-            "text": "Summary",
-            "shortText": "Summary",
+            "href": "https://www.espn.com/soccer/match/_/gameId/401911290",
+            "text": "Gamecast",
+            "shortText": "Live",
             "isExternal": false,
             "isPremium": false,
             "isHidden": false
@@ -199334,8 +199336,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 900.0,
-              "displayClock": "15'",
+              "clock": 1080.0,
+              "displayClock": "18'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -199343,8 +199345,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "15'",
-                "shortDetail": "15'"
+                "detail": "18'",
+                "shortDetail": "18'"
               }
             },
             "venue": {
@@ -199512,7 +199514,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "49.5"
+                    "displayValue": "49.1"
                   },
                   {
                     "name": "shotAssists",
@@ -199544,7 +199546,7 @@
                 "homeAway": "away",
                 "winner": false,
                 "form": "WLWWL",
-                "score": "0",
+                "score": "1",
                 "records": [
                   {
                     "name": "All Splits",
@@ -199682,7 +199684,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "50.5"
+                    "displayValue": "50.9"
                   },
                   {
                     "name": "shotAssists",
@@ -199692,22 +199694,67 @@
                   {
                     "name": "shotsOnTarget",
                     "abbreviation": "SOG",
-                    "displayValue": "2"
+                    "displayValue": "3"
                   },
                   {
                     "name": "totalGoals",
                     "abbreviation": "G",
-                    "displayValue": "0"
+                    "displayValue": "1"
                   },
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "2"
+                    "displayValue": "3"
                   }
                 ]
               }
             ],
-            "details": [],
+            "details": [
+              {
+                "type": {
+                  "id": "70",
+                  "text": "Goal"
+                },
+                "clock": {
+                  "value": 888.0,
+                  "displayValue": "15'"
+                },
+                "team": {
+                  "id": "145"
+                },
+                "scoreValue": 1,
+                "scoringPlay": true,
+                "redCard": false,
+                "yellowCard": false,
+                "penaltyKick": false,
+                "ownGoal": false,
+                "shootout": false,
+                "athletesInvolved": [
+                  {
+                    "id": "351290",
+                    "displayName": "Thom Van Bergen",
+                    "shortName": "T. Van Bergen",
+                    "fullName": "Thom Van Bergen",
+                    "jersey": "26",
+                    "team": {
+                      "id": "145"
+                    },
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/351290/thom-van-bergen",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "AM"
+                  }
+                ]
+              }
+            ],
             "odds": [
               {
                 "overUnder": 2.5,
@@ -199761,14 +199808,14 @@
                       "odds": "-140"
                     },
                     "current": {
-                      "line": "o2.5",
-                      "odds": "-108",
+                      "line": "o3.5",
+                      "odds": "-103",
                       "link": {
                         "rel": [
                           "over",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34505089%3Foutcomes%3D0OU85827591O250_1",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34505089%3Foutcomes%3D0OU85827591O350_1",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -199777,7 +199824,7 @@
                             "gameId": 401875641,
                             "betSide": "over",
                             "betType": "straight",
-                            "betDetails": "Over:2.5"
+                            "betDetails": "Over:3.5"
                           }
                         }
                       }
@@ -199793,14 +199840,14 @@
                       "odds": "+105"
                     },
                     "current": {
-                      "line": "u2.5",
-                      "odds": "-132",
+                      "line": "u3.5",
+                      "odds": "-138",
                       "link": {
                         "rel": [
                           "under",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34505089%3Foutcomes%3D0OU85827591U250_3",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34505089%3Foutcomes%3D0OU85827591U350_3",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -199809,7 +199856,7 @@
                             "gameId": 401875641,
                             "betSide": "under",
                             "betType": "straight",
-                            "betDetails": "Under:2.5"
+                            "betDetails": "Under:3.5"
                           }
                         }
                       }
@@ -199830,7 +199877,7 @@
                     },
                     "current": {
                       "line": "+0.5",
-                      "odds": "-195",
+                      "odds": "+115",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -199862,7 +199909,7 @@
                     },
                     "current": {
                       "line": "-0.5",
-                      "odds": "+130",
+                      "odds": "-170",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -199895,7 +199942,7 @@
                       "odds": "+150"
                     },
                     "current": {
-                      "odds": "+185",
+                      "odds": "+390",
                       "link": {
                         "rel": [
                           "home",
@@ -199923,7 +199970,7 @@
                       "odds": "+170"
                     },
                     "current": {
-                      "odds": "+145",
+                      "odds": "-155",
                       "link": {
                         "rel": [
                           "away",
@@ -199949,6 +199996,26 @@
                     },
                     "close": {
                       "odds": "+250"
+                    },
+                    "current": {
+                      "odds": "+290",
+                      "link": {
+                        "rel": [
+                          "draw",
+                          "bets"
+                        ],
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34505089%3Foutcomes%3D0ML85827586_2",
+                        "tracking": {
+                          "campaign": "betting-integrations",
+                          "tags": {
+                            "league": "ned.1",
+                            "sport": "soccer",
+                            "gameId": 401875641,
+                            "betSide": "draw",
+                            "betType": "straight"
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -199961,8 +200028,8 @@
           }
         ],
         "status": {
-          "clock": 900.0,
-          "displayClock": "15'",
+          "clock": 1080.0,
+          "displayClock": "18'",
           "period": 1,
           "type": {
             "id": "25",
@@ -199970,8 +200037,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "15'",
-            "shortDetail": "15'"
+            "detail": "18'",
+            "shortDetail": "18'"
           }
         },
         "venue": {
@@ -226371,8 +226438,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 900.0,
-              "displayClock": "15'",
+              "clock": 1020.0,
+              "displayClock": "17'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -226380,8 +226447,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "15'",
-                "shortDetail": "15'"
+                "detail": "17'",
+                "shortDetail": "17'"
               }
             },
             "venue": {
@@ -226796,7 +226863,7 @@
                     },
                     "current": {
                       "line": "o3.5",
-                      "odds": "+102",
+                      "odds": "+104",
                       "link": {
                         "rel": [
                           "over",
@@ -226828,7 +226895,7 @@
                     },
                     "current": {
                       "line": "u3.5",
-                      "odds": "-153",
+                      "odds": "-156",
                       "link": {
                         "rel": [
                           "under",
@@ -226927,7 +226994,7 @@
                       "odds": "+1300"
                     },
                     "current": {
-                      "odds": "+1500",
+                      "odds": "+1300",
                       "link": {
                         "rel": [
                           "home",
@@ -226955,7 +227022,7 @@
                       "odds": "-650"
                     },
                     "current": {
-                      "odds": "-1000",
+                      "odds": "-800",
                       "link": {
                         "rel": [
                           "away",
@@ -226983,7 +227050,7 @@
                       "odds": "+600"
                     },
                     "current": {
-                      "odds": "+650",
+                      "odds": "+600",
                       "link": {
                         "rel": [
                           "draw",
@@ -227013,8 +227080,8 @@
           }
         ],
         "status": {
-          "clock": 900.0,
-          "displayClock": "15'",
+          "clock": 1020.0,
+          "displayClock": "17'",
           "period": 1,
           "type": {
             "id": "25",
@@ -227022,8 +227089,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "15'",
-            "shortDetail": "15'"
+            "detail": "17'",
+            "shortDetail": "17'"
           }
         },
         "venue": {
