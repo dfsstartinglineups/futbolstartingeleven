@@ -180,9 +180,9 @@
                     <a href="/teams/internacional-de-bogota/match/" class="match-link-icon text-muted ms-2 d-flex align-items-center" onclick="event.stopPropagation();" title="View Match Center"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg></a>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
-                    <div class="text-center" style="width: 30%;"><img src="/images/teams/95786a169c31.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Internacional de Bogotá</div><a href="/teams/internacional-de-bogota/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/95786a169c31.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Internacional de Bogotá</div></div>
                     <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-401877878"><div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">vs</div></div>
-                    <div class="text-center" style="width: 30%;"><img src="/images/teams/5d8f1bef3c76.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Independiente Medellín</div><a href="/teams/independiente-medellin/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/5d8f1bef3c76.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Independiente Medellín</div></div>
                 </div>
                 <div class="w-100" id="events-401877878"></div>
             </div>
@@ -191,13 +191,13 @@
             <a href="https://weatherfootball.com/teams/internacional-de-bogota/" class="d-block w-100 text-center py-2 border-bottom text-decoration-none fw-bold" style="background-color: #e0f2fe; color: #0284c7; font-size: 0.75rem;">🌤️ Weather Forecast</a>
             <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
                 <div class="d-flex gap-4 w-100">
-                    <div class="lineup-tab " id="tab-xi-401877878" onclick="switchLineupTab(event, '401877878', 'xi')" style="flex: 1; text-align: center;">FINAL XI</div>
-                    <div class="lineup-tab active " id="tab-stats-401877878" onclick="switchLineupTab(event, '401877878', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                    <div class="lineup-tab active" id="tab-xi-401877878" onclick="switchLineupTab(event, '401877878', 'xi')" style="flex: 1; text-align: center;">FINAL XI</div>
+                    <div class="lineup-tab  d-none" id="tab-stats-401877878" onclick="switchLineupTab(event, '401877878', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
                 </div>
             </div>
             <div class="collapse show lineup-container" id="lineup-collapse-401877878">
-                <div id="view-xi-401877878" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
-                <div id="view-stats-401877878" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
+                <div id="view-xi-401877878" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
+                <div id="view-stats-401877878" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
             </div>
         </div>
     </div>
@@ -227,9 +227,9 @@
                     <a href="/teams/america-de-cali/match/" class="match-link-icon text-muted ms-2 d-flex align-items-center" onclick="event.stopPropagation();" title="View Match Center"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg></a>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
-                    <div class="text-center" style="width: 30%;"><img src="/images/teams/534681daf599.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">América de Cali</div><a href="/teams/america-de-cali/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/534681daf599.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">América de Cali</div></div>
                     <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-401878035"><div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">vs</div></div>
-                    <div class="text-center" style="width: 30%;"><img src="/images/teams/f41dee55c565.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Fortaleza CEIF</div><a href="/teams/fortaleza-ceif/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/f41dee55c565.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Fortaleza CEIF</div></div>
                 </div>
                 <div class="w-100" id="events-401878035"></div>
             </div>
@@ -238,13 +238,13 @@
             <a href="https://weatherfootball.com/teams/america-de-cali/" class="d-block w-100 text-center py-2 border-bottom text-decoration-none fw-bold" style="background-color: #e0f2fe; color: #0284c7; font-size: 0.75rem;">🌤️ Weather Forecast</a>
             <div class="bg-light border-bottom d-flex justify-content-center align-items-center px-2 py-1">
                 <div class="d-flex gap-4 w-100">
-                    <div class="lineup-tab " id="tab-xi-401878035" onclick="switchLineupTab(event, '401878035', 'xi')" style="flex: 1; text-align: center;">FINAL XI</div>
-                    <div class="lineup-tab active " id="tab-stats-401878035" onclick="switchLineupTab(event, '401878035', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
+                    <div class="lineup-tab active" id="tab-xi-401878035" onclick="switchLineupTab(event, '401878035', 'xi')" style="flex: 1; text-align: center;">FINAL XI</div>
+                    <div class="lineup-tab  d-none" id="tab-stats-401878035" onclick="switchLineupTab(event, '401878035', 'stats')" style="flex: 1; text-align: center;">LIVE STATS</div>
                 </div>
             </div>
             <div class="collapse show lineup-container" id="lineup-collapse-401878035">
-                <div id="view-xi-401878035" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
-                <div id="view-stats-401878035" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
+                <div id="view-xi-401878035" class=""><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fst-italic">Lineup pending...</div></div></div></div>
+                <div id="view-stats-401878035" class="d-none"><div class="row g-0 bg-white border-top"><div class="col-6 border-end"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div><div class="col-6"><div class="p-3 text-center text-muted small fw-bold">Awaiting live stats...</div></div></div></div>
             </div>
         </div>
     </div>
@@ -274,9 +274,9 @@
                     <a href="/teams/once-caldas/match/" class="match-link-icon text-muted ms-2 d-flex align-items-center" onclick="event.stopPropagation();" title="View Match Center"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg></a>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-1 py-1 w-100">
-                    <div class="text-center" style="width: 30%;"><img src="/images/teams/7ed0aff06556.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Once Caldas</div><a href="/teams/once-caldas/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/7ed0aff06556.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Once Caldas</div></div>
                     <div class="text-center d-flex flex-column align-items-center justify-content-center" style="width: 40%;" id="score-401877998"><div class="fw-bold text-dark mx-2" style="font-size: 1.2rem;">vs</div></div>
-                    <div class="text-center" style="width: 30%;"><img src="/images/teams/286d27bea07f.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Alianza FC</div><a href="/teams/alianza-fc/lineup/" class="text-decoration-none text-primary" style="font-size:0.65rem; display:block; margin-top:-2px;">Lineup</a></div>
+                    <div class="text-center" style="width: 30%;"><img src="/images/teams/286d27bea07f.png" loading="lazy" decoding="async" class="team-logo mb-1"><div class="fw-bold text-dark text-truncate" style="font-size: 0.8rem;">Alianza FC</div></div>
                 </div>
                 <div class="w-100" id="events-401877998"></div>
             </div>
