@@ -94,7 +94,7 @@
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3" style="width: 100%;">
         <div class="d-flex flex-column align-items-start">
             <span class="fw-bold text-success mb-1" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center;">
-                <span class="live-dot"></span> LIVE: 89'
+                <span class="live-dot"></span> LIVE: 90' + 4''
             </span>
             <div class="d-flex align-items-center" style="font-size: 1rem; font-weight: 700;">
                 <a href="/teams/sg-sonnenhof-groaspach/lineup/" class="text-decoration-none text-dark" style="color: inherit;">
@@ -354,25 +354,44 @@
                 }
             }
 
+            // 2. Rebuild the Expanded Events Accordion Block
             const eventsBlock = document.getElementById(`events-${domId}`);
             if (eventsBlock) {
-                let timelineHtml = `<div class="w-100 px-3 pt-3 pb-2 mt-2 border-top" style="background-color: #f8f9fa; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto;">`;
-                const reversedEvents = [...data.events].reverse();
-                reversedEvents.forEach(ev => {
-                    let icon = '🟨', colorClass = 'text-warning';
-                    if (ev.type === 'Goal') { icon = '⚽'; colorClass = 'text-success'; }
-                    else if (ev.type === 'Red Card') { icon = '🟥'; colorClass = 'text-danger'; }
-                    else if (ev.type === 'subst') { icon = '🔄'; colorClass = 'text-primary'; }
+                const homeId = String(data.teams.home.id);
+                const awayId = String(data.teams.away.id);
+                const hName = data.teams.home.name;
+                const aName = data.teams.away.name;
+                
+                const hEvs = data.events.filter(e => String(e.team_id) === homeId).reverse();
+                const aEvs = data.events.filter(e => String(e.team_id) === awayId).reverse();
+                
+                const shortenPlayerName = (fullName) => {
+                    if (!fullName) return "Unknown";
+                    const parts = fullName.trim().split(' ');
+                    if (parts.length === 1) return parts[0];
+                    return `${parts[0][0].toUpperCase()}. ${parts.slice(1).join(' ')}`;
+                };
 
-                    if (ev.type === 'subst') {
-                        timelineHtml += `<div class="d-flex align-items-start mb-2 border-bottom pb-2"><div class="text-secondary fw-bold pe-2" style="width: 40px; text-align: right; font-size: 0.75rem;">${ev.time}'</div><div style="width: 25px; text-align: center; font-size: 0.85rem;" class="me-2">${icon}</div><div class="text-truncate" style="font-size: 0.75rem; line-height: 1.2;"><span class="text-dark fw-bold">${ev.player}</span> IN<br><span class="text-muted">(${ev.player_out} OUT)</span></div></div>`;
-                    } else {
-                        const astHtml = ev.assist ? `<br><span class="text-muted fw-normal">👟 ${ev.assist}</span>` : '';
-                        timelineHtml += `<div class="d-flex align-items-start mb-2 border-bottom pb-2"><div class="text-secondary fw-bold pe-2" style="width: 40px; text-align: right; font-size: 0.75rem;">${ev.time}'</div><div style="width: 25px; text-align: center; font-size: 0.85rem;" class="me-2 ${colorClass}">${icon}</div><div class="text-truncate" style="font-size: 0.75rem; line-height: 1.2;"><span class="text-dark fw-bold">${ev.player}</span>${astHtml}</div></div>`;
+                const fmtEv = (e, teamName) => {
+                    if (e.type === 'subst') {
+                        return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">🔄</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player_out)}</span> IN<br><span class="text-muted" style="font-size: 0.55rem;">(${shortenPlayerName(e.player)} OUT)</span></div></div>`;
                     }
-                });
-                timelineHtml += `</div>`;
-                eventsBlock.innerHTML = timelineHtml;
+                    const icon = e.type === 'Goal' ? '⚽' : (e.type === 'Red Card' ? '🟥' : '🟨');
+                    const ast = (e.type === 'Goal' && e.assist) ? `<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>` : '';
+                    return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">${icon}</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player || teamName)}</span>${ast}</div></div>`;
+                };
+
+                const needsCol = Math.max(hEvs.length, aEvs.length) > 1;
+                const hFirst = hEvs.length > 0 ? fmtEv(hEvs[0], hName) : '';
+                const aFirst = aEvs.length > 0 ? fmtEv(aEvs[0], aName) : '';
+                const hAll = hEvs.map(e => fmtEv(e, hName)).join('');
+                const aAll = aEvs.map(e => fmtEv(e, aName)).join('');
+                
+                // Preserve the expanded state so it doesn't snap shut when a new event arrives
+                const isCurrentlyExpanded = eventsBlock.firstElementChild && eventsBlock.firstElementChild.classList.contains('is-expanded');
+                const toggleJS = "const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp);";
+                
+                eventsBlock.innerHTML = `<div class="w-100 px-2 pt-1 mt-1 border-top text-muted ${isCurrentlyExpanded ? 'is-expanded' : ''}" style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" onclick="${needsCol ? toggleJS : ''}" title="${needsCol ? 'Click to expand/collapse match timeline' : ''}"><div class="event-collapsed ${isCurrentlyExpanded ? 'd-none' : ''}"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${hFirst}</div><div class="text-start" style="flex: 1; min-width: 0;">${aFirst}</div></div>${needsCol ? "<div class='text-center text-secondary w-100' style='font-size: 0.60rem;'>▼</div>" : ""}</div><div class="event-expanded ${isCurrentlyExpanded ? '' : 'd-none'}"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${hAll}</div><div class="text-start" style="flex: 1; min-width: 0;">${aAll}</div></div><div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▲</div></div></div>`;
             }
         }
     }
