@@ -32,7 +32,7 @@ if not firebase_admin._apps:
     else:
         firebase_admin.initialize_app(options={'databaseURL': db_url})
 
-# Cache to throttle individual player Core API calls (120s TTL)
+# Cache to throttle individual player Core API calls
 PLAYER_CORE_CACHE = {}
 CORE_STATS_THROTTLE_SEC = 120
 
@@ -198,16 +198,22 @@ def parse_live_match_summary(event_id):
         status_obj = comp_head.get('status', {})
         game_state = (status_obj.get('type') or {}).get('state', 'pre')
 
-        # Extract internal slug directly from summary header (matching build_index.py)
         internal_slug = (header.get('league') or {}).get('slug', '')
 
-        # Live score extraction
+        # Live score & Team info extraction (THE FIX)
         scores = {"home": 0, "away": 0}
+        teams_info = {"home": {"id": "", "name": ""}, "away": {"id": "", "name": ""}}
+        
         for comp in comp_head.get('competitors', []):
             ha = comp.get('homeAway')
-            if ha in ['home', 'away'] and comp.get('score') is not None:
-                try: scores[ha] = int(comp.get('score'))
-                except: pass
+            if ha in ['home', 'away']:
+                t_obj = comp.get('team') or {}
+                teams_info[ha]["id"] = str(t_obj.get('id', ''))
+                teams_info[ha]["name"] = t_obj.get('displayName') or t_obj.get('name') or ''
+                
+                if comp.get('score') is not None:
+                    try: scores[ha] = int(comp.get('score'))
+                    except: pass
 
         # Team stats extraction
         team_stats = {
@@ -261,7 +267,7 @@ def parse_live_match_summary(event_id):
                     "assist": p_out if ev_type == "Goal" else None
                 })
 
-        # Core player stats extraction (Throttled to once every 2 minutes per match)
+        # Core player stats extraction
         player_live_stats = {}
         now_ts = time.time()
         cached_player_data = PLAYER_CORE_CACHE.get(str(event_id), {})
@@ -287,7 +293,6 @@ def parse_live_match_summary(event_id):
                         for pid, s_dict in raw_core.items():
                             player_live_stats[pid] = extract_player_live_stats(s_dict)
                             
-                        # Save to memory cache
                         PLAYER_CORE_CACHE[str(event_id)] = {
                             'last_fetched': now_ts,
                             'stats': player_live_stats
@@ -296,7 +301,6 @@ def parse_live_match_summary(event_id):
                         print(f"⚠️ Core stats fetch error for event {event_id}: {e}")
                         player_live_stats = cached_player_data.get('stats', {})
         else:
-            # Serve cached player stats without hitting the network
             player_live_stats = cached_player_data.get('stats', {})
 
         clock_str = extract_match_clock(status_obj)
@@ -307,6 +311,7 @@ def parse_live_match_summary(event_id):
             "status_short": (status_obj.get('type') or {}).get('shortDetail', 'LIVE'),
             "clock": clock_str,
             "scores": scores,
+            "teams": teams_info, # THIS ALLOWS THE JS TO BUILD THE ACCORDION!
             "team_stats": team_stats,
             "events": events_list,
             "player_stats": player_live_stats,
