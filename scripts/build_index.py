@@ -2319,8 +2319,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         if (data.events && data.events.length > 0) {
             const lastEv = data.events[data.events.length - 1];
-            
-            // 1. Update the Ribbon & Header Ticker
             const ribbonEvEl = document.getElementById(`ribbon-latest-event-${domId}`);
             const syncEvEl = document.getElementById(`time-event-sync-${domId}`);
             
@@ -2358,7 +2356,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 }
             }
 
-            // 2. Rebuild the Expanded Events Accordion Block
+            // Rebuild the Expanded Events Accordion Block
             const eventsBlock = document.getElementById(`events-${domId}`);
             if (eventsBlock) {
                 const homeId = String(data.teams.home.id);
@@ -2399,6 +2397,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             }
         }
     }
+
     function initFirebaseListeners() {
         const activeListeners = new Set();
         document.querySelectorAll('.lineup-card').forEach(card => {
@@ -2446,7 +2445,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.day-tab-btn').forEach(b => { b.classList.remove('btn-dark', 'active'); b.classList.add('btn-outline-dark'); });
                 e.target.closest('.day-tab-btn').classList.remove('btn-outline-dark'); e.target.closest('.day-tab-btn').classList.add('btn-dark', 'active');
-                if (typeof ACTIVE_DAY !== 'undefined') ACTIVE_DAY = e.target.closest('.day-tab-btn').getAttribute('data-day');
+                ACTIVE_DAY = e.target.closest('.day-tab-btn').getAttribute('data-day');
                 document.querySelectorAll('.day-partition').forEach(p => p.classList.add('d-none'));
                 document.getElementById('partition-' + ACTIVE_DAY)?.classList.remove('d-none');
                 if (typeof populateLeagueDropdown === 'function') populateLeagueDropdown();
@@ -2484,19 +2483,53 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         });
 
         initFirebaseListeners();
-        // Fallback listener assignment for dynamically revealed cards
         setInterval(initFirebaseListeners, 30000);
     });
+
+    function populateLeagueDropdown() {
+        const select = document.getElementById('league-select');
+        if (!select) return;
+        select.innerHTML = '<option value="">-- Select League --</option>';
+        const activePartition = document.getElementById('partition-' + (typeof ACTIVE_DAY !== 'undefined' ? ACTIVE_DAY : 'today'));
+        if (!activePartition) return;
+        const headers = Array.from(activePartition.querySelectorAll('.league-header'))
+            .filter(h => !h.classList.contains('d-none'))
+            .sort((a, b) => (a.getAttribute('data-league-name') || '').localeCompare(b.getAttribute('data-league-name') || ''));
+        headers.forEach(h => {
+            const opt = document.createElement('option');
+            opt.value = h.id; opt.textContent = h.getAttribute('data-league-name') || 'League';
+            select.appendChild(opt);
+        });
+    }
+
+    function applySearchFilter() {
+        const searchText = (document.getElementById('team-search')?.value || '').toLowerCase();
+        const activePartition = document.getElementById('partition-' + (typeof ACTIVE_DAY !== 'undefined' ? ACTIVE_DAY : 'today'));
+        if (!activePartition) return;
+        let totalVisibleMatches = 0;
+        activePartition.querySelectorAll('.league-header, .live-header').forEach(header => {
+            let visibleInLeague = 0, sibling = header.nextElementSibling;
+            while (sibling && !sibling.classList.contains('league-header') && !sibling.classList.contains('live-header')) {
+                if (sibling.classList.contains('game-card-wrapper')) {
+                    if ((sibling.getAttribute('data-search') || '').includes(searchText)) {
+                        sibling.classList.remove('d-none'); visibleInLeague++; totalVisibleMatches++;
+                    } else { sibling.classList.add('d-none'); }
+                }
+                sibling = sibling.nextElementSibling;
+            }
+            header.classList.toggle('d-none', visibleInLeague === 0);
+        });
+        const emptyState = activePartition.querySelector('.empty-state');
+        if (emptyState) emptyState.classList.toggle('d-none', totalVisibleMatches > 0);
+        populateLeagueDropdown();
+    }
 
     window.toggleSingleCard = function(fixId) {
         const fullView = document.getElementById(`full-${fixId}`);
         document.getElementById(`ribbon-${fixId}`)?.classList.toggle('d-none');
         fullView?.classList.toggle('d-none');
         if (fullView && !fullView.classList.contains('d-none')) {
-            fullView.querySelectorAll('img[data-src]').forEach(img => {
-                img.src = img.getAttribute('data-src');
-                img.removeAttribute('data-src');
-            });
+            fullView.querySelectorAll('img[data-src]').forEach(img => { img.src = img.getAttribute('data-src'); img.removeAttribute('data-src'); });
         }
     };
 
@@ -2504,24 +2537,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         if (event && event.stopPropagation) event.stopPropagation();
         const xiTab = document.getElementById(`tab-xi-${fixId}`), statsTab = document.getElementById(`tab-stats-${fixId}`);
         const xiView = document.getElementById(`view-xi-${fixId}`), statsView = document.getElementById(`view-stats-${fixId}`);
-        if (tabName === 'xi') {
-            xiTab?.classList.add('active'); statsTab?.classList.remove('active');
-            xiView?.classList.remove('d-none'); statsView?.classList.add('d-none');
-        } else if (tabName === 'stats') {
-            statsTab?.classList.add('active'); xiTab?.classList.remove('active');
-            statsView?.classList.remove('d-none'); xiView?.classList.add('d-none');
-        }
+        if (tabName === 'xi') { xiTab?.classList.add('active'); statsTab?.classList.remove('active'); xiView?.classList.remove('d-none'); statsView?.classList.add('d-none'); }
+        else if (tabName === 'stats') { statsTab?.classList.add('active'); xiTab?.classList.remove('active'); statsView?.classList.remove('d-none'); xiView?.classList.add('d-none'); }
     };
 
     function triggerCardGlow(cardEl, newestEventText) {
         if (!cardEl || !newestEventText) return;
         const text = newestEventText.toLowerCase();
-        
         let glowClass = 'glow-goal'; 
         if (text.includes('🟥') || text.includes('red')) glowClass = 'glow-red-card';
         else if (text.includes('🟨') || text.includes('yellow')) glowClass = 'glow-yellow-card';
         else if (text.includes('🔄') || text.includes('sub')) glowClass = 'glow-subst';
-
         cardEl.classList.remove('glow-goal', 'glow-red-card', 'glow-yellow-card', 'glow-subst');
         void cardEl.offsetWidth;
         cardEl.classList.add(glowClass);
