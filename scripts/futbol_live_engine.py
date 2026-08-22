@@ -32,7 +32,7 @@ if not firebase_admin._apps:
     else:
         firebase_admin.initialize_app(options={'databaseURL': db_url})
 
-# Cache to throttle individual player Core API calls
+# Cache to throttle individual player Core API calls (120s TTL)
 PLAYER_CORE_CACHE = {}
 CORE_STATS_THROTTLE_SEC = 120
 
@@ -177,7 +177,7 @@ async def get_core_stats_concurrently(internal_slug, event_id, player_list):
         results = await asyncio.gather(*tasks)
         return {pid: stats for pid, stats in results if stats}
 
-def parse_live_match_summary(event_id, internal_slug):
+def parse_live_match_summary(event_id):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
         'Accept': 'application/json, text/plain, */*',
@@ -197,6 +197,9 @@ def parse_live_match_summary(event_id, internal_slug):
         comp_head = comp_list[0] if comp_list else {}
         status_obj = comp_head.get('status', {})
         game_state = (status_obj.get('type') or {}).get('state', 'pre')
+
+        # Extract internal slug directly from summary header (matching build_index.py)
+        internal_slug = (header.get('league') or {}).get('slug', '')
 
         # Live score extraction
         scores = {"home": 0, "away": 0}
@@ -228,7 +231,8 @@ def parse_live_match_summary(event_id, internal_slug):
                 "away": {"possession": clean_n(a_raw.get('possessionPct', 50)), "total_shots": clean_n(a_raw.get('totalShots', 0)), "shots_on_target": clean_n(a_raw.get('shotsOnTarget', 0)), "corners": clean_n(a_raw.get('cornerKicks', 0)), "yellow_cards": clean_n(a_raw.get('yellowCards', 0)), "red_cards": clean_n(a_raw.get('redCards', 0))}
             }
 
-        # Events extraction
+        # Events extraction + sub tracking
+        subbed_in_set = set()
         events_list = []
         key_events = data.get('keyEvents', [])
         if isinstance(key_events, list):
@@ -244,6 +248,10 @@ def parse_live_match_summary(event_id, internal_slug):
                 p_in = (parts[0].get('athlete') or {}).get('displayName', '') if parts else ''
                 p_out = (parts[1].get('athlete') or {}).get('displayName', '') if len(parts) > 1 else ''
 
+                if is_sub:
+                    if parts: subbed_in_set.add(str((parts[0].get('athlete') or {}).get('id', '')))
+                    if p_in: subbed_in_set.add(p_in.lower())
+
                 events_list.append({
                     "time": (ev.get('clock') or {}).get('displayValue', "0'").replace("'", ""),
                     "team_id": str((ev.get('team') or {}).get('id', '')),
@@ -256,7 +264,7 @@ def parse_live_match_summary(event_id, internal_slug):
         # Core player stats extraction (Throttled to once every 2 minutes per match)
         player_live_stats = {}
         now_ts = time.time()
-        cached_player_data = PLAYER_CORE_CACHE.get(event_id, {})
+        cached_player_data = PLAYER_CORE_CACHE.get(str(event_id), {})
         last_fetched = cached_player_data.get('last_fetched', 0)
 
         if (now_ts - last_fetched) > CORE_STATS_THROTTLE_SEC:
@@ -268,7 +276,8 @@ def parse_live_match_summary(event_id, internal_slug):
                     for entry in r_data.get('roster', []):
                         ath = entry.get('athlete') or {}
                         p_id = str(ath.get('id', ''))
-                        if entry.get('starter') or entry.get('subbedIn') or entry.get('didPlay') or entry.get('played'):
+                        p_name = ath.get('displayName', '')
+                        if entry.get('starter') or entry.get('subbedIn') or entry.get('didPlay') or entry.get('played') or (p_id in subbed_in_set or p_name.lower() in subbed_in_set):
                             if t_id and p_id: 
                                 active_players.append((t_id, p_id))
 
@@ -279,7 +288,7 @@ def parse_live_match_summary(event_id, internal_slug):
                             player_live_stats[pid] = extract_player_live_stats(s_dict)
                             
                         # Save to memory cache
-                        PLAYER_CORE_CACHE[event_id] = {
+                        PLAYER_CORE_CACHE[str(event_id)] = {
                             'last_fetched': now_ts,
                             'stats': player_live_stats
                         }
@@ -332,36 +341,32 @@ def main():
                 continue
 
             events = res.json().get('events', [])
-            live_events = []
+            live_event_ids = []
 
             for ev in events:
                 state = ((ev.get('status') or {}).get('type') or {}).get('state', 'pre')
                 ev_id = str(ev.get('id', ''))
                 
-                # Fetch if match is in-progress OR recently finished
+                # Fetch if match is in-progress
                 if state == 'in':
-                    internal_slug = (ev.get('league') or {}).get('slug', '')
-                    live_events.append((ev_id, internal_slug))
-                elif state == 'post':
-                    # Optional: Check if lock was already pushed, otherwise push final payload once
-                    pass
+                    live_event_ids.append(ev_id)
 
-            if not live_events:
+            if not live_event_ids:
                 print(f"[{now_est.strftime('%I:%M:%S %p')}] 💤 No live matches in progress. Sleeping 60s...")
                 time.sleep(60)
                 continue
 
-            print(f"[{now_est.strftime('%I:%M:%S %p')}] ⚡ {len(live_events)} LIVE match(es) active. Syncing with Firebase...")
+            print(f"[{now_est.strftime('%I:%M:%S %p')}] ⚡ {len(live_event_ids)} LIVE match(es) active. Syncing with Firebase...")
             
             updates = {}
-            for ev_id, internal_slug in live_events:
-                payload = parse_live_match_summary(ev_id, internal_slug)
+            for ev_id in live_event_ids:
+                payload = parse_live_match_summary(ev_id)
                 if payload:
                     updates[f"live_futbol/{ev_id}"] = payload
 
             if updates:
                 db.reference().update(updates)
-                print(f"  └─ ✅ Successfully updated {len(updates)} live matches in Firebase.")
+                print(f"  └─ ✅ Successfully updated {len(updates)} live matches (including player stats) in Firebase.")
 
             # Fast polling interval during live matches with random jitter (20 to 30 seconds)
             sleep_duration = random.uniform(20, 30)
