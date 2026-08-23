@@ -1248,8 +1248,8 @@ def parse_espn_summary(event_id):
 
             if h_raw or a_raw:
                 summary_data["team_stats"] = {
-                    "home": {"possession": clean_num(h_raw.get('possessionPct', 50)), "total_shots": clean_num(h_raw.get('totalShots', 0)), "shots_on_target": clean_num(h_raw.get('shotsOnTarget', 0)), "corners": clean_num(h_raw.get('cornerKicks', 0)), "yellow_cards": clean_num(h_raw.get('yellowCards', 0)), "red_cards": clean_num(h_raw.get('redCards', 0))},
-                    "away": {"possession": clean_num(a_raw.get('possessionPct', 50)), "total_shots": clean_num(a_raw.get('totalShots', 0)), "shots_on_target": clean_num(a_raw.get('shotsOnTarget', 0)), "corners": clean_num(a_raw.get('cornerKicks', 0)), "yellow_cards": clean_num(a_raw.get('yellowCards', 0)), "red_cards": clean_num(a_raw.get('redCards', 0))}
+                    "home": {"possession": clean_num(h_raw.get('possessionPct', 50)), "total_shots": clean_num(h_raw.get('totalShots', 0)), "shots_on_target": clean_num(h_raw.get('shotsOnTarget', 0)), "corners": clean_num(h_raw.get('wonCorners', h_raw.get('cornerKicks', 0))), "yellow_cards": clean_num(h_raw.get('yellowCards', 0)), "red_cards": clean_num(h_raw.get('redCards', 0))},
+                    "away": {"possession": clean_num(a_raw.get('possessionPct', 50)), "total_shots": clean_num(a_raw.get('totalShots', 0)), "shots_on_target": clean_num(a_raw.get('shotsOnTarget', 0)), "corners": clean_num(a_raw.get('wonCorners', a_raw.get('cornerKicks', 0))), "yellow_cards": clean_num(a_raw.get('yellowCards', 0)), "red_cards": clean_num(a_raw.get('redCards', 0))}
                 }
 
         sub_to_starter = {}
