@@ -321,7 +321,7 @@ def parse_live_match_summary(event_id):
         return {
             "id": str(event_id),
             "state": game_state,
-            "status_short": (status_obj.get('type') or {}).get('shortDetail', 'LIVE'),
+            "status_short": "FT" if game_state == "post" else (status_obj.get('type') or {}).get('shortDetail', 'LIVE'),
             "clock": clock_str,
             "scores": scores,
             "teams": teams_info, # THIS ALLOWS THE JS TO BUILD THE ACCORDION!
