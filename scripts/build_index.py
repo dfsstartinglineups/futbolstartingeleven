@@ -5236,8 +5236,8 @@ def generate_v2_index():
                                 p_data['last_match_id'] = match_id
                                 p_data['is_final'] = is_ft
 
-    print(f"🔄 Generating Match Pages for Today's Slate...")
-    for m in raw_matches_by_day['today']:
+    print(f"🔄 Generating Match Pages...")
+    for m in matches_to_process:
         status_short = m['fixture']['status']['short']
         is_ft = status_short in ['FT', 'AET', 'PEN', 'PST', 'CANC', 'ABD']
         is_live = not is_ft and status_short not in ['NS', 'TBD']
@@ -5259,7 +5259,8 @@ def generate_v2_index():
                 try:
                     with open(match_file, 'r', encoding='utf-8') as f:
                         content = f.read()
-                        if not any(badge in content for badge in ['>FT</span>', '>AET</span>', '>PEN</span>', '>PST</span>', '>CANC</span>', '>ABD</span>']):
+                        # Adding </div> bypasses the Javascript string collision
+                        if not any(badge in content for badge in ['>FT</span></div>', '>AET</span></div>', '>PEN</span></div>', '>PST</span></div>', '>CANC</span></div>', '>ABD</span></div>']):
                             needs_match_build = True
                 except Exception:
                     needs_match_build = True
