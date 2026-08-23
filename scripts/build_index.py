@@ -2322,6 +2322,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const ribbonEvEl = document.getElementById(`ribbon-latest-event-${domId}`);
             const syncEvEl = document.getElementById(`time-event-sync-${domId}`);
             
+            const shortenPlayerName = (fullName) => {
+                if (!fullName) return "Unknown";
+                const parts = fullName.trim().split(' ');
+                if (parts.length === 1) return parts[0];
+                return `${parts[0][0].toUpperCase()}. ${parts.slice(1).join(' ')}`;
+            };
+            
             if (ribbonEvEl) {
                 const currentEvStr = ribbonEvEl.getAttribute('data-last-event') || '';
                 const newEvStr = `${lastEv.time}-${lastEv.player}`;
