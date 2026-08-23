@@ -10,7 +10,7 @@
     "side": "home",
     "league_name": "MLS",
     "league_hashtag": "#MLS",
-    "formation": "4-3-3",
+    "formation": "4-2-3-1",
     "starting_xi": [
       {
         "name": "Matt Turner",
@@ -48,13 +48,6 @@
         "number": "8"
       },
       {
-        "name": "Jackson Yueill",
-        "short_name": "J. Yueill",
-        "pos": "CM",
-        "category": "M",
-        "number": "14"
-      },
-      {
         "name": "Alhassan Yusuf",
         "short_name": "A. Yusuf",
         "pos": "LM",
@@ -62,25 +55,18 @@
         "number": "80"
       },
       {
-        "name": "Carles Gil",
-        "short_name": "C. Gil",
+        "name": "Jackson Yueill",
+        "short_name": "J. Yueill",
         "pos": "RM",
         "category": "M",
+        "number": "14"
+      },
+      {
+        "name": "Carles Gil",
+        "short_name": "C. Gil",
+        "pos": "AM",
+        "category": "F",
         "number": "10"
-      },
-      {
-        "name": "Peyton Miller",
-        "short_name": "P. Miller",
-        "pos": "LF",
-        "category": "M",
-        "number": "25"
-      },
-      {
-        "name": "Jack Harrison",
-        "short_name": "J. Harrison",
-        "pos": "RF",
-        "category": "M",
-        "number": "11"
       },
       {
         "name": "Dor Turgeman",
@@ -88,6 +74,20 @@
         "pos": "F",
         "category": "F",
         "number": "99"
+      },
+      {
+        "name": "Peyton Miller",
+        "short_name": "P. Miller",
+        "pos": "AM-L",
+        "category": "F",
+        "number": "25"
+      },
+      {
+        "name": "Jack Harrison",
+        "short_name": "J. Harrison",
+        "pos": "AM-R",
+        "category": "F",
+        "number": "11"
       }
     ]
   },
@@ -930,7 +930,7 @@
     "side": "away",
     "league_name": "Brazilian Serie A",
     "league_hashtag": "#BrazilianSerieA",
-    "formation": "4-4-2",
+    "formation": "4-2-3-1",
     "starting_xi": [
       {
         "name": "Rafael",
@@ -968,46 +968,46 @@
         "number": "19"
       },
       {
-        "name": "Danielzinho",
-        "short_name": "Danielzinho",
-        "pos": "CM-L",
-        "category": "M",
-        "number": "94"
-      },
-      {
         "name": "Pablo Maia",
         "short_name": "P. Maia",
-        "pos": "CM-R",
+        "pos": "LM",
         "category": "M",
         "number": "29"
       },
       {
+        "name": "Danielzinho",
+        "short_name": "Danielzinho",
+        "pos": "RM",
+        "category": "M",
+        "number": "94"
+      },
+      {
+        "name": "Luciano",
+        "short_name": "Luciano",
+        "pos": "AM",
+        "category": "F",
+        "number": "10"
+      },
+      {
+        "name": "Jonathan Calleri",
+        "short_name": "J. Calleri",
+        "pos": "F",
+        "category": "F",
+        "number": "9"
+      },
+      {
         "name": "Cauly",
         "short_name": "Cauly",
-        "pos": "LM",
-        "category": "M",
+        "pos": "AM-L",
+        "category": "F",
         "number": "80"
       },
       {
         "name": "Artur",
         "short_name": "Artur",
-        "pos": "RM",
-        "category": "M",
+        "pos": "AM-R",
+        "category": "F",
         "number": "37"
-      },
-      {
-        "name": "Jonathan Calleri",
-        "short_name": "J. Calleri",
-        "pos": "CF-L",
-        "category": "F",
-        "number": "9"
-      },
-      {
-        "name": "Luciano",
-        "short_name": "Luciano",
-        "pos": "CF-R",
-        "category": "F",
-        "number": "10"
       }
     ]
   },
@@ -1114,7 +1114,7 @@
     "side": "away",
     "league_name": "Brazilian Serie A",
     "league_hashtag": "#BrazilianSerieA",
-    "formation": "4-2-3-1",
+    "formation": "3-4-1-2",
     "starting_xi": [
       {
         "name": "Walter",
@@ -1124,74 +1124,258 @@
         "number": "22"
       },
       {
-        "name": "Willian Machado",
-        "short_name": "W. Machado",
-        "pos": "CD-L",
-        "category": "D",
-        "number": "3"
-      },
-      {
         "name": "João Victor Carroll",
         "short_name": "J. Victor Carroll",
-        "pos": "CD-R",
+        "pos": "CD",
         "category": "D",
         "number": "34"
       },
       {
+        "name": "Neto Moura",
+        "short_name": "N. Moura",
+        "pos": "CD-L",
+        "category": "D",
+        "number": "25"
+      },
+      {
+        "name": "Willian Machado",
+        "short_name": "W. Machado",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "3"
+      },
+      {
+        "name": "Gustavo Cazonatti",
+        "short_name": "G. Cazonatti",
+        "pos": "CM-L",
+        "category": "M",
+        "number": "55"
+      },
+      {
+        "name": "Gabriel Knesowitsch",
+        "short_name": "G. Knesowitsch",
+        "pos": "CM-R",
+        "category": "M",
+        "number": "44"
+      },
+      {
         "name": "Reinaldo",
         "short_name": "Reinaldo",
-        "pos": "LB",
-        "category": "D",
+        "pos": "LM",
+        "category": "M",
         "number": "6"
       },
       {
         "name": "Igor Marques",
         "short_name": "I. Marques",
-        "pos": "RB",
-        "category": "D",
-        "number": "32"
-      },
-      {
-        "name": "Neto Moura",
-        "short_name": "N. Moura",
-        "pos": "LM",
-        "category": "M",
-        "number": "25"
-      },
-      {
-        "name": "Gustavo Cazonatti",
-        "short_name": "G. Cazonatti",
         "pos": "RM",
         "category": "M",
-        "number": "55"
-      },
-      {
-        "name": "Carlos Eduardo",
-        "short_name": "C. Eduardo",
-        "pos": "AM",
-        "category": "F",
-        "number": "33"
+        "number": "32"
       },
       {
         "name": "Bruno Santos",
         "short_name": "B. Santos",
-        "pos": "F",
+        "pos": "AM",
         "category": "F",
         "number": "30"
       },
       {
         "name": "Alesson",
         "short_name": "Alesson",
-        "pos": "AM-L",
+        "pos": "CF-L",
         "category": "F",
         "number": "77"
       },
       {
-        "name": "Gabriel Knesowitsch",
-        "short_name": "G. Knesowitsch",
-        "pos": "AM-R",
+        "name": "Carlos Eduardo",
+        "short_name": "C. Eduardo",
+        "pos": "CF-R",
         "category": "F",
+        "number": "33"
+      }
+    ]
+  },
+  "401841207_coritiba_2026-08-23": {
+    "fixture_id": "401841207",
+    "date": "2026-08-23",
+    "team_name": "Coritiba",
+    "team_slug": "coritiba",
+    "lineup_url": "https://futbolstartingeleven.com/teams/coritiba/lineup/",
+    "opponent_name": "Corinthians",
+    "opponent_slug": "corinthians",
+    "side": "home",
+    "league_name": "Brazilian Serie A",
+    "league_hashtag": "#BrazilianSerieA",
+    "formation": "4-2-3-1",
+    "starting_xi": [
+      {
+        "name": "Pedro Luccas",
+        "short_name": "P. Luccas",
+        "pos": "G",
+        "category": "G",
+        "number": "1"
+      },
+      {
+        "name": "Jacy Maranhão",
+        "short_name": "J. Maranhão",
+        "pos": "D",
+        "category": "D",
+        "number": "55"
+      },
+      {
+        "name": "João Pedro Chermont",
+        "short_name": "J. Pedro Chermont",
+        "pos": "D",
+        "category": "D",
         "number": "44"
+      },
+      {
+        "name": "Tiago",
+        "short_name": "Tiago",
+        "pos": "D",
+        "category": "D",
+        "number": "23"
+      },
+      {
+        "name": "Bruno Melo",
+        "short_name": "B. Melo",
+        "pos": "D",
+        "category": "D",
+        "number": "26"
+      },
+      {
+        "name": "Joaquín Lavega",
+        "short_name": "J. Lavega",
+        "pos": "M",
+        "category": "M",
+        "number": "7"
+      },
+      {
+        "name": "Thiago Santos",
+        "short_name": "T. Santos",
+        "pos": "M",
+        "category": "M",
+        "number": "21"
+      },
+      {
+        "name": "Sebastián Gómez",
+        "short_name": "S. Gómez",
+        "pos": "M",
+        "category": "M",
+        "number": "19"
+      },
+      {
+        "name": "Breno",
+        "short_name": "Breno",
+        "pos": "M",
+        "category": "M",
+        "number": "77"
+      },
+      {
+        "name": "Josué Pesqueira",
+        "short_name": "J. Pesqueira",
+        "pos": "M",
+        "category": "M",
+        "number": "10"
+      },
+      {
+        "name": "Pedro Rocha",
+        "short_name": "P. Rocha",
+        "pos": "F",
+        "category": "F",
+        "number": "32"
+      }
+    ]
+  },
+  "401841207_corinthians_2026-08-23": {
+    "fixture_id": "401841207",
+    "date": "2026-08-23",
+    "team_name": "Corinthians",
+    "team_slug": "corinthians",
+    "lineup_url": "https://futbolstartingeleven.com/teams/corinthians/lineup/",
+    "opponent_name": "Coritiba",
+    "opponent_slug": "coritiba",
+    "side": "away",
+    "league_name": "Brazilian Serie A",
+    "league_hashtag": "#BrazilianSerieA",
+    "formation": "4-2-3-1",
+    "starting_xi": [
+      {
+        "name": "Kauê Camargo",
+        "short_name": "K. Camargo",
+        "pos": "G",
+        "category": "G",
+        "number": "51"
+      },
+      {
+        "name": "Gabriel Paulista",
+        "short_name": "G. Paulista",
+        "pos": "D",
+        "category": "D",
+        "number": "3"
+      },
+      {
+        "name": "Fabrizio Angileri",
+        "short_name": "F. Angileri",
+        "pos": "D",
+        "category": "D",
+        "number": "26"
+      },
+      {
+        "name": "Pedro Milans",
+        "short_name": "P. Milans",
+        "pos": "D",
+        "category": "D",
+        "number": "20"
+      },
+      {
+        "name": "Gustavo Henrique",
+        "short_name": "G. Henrique",
+        "pos": "D",
+        "category": "D",
+        "number": "13"
+      },
+      {
+        "name": "Breno Bidon",
+        "short_name": "B. Bidon",
+        "pos": "M",
+        "category": "M",
+        "number": "7"
+      },
+      {
+        "name": "Raniele",
+        "short_name": "Raniele",
+        "pos": "M",
+        "category": "M",
+        "number": "14"
+      },
+      {
+        "name": "Allan",
+        "short_name": "Allan",
+        "pos": "M",
+        "category": "M",
+        "number": "29"
+      },
+      {
+        "name": "André Carrillo",
+        "short_name": "A. Carrillo",
+        "pos": "M",
+        "category": "M",
+        "number": "19"
+      },
+      {
+        "name": "Kaio",
+        "short_name": "Kaio",
+        "pos": "M",
+        "category": "M",
+        "number": "37"
+      },
+      {
+        "name": "Pedro Raúl",
+        "short_name": "P. Raúl",
+        "pos": "F",
+        "category": "F",
+        "number": "18"
       }
     ]
   },
