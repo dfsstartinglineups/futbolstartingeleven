@@ -233,10 +233,23 @@ def parse_live_match_summary(event_id):
                 except: return 0
 
             team_stats = {
-                "home": {"possession": clean_n(h_raw.get('possessionPct', 50)), "total_shots": clean_n(h_raw.get('totalShots', 0)), "shots_on_target": clean_n(h_raw.get('shotsOnTarget', 0)), "corners": clean_n(h_raw.get('cornerKicks', 0)), "yellow_cards": clean_n(h_raw.get('yellowCards', 0)), "red_cards": clean_n(h_raw.get('redCards', 0))},
-                "away": {"possession": clean_n(a_raw.get('possessionPct', 50)), "total_shots": clean_n(a_raw.get('totalShots', 0)), "shots_on_target": clean_n(a_raw.get('shotsOnTarget', 0)), "corners": clean_n(a_raw.get('cornerKicks', 0)), "yellow_cards": clean_n(a_raw.get('yellowCards', 0)), "red_cards": clean_n(a_raw.get('redCards', 0))}
+                "home": {
+                    "possession": clean_n(h_raw.get('possessionPct', 50)), 
+                    "total_shots": clean_n(h_raw.get('totalShots', 0)), 
+                    "shots_on_target": clean_n(h_raw.get('shotsOnTarget', 0)), 
+                    "corners": clean_n(h_raw.get('wonCorners', h_raw.get('cornerKicks', 0))), 
+                    "yellow_cards": clean_n(h_raw.get('yellowCards', 0)), 
+                    "red_cards": clean_n(h_raw.get('redCards', 0))
+                },
+                "away": {
+                    "possession": clean_n(a_raw.get('possessionPct', 50)), 
+                    "total_shots": clean_n(a_raw.get('totalShots', 0)), 
+                    "shots_on_target": clean_n(a_raw.get('shotsOnTarget', 0)), 
+                    "corners": clean_n(a_raw.get('wonCorners', a_raw.get('cornerKicks', 0))), 
+                    "yellow_cards": clean_n(a_raw.get('yellowCards', 0)), 
+                    "red_cards": clean_n(a_raw.get('redCards', 0))
+                }
             }
-
         # Events extraction + sub tracking
         subbed_in_set = set()
         events_list = []
