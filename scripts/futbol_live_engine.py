@@ -343,6 +343,9 @@ def main():
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
     }
     
+    # Keep a memory of matches we are actively tracking
+    active_matches_memory = set()
+    
     while True:
         try:
             est = pytz.timezone('America/New_York')
@@ -368,6 +371,11 @@ def main():
                 # Fetch if match is in-progress
                 if state == 'in':
                     live_event_ids.append(ev_id)
+                    active_matches_memory.add(ev_id)
+                # IF the match just ended, push the final FT state once before forgetting it
+                elif state == 'post' and ev_id in active_matches_memory:
+                    live_event_ids.append(ev_id)
+                    active_matches_memory.remove(ev_id)
 
             if not live_event_ids:
                 print(f"[{now_est.strftime('%I:%M:%S %p')}] 💤 No live matches in progress. Sleeping 60s...")
