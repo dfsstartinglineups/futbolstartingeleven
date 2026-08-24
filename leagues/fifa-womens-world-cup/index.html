@@ -118,6 +118,9 @@
 </div>
 
 <script>
+    let ACTIVE_DAY = "today";
+    let globalScoreboardMode = true;
+
     const firebaseConfig = { databaseURL: "https://nbastartingfive-8b420-default-rtdb.firebaseio.com" };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -177,6 +180,13 @@
             const ribbonEvEl = document.getElementById(`ribbon-latest-event-${domId}`);
             const syncEvEl = document.getElementById(`time-event-sync-${domId}`);
             
+            const shortenPlayerName = (fullName) => {
+                if (!fullName) return "Unknown";
+                const parts = fullName.trim().split(' ');
+                if (parts.length === 1) return parts[0];
+                return `${parts[0][0].toUpperCase()}. ${parts.slice(1).join(' ')}`;
+            };
+            
             if (ribbonEvEl) {
                 const currentEvStr = ribbonEvEl.getAttribute('data-last-event') || '';
                 const newEvStr = `${lastEv.time}-${lastEv.player}`;
@@ -195,6 +205,9 @@
                         ribbonHtml = `<div class="text-dark fw-bold text-start w-100 ps-2 d-flex flex-column justify-content-center" style="font-size: 0.6rem; line-height: 1.3;"><div class="text-truncate">🔄 ${lastEv.time}'</div><div class="text-truncate">🟢 <span class="text-success">${pIn}</span></div><div class="text-muted text-truncate">🔴 ${pOut}</div></div>`;
                         syncHtml = `<div class="ms-2 d-flex align-items-center text-dark fw-bold" style="font-size: 0.65rem; line-height: 1.2; min-width: 0;"><div class="d-flex align-items-center me-2"><span class="bg-primary text-white rounded d-flex justify-content-center align-items-center me-1" style="width: 14px; height: 14px; font-size: 0.55rem;">🔄</span><span>${lastEv.time}'</span></div><div class="d-flex flex-column text-start" style="min-width: 0;"><div class="text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#20c997; margin-bottom:1px; margin-right:3px;"></span>${pIn}</div><div class="text-muted text-truncate"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#dc3545; margin-bottom:1px; margin-right:3px;"></span>${pOut}</div></div></div>`;
                     } else {
+                        const hName = data.teams?.home?.name || "Home";
+                        const aName = data.teams?.away?.name || "Away";
+                        const homeId = String(data.teams?.home?.id || "");
                         const pName = shortenPlayerName(lastEv.player || (String(lastEv.team_id) === homeId ? hName : aName));
                         const astHtml = lastEv.assist ? `<div class="text-muted text-truncate" style="font-size: 0.55rem;">👟 ${shortenPlayerName(lastEv.assist)}</div>` : '';
                         const astHtmlFull = lastEv.assist ? `<div class="text-muted text-truncate fw-normal" style="font-size: 0.55rem;"><span style="display:inline-block; width:12px;"></span>👟 ${shortenPlayerName(lastEv.assist)}</div>` : '';
@@ -209,6 +222,37 @@
                         triggerCardGlow(document.getElementById(`card-${domId}`), lastEv.type);
                     }
                 }
+            }
+
+            const eventsBlock = document.getElementById(`events-${domId}`);
+            if (eventsBlock && data.teams) {
+                const homeId = String(data.teams.home.id);
+                const awayId = String(data.teams.away.id);
+                const hName = data.teams.home.name;
+                const aName = data.teams.away.name;
+                
+                const hEvs = data.events.filter(e => String(e.team_id) === homeId).reverse();
+                const aEvs = data.events.filter(e => String(e.team_id) === awayId).reverse();
+
+                const fmtEv = (e, teamName) => {
+                    if (e.type === 'subst') {
+                        return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">🔄</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player_out)}</span> IN<br><span class="text-muted" style="font-size: 0.55rem;">(${shortenPlayerName(e.player)} OUT)</span></div></div>`;
+                    }
+                    const icon = e.type === 'Goal' ? '⚽' : (e.type === 'Red Card' ? '🟥' : '🟨');
+                    const ast = (e.type === 'Goal' && e.assist) ? `<br><span class="text-muted fw-normal" style="font-size: 0.55rem;">👟 ${shortenPlayerName(e.assist)}</span>` : '';
+                    return `<div class="d-flex align-items-start mb-1" style="line-height: 1.1;"><div class="text-secondary fw-bold pe-1" style="width: 25px; text-align: right; font-size: 0.6rem;">${e.time}'</div><div style="width: 16px; text-align: center;" class="me-1">${icon}</div><div class="text-truncate"><span class="text-dark fw-bold">${shortenPlayerName(e.player || teamName)}</span>${ast}</div></div>`;
+                };
+
+                const needsCol = Math.max(hEvs.length, aEvs.length) > 1;
+                const hFirst = hEvs.length > 0 ? fmtEv(hEvs[0], hName) : '';
+                const aFirst = aEvs.length > 0 ? fmtEv(aEvs[0], aName) : '';
+                const hAll = hEvs.map(e => fmtEv(e, hName)).join('');
+                const aAll = aEvs.map(e => fmtEv(e, aName)).join('');
+                
+                const isCurrentlyExpanded = eventsBlock.firstElementChild && eventsBlock.firstElementChild.classList.contains('is-expanded');
+                const toggleJS = "const isExp = this.classList.toggle('is-expanded'); this.querySelector('.event-collapsed').classList.toggle('d-none', isExp); this.querySelector('.event-expanded').classList.toggle('d-none', !isExp);";
+                
+                eventsBlock.innerHTML = `<div class="w-100 px-2 pt-1 mt-1 border-top text-muted ${isCurrentlyExpanded ? 'is-expanded' : ''}" style="font-size: 0.65rem; cursor: pointer; transition: background-color 0.2s;" onclick="${needsCol ? toggleJS : ''}" title="${needsCol ? 'Click to expand/collapse match timeline' : ''}"><div class="event-collapsed ${isCurrentlyExpanded ? 'd-none' : ''}"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${hFirst}</div><div class="text-start" style="flex: 1; min-width: 0;">${aFirst}</div></div>${needsCol ? "<div class='text-center text-secondary w-100' style='font-size: 0.60rem;'>▼</div>" : ""}</div><div class="event-expanded ${isCurrentlyExpanded ? '' : 'd-none'}"><div class="d-flex justify-content-between"><div class="text-start" style="flex: 1; min-width: 0;">${hAll}</div><div class="text-start" style="flex: 1; min-width: 0;">${aAll}</div></div><div class="text-center text-secondary w-100" style="font-size: 0.60rem;">▲</div></div></div>`;
             }
         }
     }
@@ -243,7 +287,71 @@
         });
     }
 
+    function populateLeagueDropdown() {
+        const select = document.getElementById('league-select');
+        if (!select) return;
+        select.innerHTML = '<option value="">-- Select League --</option>';
+        const activePartition = document.getElementById('partition-' + (typeof ACTIVE_DAY !== 'undefined' ? ACTIVE_DAY : 'today'));
+        if (!activePartition) return;
+        const headers = Array.from(activePartition.querySelectorAll('.league-header'))
+            .filter(h => !h.classList.contains('d-none'))
+            .sort((a, b) => (a.getAttribute('data-league-name') || '').localeCompare(b.getAttribute('data-league-name') || ''));
+        headers.forEach(h => {
+            const opt = document.createElement('option');
+            opt.value = h.id; opt.textContent = h.getAttribute('data-league-name') || 'League';
+            select.appendChild(opt);
+        });
+    }
+
+    function applySearchFilter() {
+        const searchText = (document.getElementById('team-search')?.value || '').toLowerCase();
+        const activePartition = document.getElementById('partition-' + (typeof ACTIVE_DAY !== 'undefined' ? ACTIVE_DAY : 'today'));
+        if (!activePartition) return;
+        let totalVisibleMatches = 0;
+        activePartition.querySelectorAll('.league-header, .live-header').forEach(header => {
+            let visibleInLeague = 0, sibling = header.nextElementSibling;
+            while (sibling && !sibling.classList.contains('league-header') && !sibling.classList.contains('live-header')) {
+                if (sibling.classList.contains('game-card-wrapper')) {
+                    if ((sibling.getAttribute('data-search') || '').includes(searchText)) {
+                        sibling.classList.remove('d-none'); visibleInLeague++; totalVisibleMatches++;
+                    } else { sibling.classList.add('d-none'); }
+                }
+                sibling = sibling.nextElementSibling;
+            }
+            header.classList.toggle('d-none', visibleInLeague === 0);
+        });
+        const emptyState = activePartition.querySelector('.empty-state');
+        if (emptyState) emptyState.classList.toggle('d-none', totalVisibleMatches > 0);
+        populateLeagueDropdown();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+        if (typeof populateLeagueDropdown === 'function') populateLeagueDropdown();
+        
+        document.querySelectorAll('.local-time-badge').forEach(badge => {
+            const utcStr = badge.getAttribute('data-utc');
+            if (utcStr) {
+                const dt = new Date(utcStr);
+                const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
+                let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
+                badge.textContent = `${day} ${time}`;
+            }
+        });
+
+        document.querySelectorAll('.day-tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.day-tab-btn').forEach(b => { b.classList.remove('btn-dark', 'active'); b.classList.add('btn-outline-dark'); });
+                e.target.closest('.day-tab-btn').classList.remove('btn-outline-dark'); e.target.closest('.day-tab-btn').classList.add('btn-dark', 'active');
+                if (typeof ACTIVE_DAY !== 'undefined') ACTIVE_DAY = e.target.closest('.day-tab-btn').getAttribute('data-day');
+                document.querySelectorAll('.day-partition').forEach(p => p.classList.add('d-none'));
+                document.getElementById('partition-' + (typeof ACTIVE_DAY !== 'undefined' ? ACTIVE_DAY : 'today'))?.classList.remove('d-none');
+                if (typeof populateLeagueDropdown === 'function') populateLeagueDropdown();
+                if (typeof applySearchFilter === 'function') applySearchFilter();
+            });
+        });
+
+        document.getElementById('team-search')?.addEventListener('input', (e) => { if (typeof applySearchFilter === 'function') applySearchFilter(); });
+        
         document.getElementById('leagueSearchNavInput')?.addEventListener('input', function(e) {
             const text = e.target.value.toLowerCase();
             document.querySelectorAll('#leagueSearchList li').forEach(li => {
@@ -252,13 +360,25 @@
             });
         });
 
-        document.querySelectorAll('.local-time-badge').forEach(badge => {
-            const utcStr = badge.getAttribute('data-utc');
-            if (utcStr) {
-                const dt = new Date(utcStr);
-                const day = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dt);
-                let time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(dt).toLowerCase().replace(' ', '');
-                badge.textContent = `${day} ${time}`;
+        document.getElementById('toggle-all-cards')?.addEventListener('click', (e) => {
+            if (typeof globalScoreboardMode !== 'undefined') {
+                globalScoreboardMode = !globalScoreboardMode;
+                e.target.innerHTML = globalScoreboardMode ? '🔼 EXPAND ALL CARDS' : '🔽 COMPACT SCOREBOARD';
+                document.querySelectorAll('.ribbon-view').forEach(el => el.classList.toggle('d-none', !globalScoreboardMode));
+                document.querySelectorAll('.full-view').forEach(el => el.classList.toggle('d-none', globalScoreboardMode));
+                document.getElementById('toggle-all-lineups')?.classList.toggle('d-none', globalScoreboardMode);
+            }
+        });
+
+        document.getElementById('league-select')?.addEventListener('change', (e) => {
+            const targetId = e.target.value;
+            if (!targetId) return;
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                const navOffset = 70;
+                const elementPosition = targetEl.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
             }
         });
 
