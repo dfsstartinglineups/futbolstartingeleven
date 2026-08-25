@@ -34036,7 +34036,7 @@
   },
   "20260825": {
     "is_locked": false,
-    "last_fetched": 1787692361.253209,
+    "last_fetched": 1787692599.2907753,
     "raw_events": [
       {
         "id": "401908119",
@@ -56058,17 +56058,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 6240.0,
-              "displayClock": "104'",
+              "clock": 6300.0,
+              "displayClock": "105'+2'",
               "period": 3,
               "type": {
-                "id": "24",
-                "name": "STATUS_OVERTIME",
+                "id": "49",
+                "name": "STATUS_HALFTIME_ET",
                 "state": "in",
                 "completed": false,
-                "description": "Overtime",
-                "detail": "104'",
-                "shortDetail": "104'"
+                "description": "Extra Time Halftime",
+                "detail": "Extra Time Halftime",
+                "shortDetail": "ET-HT"
               }
             },
             "venue": {
@@ -56243,7 +56243,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "15"
+                    "displayValue": "19"
                   },
                   {
                     "name": "wonCorners",
@@ -56258,7 +56258,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "50.8"
+                    "displayValue": "50.4"
                   },
                   {
                     "name": "shotAssists",
@@ -56278,7 +56278,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "35"
+                    "displayValue": "36"
                   }
                 ]
               },
@@ -56421,12 +56421,12 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "49.2"
+                    "displayValue": "49.6"
                   },
                   {
                     "name": "shotAssists",
                     "abbreviation": "SHAST",
-                    "displayValue": "6"
+                    "displayValue": "7"
                   },
                   {
                     "name": "shotsOnTarget",
@@ -56441,7 +56441,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "6"
+                    "displayValue": "7"
                   }
                 ]
               }
@@ -56795,6 +56795,50 @@
                     "position": "CD"
                   }
                 ]
+              },
+              {
+                "type": {
+                  "id": "94",
+                  "text": "Yellow Card"
+                },
+                "clock": {
+                  "value": 6178.0,
+                  "displayValue": "103'"
+                },
+                "team": {
+                  "id": "256"
+                },
+                "scoreValue": 0,
+                "scoringPlay": false,
+                "redCard": false,
+                "yellowCard": true,
+                "penaltyKick": false,
+                "ownGoal": false,
+                "shootout": false,
+                "athletesInvolved": [
+                  {
+                    "id": "259208",
+                    "displayName": "Luke McCowan",
+                    "shortName": "L. McCowan",
+                    "fullName": "Luke McCowan",
+                    "jersey": "14",
+                    "team": {
+                      "id": "256"
+                    },
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/259208/luke-mccowan",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "SUB"
+                  }
+                ]
               }
             ],
             "odds": [
@@ -56922,17 +56966,17 @@
           }
         ],
         "status": {
-          "clock": 6240.0,
-          "displayClock": "104'",
+          "clock": 6300.0,
+          "displayClock": "105'+2'",
           "period": 3,
           "type": {
-            "id": "24",
-            "name": "STATUS_OVERTIME",
+            "id": "49",
+            "name": "STATUS_HALFTIME_ET",
             "state": "in",
             "completed": false,
-            "description": "Overtime",
-            "detail": "104'",
-            "shortDetail": "104'"
+            "description": "Extra Time Halftime",
+            "detail": "Extra Time Halftime",
+            "shortDetail": "ET-HT"
           }
         },
         "venue": {
@@ -59889,16 +59933,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 5400.0,
+              "displayClock": "90'",
+              "period": 2,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
-                "completed": false,
-                "description": "Scheduled",
-                "detail": "Tue, August 25th at 2:45 PM EDT",
-                "shortDetail": "Scheduled"
+                "id": "28",
+                "name": "STATUS_FULL_TIME",
+                "state": "post",
+                "completed": true,
+                "description": "Full Time",
+                "detail": "FT",
+                "shortDetail": "FT"
               }
             },
             "venue": {
@@ -59926,7 +59971,7 @@
                 "order": 0,
                 "homeAway": "home",
                 "winner": false,
-                "form": "DW",
+                "form": "DDW",
                 "score": "0",
                 "team": {
                   "id": "132071",
@@ -60038,9 +60083,9 @@
                 "type": "team",
                 "order": 1,
                 "homeAway": "away",
-                "winner": false,
-                "form": "DW",
-                "score": "0",
+                "winner": true,
+                "form": "DDW",
+                "score": "1",
                 "team": {
                   "id": "132105",
                   "uid": "s:600~t:132105",
@@ -60156,16 +60201,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 5400.0,
+          "displayClock": "90'",
+          "period": 2,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
-            "completed": false,
-            "description": "Scheduled",
-            "detail": "Tue, August 25th at 2:45 PM EDT",
-            "shortDetail": "Scheduled"
+            "id": "28",
+            "name": "STATUS_FULL_TIME",
+            "state": "post",
+            "completed": true,
+            "description": "Full Time",
+            "detail": "FT",
+            "shortDetail": "FT"
           }
         },
         "venue": {
@@ -60884,16 +60930,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 5400.0,
+              "displayClock": "90'",
+              "period": 2,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
-                "completed": false,
-                "description": "Scheduled",
-                "detail": "Tue, August 25th at 2:45 PM EDT",
-                "shortDetail": "Scheduled"
+                "id": "28",
+                "name": "STATUS_FULL_TIME",
+                "state": "post",
+                "completed": true,
+                "description": "Full Time",
+                "detail": "FT",
+                "shortDetail": "FT"
               }
             },
             "format": {
@@ -60914,7 +60961,7 @@
                 "order": 0,
                 "homeAway": "home",
                 "winner": false,
-                "form": "DW",
+                "form": "DDW",
                 "score": "0",
                 "team": {
                   "id": "131995",
@@ -61026,9 +61073,9 @@
                 "type": "team",
                 "order": 1,
                 "homeAway": "away",
-                "winner": false,
-                "form": "DW",
-                "score": "0",
+                "winner": true,
+                "form": "DDW",
+                "score": "2",
                 "team": {
                   "id": "131965",
                   "uid": "s:600~t:131965",
@@ -61144,16 +61191,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 5400.0,
+          "displayClock": "90'",
+          "period": 2,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
-            "completed": false,
-            "description": "Scheduled",
-            "detail": "Tue, August 25th at 2:45 PM EDT",
-            "shortDetail": "Scheduled"
+            "id": "28",
+            "name": "STATUS_FULL_TIME",
+            "state": "post",
+            "completed": true,
+            "description": "Full Time",
+            "detail": "FT",
+            "shortDetail": "FT"
           }
         },
         "links": [
@@ -61208,16 +61256,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 5400.0,
+              "displayClock": "90'",
+              "period": 2,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
-                "completed": false,
-                "description": "Scheduled",
-                "detail": "Tue, August 25th at 2:45 PM EDT",
-                "shortDetail": "Scheduled"
+                "id": "28",
+                "name": "STATUS_FULL_TIME",
+                "state": "post",
+                "completed": true,
+                "description": "Full Time",
+                "detail": "FT",
+                "shortDetail": "FT"
               }
             },
             "format": {
@@ -61237,9 +61286,9 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "DW",
-                "score": "0",
+                "winner": true,
+                "form": "DDW",
+                "score": "2",
                 "team": {
                   "id": "132048",
                   "uid": "s:600~t:132048",
@@ -61351,7 +61400,7 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "D",
+                "form": "DD",
                 "score": "0",
                 "team": {
                   "id": "132384",
@@ -61468,16 +61517,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 5400.0,
+          "displayClock": "90'",
+          "period": 2,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
-            "completed": false,
-            "description": "Scheduled",
-            "detail": "Tue, August 25th at 2:45 PM EDT",
-            "shortDetail": "Scheduled"
+            "id": "28",
+            "name": "STATUS_FULL_TIME",
+            "state": "post",
+            "completed": true,
+            "description": "Full Time",
+            "detail": "FT",
+            "shortDetail": "FT"
           }
         },
         "links": [
@@ -64145,16 +64195,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 5400.0,
+              "displayClock": "90'",
+              "period": 2,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
-                "completed": false,
-                "description": "Scheduled",
-                "detail": "Tue, August 25th at 2:45 PM EDT",
-                "shortDetail": "Scheduled"
+                "id": "28",
+                "name": "STATUS_FULL_TIME",
+                "state": "post",
+                "completed": true,
+                "description": "Full Time",
+                "detail": "FT",
+                "shortDetail": "FT"
               }
             },
             "venue": {
@@ -64182,9 +64233,9 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "DWD",
-                "score": "0",
+                "winner": true,
+                "form": "DDWD",
+                "score": "1",
                 "team": {
                   "id": "132122",
                   "uid": "s:600~t:132122",
@@ -64296,7 +64347,7 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "DW",
+                "form": "DDW",
                 "score": "0",
                 "team": {
                   "id": "132187",
@@ -64413,16 +64464,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 5400.0,
+          "displayClock": "90'",
+          "period": 2,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
-            "completed": false,
-            "description": "Scheduled",
-            "detail": "Tue, August 25th at 2:45 PM EDT",
-            "shortDetail": "Scheduled"
+            "id": "28",
+            "name": "STATUS_FULL_TIME",
+            "state": "post",
+            "completed": true,
+            "description": "Full Time",
+            "detail": "FT",
+            "shortDetail": "FT"
           }
         },
         "venue": {
@@ -64480,16 +64532,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 5400.0,
+              "displayClock": "90'",
+              "period": 2,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
-                "completed": false,
-                "description": "Scheduled",
-                "detail": "Tue, August 25th at 2:45 PM EDT",
-                "shortDetail": "Scheduled"
+                "id": "28",
+                "name": "STATUS_FULL_TIME",
+                "state": "post",
+                "completed": true,
+                "description": "Full Time",
+                "detail": "FT",
+                "shortDetail": "FT"
               }
             },
             "venue": {
@@ -64517,7 +64570,7 @@
                 "order": 0,
                 "homeAway": "home",
                 "winner": false,
-                "form": "D",
+                "form": "DD",
                 "score": "0",
                 "team": {
                   "id": "132390",
@@ -64629,9 +64682,9 @@
                 "type": "team",
                 "order": 1,
                 "homeAway": "away",
-                "winner": false,
-                "form": "DW",
-                "score": "0",
+                "winner": true,
+                "form": "DDW",
+                "score": "1",
                 "team": {
                   "id": "132094",
                   "uid": "s:600~t:132094",
@@ -64747,16 +64800,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 5400.0,
+          "displayClock": "90'",
+          "period": 2,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
-            "completed": false,
-            "description": "Scheduled",
-            "detail": "Tue, August 25th at 2:45 PM EDT",
-            "shortDetail": "Scheduled"
+            "id": "28",
+            "name": "STATUS_FULL_TIME",
+            "state": "post",
+            "completed": true,
+            "description": "Full Time",
+            "detail": "FT",
+            "shortDetail": "FT"
           }
         },
         "venue": {
@@ -64814,16 +64868,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 7200.0,
+              "displayClock": "120'",
+              "period": 5,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
-                "completed": false,
-                "description": "Scheduled",
-                "detail": "Tue, August 25th at 2:45 PM EDT",
-                "shortDetail": "Scheduled"
+                "id": "47",
+                "name": "STATUS_FINAL_PEN",
+                "state": "post",
+                "completed": true,
+                "description": "Final Score - After Penalties",
+                "detail": "FT-Pens",
+                "shortDetail": "FT-Pens"
               }
             },
             "format": {
@@ -64843,9 +64898,9 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "D",
-                "score": "0",
+                "winner": true,
+                "form": "DD",
+                "score": "1",
                 "team": {
                   "id": "132379",
                   "uid": "s:600~t:132379",
@@ -64957,7 +65012,7 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "DW",
+                "form": "DDW",
                 "score": "0",
                 "team": {
                   "id": "131930",
@@ -65074,16 +65129,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 7200.0,
+          "displayClock": "120'",
+          "period": 5,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
-            "completed": false,
-            "description": "Scheduled",
-            "detail": "Tue, August 25th at 2:45 PM EDT",
-            "shortDetail": "Scheduled"
+            "id": "47",
+            "name": "STATUS_FINAL_PEN",
+            "state": "post",
+            "completed": true,
+            "description": "Final Score - After Penalties",
+            "detail": "FT-Pens",
+            "shortDetail": "FT-Pens"
           }
         },
         "links": [
@@ -90933,7 +90989,10 @@
                       "isPremium": false,
                       "isHidden": false
                     }
-                  ]
+                  ],
+                  "venue": {
+                    "id": "5453"
+                  }
                 },
                 "statistics": [
                   {
@@ -98155,8 +98214,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 242.0,
-              "displayClock": "5'",
+              "clock": 512.0,
+              "displayClock": "9'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -98164,8 +98223,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "5'",
-                "shortDetail": "5'"
+                "detail": "9'",
+                "shortDetail": "9'"
               }
             },
             "venue": {
@@ -98337,8 +98396,8 @@
           }
         ],
         "status": {
-          "clock": 242.0,
-          "displayClock": "5'",
+          "clock": 512.0,
+          "displayClock": "9'",
           "period": 1,
           "type": {
             "id": "25",
@@ -98346,8 +98405,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "5'",
-            "shortDetail": "5'"
+            "detail": "9'",
+            "shortDetail": "9'"
           }
         },
         "venue": {
