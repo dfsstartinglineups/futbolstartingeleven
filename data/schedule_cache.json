@@ -65147,7 +65147,7 @@
   },
   "20260826": {
     "is_locked": false,
-    "last_fetched": 1787779930.5116715,
+    "last_fetched": 1787780159.5264254,
     "raw_events": [
       {
         "id": "401908136",
@@ -76846,13 +76846,13 @@
               "displayClock": "120'+2'",
               "period": 4,
               "type": {
-                "id": "24",
-                "name": "STATUS_OVERTIME",
-                "state": "in",
-                "completed": false,
-                "description": "Overtime",
-                "detail": "120'+2'",
-                "shortDetail": "120'+2'"
+                "id": "45",
+                "name": "STATUS_FINAL_AET",
+                "state": "post",
+                "completed": true,
+                "description": "Final Score - After Extra Time",
+                "detail": "AET",
+                "shortDetail": "AET"
               }
             },
             "venue": {
@@ -76883,19 +76883,19 @@
                 {
                   "id": "521",
                   "uid": "s:600~t:521",
-                  "winner": false,
+                  "winner": true,
                   "aggregateScore": 3.0
                 }
               ],
-              "completed": false,
+              "completed": true,
               "title": "Playoff Round",
               "totalCompetitions": 2
             },
-            "altGameNote": "UCL Qualifying, Playoff Round - 2nd Leg",
+            "altGameNote": "UCL Qualifying, Playoff Round",
             "notes": [
               {
-                "text": "2nd Leg - Slovan Bratislava lead 3-2 on aggregate",
-                "headline": "2nd Leg - Slovan Bratislava lead 3-2 on aggregate",
+                "text": "2nd Leg - Slovan Bratislava win 3-2 on aggregate",
+                "headline": "2nd Leg - Slovan Bratislava win 3-2 on aggregate",
                 "type": "event"
               }
             ],
@@ -76910,7 +76910,7 @@
                 "order": 0,
                 "homeAway": "home",
                 "winner": false,
-                "form": "DDWLD",
+                "form": "LDWLD",
                 "score": "1",
                 "aggregateScore": 2.0,
                 "team": {
@@ -77042,12 +77042,12 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "61.4"
+                    "displayValue": "61.7"
                   },
                   {
                     "name": "shotAssists",
                     "abbreviation": "SHAST",
-                    "displayValue": "13"
+                    "displayValue": "15"
                   },
                   {
                     "name": "shotsOnTarget",
@@ -77062,7 +77062,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "19"
+                    "displayValue": "20"
                   }
                 ]
               },
@@ -77072,8 +77072,8 @@
                 "type": "team",
                 "order": 1,
                 "homeAway": "away",
-                "winner": false,
-                "form": "DDWWD",
+                "winner": true,
+                "form": "WDWWD",
                 "score": "2",
                 "aggregateScore": 3.0,
                 "team": {
@@ -77202,7 +77202,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "38.6"
+                    "displayValue": "38.3"
                   },
                   {
                     "name": "shotAssists",
@@ -77691,123 +77691,7 @@
               }
             ],
             "odds": [
-              {
-                "overUnder": 2.5,
-                "link": {
-                  "language": "en-US",
-                  "rel": [
-                    "game",
-                    "desktop",
-                    "bets"
-                  ],
-                  "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34547616",
-                  "text": "Game",
-                  "shortText": "Game",
-                  "isExternal": true,
-                  "isPremium": false,
-                  "isHidden": false
-                },
-                "provider": {
-                  "id": "100",
-                  "name": "DraftKings",
-                  "priority": 1
-                },
-                "drawOdds": {
-                  "moneyLine": 230,
-                  "link": {
-                    "language": "en-US",
-                    "rel": [
-                      "draw",
-                      "desktop",
-                      "bets",
-                      "draftkings"
-                    ],
-                    "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34547616%3Foutcomes%3D0ML85951317_2",
-                    "text": "Draw Bet",
-                    "shortText": "Draw Bet",
-                    "isExternal": true,
-                    "isPremium": false,
-                    "isHidden": false
-                  }
-                },
-                "total": {
-                  "displayName": "Total",
-                  "shortDisplayName": "Total",
-                  "over": {
-                    "open": {
-                      "line": "o2.5",
-                      "odds": "-120"
-                    },
-                    "close": {
-                      "line": "o2.5",
-                      "odds": "-115"
-                    }
-                  },
-                  "under": {
-                    "open": {
-                      "line": "u2.5",
-                      "odds": "-120"
-                    },
-                    "close": {
-                      "line": "u2.5",
-                      "odds": "-115"
-                    }
-                  }
-                },
-                "pointSpread": {
-                  "displayName": "Spread",
-                  "shortDisplayName": "Spread",
-                  "home": {
-                    "open": {
-                      "line": "-0.5",
-                      "odds": "+120"
-                    },
-                    "close": {
-                      "line": "+0.5",
-                      "odds": "-210"
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "line": "+0.5",
-                      "odds": "-190"
-                    },
-                    "close": {
-                      "line": "-0.5",
-                      "odds": "+150"
-                    }
-                  }
-                },
-                "moneyline": {
-                  "displayName": "Moneyline",
-                  "shortDisplayName": "ML",
-                  "home": {
-                    "open": {
-                      "odds": "+140"
-                    },
-                    "close": {
-                      "odds": "+170"
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "odds": "+190"
-                    },
-                    "close": {
-                      "odds": "+160"
-                    }
-                  },
-                  "draw": {
-                    "open": {
-                      "odds": "+215"
-                    },
-                    "close": {
-                      "odds": "+230"
-                    }
-                  }
-                },
-                "details": "SLB +160"
-              }
+              null
             ],
             "wasSuspended": false,
             "playByPlayAvailable": true,
@@ -77819,13 +77703,13 @@
           "displayClock": "120'+2'",
           "period": 4,
           "type": {
-            "id": "24",
-            "name": "STATUS_OVERTIME",
-            "state": "in",
-            "completed": false,
-            "description": "Overtime",
-            "detail": "120'+2'",
-            "shortDetail": "120'+2'"
+            "id": "45",
+            "name": "STATUS_FINAL_AET",
+            "state": "post",
+            "completed": true,
+            "description": "Final Score - After Extra Time",
+            "detail": "AET",
+            "shortDetail": "AET"
           }
         },
         "venue": {
@@ -77835,13 +77719,13 @@
           {
             "language": "en-US",
             "rel": [
-              "live",
+              "summary",
               "desktop",
               "event"
             ],
-            "href": "https://www.espn.com/soccer/match/_/gameId/401909194",
-            "text": "Gamecast",
-            "shortText": "Live",
+            "href": "https://www.espn.com/soccer/match/_/gameId/401909194/slovan-bratislava-nk-celje",
+            "text": "Summary",
+            "shortText": "Summary",
             "isExternal": false,
             "isPremium": false,
             "isHidden": false
@@ -84913,7 +84797,7 @@
                   "priority": 1
                 },
                 "drawOdds": {
-                  "moneyLine": 210,
+                  "moneyLine": 200,
                   "link": {
                     "language": "en-US",
                     "rel": [
@@ -85000,7 +84884,7 @@
                     },
                     "close": {
                       "line": "-0.5",
-                      "odds": "+105",
+                      "odds": "+115",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -85028,7 +84912,7 @@
                     },
                     "close": {
                       "line": "+0.5",
-                      "odds": "-155",
+                      "odds": "-170",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -85058,7 +84942,7 @@
                       "odds": "+120"
                     },
                     "close": {
-                      "odds": "+115",
+                      "odds": "+125",
                       "link": {
                         "rel": [
                           "home",
@@ -85083,7 +84967,7 @@
                       "odds": "+225"
                     },
                     "close": {
-                      "odds": "+230",
+                      "odds": "+220",
                       "link": {
                         "rel": [
                           "away",
@@ -85108,7 +84992,7 @@
                       "odds": "+195"
                     },
                     "close": {
-                      "odds": "+210",
+                      "odds": "+200",
                       "link": {
                         "rel": [
                           "draw",
@@ -85129,7 +85013,7 @@
                     }
                   }
                 },
-                "details": "ELP +115"
+                "details": "ELP +125"
               }
             ],
             "wasSuspended": false,
@@ -108413,8 +108297,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 1920.0,
-              "displayClock": "32'",
+              "clock": 2160.0,
+              "displayClock": "36'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -108422,8 +108306,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "32'",
-                "shortDetail": "32'"
+                "detail": "36'",
+                "shortDetail": "36'"
               }
             },
             "venue": {
@@ -108576,7 +108460,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "7"
+                    "displayValue": "8"
                   },
                   {
                     "name": "wonCorners",
@@ -108591,7 +108475,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "39.7"
+                    "displayValue": "44.9"
                   },
                   {
                     "name": "shotAssists",
@@ -108611,7 +108495,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "3"
+                    "displayValue": "5"
                   }
                 ]
               },
@@ -108746,7 +108630,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "2"
+                    "displayValue": "3"
                   },
                   {
                     "name": "wonCorners",
@@ -108761,7 +108645,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "60.3"
+                    "displayValue": "55.1"
                   },
                   {
                     "name": "shotAssists",
@@ -108841,7 +108725,7 @@
                     },
                     "current": {
                       "line": "o1.5",
-                      "odds": "+101",
+                      "odds": "+111",
                       "link": {
                         "rel": [
                           "over",
@@ -108873,7 +108757,7 @@
                     },
                     "current": {
                       "line": "u1.5",
-                      "odds": "-144",
+                      "odds": "-159",
                       "link": {
                         "rel": [
                           "under",
@@ -108972,7 +108856,7 @@
                       "odds": "+210"
                     },
                     "current": {
-                      "odds": "+255",
+                      "odds": "+270",
                       "link": {
                         "rel": [
                           "home",
@@ -109000,7 +108884,7 @@
                       "odds": "+150"
                     },
                     "current": {
-                      "odds": "+155",
+                      "odds": "+160",
                       "link": {
                         "rel": [
                           "away",
@@ -109028,7 +108912,7 @@
                       "odds": "+180"
                     },
                     "current": {
-                      "odds": "+145",
+                      "odds": "+135",
                       "link": {
                         "rel": [
                           "draw",
@@ -109058,8 +108942,8 @@
           }
         ],
         "status": {
-          "clock": 1920.0,
-          "displayClock": "32'",
+          "clock": 2160.0,
+          "displayClock": "36'",
           "period": 1,
           "type": {
             "id": "25",
@@ -109067,8 +108951,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "32'",
-            "shortDetail": "32'"
+            "detail": "36'",
+            "shortDetail": "36'"
           }
         },
         "venue": {
@@ -115202,8 +115086,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 1500.0,
-              "displayClock": "25'",
+              "clock": 1740.0,
+              "displayClock": "29'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -115211,8 +115095,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "25'",
-                "shortDetail": "25'"
+                "detail": "29'",
+                "shortDetail": "29'"
               }
             },
             "venue": {
@@ -115621,14 +115505,13 @@
                       "odds": "+115"
                     },
                     "current": {
-                      "line": "o3.5",
-                      "odds": "-150",
+                      "line": "OFF",
+                      "odds": "OFF",
                       "link": {
                         "rel": [
                           "over",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34577902%3Foutcomes%3D0OU86037462O350_1",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -115637,7 +115520,7 @@
                             "gameId": 401899675,
                             "betSide": "over",
                             "betType": "straight",
-                            "betDetails": "Over:3.5"
+                            "betDetails": "Over:null"
                           }
                         }
                       }
@@ -115653,8 +115536,8 @@
                       "odds": "-165"
                     },
                     "current": {
-                      "line": "u3.5",
-                      "odds": "+100",
+                      "line": "OFF",
+                      "odds": "-104",
                       "link": {
                         "rel": [
                           "under",
@@ -115669,7 +115552,7 @@
                             "gameId": 401899675,
                             "betSide": "under",
                             "betType": "straight",
-                            "betDetails": "Under:3.5"
+                            "betDetails": "Under:null"
                           }
                         }
                       }
@@ -115839,8 +115722,8 @@
           }
         ],
         "status": {
-          "clock": 1500.0,
-          "displayClock": "25'",
+          "clock": 1740.0,
+          "displayClock": "29'",
           "period": 1,
           "type": {
             "id": "25",
@@ -115848,8 +115731,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "25'",
-            "shortDetail": "25'"
+            "detail": "29'",
+            "shortDetail": "29'"
           }
         },
         "venue": {
@@ -118967,8 +118850,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 3794.0,
-              "displayClock": "64'",
+              "clock": 4010.0,
+              "displayClock": "67'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -118976,8 +118859,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "64'",
-                "shortDetail": "64'"
+                "detail": "67'",
+                "shortDetail": "67'"
               }
             },
             "venue": {
@@ -119173,8 +119056,8 @@
           }
         ],
         "status": {
-          "clock": 3794.0,
-          "displayClock": "64'",
+          "clock": 4010.0,
+          "displayClock": "67'",
           "period": 2,
           "type": {
             "id": "26",
@@ -119182,8 +119065,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "64'",
-            "shortDetail": "64'"
+            "detail": "67'",
+            "shortDetail": "67'"
           }
         },
         "venue": {
@@ -120203,8 +120086,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 4022.0,
-              "displayClock": "68'",
+              "clock": 4209.0,
+              "displayClock": "71'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -120212,8 +120095,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "68'",
-                "shortDetail": "68'"
+                "detail": "71'",
+                "shortDetail": "71'"
               }
             },
             "venue": {
@@ -120396,8 +120279,8 @@
           }
         ],
         "status": {
-          "clock": 4022.0,
-          "displayClock": "68'",
+          "clock": 4209.0,
+          "displayClock": "71'",
           "period": 2,
           "type": {
             "id": "26",
@@ -120405,8 +120288,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "68'",
-            "shortDetail": "68'"
+            "detail": "71'",
+            "shortDetail": "71'"
           }
         },
         "venue": {
