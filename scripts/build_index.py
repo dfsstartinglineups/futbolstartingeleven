@@ -5249,25 +5249,31 @@ def generate_v2_index():
                 continue
 
             match_file = os.path.join('teams', t_slug, 'match', 'index.html')
-            needs_match_build = False
+                needs_match_build = False
+                event_id = str(m['fixture']['id'])
 
-            if not os.path.exists(match_file):
-                needs_match_build = True
-            elif is_live:
-                needs_match_build = True
-            elif is_ft:
-                try:
-                    with open(match_file, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                        # Adding </div> bypasses the Javascript string collision
-                        if not any(badge in content for badge in ['>FT</span></div>', '>AET</span></div>', '>PEN</span></div>', '>PST</span></div>', '>CANC</span></div>', '>ABD</span></div>']):
+                if not os.path.exists(match_file):
+                    needs_match_build = True
+                elif is_live:
+                    needs_match_build = True
+                else:
+                    try:
+                        with open(match_file, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                            
+                        # FORCE REBUILD: If the file contains an old match, overwrite it immediately
+                        if f"<!-- MATCH_{event_id} -->" not in content:
                             needs_match_build = True
-                except Exception:
-                    needs_match_build = True
-            else:
-                time_since_file = time.time() - os.path.getmtime(match_file)
-                if time_since_file > 300:
-                    needs_match_build = True
+                        elif is_ft:
+                            # Adding </div> bypasses the Javascript string collision
+                            if not any(badge in content for badge in ['>FT</span></div>', '>AET</span></div>', '>PEN</span></div>', '>PST</span></div>', '>CANC</span></div>', '>ABD</span></div>']):
+                                needs_match_build = True
+                        else:
+                            time_since_file = time.time() - os.path.getmtime(match_file)
+                            if time_since_file > 300:
+                                needs_match_build = True
+                    except Exception:
+                        needs_match_build = True
 
             if needs_match_build:
                 build_single_match_page(
