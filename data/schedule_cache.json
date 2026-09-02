@@ -44876,7 +44876,7 @@
   },
   "20260902": {
     "is_locked": false,
-    "last_fetched": 1788383871.6634188,
+    "last_fetched": 1788384085.439117,
     "raw_events": [
       {
         "id": "401914297",
@@ -46207,7 +46207,7 @@
                   "priority": 1
                 },
                 "drawOdds": {
-                  "moneyLine": 235,
+                  "moneyLine": 240,
                   "link": {
                     "language": "en-US",
                     "rel": [
@@ -46262,7 +46262,7 @@
                     },
                     "close": {
                       "line": "u2.5",
-                      "odds": "+105",
+                      "odds": "+110",
                       "link": {
                         "rel": [
                           "under",
@@ -46352,7 +46352,7 @@
                       "odds": "-105"
                     },
                     "close": {
-                      "odds": "+125",
+                      "odds": "+120",
                       "link": {
                         "rel": [
                           "home",
@@ -46402,7 +46402,7 @@
                       "odds": "+225"
                     },
                     "close": {
-                      "odds": "+235",
+                      "odds": "+240",
                       "link": {
                         "rel": [
                           "draw",
@@ -46423,7 +46423,7 @@
                     }
                   }
                 },
-                "details": "AME +125"
+                "details": "AME +120"
               }
             ],
             "wasSuspended": false,
@@ -61178,16 +61178,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 7200.0,
+              "displayClock": "120'",
+              "period": 5,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
-                "completed": false,
-                "description": "Scheduled",
-                "detail": "Wed, September 2nd at 2:00 PM EDT",
-                "shortDetail": "Scheduled"
+                "id": "47",
+                "name": "STATUS_FINAL_PEN",
+                "state": "post",
+                "completed": true,
+                "description": "Final Score - After Penalties",
+                "detail": "FT-Pens",
+                "shortDetail": "FT-Pens"
               }
             },
             "format": {
@@ -61196,7 +61197,13 @@
               }
             },
             "altGameNote": "KNVB Beker, First Preliminary Round",
-            "notes": [],
+            "notes": [
+              {
+                "text": "RKSV Halsteren win 5-3 on penalties",
+                "headline": "RKSV Halsteren win 5-3 on penalties",
+                "type": "event"
+              }
+            ],
             "geoBroadcasts": [],
             "broadcasts": [],
             "broadcast": "",
@@ -61208,7 +61215,9 @@
                 "order": 0,
                 "homeAway": "home",
                 "winner": false,
-                "score": "0",
+                "form": "D",
+                "score": "2",
+                "shootoutScore": 3,
                 "team": {
                   "id": "133006",
                   "uid": "s:600~t:133006",
@@ -61319,9 +61328,10 @@
                 "type": "team",
                 "order": 1,
                 "homeAway": "away",
-                "winner": false,
-                "form": "L",
-                "score": "0",
+                "winner": true,
+                "form": "DL",
+                "score": "2",
+                "shootoutScore": 5,
                 "team": {
                   "id": "131458",
                   "uid": "s:600~t:131458",
@@ -61437,16 +61447,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 7200.0,
+          "displayClock": "120'",
+          "period": 5,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
-            "completed": false,
-            "description": "Scheduled",
-            "detail": "Wed, September 2nd at 2:00 PM EDT",
-            "shortDetail": "Scheduled"
+            "id": "47",
+            "name": "STATUS_FINAL_PEN",
+            "state": "post",
+            "completed": true,
+            "description": "Final Score - After Penalties",
+            "detail": "FT-Pens",
+            "shortDetail": "FT-Pens"
           }
         },
         "links": [
@@ -64513,16 +64524,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 7200.0,
+              "displayClock": "120'",
+              "period": 5,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
-                "completed": false,
-                "description": "Scheduled",
-                "detail": "Wed, September 2nd at 2:00 PM EDT",
-                "shortDetail": "Scheduled"
+                "id": "47",
+                "name": "STATUS_FINAL_PEN",
+                "state": "post",
+                "completed": true,
+                "description": "Final Score - After Penalties",
+                "detail": "FT-Pens",
+                "shortDetail": "FT-Pens"
               }
             },
             "venue": {
@@ -64539,7 +64551,13 @@
               }
             },
             "altGameNote": "KNVB Beker, First Preliminary Round",
-            "notes": [],
+            "notes": [
+              {
+                "text": "VV Staphorst win 6-5 on penalties",
+                "headline": "VV Staphorst win 6-5 on penalties",
+                "type": "event"
+              }
+            ],
             "geoBroadcasts": [],
             "broadcasts": [],
             "broadcast": "",
@@ -64550,9 +64568,10 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "LLLLL",
-                "score": "0",
+                "winner": true,
+                "form": "DLLLL",
+                "score": "2",
+                "shootoutScore": 6,
                 "team": {
                   "id": "11812",
                   "uid": "s:600~t:11812",
@@ -64664,8 +64683,9 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "LLWLL",
-                "score": "0",
+                "form": "DLLWL",
+                "score": "2",
+                "shootoutScore": 5,
                 "team": {
                   "id": "8501",
                   "uid": "s:600~t:8501",
@@ -64781,16 +64801,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 7200.0,
+          "displayClock": "120'",
+          "period": 5,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
-            "completed": false,
-            "description": "Scheduled",
-            "detail": "Wed, September 2nd at 2:00 PM EDT",
-            "shortDetail": "Scheduled"
+            "id": "47",
+            "name": "STATUS_FINAL_PEN",
+            "state": "post",
+            "completed": true,
+            "description": "Final Score - After Penalties",
+            "detail": "FT-Pens",
+            "shortDetail": "FT-Pens"
           }
         },
         "venue": {
@@ -92456,7 +92477,7 @@
                   "priority": 1
                 },
                 "drawOdds": {
-                  "moneyLine": 300,
+                  "moneyLine": 290,
                   "link": {
                     "language": "en-US",
                     "rel": [
@@ -92543,7 +92564,7 @@
                     },
                     "close": {
                       "line": "-0.5",
-                      "odds": "-185",
+                      "odds": "-180",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -92571,7 +92592,7 @@
                     },
                     "close": {
                       "line": "+0.5",
-                      "odds": "+135",
+                      "odds": "+125",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -92601,7 +92622,7 @@
                       "odds": "-240"
                     },
                     "close": {
-                      "odds": "-175",
+                      "odds": "-165",
                       "link": {
                         "rel": [
                           "home",
@@ -92626,7 +92647,7 @@
                       "odds": "+550"
                     },
                     "close": {
-                      "odds": "+475",
+                      "odds": "+450",
                       "link": {
                         "rel": [
                           "away",
@@ -92651,7 +92672,7 @@
                       "odds": "+340"
                     },
                     "close": {
-                      "odds": "+300",
+                      "odds": "+290",
                       "link": {
                         "rel": [
                           "draw",
@@ -92672,7 +92693,7 @@
                     }
                   }
                 },
-                "details": "COQ -175"
+                "details": "COQ -165"
               }
             ],
             "wasSuspended": false,
@@ -96834,7 +96855,7 @@
                   "priority": 1
                 },
                 "drawOdds": {
-                  "moneyLine": 260,
+                  "moneyLine": 255,
                   "link": {
                     "language": "en-US",
                     "rel": [
@@ -96921,7 +96942,7 @@
                     },
                     "close": {
                       "line": "-0.5",
-                      "odds": "-160",
+                      "odds": "-155",
                       "link": {
                         "rel": [
                           "homeSpread",
@@ -96949,7 +96970,7 @@
                     },
                     "close": {
                       "line": "+0.5",
-                      "odds": "+115",
+                      "odds": "+110",
                       "link": {
                         "rel": [
                           "awaySpread",
@@ -96979,7 +97000,7 @@
                       "odds": "-140"
                     },
                     "close": {
-                      "odds": "-150",
+                      "odds": "-145",
                       "link": {
                         "rel": [
                           "home",
@@ -97004,7 +97025,7 @@
                       "odds": "+330"
                     },
                     "close": {
-                      "odds": "+400",
+                      "odds": "+380",
                       "link": {
                         "rel": [
                           "away",
@@ -97029,7 +97050,7 @@
                       "odds": "+250"
                     },
                     "close": {
-                      "odds": "+260",
+                      "odds": "+255",
                       "link": {
                         "rel": [
                           "draw",
@@ -97050,7 +97071,7 @@
                     }
                   }
                 },
-                "details": "OLI -150"
+                "details": "OLI -145"
               }
             ],
             "wasSuspended": false,
@@ -99665,8 +99686,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 3540.0,
-              "displayClock": "59'",
+              "clock": 3780.0,
+              "displayClock": "63'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -99674,8 +99695,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "59'",
-                "shortDetail": "59'"
+                "detail": "63'",
+                "shortDetail": "63'"
               }
             },
             "venue": {
@@ -99828,7 +99849,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "11"
+                    "displayValue": "12"
                   },
                   {
                     "name": "wonCorners",
@@ -99843,7 +99864,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "48.6"
+                    "displayValue": "48.5"
                   },
                   {
                     "name": "shotAssists",
@@ -99853,7 +99874,7 @@
                   {
                     "name": "shotsOnTarget",
                     "abbreviation": "SOG",
-                    "displayValue": "4"
+                    "displayValue": "5"
                   },
                   {
                     "name": "totalGoals",
@@ -99863,7 +99884,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "7"
+                    "displayValue": "8"
                   }
                 ]
               },
@@ -99875,7 +99896,7 @@
                 "homeAway": "away",
                 "winner": false,
                 "form": "DLWWW",
-                "score": "2",
+                "score": "3",
                 "records": [
                   {
                     "name": "All Splits",
@@ -99998,7 +100019,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "10"
+                    "displayValue": "9"
                   },
                   {
                     "name": "wonCorners",
@@ -100013,7 +100034,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "51.4"
+                    "displayValue": "51.5"
                   },
                   {
                     "name": "shotAssists",
@@ -100023,17 +100044,17 @@
                   {
                     "name": "shotsOnTarget",
                     "abbreviation": "SOG",
-                    "displayValue": "3"
+                    "displayValue": "4"
                   },
                   {
                     "name": "totalGoals",
                     "abbreviation": "G",
-                    "displayValue": "2"
+                    "displayValue": "3"
                   },
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "6"
+                    "displayValue": "7"
                   }
                 ]
               }
@@ -100214,6 +100235,50 @@
                     "position": "LM"
                   }
                 ]
+              },
+              {
+                "type": {
+                  "id": "98",
+                  "text": "Penalty - Scored"
+                },
+                "clock": {
+                  "value": 3583.0,
+                  "displayValue": "60'"
+                },
+                "team": {
+                  "id": "4818"
+                },
+                "scoreValue": 1,
+                "scoringPlay": true,
+                "redCard": false,
+                "yellowCard": false,
+                "penaltyKick": true,
+                "ownGoal": false,
+                "shootout": false,
+                "athletesInvolved": [
+                  {
+                    "id": "270278",
+                    "displayName": "Rodr\u00edgo Pollero",
+                    "shortName": "R. Pollero",
+                    "fullName": "Rodr\u00edgo Pollero",
+                    "jersey": "9",
+                    "team": {
+                      "id": "4818"
+                    },
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/270278/rodrigo-pollero",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "F"
+                  }
+                ]
               }
             ],
             "odds": [
@@ -100225,8 +100290,8 @@
           }
         ],
         "status": {
-          "clock": 3540.0,
-          "displayClock": "59'",
+          "clock": 3780.0,
+          "displayClock": "63'",
           "period": 2,
           "type": {
             "id": "26",
@@ -100234,8 +100299,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "59'",
-            "shortDetail": "59'"
+            "detail": "63'",
+            "shortDetail": "63'"
           }
         },
         "venue": {
@@ -109569,8 +109634,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 3173.0,
-              "displayClock": "53'",
+              "clock": 3341.0,
+              "displayClock": "56'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -109578,8 +109643,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "53'",
-                "shortDetail": "53'"
+                "detail": "56'",
+                "shortDetail": "56'"
               }
             },
             "venue": {
@@ -109774,8 +109839,8 @@
           }
         ],
         "status": {
-          "clock": 3173.0,
-          "displayClock": "53'",
+          "clock": 3341.0,
+          "displayClock": "56'",
           "period": 2,
           "type": {
             "id": "26",
@@ -109783,8 +109848,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "53'",
-            "shortDetail": "53'"
+            "detail": "56'",
+            "shortDetail": "56'"
           }
         },
         "venue": {
@@ -113342,8 +113407,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 3270.0,
-              "displayClock": "55'",
+              "clock": 3475.0,
+              "displayClock": "58'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -113351,8 +113416,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "55'",
-                "shortDetail": "55'"
+                "detail": "58'",
+                "shortDetail": "58'"
               }
             },
             "venue": {
@@ -113558,8 +113623,8 @@
           }
         ],
         "status": {
-          "clock": 3270.0,
-          "displayClock": "55'",
+          "clock": 3475.0,
+          "displayClock": "58'",
           "period": 2,
           "type": {
             "id": "26",
@@ -113567,8 +113632,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "55'",
-            "shortDetail": "55'"
+            "detail": "58'",
+            "shortDetail": "58'"
           }
         },
         "venue": {
@@ -114079,8 +114144,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 3376.0,
-              "displayClock": "57'",
+              "clock": 3586.0,
+              "displayClock": "60'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -114088,8 +114153,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "57'",
-                "shortDetail": "57'"
+                "detail": "60'",
+                "shortDetail": "60'"
               }
             },
             "venue": {
@@ -114272,8 +114337,8 @@
           }
         ],
         "status": {
-          "clock": 3376.0,
-          "displayClock": "57'",
+          "clock": 3586.0,
+          "displayClock": "60'",
           "period": 2,
           "type": {
             "id": "26",
@@ -114281,8 +114346,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "57'",
-            "shortDetail": "57'"
+            "detail": "60'",
+            "shortDetail": "60'"
           }
         },
         "venue": {
