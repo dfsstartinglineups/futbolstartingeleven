@@ -4717,13 +4717,30 @@ def build_sitemaps(league_state, team_state, player_state):
     with open("sitemap-lineups.xml", "w", encoding="utf-8") as f:
         f.write(lineups_xml)
 
-    players_xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    player_count = 0
+    players_xml_1 = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    players_xml_2 = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    
     for slug, data in player_state.items():
         lmod = format_w3c_date(data.get('last_updated', 0))
-        players_xml += f'    <url>\n        <loc>{base_url}/players/{slug}/</loc>\n        <lastmod>{lmod}</lastmod>\n    </url>\n'
-    players_xml += '</urlset>'
+        url_node = f'    <url>\n        <loc>{base_url}/players/{slug}/</loc>\n        <lastmod>{lmod}</lastmod>\n    </url>\n'
+        
+        if player_count < 50000:
+            players_xml_1 += url_node
+        else:
+            players_xml_2 += url_node
+            
+        player_count += 1
+
+    players_xml_1 += '</urlset>'
+    players_xml_2 += '</urlset>'
+
     with open("sitemap-players.xml", "w", encoding="utf-8") as f:
-        f.write(players_xml)
+        f.write(players_xml_1)
+
+    if player_count > 50000:
+        with open("sitemap-players2.xml", "w", encoding="utf-8") as f:
+            f.write(players_xml_2)
 
     matches_xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     for slug, data in team_state.items():
@@ -4734,6 +4751,14 @@ def build_sitemaps(league_state, team_state, player_state):
     matches_xml += '</urlset>'
     with open("sitemap-matches.xml", "w", encoding="utf-8") as f:
         f.write(matches_xml)
+
+    players2_sitemap_block = ""
+    if player_count > 50000:
+        players2_sitemap_block = f'''
+    <sitemap>
+        <loc>{base_url}/sitemap-players2.xml</loc>
+        <lastmod>{now_iso}</lastmod>
+    </sitemap>'''
 
     index_xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -4756,12 +4781,12 @@ def build_sitemaps(league_state, team_state, player_state):
     <sitemap>
         <loc>{base_url}/sitemap-players.xml</loc>
         <lastmod>{now_iso}</lastmod>
-    </sitemap>
+    </sitemap>{players2_sitemap_block}
 </sitemapindex>'''
     with open("sitemap.xml", "w", encoding="utf-8") as f:
         f.write(index_xml)
         
-    print(f"  └─ Successfully created sitemap.xml and 4 child maps.")
+    print(f"  └─ Successfully created sitemap.xml and child maps (Players Split: {min(player_count, 50000)} / {max(0, player_count - 50000)}).")
 
 def ping_indexnow(changed_urls):
     if not changed_urls:
