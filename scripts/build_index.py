@@ -1940,7 +1940,16 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
             away_name = str(a_team.get('displayName') or a_team.get('name') or "TBD")
             home_logo = get_local_image_url(str(h_team.get('logo') or ""), subfolder="images/teams")
             away_logo = get_local_image_url(str(a_team.get('logo') or ""), subfolder="images/teams")
-
+            espn_venue = comp.get('venue') or event.get('venue') or {}
+            venue_name = espn_venue.get('fullName') or espn_venue.get('displayName') or ''
+            venue_city = (espn_venue.get('address') or {}).get('city', '')
+            venue_country = (espn_venue.get('address') or {}).get('country', '')
+            
+            stadium_info = {
+                "name": venue_name,
+                "city": venue_city,
+                "country": venue_country
+            } if venue_name else None
             resolved_pill, resolved_display_name = resolve_event_league(event, core_index)
 
             league_list = event.get('leagues') or []
@@ -2007,7 +2016,8 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                             "goals": {"home": int(home_comp.get('score') or 0), "away": int(away_comp.get('score') or 0)},
                             "league": {"name": final_league_name, "abbrev": generate_league_abbrev(final_league_name), "slug": league_slug, "flag": league_flag, "pill": league_pill},
                             "html_card": f"<!-- MATCH_{event_id} -->{card_content}<!-- END_MATCH_{event_id} -->",
-                            "is_today_partition": is_today_partition
+                            "is_today_partition": is_today_partition,
+                            "stadium": stadium_info
                         })
                         continue
 
@@ -2049,7 +2059,8 @@ def fetch_espn_scores_for_date(date_str, old_html, pill=None, end_date_str=None,
                 },
                 "team_stats": summary["team_stats"], "homeLineup": summary["homeLineup"], "awayLineup": summary["awayLineup"],
                 "events": summary["events"], "odds": summary["odds"], "injuries": summary["injuries"],
-                "is_today_partition": is_today_partition
+                "is_today_partition": is_today_partition,
+                "stadium": stadium_info
             }
             
             match_entry["html_card"] = pre_render_game_card(match_entry)
@@ -4592,7 +4603,10 @@ def generate_match_schema(match_data):
     away_name = match_data['teams']['away']['name']
     match_date = match_data['fixture'].get('date', '')
     status_short = match_data['fixture']['status']['short']
-    venue_name = match_data.get('stadium', {}).get('name') if isinstance(match_data.get('stadium'), dict) else None
+    
+    stadium_data = match_data.get('stadium')
+    venue_name = stadium_data.get('name') if isinstance(stadium_data, dict) else None
+    venue_city = stadium_data.get('city') if isinstance(stadium_data, dict) else None
     
     if status_short in ['PST', 'CANC', 'ABD']:
         event_status = "https://schema.org/EventCancelled"
@@ -4619,10 +4633,16 @@ def generate_match_schema(match_data):
         event_schema["startDate"] = match_date
         
     if venue_name:
-        event_schema["location"] = {
+        location_node = {
             "@type": "Place",
             "name": venue_name
         }
+        if venue_city:
+            location_node["address"] = {
+                "@type": "PostalAddress",
+                "addressLocality": venue_city
+            }
+        event_schema["location"] = location_node
     
     json_string = json.dumps(event_schema, indent=2, ensure_ascii=False)
     return f'<script type="application/ld+json">\n{json_string}\n</script>'
