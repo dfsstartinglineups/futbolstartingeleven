@@ -4608,6 +4608,10 @@ def generate_match_schema(match_data):
     venue_name = stadium_data.get('name') if isinstance(stadium_data, dict) else None
     venue_city = stadium_data.get('city') if isinstance(stadium_data, dict) else None
     
+    # Fallback for Google Rich Results validator
+    if not venue_name:
+        venue_name = "Unknown"
+    
     if status_short in ['PST', 'CANC', 'ABD']:
         event_status = "https://schema.org/EventCancelled"
     else:
@@ -4632,17 +4636,16 @@ def generate_match_schema(match_data):
     if match_date:
         event_schema["startDate"] = match_date
         
-    if venue_name:
-        location_node = {
-            "@type": "Place",
-            "name": venue_name
+    location_node = {
+        "@type": "Place",
+        "name": venue_name
+    }
+    if venue_city:
+        location_node["address"] = {
+            "@type": "PostalAddress",
+            "addressLocality": venue_city
         }
-        if venue_city:
-            location_node["address"] = {
-                "@type": "PostalAddress",
-                "addressLocality": venue_city
-            }
-        event_schema["location"] = location_node
+    event_schema["location"] = location_node
     
     json_string = json.dumps(event_schema, indent=2, ensure_ascii=False)
     return f'<script type="application/ld+json">\n{json_string}\n</script>'
@@ -4867,11 +4870,16 @@ def generate_homepage_schema(today_matches):
             event_schema["startDate"] = match_date
             
         venue_name = m.get('stadium', {}).get('name') if isinstance(m.get('stadium'), dict) else None
-        if venue_name:
-            event_schema["location"] = {
-                "@type": "Place",
-                "name": venue_name
-            }
+        
+        # Fallback for Google Rich Results validator
+        if not venue_name:
+            venue_name = "Unknown"
+            
+        event_schema["location"] = {
+            "@type": "Place",
+            "name": venue_name
+        }
+        
         schema_list.append(event_schema)
         
     if not schema_list:
