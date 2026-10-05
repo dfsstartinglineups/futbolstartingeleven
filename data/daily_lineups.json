@@ -286,7 +286,7 @@
     "side": "away",
     "league_name": "🌎 UEFA Nations League",
     "league_hashtag": "#UEFANationsLeague",
-    "formation": "4-2-3-1",
+    "formation": "4-3-3",
     "starting_xi": [
       {
         "name": "Maarten Vandevoordt",
@@ -470,7 +470,7 @@
     "side": "away",
     "league_name": "🌎 UEFA Nations League",
     "league_hashtag": "#UEFANationsLeague",
-    "formation": "5-4-1",
+    "formation": "3-4-2-1",
     "starting_xi": [
       {
         "name": "Ugurcan Çakir",
@@ -501,46 +501,32 @@
         "number": "2"
       },
       {
+        "name": "Ismail Yüksek",
+        "short_name": "I. Yüksek",
+        "pos": "CM-L",
+        "category": "M",
+        "number": "16"
+      },
+      {
+        "name": "Salih Özcan",
+        "short_name": "S. Özcan",
+        "pos": "CM-R",
+        "category": "M",
+        "number": "5"
+      },
+      {
         "name": "Eren Elmali",
         "short_name": "E. Elmali",
-        "pos": "LB",
-        "category": "D",
+        "pos": "LM",
+        "category": "M",
         "number": "13"
       },
       {
         "name": "Ferdi Kadioglu",
         "short_name": "F. Kadioglu",
-        "pos": "RB",
-        "category": "D",
-        "number": "20"
-      },
-      {
-        "name": "Irfan Can Kahveci",
-        "short_name": "I. Can Kahveci",
-        "pos": "CM-L",
-        "category": "M",
-        "number": "10"
-      },
-      {
-        "name": "Ismail Yüksek",
-        "short_name": "I. Yüksek",
-        "pos": "CM-R",
-        "category": "M",
-        "number": "16"
-      },
-      {
-        "name": "Aral Simsir",
-        "short_name": "A. Simsir",
-        "pos": "LM",
-        "category": "M",
-        "number": "21"
-      },
-      {
-        "name": "Salih Özcan",
-        "short_name": "S. Özcan",
         "pos": "RM",
         "category": "M",
-        "number": "5"
+        "number": "20"
       },
       {
         "name": "Yunus Akgün",
@@ -548,6 +534,20 @@
         "pos": "F",
         "category": "F",
         "number": "19"
+      },
+      {
+        "name": "Aral Simsir",
+        "short_name": "A. Simsir",
+        "pos": "CF-L",
+        "category": "F",
+        "number": "21"
+      },
+      {
+        "name": "Irfan Can Kahveci",
+        "short_name": "I. Can Kahveci",
+        "pos": "CF-R",
+        "category": "F",
+        "number": "10"
       }
     ]
   },
@@ -1114,7 +1114,7 @@
     "side": "home",
     "league_name": "🌎 UEFA Nations League",
     "league_hashtag": "#UEFANationsLeague",
-    "formation": "3-4-1-2",
+    "formation": "4-2-3-1",
     "starting_xi": [
       {
         "name": "Anatoliy Trubin",
@@ -1126,16 +1126,9 @@
       {
         "name": "Eduard Sarapyi",
         "short_name": "E. Sarapyi",
-        "pos": "CD",
-        "category": "D",
-        "number": "3"
-      },
-      {
-        "name": "Taras Mykhavko",
-        "short_name": "T. Mykhavko",
         "pos": "CD-L",
         "category": "D",
-        "number": "4"
+        "number": "3"
       },
       {
         "name": "Illia Zabarnyi",
@@ -1145,53 +1138,60 @@
         "number": "13"
       },
       {
-        "name": "Oleh Ocheretko",
-        "short_name": "O. Ocheretko",
-        "pos": "CM-L",
-        "category": "M",
-        "number": "18"
-      },
-      {
-        "name": "Yehor Nazaryna",
-        "short_name": "Y. Nazaryna",
-        "pos": "CM-R",
-        "category": "M",
-        "number": "19"
-      },
-      {
-        "name": "Vladyslav Veleten",
-        "short_name": "V. Veleten",
-        "pos": "LM",
-        "category": "M",
-        "number": "21"
+        "name": "Taras Mykhavko",
+        "short_name": "T. Mykhavko",
+        "pos": "LB",
+        "category": "D",
+        "number": "4"
       },
       {
         "name": "Illia Krupskyi",
         "short_name": "I. Krupskyi",
-        "pos": "RM",
-        "category": "M",
+        "pos": "RB",
+        "category": "D",
         "number": "2"
       },
       {
-        "name": "Viktor Tsygankov",
-        "short_name": "V. Tsygankov",
-        "pos": "AM",
-        "category": "F",
-        "number": "15"
+        "name": "Yehor Nazaryna",
+        "short_name": "Y. Nazaryna",
+        "pos": "LM",
+        "category": "M",
+        "number": "19"
       },
       {
-        "name": "Ihor Krasnopir",
-        "short_name": "I. Krasnopir",
-        "pos": "CF-L",
-        "category": "F",
-        "number": "22"
+        "name": "Oleh Ocheretko",
+        "short_name": "O. Ocheretko",
+        "pos": "RM",
+        "category": "M",
+        "number": "18"
       },
       {
         "name": "Matvii Ponomarenko",
         "short_name": "M. Ponomarenko",
-        "pos": "CF-R",
+        "pos": "AM",
         "category": "F",
         "number": "10"
+      },
+      {
+        "name": "Ihor Krasnopir",
+        "short_name": "I. Krasnopir",
+        "pos": "F",
+        "category": "F",
+        "number": "22"
+      },
+      {
+        "name": "Vladyslav Veleten",
+        "short_name": "V. Veleten",
+        "pos": "AM-L",
+        "category": "F",
+        "number": "21"
+      },
+      {
+        "name": "Viktor Tsygankov",
+        "short_name": "V. Tsygankov",
+        "pos": "AM-R",
+        "category": "F",
+        "number": "15"
       }
     ]
   },
@@ -1758,7 +1758,7 @@
     "side": "away",
     "league_name": "Argentine Liga Profesional de Fútbol",
     "league_hashtag": "#ArgentineLigaProfesionaldeFútbol",
-    "formation": "4-4-2",
+    "formation": "4-1-4-1",
     "starting_xi": [
       {
         "name": "Alan Aguerre",
@@ -1768,18 +1768,18 @@
         "number": "1"
       },
       {
-        "name": "Felipe Aguilar",
-        "short_name": "F. Aguilar",
-        "pos": "CD-L",
-        "category": "D",
-        "number": "21"
-      },
-      {
         "name": "Alejandro Maciel",
         "short_name": "A. Maciel",
-        "pos": "CD-R",
+        "pos": "CD-L",
         "category": "D",
         "number": "2"
+      },
+      {
+        "name": "Felipe Aguilar",
+        "short_name": "F. Aguilar",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "21"
       },
       {
         "name": "Dario Cáceres",
@@ -1796,6 +1796,13 @@
         "number": "33"
       },
       {
+        "name": "Matías Vera",
+        "short_name": "M. Vera",
+        "pos": "DM",
+        "category": "M",
+        "number": "22"
+      },
+      {
         "name": "Lucas González",
         "short_name": "L. González",
         "pos": "CM-L",
@@ -1803,11 +1810,11 @@
         "number": "18"
       },
       {
-        "name": "Matías Vera",
-        "short_name": "M. Vera",
+        "name": "Marco Iacobellis",
+        "short_name": "M. Iacobellis",
         "pos": "CM-R",
         "category": "M",
-        "number": "22"
+        "number": "10"
       },
       {
         "name": "Diego Barrera",
@@ -1817,25 +1824,18 @@
         "number": "7"
       },
       {
-        "name": "Marco Iacobellis",
-        "short_name": "M. Iacobellis",
+        "name": "Leonardo Sequeira",
+        "short_name": "L. Sequeira",
         "pos": "RM",
         "category": "M",
-        "number": "10"
+        "number": "28"
       },
       {
         "name": "Michael Santos",
         "short_name": "M. Santos",
-        "pos": "CF-L",
+        "pos": "F",
         "category": "F",
         "number": "27"
-      },
-      {
-        "name": "Leonardo Sequeira",
-        "short_name": "L. Sequeira",
-        "pos": "CF-R",
-        "category": "F",
-        "number": "28"
       }
     ]
   },
