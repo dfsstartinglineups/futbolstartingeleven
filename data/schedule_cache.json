@@ -33150,7 +33150,7 @@
   },
   "20261009": {
     "is_locked": false,
-    "last_fetched": 1791608318.349471,
+    "last_fetched": 1791608642.846,
     "raw_events": [
       {
         "id": "401882851",
@@ -36354,16 +36354,16 @@
             "recent": true,
             "status": {
               "clock": 5400.0,
-              "displayClock": "90'+3'",
+              "displayClock": "90'+6'",
               "period": 2,
               "type": {
-                "id": "26",
-                "name": "STATUS_SECOND_HALF",
-                "state": "in",
-                "completed": false,
-                "description": "Second Half",
-                "detail": "90'+3'",
-                "shortDetail": "90'+3'"
+                "id": "28",
+                "name": "STATUS_FULL_TIME",
+                "state": "post",
+                "completed": true,
+                "description": "Full Time",
+                "detail": "FT",
+                "shortDetail": "FT"
               }
             },
             "venue": {
@@ -36391,14 +36391,14 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "WLDDD",
+                "winner": true,
+                "form": "DWLDD",
                 "score": "3",
                 "records": [
                   {
                     "name": "All Splits",
                     "type": "total",
-                    "summary": "2-4-4",
+                    "summary": "3-4-4",
                     "abbreviation": "Total"
                   }
                 ],
@@ -36516,7 +36516,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "12"
+                    "displayValue": "13"
                   },
                   {
                     "name": "wonCorners",
@@ -36562,13 +36562,13 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "DLWWW",
+                "form": "DDLWW",
                 "score": "2",
                 "records": [
                   {
                     "name": "All Splits",
                     "type": "total",
-                    "summary": "6-2-2",
+                    "summary": "6-2-3",
                     "abbreviation": "Total"
                   }
                 ],
@@ -36686,12 +36686,12 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "19"
+                    "displayValue": "20"
                   },
                   {
                     "name": "wonCorners",
                     "abbreviation": "CW",
-                    "displayValue": "4"
+                    "displayValue": "6"
                   },
                   {
                     "name": "goalAssists",
@@ -36706,12 +36706,12 @@
                   {
                     "name": "shotAssists",
                     "abbreviation": "SHAST",
-                    "displayValue": "12"
+                    "displayValue": "14"
                   },
                   {
                     "name": "shotsOnTarget",
                     "abbreviation": "SOG",
-                    "displayValue": "7"
+                    "displayValue": "8"
                   },
                   {
                     "name": "totalGoals",
@@ -36721,7 +36721,7 @@
                   {
                     "name": "totalShots",
                     "abbreviation": "SHOT",
-                    "displayValue": "15"
+                    "displayValue": "17"
                   }
                 ]
               }
@@ -37098,141 +37098,98 @@
                     "position": "SUB"
                   }
                 ]
+              },
+              {
+                "type": {
+                  "id": "94",
+                  "text": "Yellow Card"
+                },
+                "clock": {
+                  "value": 5400.0,
+                  "displayValue": "90'+3'"
+                },
+                "team": {
+                  "id": "223"
+                },
+                "scoreValue": 0,
+                "scoringPlay": false,
+                "redCard": false,
+                "yellowCard": true,
+                "penaltyKick": false,
+                "ownGoal": false,
+                "shootout": false,
+                "athletesInvolved": [
+                  {
+                    "id": "128422",
+                    "displayName": "Franco Romero",
+                    "shortName": "F. Romero",
+                    "fullName": "Franco Romero",
+                    "jersey": "5",
+                    "team": {
+                      "id": "223"
+                    },
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/128422/franco-romero",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "RM"
+                  }
+                ]
+              },
+              {
+                "type": {
+                  "id": "94",
+                  "text": "Yellow Card"
+                },
+                "clock": {
+                  "value": 5400.0,
+                  "displayValue": "90'+3'"
+                },
+                "team": {
+                  "id": "223"
+                },
+                "scoreValue": 0,
+                "scoringPlay": false,
+                "redCard": false,
+                "yellowCard": true,
+                "penaltyKick": false,
+                "ownGoal": false,
+                "shootout": false,
+                "athletesInvolved": [
+                  {
+                    "id": "288735",
+                    "displayName": "Federico Pereira",
+                    "shortName": "F. Pereira",
+                    "fullName": "Federico Pereira",
+                    "jersey": "6",
+                    "team": {
+                      "id": "223"
+                    },
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/288735/federico-pereira",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "CD-L"
+                  }
+                ]
               }
             ],
             "odds": [
-              {
-                "overUnder": 2.5,
-                "link": {
-                  "language": "en-US",
-                  "rel": [
-                    "game",
-                    "desktop",
-                    "bets"
-                  ],
-                  "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34772224",
-                  "text": "Game",
-                  "shortText": "Game",
-                  "isExternal": true,
-                  "isPremium": false,
-                  "isHidden": false
-                },
-                "provider": {
-                  "id": "100",
-                  "name": "DraftKings",
-                  "priority": 1,
-                  "displayName": "DraftKings",
-                  "logos": [
-                    {
-                      "href": "https://a.espncdn.com/i/betting/Draftkings_Light.svg",
-                      "rel": [
-                        "light"
-                      ]
-                    },
-                    {
-                      "href": "https://a.espncdn.com/i/betting/Draftkings_Dark.svg",
-                      "rel": [
-                        "dark"
-                      ]
-                    }
-                  ]
-                },
-                "drawOdds": {
-                  "moneyLine": 250,
-                  "link": {
-                    "language": "en-US",
-                    "rel": [
-                      "draw",
-                      "desktop",
-                      "bets",
-                      "draftkings"
-                    ],
-                    "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34772224%3Foutcomes%3D0ML86587599_2",
-                    "text": "Draw Bet",
-                    "shortText": "Draw Bet",
-                    "isExternal": true,
-                    "isPremium": false,
-                    "isHidden": false
-                  }
-                },
-                "total": {
-                  "displayName": "Total",
-                  "shortDisplayName": "Total",
-                  "over": {
-                    "open": {
-                      "line": "o2.5",
-                      "odds": "-150"
-                    },
-                    "close": {
-                      "line": "o2.5",
-                      "odds": "-150"
-                    }
-                  },
-                  "under": {
-                    "open": {
-                      "line": "u2.5",
-                      "odds": "+105"
-                    },
-                    "close": {
-                      "line": "u2.5",
-                      "odds": "+115"
-                    }
-                  }
-                },
-                "pointSpread": {
-                  "displayName": "Spread",
-                  "shortDisplayName": "Spread",
-                  "home": {
-                    "open": {
-                      "line": "+0.5",
-                      "odds": "-175"
-                    },
-                    "close": {
-                      "line": "+0.5",
-                      "odds": "-165"
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "line": "-0.5",
-                      "odds": "+115"
-                    },
-                    "close": {
-                      "line": "-0.5",
-                      "odds": "+120"
-                    }
-                  }
-                },
-                "moneyline": {
-                  "displayName": "Moneyline",
-                  "shortDisplayName": "ML",
-                  "home": {
-                    "open": {
-                      "odds": "+185"
-                    },
-                    "close": {
-                      "odds": "+195"
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "odds": "+125"
-                    },
-                    "close": {
-                      "odds": "+130"
-                    }
-                  },
-                  "draw": {
-                    "open": {
-                      "odds": "+240"
-                    },
-                    "close": {
-                      "odds": "+250"
-                    }
-                  }
-                },
-                "details": "TOL +130"
-              }
+              null
             ],
             "wasSuspended": false,
             "playByPlayAvailable": true,
@@ -37241,16 +37198,16 @@
         ],
         "status": {
           "clock": 5400.0,
-          "displayClock": "90'+3'",
+          "displayClock": "90'+6'",
           "period": 2,
           "type": {
-            "id": "26",
-            "name": "STATUS_SECOND_HALF",
-            "state": "in",
-            "completed": false,
-            "description": "Second Half",
-            "detail": "90'+3'",
-            "shortDetail": "90'+3'"
+            "id": "28",
+            "name": "STATUS_FULL_TIME",
+            "state": "post",
+            "completed": true,
+            "description": "Full Time",
+            "detail": "FT",
+            "shortDetail": "FT"
           }
         },
         "venue": {
@@ -37260,13 +37217,13 @@
           {
             "language": "en-US",
             "rel": [
-              "live",
+              "summary",
               "desktop",
               "event"
             ],
-            "href": "https://www.espn.com/soccer/match/_/gameId/401876953",
-            "text": "Gamecast",
-            "shortText": "Live",
+            "href": "https://www.espn.com/soccer/match/_/gameId/401876953/toluca-tigres-uanl",
+            "text": "Summary",
+            "shortText": "Summary",
             "isExternal": false,
             "isPremium": false,
             "isHidden": false
@@ -83998,7 +83955,7 @@
             "startDate": "2026-10-09T21:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 5400.0,
               "displayClock": "90'+7'",
@@ -94776,26 +94733,6 @@
                   "displayValue": "90'+1'"
                 },
                 "team": {
-                  "id": "7477"
-                },
-                "scoreValue": 0,
-                "scoringPlay": false,
-                "redCard": false,
-                "yellowCard": true,
-                "penaltyKick": false,
-                "ownGoal": false,
-                "shootout": false
-              },
-              {
-                "type": {
-                  "id": "94",
-                  "text": "Yellow Card"
-                },
-                "clock": {
-                  "value": 5400.0,
-                  "displayValue": "90'+1'"
-                },
-                "team": {
                   "id": "7476"
                 },
                 "scoreValue": 0,
@@ -94829,6 +94766,26 @@
                     "position": "SUB"
                   }
                 ]
+              },
+              {
+                "type": {
+                  "id": "94",
+                  "text": "Yellow Card"
+                },
+                "clock": {
+                  "value": 5400.0,
+                  "displayValue": "90'+1'"
+                },
+                "team": {
+                  "id": "7477"
+                },
+                "scoreValue": 0,
+                "scoringPlay": false,
+                "redCard": false,
+                "yellowCard": true,
+                "penaltyKick": false,
+                "ownGoal": false,
+                "shootout": false
               }
             ],
             "odds": [
@@ -94892,7 +94849,7 @@
             "startDate": "2026-10-09T21:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 5400.0,
               "displayClock": "90'+10'",
@@ -102278,7 +102235,7 @@
             "startDate": "2026-10-09T21:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 5400.0,
               "displayClock": "90'",
@@ -102516,7 +102473,7 @@
             "startDate": "2026-10-09T21:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 5400.0,
               "displayClock": "90'",
