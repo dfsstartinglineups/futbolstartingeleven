@@ -27098,7 +27098,7 @@
   },
   "20261020": {
     "is_locked": false,
-    "last_fetched": 1792531808.4502096,
+    "last_fetched": 1792532106.3833656,
     "raw_events": [
       {
         "id": "401915403",
@@ -41791,7 +41791,7 @@
                 "periods": 2
               }
             },
-            "altGameNote": "U-17 WWC, Group A",
+            "altGameNote": "FIFA U-17 Women's World Cup, Group A",
             "group": {
               "groupId": "1",
               "name": "Group A",
@@ -42344,7 +42344,7 @@
                 "periods": 2
               }
             },
-            "altGameNote": "U-17 WWC, Group B",
+            "altGameNote": "FIFA U-17 Women's World Cup, Group B",
             "group": {
               "groupId": "2",
               "name": "Group B",
@@ -43117,7 +43117,7 @@
                 "periods": 2
               }
             },
-            "altGameNote": "U-17 WWC, Group A",
+            "altGameNote": "FIFA U-17 Women's World Cup, Group A",
             "group": {
               "groupId": "1",
               "name": "Group A",
@@ -43978,7 +43978,7 @@
                 "periods": 2
               }
             },
-            "altGameNote": "U-17 WWC, Group B",
+            "altGameNote": "FIFA U-17 Women's World Cup, Group B",
             "group": {
               "groupId": "2",
               "name": "Group B",
@@ -63374,16 +63374,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 7200.0,
+              "displayClock": "120'",
+              "period": 5,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
-                "completed": false,
-                "description": "Scheduled",
-                "detail": "Tue, October 20th at 2:45 PM EDT",
-                "shortDetail": "Scheduled"
+                "id": "47",
+                "name": "STATUS_FINAL_PEN",
+                "state": "post",
+                "completed": true,
+                "description": "Final Score - After Penalties",
+                "detail": "FT-Pens",
+                "shortDetail": "FT-Pens"
               }
             },
             "venue": {
@@ -63400,7 +63401,13 @@
               }
             },
             "altGameNote": "English FA Cup Qualifying, Fourth Round Qualifying",
-            "notes": [],
+            "notes": [
+              {
+                "text": "Cray Wanderers win 4-3 on penalties",
+                "headline": "Cray Wanderers win 4-3 on penalties",
+                "type": "event"
+              }
+            ],
             "geoBroadcasts": [],
             "broadcasts": [],
             "broadcast": "",
@@ -63411,9 +63418,10 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "DWWDW",
-                "score": "0",
+                "winner": true,
+                "form": "DDWWD",
+                "score": "2",
+                "shootoutScore": 4,
                 "team": {
                   "id": "20770",
                   "uid": "s:600~t:20770",
@@ -63525,8 +63533,9 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "DWDW",
-                "score": "0",
+                "form": "DDWDW",
+                "score": "2",
+                "shootoutScore": 3,
                 "team": {
                   "id": "133883",
                   "uid": "s:600~t:133883",
@@ -63642,16 +63651,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 7200.0,
+          "displayClock": "120'",
+          "period": 5,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
-            "completed": false,
-            "description": "Scheduled",
-            "detail": "Tue, October 20th at 2:45 PM EDT",
-            "shortDetail": "Scheduled"
+            "id": "47",
+            "name": "STATUS_FINAL_PEN",
+            "state": "post",
+            "completed": true,
+            "description": "Final Score - After Penalties",
+            "detail": "FT-Pens",
+            "shortDetail": "FT-Pens"
           }
         },
         "venue": {
@@ -67699,7 +67709,53 @@
                     "id": "11113"
                   }
                 },
-                "statistics": [],
+                "statistics": [
+                  {
+                    "name": "appearances",
+                    "abbreviation": "APP",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "foulsCommitted",
+                    "abbreviation": "FC",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "wonCorners",
+                    "abbreviation": "CW",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "goalAssists",
+                    "abbreviation": "A",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "possessionPct",
+                    "abbreviation": "PP",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "shotAssists",
+                    "abbreviation": "SHAST",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "shotsOnTarget",
+                    "abbreviation": "SOG",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "totalGoals",
+                    "abbreviation": "G",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "totalShots",
+                    "abbreviation": "SHOT",
+                    "displayValue": "0"
+                  }
+                ],
                 "leaders": [
                   {
                     "name": "goals",
@@ -67905,7 +67961,53 @@
                     "id": "5378"
                   }
                 },
-                "statistics": [],
+                "statistics": [
+                  {
+                    "name": "appearances",
+                    "abbreviation": "APP",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "foulsCommitted",
+                    "abbreviation": "FC",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "wonCorners",
+                    "abbreviation": "CW",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "goalAssists",
+                    "abbreviation": "A",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "possessionPct",
+                    "abbreviation": "PP",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "shotAssists",
+                    "abbreviation": "SHAST",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "shotsOnTarget",
+                    "abbreviation": "SOG",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "totalGoals",
+                    "abbreviation": "G",
+                    "displayValue": "0"
+                  },
+                  {
+                    "name": "totalShots",
+                    "abbreviation": "SHOT",
+                    "displayValue": "0"
+                  }
+                ],
                 "leaders": [
                   {
                     "name": "goals",
@@ -68899,13 +69001,13 @@
               "clock": 0.0,
               "displayClock": "0'",
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
+                "id": "6",
+                "name": "STATUS_POSTPONED",
+                "state": "post",
                 "completed": false,
-                "description": "Scheduled",
-                "detail": "Tue, October 20th at 7:00 PM EDT",
-                "shortDetail": "Scheduled"
+                "description": "Postponed",
+                "detail": "Postponed",
+                "shortDetail": "Postponed"
               }
             },
             "venue": {
@@ -69068,89 +69170,7 @@
                     "id": "5428"
                   }
                 },
-                "statistics": [],
-                "leaders": [
-                  {
-                    "name": "goals",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "3",
-                        "value": 3.0,
-                        "athlete": {
-                          "id": "358193",
-                          "displayName": "Francisco Pozzo",
-                          "shortName": "F. Pozzo",
-                          "fullName": "Francisco Pozzo",
-                          "jersey": "9",
-                          "active": true,
-                          "team": {
-                            "id": "10144"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/358193/francisco-pozzo",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "F"
-                          }
-                        },
-                        "team": {
-                          "id": "10144"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "goalsLeaders",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "3",
-                        "value": 3.0,
-                        "athlete": {
-                          "id": "358193",
-                          "displayName": "Francisco Pozzo",
-                          "shortName": "F. Pozzo",
-                          "fullName": "Francisco Pozzo",
-                          "jersey": "9",
-                          "active": true,
-                          "team": {
-                            "id": "10144"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/358193/francisco-pozzo",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "F"
-                          }
-                        },
-                        "team": {
-                          "id": "10144"
-                        }
-                      }
-                    ]
-                  }
-                ]
+                "statistics": []
               },
               {
                 "id": "8186",
@@ -69266,89 +69286,7 @@
                     "id": "6039"
                   }
                 },
-                "statistics": [],
-                "leaders": [
-                  {
-                    "name": "goals",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "3",
-                        "value": 3.0,
-                        "athlete": {
-                          "id": "246557",
-                          "displayName": "Luis Riveros",
-                          "shortName": "L. Riveros",
-                          "fullName": "Luis Riveros",
-                          "jersey": "27",
-                          "active": true,
-                          "team": {
-                            "id": "8186"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/246557/luis-riveros",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "F"
-                          }
-                        },
-                        "team": {
-                          "id": "8186"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "goalsLeaders",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "3",
-                        "value": 3.0,
-                        "athlete": {
-                          "id": "246557",
-                          "displayName": "Luis Riveros",
-                          "shortName": "L. Riveros",
-                          "fullName": "Luis Riveros",
-                          "jersey": "27",
-                          "active": true,
-                          "team": {
-                            "id": "8186"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/246557/luis-riveros",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "F"
-                          }
-                        },
-                        "team": {
-                          "id": "8186"
-                        }
-                      }
-                    ]
-                  }
-                ]
+                "statistics": []
               }
             ],
             "details": [],
@@ -69364,13 +69302,13 @@
           "clock": 0.0,
           "displayClock": "0'",
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
+            "id": "6",
+            "name": "STATUS_POSTPONED",
+            "state": "post",
             "completed": false,
-            "description": "Scheduled",
-            "detail": "Tue, October 20th at 7:00 PM EDT",
-            "shortDetail": "Scheduled"
+            "description": "Postponed",
+            "detail": "Postponed",
+            "shortDetail": "Postponed"
           }
         },
         "venue": {
@@ -69414,16 +69352,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 0.0,
-              "displayClock": "0'",
+              "clock": 300.0,
+              "displayClock": "5'",
+              "period": 1,
               "type": {
-                "id": "1",
-                "name": "STATUS_SCHEDULED",
-                "state": "pre",
+                "id": "25",
+                "name": "STATUS_FIRST_HALF",
+                "state": "in",
                 "completed": false,
-                "description": "Scheduled",
-                "detail": "Tue, October 20th at 5:30 PM EDT",
-                "shortDetail": "Scheduled"
+                "description": "First Half",
+                "detail": "5'",
+                "shortDetail": "5'"
               }
             },
             "venue": {
@@ -69576,7 +69515,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "0"
+                    "displayValue": "1"
                   },
                   {
                     "name": "wonCorners",
@@ -69591,7 +69530,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "0"
+                    "displayValue": "25"
                   },
                   {
                     "name": "shotAssists",
@@ -69612,88 +69551,6 @@
                     "name": "totalShots",
                     "abbreviation": "SHOT",
                     "displayValue": "0"
-                  }
-                ],
-                "leaders": [
-                  {
-                    "name": "goals",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "4",
-                        "value": 4.0,
-                        "athlete": {
-                          "id": "228693",
-                          "displayName": "Jordy Monroy",
-                          "shortName": "J. Monroy",
-                          "fullName": "Jordy Monroy",
-                          "jersey": "20",
-                          "active": true,
-                          "team": {
-                            "id": "5486"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/228693/jordy-monroy",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "D"
-                          }
-                        },
-                        "team": {
-                          "id": "5486"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "goalsLeaders",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "4",
-                        "value": 4.0,
-                        "athlete": {
-                          "id": "228693",
-                          "displayName": "Jordy Monroy",
-                          "shortName": "J. Monroy",
-                          "fullName": "Jordy Monroy",
-                          "jersey": "20",
-                          "active": true,
-                          "team": {
-                            "id": "5486"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/228693/jordy-monroy",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "D"
-                          }
-                        },
-                        "team": {
-                          "id": "5486"
-                        }
-                      }
-                    ]
                   }
                 ]
               },
@@ -69843,7 +69700,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "0"
+                    "displayValue": "75"
                   },
                   {
                     "name": "shotAssists",
@@ -69864,88 +69721,6 @@
                     "name": "totalShots",
                     "abbreviation": "SHOT",
                     "displayValue": "0"
-                  }
-                ],
-                "leaders": [
-                  {
-                    "name": "goals",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "3",
-                        "value": 3.0,
-                        "athlete": {
-                          "id": "339961",
-                          "displayName": "Santiago Mera",
-                          "shortName": "S. Mera",
-                          "fullName": "Santiago Mera",
-                          "jersey": "16",
-                          "active": true,
-                          "team": {
-                            "id": "5480"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/339961/santiago-mera",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "F"
-                          }
-                        },
-                        "team": {
-                          "id": "5480"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "goalsLeaders",
-                    "displayName": "Goals",
-                    "shortDisplayName": "Goals",
-                    "abbreviation": "G",
-                    "leaders": [
-                      {
-                        "displayValue": "3",
-                        "value": 3.0,
-                        "athlete": {
-                          "id": "339961",
-                          "displayName": "Santiago Mera",
-                          "shortName": "S. Mera",
-                          "fullName": "Santiago Mera",
-                          "jersey": "16",
-                          "active": true,
-                          "team": {
-                            "id": "5480"
-                          },
-                          "links": [
-                            {
-                              "rel": [
-                                "playercard",
-                                "desktop",
-                                "athlete"
-                              ],
-                              "href": "https://www.espn.com/soccer/player/_/id/339961/santiago-mera",
-                              "isHidden": false
-                            }
-                          ],
-                          "position": {
-                            "abbreviation": "F"
-                          }
-                        },
-                        "team": {
-                          "id": "5480"
-                        }
-                      }
-                    ]
                   }
                 ]
               }
@@ -70001,13 +69776,17 @@
                     },
                     "close": {
                       "line": "o2.5",
-                      "odds": "+130",
+                      "odds": "+130"
+                    },
+                    "current": {
+                      "line": "o2.5",
+                      "odds": "+141",
                       "link": {
                         "rel": [
                           "over",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0OU86801336O250_1",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0OU86802274O250_1",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -70029,13 +69808,17 @@
                     },
                     "close": {
                       "line": "u2.5",
-                      "odds": "-175",
+                      "odds": "-175"
+                    },
+                    "current": {
+                      "line": "u2.5",
+                      "odds": "-206",
                       "link": {
                         "rel": [
                           "under",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0OU86801336U250_3",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0OU86802274U250_3",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -70061,13 +69844,17 @@
                     },
                     "close": {
                       "line": "-0.5",
+                      "odds": "+110"
+                    },
+                    "current": {
+                      "line": "-0.5",
                       "odds": "+110",
                       "link": {
                         "rel": [
                           "homeSpread",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0HC86801339N50_1",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0HC86802275N50_1",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -70089,13 +69876,17 @@
                     },
                     "close": {
                       "line": "+0.5",
-                      "odds": "-155",
+                      "odds": "-155"
+                    },
+                    "current": {
+                      "line": "+0.5",
+                      "odds": "-160",
                       "link": {
                         "rel": [
                           "awaySpread",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0HC86801339P50_3",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0HC86802275P50_3",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -70119,13 +69910,16 @@
                       "odds": "+115"
                     },
                     "close": {
+                      "odds": "+120"
+                    },
+                    "current": {
                       "odds": "+120",
                       "link": {
                         "rel": [
                           "home",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0ML86800982_1",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0ML86802267_1",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -70144,13 +69938,16 @@
                       "odds": "+235"
                     },
                     "close": {
-                      "odds": "+250",
+                      "odds": "+250"
+                    },
+                    "current": {
+                      "odds": "+230",
                       "link": {
                         "rel": [
                           "away",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0ML86800982_3",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0ML86802267_3",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -70169,13 +69966,16 @@
                       "odds": "+205"
                     },
                     "close": {
-                      "odds": "+195",
+                      "odds": "+195"
+                    },
+                    "current": {
+                      "odds": "+210",
                       "link": {
                         "rel": [
                           "draw",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0ML86800982_2",
+                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34852600%3Foutcomes%3D0ML86802267_2",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -70199,16 +69999,17 @@
           }
         ],
         "status": {
-          "clock": 0.0,
-          "displayClock": "0'",
+          "clock": 300.0,
+          "displayClock": "5'",
+          "period": 1,
           "type": {
-            "id": "1",
-            "name": "STATUS_SCHEDULED",
-            "state": "pre",
+            "id": "25",
+            "name": "STATUS_FIRST_HALF",
+            "state": "in",
             "completed": false,
-            "description": "Scheduled",
-            "detail": "Tue, October 20th at 5:30 PM EDT",
-            "shortDetail": "Scheduled"
+            "description": "First Half",
+            "detail": "5'",
+            "shortDetail": "5'"
           }
         },
         "venue": {
@@ -70218,13 +70019,41 @@
           {
             "language": "en-US",
             "rel": [
-              "summary",
+              "live",
               "desktop",
               "event"
             ],
-            "href": "https://www.espn.com/soccer/match/_/gameId/401878040/boyaca-chico-fc-deportivo-pereira",
-            "text": "Summary",
-            "shortText": "Summary",
+            "href": "https://www.espn.com/soccer/match/_/gameId/401878040",
+            "text": "Gamecast",
+            "shortText": "Live",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+          },
+          {
+            "language": "en-US",
+            "rel": [
+              "team-stats",
+              "desktop",
+              "event"
+            ],
+            "href": "https://www.espn.com/soccer/team-stats/_/gameId/401878040/league/col.1",
+            "text": "Team Stats",
+            "shortText": "Team Stats",
+            "isExternal": false,
+            "isPremium": false,
+            "isHidden": false
+          },
+          {
+            "language": "en-US",
+            "rel": [
+              "player-stats",
+              "desktop",
+              "event"
+            ],
+            "href": "https://www.espn.com/soccer/player-stats/_/gameId/401878040/league/col.1",
+            "text": "Player Stats",
+            "shortText": "Player Stats",
             "isExternal": false,
             "isPremium": false,
             "isHidden": false
@@ -74633,8 +74462,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2909.0,
-              "displayClock": "49'",
+              "clock": 3149.0,
+              "displayClock": "53'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -74642,8 +74471,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "49'",
-                "shortDetail": "49'"
+                "detail": "53'",
+                "shortDetail": "53'"
               }
             },
             "venue": {
@@ -74679,7 +74508,7 @@
                 "homeAway": "home",
                 "winner": false,
                 "form": "DWLLD",
-                "score": "3",
+                "score": "4",
                 "records": [
                   {
                     "name": "All Splits",
@@ -74833,8 +74662,8 @@
           }
         ],
         "status": {
-          "clock": 2909.0,
-          "displayClock": "49'",
+          "clock": 3149.0,
+          "displayClock": "53'",
           "period": 2,
           "type": {
             "id": "26",
@@ -74842,8 +74671,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "49'",
-            "shortDetail": "49'"
+            "detail": "53'",
+            "shortDetail": "53'"
           }
         },
         "venue": {
@@ -74871,8 +74700,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 1538.0,
-              "displayClock": "26'",
+              "clock": 1841.0,
+              "displayClock": "31'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -74880,8 +74709,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "26'",
-                "shortDetail": "26'"
+                "detail": "31'",
+                "shortDetail": "31'"
               }
             },
             "venue": {
@@ -75071,8 +74900,8 @@
           }
         ],
         "status": {
-          "clock": 1538.0,
-          "displayClock": "26'",
+          "clock": 1841.0,
+          "displayClock": "31'",
           "period": 1,
           "type": {
             "id": "25",
@@ -75080,8 +74909,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "26'",
-            "shortDetail": "26'"
+            "detail": "31'",
+            "shortDetail": "31'"
           }
         },
         "venue": {
