@@ -470,7 +470,7 @@
     "side": "away",
     "league_name": "English Premier League",
     "league_hashtag": "#EnglishPremierLeague",
-    "formation": "4-2-3-1",
+    "formation": "4-3-3",
     "starting_xi": [
       {
         "name": "Robin Roefs",
@@ -508,6 +508,13 @@
         "number": "32"
       },
       {
+        "name": "Granit Xhaka",
+        "short_name": "G. Xhaka",
+        "pos": "CM",
+        "category": "M",
+        "number": "34"
+      },
+      {
         "name": "Noah Sadiki",
         "short_name": "N. Sadiki",
         "pos": "LM",
@@ -515,18 +522,25 @@
         "number": "27"
       },
       {
-        "name": "Granit Xhaka",
-        "short_name": "G. Xhaka",
-        "pos": "RM",
-        "category": "M",
-        "number": "34"
-      },
-      {
         "name": "Enzo Le Fée",
         "short_name": "E. Le Fée",
-        "pos": "AM",
-        "category": "F",
+        "pos": "RM",
+        "category": "M",
         "number": "28"
+      },
+      {
+        "name": "Nilson Angulo",
+        "short_name": "N. Angulo",
+        "pos": "LF",
+        "category": "M",
+        "number": "10"
+      },
+      {
+        "name": "Chris Rigg",
+        "short_name": "C. Rigg",
+        "pos": "RF",
+        "category": "M",
+        "number": "11"
       },
       {
         "name": "Brian Brobbey",
@@ -534,20 +548,6 @@
         "pos": "F",
         "category": "F",
         "number": "9"
-      },
-      {
-        "name": "Nilson Angulo",
-        "short_name": "N. Angulo",
-        "pos": "AM-L",
-        "category": "F",
-        "number": "10"
-      },
-      {
-        "name": "Chris Rigg",
-        "short_name": "C. Rigg",
-        "pos": "AM-R",
-        "category": "F",
-        "number": "11"
       }
     ]
   },
@@ -7012,67 +7012,53 @@
         "number": "1"
       },
       {
-        "name": "Samuel Johansen Chukwudi",
-        "short_name": "S. Johansen Chukwudi",
-        "pos": "D",
-        "category": "D",
-        "number": "28"
-      },
-      {
         "name": "Oliver Steurer",
         "short_name": "O. Steurer",
-        "pos": "D",
+        "pos": "CD-L",
         "category": "D",
         "number": "30"
       },
       {
-        "name": "Dejan Radonjic",
-        "short_name": "D. Radonjic",
-        "pos": "D",
-        "category": "D",
-        "number": "5"
-      },
-      {
         "name": "Luka Capan",
         "short_name": "L. Capan",
-        "pos": "D",
+        "pos": "CD-R",
         "category": "D",
         "number": "29"
       },
       {
-        "name": "Yussef Nasrawe",
-        "short_name": "Y. Nasrawe",
-        "pos": "M",
-        "category": "M",
-        "number": "10"
+        "name": "Samuel Johansen Chukwudi",
+        "short_name": "S. Johansen Chukwudi",
+        "pos": "LB",
+        "category": "D",
+        "number": "28"
       },
       {
-        "name": "Lukas Malicsek",
-        "short_name": "L. Malicsek",
-        "pos": "M",
-        "category": "M",
-        "number": "4"
-      },
-      {
-        "name": "Evan Eghosa",
-        "short_name": "E. Eghosa",
-        "pos": "M",
-        "category": "M",
-        "number": "47"
+        "name": "Dejan Radonjic",
+        "short_name": "D. Radonjic",
+        "pos": "RB",
+        "category": "D",
+        "number": "5"
       },
       {
         "name": "Stefan Schwab",
         "short_name": "S. Schwab",
-        "pos": "M",
+        "pos": "LM",
         "category": "M",
         "number": "22"
       },
       {
-        "name": "Fabian Rossdorfer",
-        "short_name": "F. Rossdorfer",
-        "pos": "M",
+        "name": "Lukas Malicsek",
+        "short_name": "L. Malicsek",
+        "pos": "RM",
         "category": "M",
-        "number": "18"
+        "number": "4"
+      },
+      {
+        "name": "Yussef Nasrawe",
+        "short_name": "Y. Nasrawe",
+        "pos": "AM",
+        "category": "F",
+        "number": "10"
       },
       {
         "name": "Niama Sissoko",
@@ -7080,6 +7066,20 @@
         "pos": "F",
         "category": "F",
         "number": "9"
+      },
+      {
+        "name": "Evan Eghosa",
+        "short_name": "E. Eghosa",
+        "pos": "AM-L",
+        "category": "F",
+        "number": "47"
+      },
+      {
+        "name": "Fabian Rossdorfer",
+        "short_name": "F. Rossdorfer",
+        "pos": "AM-R",
+        "category": "F",
+        "number": "18"
       }
     ]
   },
@@ -12787,6 +12787,190 @@
       }
     ]
   },
+  "401921374_delfin_2026-10-31": {
+    "fixture_id": "401921374",
+    "date": "2026-10-31",
+    "team_name": "Delfín",
+    "team_slug": "delfin",
+    "lineup_url": "https://futbolstartingeleven.com/teams/delfin/lineup/",
+    "opponent_name": "Deportivo Cuenca",
+    "opponent_slug": "deportivo-cuenca",
+    "side": "home",
+    "league_name": "LigaPro Ecuador",
+    "league_hashtag": "#LigaProEcuador",
+    "formation": "4-2-3-1",
+    "starting_xi": [
+      {
+        "name": "Brian Heras",
+        "short_name": "B. Heras",
+        "pos": "G",
+        "category": "G",
+        "number": "21"
+      },
+      {
+        "name": "Ayrton Cisneros",
+        "short_name": "A. Cisneros",
+        "pos": "CD-L",
+        "category": "D",
+        "number": "33"
+      },
+      {
+        "name": "Anthony Bedoya",
+        "short_name": "A. Bedoya",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "32"
+      },
+      {
+        "name": "Erick Zúñiga",
+        "short_name": "E. Zúñiga",
+        "pos": "LB",
+        "category": "D",
+        "number": "14"
+      },
+      {
+        "name": "Bryan Hernández",
+        "short_name": "B. Hernández",
+        "pos": "RB",
+        "category": "D",
+        "number": "77"
+      },
+      {
+        "name": "Jonathan Morocho Basurto",
+        "short_name": "J. Morocho Basurto",
+        "pos": "LM",
+        "category": "M",
+        "number": "18"
+      },
+      {
+        "name": "Gerónimo Heredia",
+        "short_name": "G. Heredia",
+        "pos": "RM",
+        "category": "M",
+        "number": "34"
+      },
+      {
+        "name": "Danny Luna",
+        "short_name": "D. Luna",
+        "pos": "AM",
+        "category": "F",
+        "number": "10"
+      },
+      {
+        "name": "Eber Caicedo",
+        "short_name": "E. Caicedo",
+        "pos": "F",
+        "category": "F",
+        "number": "39"
+      },
+      {
+        "name": "Thiago Ozaeta",
+        "short_name": "T. Ozaeta",
+        "pos": "AM-L",
+        "category": "F",
+        "number": "50"
+      },
+      {
+        "name": "Maikel Reyes",
+        "short_name": "M. Reyes",
+        "pos": "AM-R",
+        "category": "F",
+        "number": "55"
+      }
+    ]
+  },
+  "401921374_deportivo-cuenca_2026-10-31": {
+    "fixture_id": "401921374",
+    "date": "2026-10-31",
+    "team_name": "Deportivo Cuenca",
+    "team_slug": "deportivo-cuenca",
+    "lineup_url": "https://futbolstartingeleven.com/teams/deportivo-cuenca/lineup/",
+    "opponent_name": "Delfín",
+    "opponent_slug": "delfin",
+    "side": "away",
+    "league_name": "LigaPro Ecuador",
+    "league_hashtag": "#LigaProEcuador",
+    "formation": "4-1-4-1",
+    "starting_xi": [
+      {
+        "name": "Facundo Ferrero",
+        "short_name": "F. Ferrero",
+        "pos": "G",
+        "category": "G",
+        "number": "1"
+      },
+      {
+        "name": "Santiago Postel",
+        "short_name": "S. Postel",
+        "pos": "CD-L",
+        "category": "D",
+        "number": "6"
+      },
+      {
+        "name": "Patricio Boolsen",
+        "short_name": "P. Boolsen",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "28"
+      },
+      {
+        "name": "Carlos Arboleda",
+        "short_name": "C. Arboleda",
+        "pos": "LB",
+        "category": "D",
+        "number": "37"
+      },
+      {
+        "name": "Gian Nardelli",
+        "short_name": "G. Nardelli",
+        "pos": "RB",
+        "category": "D",
+        "number": "3"
+      },
+      {
+        "name": "Mateo Maccari",
+        "short_name": "M. Maccari",
+        "pos": "DM",
+        "category": "M",
+        "number": "30"
+      },
+      {
+        "name": "Édison Vega",
+        "short_name": "É. Vega",
+        "pos": "CM-L",
+        "category": "M",
+        "number": "8"
+      },
+      {
+        "name": "Jeremy Mejía",
+        "short_name": "J. Mejía",
+        "pos": "CM-R",
+        "category": "M",
+        "number": "16"
+      },
+      {
+        "name": "Melvin Díaz",
+        "short_name": "M. Díaz",
+        "pos": "LM",
+        "category": "M",
+        "number": "19"
+      },
+      {
+        "name": "Lucas Mancinelli",
+        "short_name": "L. Mancinelli",
+        "pos": "RM",
+        "category": "M",
+        "number": "7"
+      },
+      {
+        "name": "Cristhian Alexander Benalcazar Folleco",
+        "short_name": "C. Alexander Benalcazar Folleco",
+        "pos": "F",
+        "category": "F",
+        "number": "88"
+      }
+    ]
+  },
   "401925420_mohun-bagan-super-giant_2026-10-31": {
     "fixture_id": "401925420",
     "date": "2026-10-31",
@@ -13360,25 +13544,25 @@
         "number": "17"
       },
       {
-        "name": "Terrence Mashego",
-        "short_name": "T. Mashego",
+        "name": "Luthando Vena",
+        "short_name": "L. Vena",
         "pos": "CD-L",
         "category": "D",
-        "number": "27"
-      },
-      {
-        "name": "Sinoxolo Kwayiba",
-        "short_name": "S. Kwayiba",
-        "pos": "CD-R",
-        "category": "D",
-        "number": "14"
+        "number": "4"
       },
       {
         "name": "Spiwe Given Msimango",
         "short_name": "S. Given Msimango",
-        "pos": "LB",
+        "pos": "CD-R",
         "category": "D",
         "number": "30"
+      },
+      {
+        "name": "Terrence Mashego",
+        "short_name": "T. Mashego",
+        "pos": "LB",
+        "category": "D",
+        "number": "27"
       },
       {
         "name": "Siviwe Nkwali",
@@ -13388,18 +13572,18 @@
         "number": "26"
       },
       {
-        "name": "Chumani Butsaka",
-        "short_name": "C. Butsaka",
+        "name": "Lehlogonolo Matlou",
+        "short_name": "L. Matlou",
         "pos": "CM-L",
         "category": "M",
-        "number": "33"
+        "number": "28"
       },
       {
-        "name": "Luthando Vena",
-        "short_name": "L. Vena",
+        "name": "Raoul Daniels",
+        "short_name": "R. Daniels",
         "pos": "CM-R",
         "category": "M",
-        "number": "4"
+        "number": "32"
       },
       {
         "name": "Qobolwakhe Sibande",
@@ -13409,25 +13593,25 @@
         "number": "22"
       },
       {
-        "name": "Lehlogonolo Matlou",
-        "short_name": "L. Matlou",
-        "pos": "RM",
-        "category": "M",
-        "number": "28"
-      },
-      {
         "name": "Thabiso Lebitso",
         "short_name": "T. Lebitso",
-        "pos": "CF-L",
-        "category": "F",
+        "pos": "RM",
+        "category": "M",
         "number": "37"
       },
       {
-        "name": "Raoul Daniels",
-        "short_name": "R. Daniels",
+        "name": "Sinoxolo Kwayiba",
+        "short_name": "S. Kwayiba",
+        "pos": "CF-L",
+        "category": "F",
+        "number": "14"
+      },
+      {
+        "name": "Chumani Butsaka",
+        "short_name": "C. Butsaka",
         "pos": "CF-R",
         "category": "F",
-        "number": "32"
+        "number": "33"
       }
     ]
   },
@@ -13452,32 +13636,32 @@
         "number": "23"
       },
       {
-        "name": "Sirgio Kammies",
-        "short_name": "S. Kammies",
-        "pos": "CD-L",
-        "category": "D",
-        "number": "25"
-      },
-      {
-        "name": "Boy Madingwane",
-        "short_name": "B. Madingwane",
-        "pos": "CD-R",
-        "category": "D",
-        "number": "28"
-      },
-      {
         "name": "Abbubaker Mobara",
         "short_name": "A. Mobara",
-        "pos": "LB",
+        "pos": "CD-L",
         "category": "D",
         "number": "22"
       },
       {
+        "name": "Kaketso Majadibodu",
+        "short_name": "K. Majadibodu",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "35"
+      },
+      {
         "name": "Imraan Jones",
         "short_name": "I. Jones",
-        "pos": "RB",
+        "pos": "LB",
         "category": "D",
         "number": "31"
+      },
+      {
+        "name": "Boy Madingwane",
+        "short_name": "B. Madingwane",
+        "pos": "RB",
+        "category": "D",
+        "number": "28"
       },
       {
         "name": "Azola Tshobeni",
@@ -13494,18 +13678,18 @@
         "number": "20"
       },
       {
-        "name": "Kaketso Majadibodu",
-        "short_name": "K. Majadibodu",
-        "pos": "LM",
-        "category": "M",
-        "number": "35"
-      },
-      {
         "name": "Azola Matrose",
         "short_name": "A. Matrose",
-        "pos": "RM",
+        "pos": "LM",
         "category": "M",
         "number": "10"
+      },
+      {
+        "name": "Sirgio Kammies",
+        "short_name": "S. Kammies",
+        "pos": "RM",
+        "category": "M",
+        "number": "25"
       },
       {
         "name": "Justice Figuareido",
