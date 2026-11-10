@@ -194,7 +194,7 @@
     "side": "home",
     "league_name": "🌎 UEFA Women's Champions League",
     "league_hashtag": "#UEFAWomen'sChampionsLeague",
-    "formation": "4-3-3",
+    "formation": "4-2-3-1",
     "starting_xi": [
       {
         "name": "Laia López De La Morena",
@@ -234,16 +234,9 @@
       {
         "name": "Irune Dorado",
         "short_name": "I. Dorado",
-        "pos": "CM",
-        "category": "M",
-        "number": "15"
-      },
-      {
-        "name": "Arianna Caruso",
-        "short_name": "A. Caruso",
         "pos": "LM",
         "category": "M",
-        "number": "24"
+        "number": "15"
       },
       {
         "name": "Elisa Senß",
@@ -253,18 +246,11 @@
         "number": "20"
       },
       {
-        "name": "Andreia Jacinto",
-        "short_name": "A. Jacinto",
-        "pos": "LF",
-        "category": "M",
-        "number": "17"
-      },
-      {
-        "name": "Athenea del Castillo",
-        "short_name": "A. del Castillo",
-        "pos": "RF",
-        "category": "M",
-        "number": "10"
+        "name": "Arianna Caruso",
+        "short_name": "A. Caruso",
+        "pos": "AM",
+        "category": "F",
+        "number": "24"
       },
       {
         "name": "Felicia Schröder",
@@ -272,6 +258,20 @@
         "pos": "F",
         "category": "F",
         "number": "12"
+      },
+      {
+        "name": "Andreia Jacinto",
+        "short_name": "A. Jacinto",
+        "pos": "AM-L",
+        "category": "F",
+        "number": "17"
+      },
+      {
+        "name": "Athenea del Castillo",
+        "short_name": "A. del Castillo",
+        "pos": "AM-R",
+        "category": "F",
+        "number": "10"
       }
     ]
   },
@@ -1088,18 +1088,18 @@
         "number": "7"
       },
       {
-        "name": "Miguel Rodríguez",
-        "short_name": "M. Rodríguez",
-        "pos": "CF-L",
-        "category": "F",
-        "number": "22"
-      },
-      {
         "name": "Mariano Díaz",
         "short_name": "M. Díaz",
-        "pos": "CF-R",
+        "pos": "CF-L",
         "category": "F",
         "number": "9"
+      },
+      {
+        "name": "Miguel Rodríguez",
+        "short_name": "M. Rodríguez",
+        "pos": "CF-R",
+        "category": "F",
+        "number": "22"
       }
     ]
   },
@@ -2348,25 +2348,25 @@
         "number": "39"
       },
       {
+        "name": "Tyler Sackey",
+        "short_name": "T. Sackey",
+        "pos": "LM",
+        "category": "M",
+        "number": "44"
+      },
+      {
         "name": "Kevin Mfuamba",
         "short_name": "K. Mfuamba",
-        "pos": "LM",
+        "pos": "RM",
         "category": "M",
         "number": "65"
       },
       {
         "name": "Luke Howard",
         "short_name": "L. Howard",
-        "pos": "RM",
-        "category": "M",
-        "number": "37"
-      },
-      {
-        "name": "Emmanuel Osho",
-        "short_name": "E. Osho",
         "pos": "AM",
         "category": "F",
-        "number": "49"
+        "number": "37"
       },
       {
         "name": "Sean Patton",
@@ -2383,11 +2383,11 @@
         "number": "50"
       },
       {
-        "name": "Tyler Sackey",
-        "short_name": "T. Sackey",
+        "name": "Emmanuel Osho",
+        "short_name": "E. Osho",
         "pos": "AM-R",
         "category": "F",
-        "number": "44"
+        "number": "49"
       }
     ]
   },
@@ -2494,7 +2494,7 @@
     "side": "away",
     "league_name": "English EFL Trophy",
     "league_hashtag": "#EnglishEFLTrophy",
-    "formation": "4-3-1-2",
+    "formation": "3-4-1-2",
     "starting_xi": [
       {
         "name": "James Belshaw",
@@ -2506,9 +2506,16 @@
       {
         "name": "Lucas Ness",
         "short_name": "L. Ness",
-        "pos": "CD-L",
+        "pos": "CD",
         "category": "D",
         "number": "12"
+      },
+      {
+        "name": "Ishé Samuels-Smith",
+        "short_name": "I. Samuels-Smith",
+        "pos": "CD-L",
+        "category": "D",
+        "number": "26"
       },
       {
         "name": "James Gibbons",
@@ -2518,32 +2525,18 @@
         "number": "2"
       },
       {
-        "name": "Ishé Samuels-Smith",
-        "short_name": "I. Samuels-Smith",
-        "pos": "LB",
-        "category": "D",
-        "number": "26"
-      },
-      {
-        "name": "Luke Browne",
-        "short_name": "L. Browne",
-        "pos": "RB",
-        "category": "D",
-        "number": "23"
-      },
-      {
-        "name": "Lee Ndlovu",
-        "short_name": "L. Ndlovu",
-        "pos": "M",
-        "category": "M",
-        "number": "39"
-      },
-      {
         "name": "Dean Campbell",
         "short_name": "D. Campbell",
-        "pos": "CM",
+        "pos": "CM-L",
         "category": "M",
         "number": "16"
+      },
+      {
+        "name": "Max Sanders",
+        "short_name": "M. Sanders",
+        "pos": "CM-R",
+        "category": "M",
+        "number": "6"
       },
       {
         "name": "Jack Evans",
@@ -2553,11 +2546,11 @@
         "number": "15"
       },
       {
-        "name": "Max Sanders",
-        "short_name": "M. Sanders",
+        "name": "Luke Browne",
+        "short_name": "L. Browne",
         "pos": "RM",
         "category": "M",
-        "number": "6"
+        "number": "23"
       },
       {
         "name": "Hindolo Mustapha",
@@ -2569,9 +2562,16 @@
       {
         "name": "Luka Smyth",
         "short_name": "L. Smyth",
-        "pos": "CF-R",
+        "pos": "CF-L",
         "category": "F",
         "number": "19"
+      },
+      {
+        "name": "Lee Ndlovu",
+        "short_name": "L. Ndlovu",
+        "pos": "CF-R",
+        "category": "F",
+        "number": "39"
       }
     ]
   },
@@ -2862,7 +2862,7 @@
     "side": "away",
     "league_name": "English EFL Trophy",
     "league_hashtag": "#EnglishEFLTrophy",
-    "formation": "3-4-3",
+    "formation": "3-1-4-2",
     "starting_xi": [
       {
         "name": "Aaron Bott",
@@ -2893,18 +2893,25 @@
         "number": "78"
       },
       {
-        "name": "Jayden Powell",
-        "short_name": "J. Powell",
-        "pos": "CM-L",
-        "category": "M",
-        "number": "66"
-      },
-      {
         "name": "Chinaza Nwosu",
         "short_name": "C. Nwosu",
+        "pos": "SW",
+        "category": "D",
+        "number": "77"
+      },
+      {
+        "name": "Blaine Mcclure",
+        "short_name": "B. Mcclure",
+        "pos": "CM-L",
+        "category": "M",
+        "number": "57"
+      },
+      {
+        "name": "Fuad Smith",
+        "short_name": "F. Smith",
         "pos": "CM-R",
         "category": "M",
-        "number": "77"
+        "number": "70"
       },
       {
         "name": "Spencer Sutton",
@@ -2921,25 +2928,18 @@
         "number": "61"
       },
       {
-        "name": "Fuad Smith",
-        "short_name": "F. Smith",
-        "pos": "F",
-        "category": "F",
-        "number": "70"
-      },
-      {
-        "name": "Blaine Mcclure",
-        "short_name": "B. Mcclure",
-        "pos": "CF-L",
-        "category": "F",
-        "number": "57"
-      },
-      {
         "name": "Sonny Nolan",
         "short_name": "S. Nolan",
-        "pos": "CF-R",
+        "pos": "CF-L",
         "category": "F",
         "number": "92"
+      },
+      {
+        "name": "Jayden Powell",
+        "short_name": "J. Powell",
+        "pos": "CF-R",
+        "category": "F",
+        "number": "66"
       }
     ]
   },
@@ -3966,7 +3966,7 @@
     "side": "away",
     "league_name": "English EFL Trophy",
     "league_hashtag": "#EnglishEFLTrophy",
-    "formation": "4-3-3",
+    "formation": "3-4-2-1",
     "starting_xi": [
       {
         "name": "Lewis Ward",
@@ -3978,9 +3978,16 @@
       {
         "name": "Kaelan Majekodunmi",
         "short_name": "K. Majekodunmi",
-        "pos": "CD-L",
+        "pos": "CD",
         "category": "D",
         "number": "21"
+      },
+      {
+        "name": "Joel Mcgregor",
+        "short_name": "J. Mcgregor",
+        "pos": "CD-L",
+        "category": "D",
+        "number": "33"
       },
       {
         "name": "James Debayo",
@@ -3990,32 +3997,25 @@
         "number": "18"
       },
       {
-        "name": "Joel Mcgregor",
-        "short_name": "J. Mcgregor",
-        "pos": "LB",
-        "category": "D",
-        "number": "33"
-      },
-      {
-        "name": "Mitchell Clark",
-        "short_name": "M. Clark",
-        "pos": "RB",
-        "category": "D",
-        "number": "2"
+        "name": "Tom Nichols",
+        "short_name": "T. Nichols",
+        "pos": "CM-L",
+        "category": "M",
+        "number": "7"
       },
       {
         "name": "Matthew Virtue-Thick",
         "short_name": "M. Virtue-Thick",
-        "pos": "CM",
+        "pos": "CM-R",
         "category": "M",
         "number": "24"
       },
       {
-        "name": "Tom Nichols",
-        "short_name": "T. Nichols",
+        "name": "Mitchell Clark",
+        "short_name": "M. Clark",
         "pos": "LM",
         "category": "M",
-        "number": "7"
+        "number": "2"
       },
       {
         "name": "Lucas Griffiths-Brown",
@@ -4025,25 +4025,25 @@
         "number": "38"
       },
       {
-        "name": "Jaylan Pearman",
-        "short_name": "J. Pearman",
-        "pos": "LF",
-        "category": "M",
-        "number": "22"
-      },
-      {
-        "name": "Louis Millard",
-        "short_name": "L. Millard",
-        "pos": "RF",
-        "category": "M",
-        "number": "39"
-      },
-      {
         "name": "Antwoine Hackford",
         "short_name": "A. Hackford",
         "pos": "F",
         "category": "F",
         "number": "29"
+      },
+      {
+        "name": "Jaylan Pearman",
+        "short_name": "J. Pearman",
+        "pos": "CF-L",
+        "category": "F",
+        "number": "22"
+      },
+      {
+        "name": "Louis Millard",
+        "short_name": "L. Millard",
+        "pos": "CF-R",
+        "category": "F",
+        "number": "39"
       }
     ]
   },
@@ -4351,11 +4351,11 @@
         "number": "4"
       },
       {
-        "name": "Lee O'Connor",
-        "short_name": "L. O'Connor",
+        "name": "Nathan Smith",
+        "short_name": "N. Smith",
         "pos": "CD-R",
         "category": "D",
-        "number": "22"
+        "number": "5"
       },
       {
         "name": "Patrick Brough",
@@ -4365,11 +4365,11 @@
         "number": "23"
       },
       {
-        "name": "Nathan Smith",
-        "short_name": "N. Smith",
+        "name": "Lee O'Connor",
+        "short_name": "L. O'Connor",
         "pos": "RB",
         "category": "D",
-        "number": "5"
+        "number": "22"
       },
       {
         "name": "Lewis Warrington",
@@ -4379,32 +4379,32 @@
         "number": "25"
       },
       {
-        "name": "Oliver Scott",
-        "short_name": "O. Scott",
-        "pos": "CM-L",
-        "category": "M",
-        "number": "14"
-      },
-      {
         "name": "Charlie Veevers",
         "short_name": "C. Veevers",
-        "pos": "CM-R",
+        "pos": "CM-L",
         "category": "M",
         "number": "20"
       },
       {
         "name": "Ryan Watson",
         "short_name": "R. Watson",
-        "pos": "LM",
+        "pos": "CM-R",
         "category": "M",
         "number": "44"
       },
       {
         "name": "David Kamara",
         "short_name": "D. Kamara",
-        "pos": "RM",
+        "pos": "LM",
         "category": "M",
         "number": "24"
+      },
+      {
+        "name": "Oliver Scott",
+        "short_name": "O. Scott",
+        "pos": "RM",
+        "category": "M",
+        "number": "14"
       },
       {
         "name": "Courtney Baker-Richardson",
