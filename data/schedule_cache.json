@@ -32501,7 +32501,7 @@
   },
   "20261111": {
     "is_locked": false,
-    "last_fetched": 1794460863.8593845,
+    "last_fetched": 1794461352.7526865,
     "raw_events": [
       {
         "id": "401930244",
@@ -57313,13 +57313,13 @@
               "displayClock": "110'",
               "period": 5,
               "type": {
-                "id": "44",
-                "name": "STATUS_SHOOTOUT",
-                "state": "in",
-                "completed": false,
-                "description": "Shootout",
-                "detail": "Penalties",
-                "shortDetail": "Pens"
+                "id": "47",
+                "name": "STATUS_FINAL_PEN",
+                "state": "post",
+                "completed": true,
+                "description": "Final Score - After Penalties",
+                "detail": "FT-Pens",
+                "shortDetail": "FT-Pens"
               }
             },
             "venue": {
@@ -57342,7 +57342,13 @@
               }
             },
             "altGameNote": "NCAAM Soccer",
-            "notes": [],
+            "notes": [
+              {
+                "text": "Washington win 3-2 on penalties",
+                "headline": "Washington win 3-2 on penalties",
+                "type": "event"
+              }
+            ],
             "geoBroadcasts": [
               {
                 "type": {
@@ -57376,10 +57382,10 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "LWWDW",
+                "winner": true,
+                "form": "WLWWD",
                 "score": "1",
-                "shootoutScore": 2,
+                "shootoutScore": 3,
                 "curatedRank": {
                   "current": 11
                 },
@@ -57387,7 +57393,7 @@
                   {
                     "name": "All Splits",
                     "type": "total",
-                    "summary": "10-3-4",
+                    "summary": "10-4-4",
                     "abbreviation": "Total"
                   }
                 ],
@@ -57457,7 +57463,7 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "WWDWW",
+                "form": "LWWDW",
                 "score": "1",
                 "shootoutScore": 2,
                 "curatedRank": {
@@ -57467,7 +57473,7 @@
                   {
                     "name": "All Splits",
                     "type": "total",
-                    "summary": "9-2-6",
+                    "summary": "9-3-6",
                     "abbreviation": "Total"
                   }
                 ],
@@ -57544,13 +57550,13 @@
           "displayClock": "110'",
           "period": 5,
           "type": {
-            "id": "44",
-            "name": "STATUS_SHOOTOUT",
-            "state": "in",
-            "completed": false,
-            "description": "Shootout",
-            "detail": "Penalties",
-            "shortDetail": "Pens"
+            "id": "47",
+            "name": "STATUS_FINAL_PEN",
+            "state": "post",
+            "completed": true,
+            "description": "Final Score - After Penalties",
+            "detail": "FT-Pens",
+            "shortDetail": "FT-Pens"
           }
         },
         "venue": {
@@ -57578,17 +57584,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 5400.0,
-              "displayClock": "90'",
-              "period": 2,
+              "clock": 5550.0,
+              "displayClock": "93'",
+              "period": 3,
               "type": {
-                "id": "26",
-                "name": "STATUS_SECOND_HALF",
+                "id": "24",
+                "name": "STATUS_OVERTIME",
                 "state": "in",
                 "completed": false,
-                "description": "Second Half",
-                "detail": "90'",
-                "shortDetail": "90'"
+                "description": "Overtime",
+                "detail": "93'",
+                "shortDetail": "93'"
               }
             },
             "venue": {
@@ -57806,17 +57812,17 @@
           }
         ],
         "status": {
-          "clock": 5400.0,
-          "displayClock": "90'",
-          "period": 2,
+          "clock": 5550.0,
+          "displayClock": "93'",
+          "period": 3,
           "type": {
-            "id": "26",
-            "name": "STATUS_SECOND_HALF",
+            "id": "24",
+            "name": "STATUS_OVERTIME",
             "state": "in",
             "completed": false,
-            "description": "Second Half",
-            "detail": "90'",
-            "shortDetail": "90'"
+            "description": "Overtime",
+            "detail": "93'",
+            "shortDetail": "93'"
           }
         },
         "venue": {
@@ -61350,10 +61356,10 @@
               }
             },
             "venue": {
-              "id": "7022",
-              "fullName": "Merlo Field at the Clive Charles Soccer Complex",
+              "id": "11385",
+              "fullName": "Sullivan Field",
               "address": {
-                "city": "Portland, Oregon",
+                "city": "Los Angeles, California",
                 "country": "USA"
               }
             },
@@ -61470,7 +61476,7 @@
                     }
                   ],
                   "venue": {
-                    "id": "7022"
+                    "id": "11385"
                   }
                 },
                 "statistics": []
@@ -61575,7 +61581,7 @@
           }
         },
         "venue": {
-          "displayName": "Merlo Field at the Clive Charles Soccer Complex"
+          "displayName": "Sullivan Field"
         }
       },
       {
@@ -63743,10 +63749,10 @@
               }
             },
             "venue": {
-              "id": "11204",
-              "fullName": "Tari Frahm Rokus Field",
+              "id": "11385",
+              "fullName": "Sullivan Field",
               "address": {
-                "city": "Malibu, California",
+                "city": "Los Angeles, California",
                 "country": "USA"
               }
             },
@@ -63863,7 +63869,7 @@
                     }
                   ],
                   "venue": {
-                    "id": "11204"
+                    "id": "11385"
                   }
                 },
                 "statistics": []
@@ -63939,7 +63945,7 @@
                     }
                   ],
                   "venue": {
-                    "id": "11311"
+                    "id": "11385"
                   }
                 },
                 "statistics": []
@@ -63968,7 +63974,7 @@
           }
         },
         "venue": {
-          "displayName": "Tari Frahm Rokus Field"
+          "displayName": "Sullivan Field"
         }
       },
       {
@@ -63994,15 +64000,15 @@
             "status": {
               "clock": 6600.0,
               "displayClock": "110'",
-              "period": 4,
+              "period": 5,
               "type": {
-                "id": "24",
-                "name": "STATUS_OVERTIME",
+                "id": "44",
+                "name": "STATUS_SHOOTOUT",
                 "state": "in",
                 "completed": false,
-                "description": "Overtime",
-                "detail": "110'",
-                "shortDetail": "110'"
+                "description": "Shootout",
+                "detail": "Penalties",
+                "shortDetail": "Pens"
               }
             },
             "venue": {
@@ -64039,6 +64045,7 @@
                 "winner": false,
                 "form": "WWLDW",
                 "score": "0",
+                "shootoutScore": 3,
                 "curatedRank": {
                   "current": 20
                 },
@@ -64118,6 +64125,7 @@
                 "winner": false,
                 "form": "WLWLW",
                 "score": "0",
+                "shootoutScore": 3,
                 "records": [
                   {
                     "name": "All Splits",
@@ -64197,15 +64205,15 @@
         "status": {
           "clock": 6600.0,
           "displayClock": "110'",
-          "period": 4,
+          "period": 5,
           "type": {
-            "id": "24",
-            "name": "STATUS_OVERTIME",
+            "id": "44",
+            "name": "STATUS_SHOOTOUT",
             "state": "in",
             "completed": false,
-            "description": "Overtime",
-            "detail": "110'",
-            "shortDetail": "110'"
+            "description": "Shootout",
+            "detail": "Penalties",
+            "shortDetail": "Pens"
           }
         },
         "venue": {
