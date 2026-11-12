@@ -32501,7 +32501,7 @@
   },
   "20261111": {
     "is_locked": false,
-    "last_fetched": 1794444873.5103884,
+    "last_fetched": 1794445236.5276885,
     "raw_events": [
       {
         "id": "401930244",
@@ -34426,7 +34426,7 @@
             "uid": "s:600~l:23633~e:401878609~c:401878609",
             "date": "2026-11-12T00:00Z",
             "startDate": "2026-11-12T00:00Z",
-            "attendance": 0,
+            "attendance": 1429,
             "timeValid": true,
             "recent": true,
             "status": {
@@ -34434,13 +34434,13 @@
               "displayClock": "45'+2'",
               "period": 1,
               "type": {
-                "id": "25",
-                "name": "STATUS_FIRST_HALF",
+                "id": "23",
+                "name": "STATUS_HALFTIME",
                 "state": "in",
                 "completed": false,
-                "description": "First Half",
-                "detail": "45'+2'",
-                "shortDetail": "45'+2'"
+                "description": "Halftime",
+                "detail": "HT",
+                "shortDetail": "HT"
               }
             },
             "venue": {
@@ -34608,7 +34608,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "45.9"
+                    "displayValue": "45.6"
                   },
                   {
                     "name": "shotAssists",
@@ -34763,7 +34763,7 @@
                   {
                     "name": "foulsCommitted",
                     "abbreviation": "FC",
-                    "displayValue": "6"
+                    "displayValue": "7"
                   },
                   {
                     "name": "wonCorners",
@@ -34778,7 +34778,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "54.1"
+                    "displayValue": "54.4"
                   },
                   {
                     "name": "shotAssists",
@@ -35038,13 +35038,13 @@
           "displayClock": "45'+2'",
           "period": 1,
           "type": {
-            "id": "25",
-            "name": "STATUS_FIRST_HALF",
+            "id": "23",
+            "name": "STATUS_HALFTIME",
             "state": "in",
             "completed": false,
-            "description": "First Half",
-            "detail": "45'+2'",
-            "shortDetail": "45'+2'"
+            "description": "Halftime",
+            "detail": "HT",
+            "shortDetail": "HT"
           }
         },
         "venue": {
@@ -40620,7 +40620,7 @@
             "startDate": "2026-11-12T02:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": false,
+            "recent": true,
             "status": {
               "clock": 0.0,
               "displayClock": "0'",
@@ -41780,7 +41780,6 @@
             "details": [],
             "odds": [
               {
-                "overUnder": 4.5,
                 "link": {
                   "language": "en-US",
                   "rel": [
@@ -41801,7 +41800,7 @@
                   "priority": 1
                 },
                 "drawOdds": {
-                  "moneyLine": 550,
+                  "moneyLine": 0,
                   "link": {
                     "language": "en-US",
                     "rel": [
@@ -41827,14 +41826,13 @@
                       "odds": "+110"
                     },
                     "close": {
-                      "line": "o4.5",
-                      "odds": "+115",
+                      "line": "OFF",
+                      "odds": "OFF",
                       "link": {
                         "rel": [
                           "over",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34996328%3Foutcomes%3D0OU87183107O450_1",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -41843,10 +41841,14 @@
                             "gameId": 401932063,
                             "betSide": "over",
                             "betType": "straight",
-                            "betDetails": "Over:4.5"
+                            "betDetails": "Over:null"
                           }
                         }
                       }
+                    },
+                    "current": {
+                      "line": "o4.5",
+                      "odds": "+113"
                     }
                   },
                   "under": {
@@ -41855,14 +41857,13 @@
                       "odds": "-175"
                     },
                     "close": {
-                      "line": "u4.5",
-                      "odds": "-160",
+                      "line": "OFF",
+                      "odds": "OFF",
                       "link": {
                         "rel": [
                           "under",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34996328%3Foutcomes%3D0OU87183107U450_3",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -41871,10 +41872,14 @@
                             "gameId": 401932063,
                             "betSide": "under",
                             "betType": "straight",
-                            "betDetails": "Under:4.5"
+                            "betDetails": "Under:null"
                           }
                         }
                       }
+                    },
+                    "current": {
+                      "line": "u4.5",
+                      "odds": "-162"
                     }
                   }
                 },
@@ -41887,14 +41892,13 @@
                       "odds": "-125"
                     },
                     "close": {
-                      "line": "-1.5",
-                      "odds": "-175",
+                      "line": "OFF",
+                      "odds": "OFF",
                       "link": {
                         "rel": [
                           "homeSpread",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34996328%3Foutcomes%3D0HC87183110N150_1",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -41903,10 +41907,14 @@
                             "gameId": 401932063,
                             "betSide": "home",
                             "betType": "straight",
-                            "betDetails": "Spread:AME-1.5"
+                            "betDetails": "Spread:AMEnull"
                           }
                         }
                       }
+                    },
+                    "current": {
+                      "line": "OFF",
+                      "odds": "OFF"
                     }
                   },
                   "away": {
@@ -41915,14 +41923,13 @@
                       "odds": "-120"
                     },
                     "close": {
-                      "line": "+1.5",
-                      "odds": "+125",
+                      "line": "OFF",
+                      "odds": "OFF",
                       "link": {
                         "rel": [
                           "awaySpread",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34996328%3Foutcomes%3D0HC87183110P150_3",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -41931,10 +41938,14 @@
                             "gameId": 401932063,
                             "betSide": "away",
                             "betType": "straight",
-                            "betDetails": "Spread:TOL+1.5"
+                            "betDetails": "Spread:TOLnull"
                           }
                         }
                       }
+                    },
+                    "current": {
+                      "line": "OFF",
+                      "odds": "OFF"
                     }
                   }
                 },
@@ -41946,13 +41957,12 @@
                       "odds": "-900"
                     },
                     "close": {
-                      "odds": "-450",
+                      "odds": "OFF",
                       "link": {
                         "rel": [
                           "home",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34996328%3Foutcomes%3D0ML87183096_1",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -41964,6 +41974,9 @@
                           }
                         }
                       }
+                    },
+                    "current": {
+                      "odds": "-475"
                     }
                   },
                   "away": {
@@ -41971,13 +41984,12 @@
                       "odds": "+1200"
                     },
                     "close": {
-                      "odds": "+800",
+                      "odds": "OFF",
                       "link": {
                         "rel": [
                           "away",
                           "bets"
                         ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34996328%3Foutcomes%3D0ML87183096_3",
                         "tracking": {
                           "campaign": "betting-integrations",
                           "tags": {
@@ -41989,35 +42001,20 @@
                           }
                         }
                       }
+                    },
+                    "current": {
+                      "odds": "+850"
                     }
                   },
                   "draw": {
                     "open": {
                       "odds": "+700"
                     },
-                    "close": {
-                      "odds": "+550",
-                      "link": {
-                        "rel": [
-                          "draw",
-                          "bets"
-                        ],
-                        "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34996328%3Foutcomes%3D0ML87183096_2",
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "mex.w.1",
-                            "sport": "soccer",
-                            "gameId": 401932063,
-                            "betSide": "draw",
-                            "betType": "straight"
-                          }
-                        }
-                      }
+                    "current": {
+                      "odds": "+550"
                     }
                   }
-                },
-                "details": "AME -450"
+                }
               }
             ],
             "wasSuspended": false,
@@ -43705,7 +43702,7 @@
             "startDate": "2026-11-11T17:00Z",
             "attendance": 627,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 5400.0,
               "displayClock": "90'+4'",
@@ -44268,7 +44265,7 @@
             "startDate": "2026-11-11T17:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 5400.0,
               "displayClock": "90'+3'",
@@ -46969,7 +46966,7 @@
             "startDate": "2026-11-11T17:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 5400.0,
               "displayClock": "90'",
@@ -54046,8 +54043,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 3505.0,
-              "displayClock": "59'",
+              "clock": 3743.0,
+              "displayClock": "63'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -54055,8 +54052,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "59'",
-                "shortDetail": "59'"
+                "detail": "63'",
+                "shortDetail": "63'"
               }
             },
             "venue": {
@@ -54271,8 +54268,8 @@
           }
         ],
         "status": {
-          "clock": 3505.0,
-          "displayClock": "59'",
+          "clock": 3743.0,
+          "displayClock": "63'",
           "period": 2,
           "type": {
             "id": "26",
@@ -54280,8 +54277,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "59'",
-            "shortDetail": "59'"
+            "detail": "63'",
+            "shortDetail": "63'"
           }
         },
         "venue": {
@@ -54309,8 +54306,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2182.0,
-              "displayClock": "37'",
+              "clock": 2536.0,
+              "displayClock": "43'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -54318,8 +54315,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "37'",
-                "shortDetail": "37'"
+                "detail": "43'",
+                "shortDetail": "43'"
               }
             },
             "venue": {
@@ -54534,8 +54531,8 @@
           }
         ],
         "status": {
-          "clock": 2182.0,
-          "displayClock": "37'",
+          "clock": 2536.0,
+          "displayClock": "43'",
           "period": 1,
           "type": {
             "id": "25",
@@ -54543,8 +54540,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "37'",
-            "shortDetail": "37'"
+            "detail": "43'",
+            "shortDetail": "43'"
           }
         },
         "venue": {
@@ -54572,17 +54569,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2497.0,
-              "displayClock": "42'",
+              "clock": 2700.0,
+              "displayClock": "45'",
               "period": 1,
               "type": {
-                "id": "25",
-                "name": "STATUS_FIRST_HALF",
+                "id": "23",
+                "name": "STATUS_HALFTIME",
                 "state": "in",
                 "completed": false,
-                "description": "First Half",
-                "detail": "42'",
-                "shortDetail": "42'"
+                "description": "Halftime",
+                "detail": "HT",
+                "shortDetail": "HT"
               }
             },
             "venue": {
@@ -54797,17 +54794,17 @@
           }
         ],
         "status": {
-          "clock": 2497.0,
-          "displayClock": "42'",
+          "clock": 2700.0,
+          "displayClock": "45'",
           "period": 1,
           "type": {
-            "id": "25",
-            "name": "STATUS_FIRST_HALF",
+            "id": "23",
+            "name": "STATUS_HALFTIME",
             "state": "in",
             "completed": false,
-            "description": "First Half",
-            "detail": "42'",
-            "shortDetail": "42'"
+            "description": "Halftime",
+            "detail": "HT",
+            "shortDetail": "HT"
           }
         },
         "venue": {
@@ -54835,17 +54832,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2406.0,
-              "displayClock": "41'",
+              "clock": 2700.0,
+              "displayClock": "45'",
               "period": 1,
               "type": {
-                "id": "25",
-                "name": "STATUS_FIRST_HALF",
+                "id": "23",
+                "name": "STATUS_HALFTIME",
                 "state": "in",
                 "completed": false,
-                "description": "First Half",
-                "detail": "41'",
-                "shortDetail": "41'"
+                "description": "Halftime",
+                "detail": "HT",
+                "shortDetail": "HT"
               }
             },
             "venue": {
@@ -55038,17 +55035,17 @@
           }
         ],
         "status": {
-          "clock": 2406.0,
-          "displayClock": "41'",
+          "clock": 2700.0,
+          "displayClock": "45'",
           "period": 1,
           "type": {
-            "id": "25",
-            "name": "STATUS_FIRST_HALF",
+            "id": "23",
+            "name": "STATUS_HALFTIME",
             "state": "in",
             "completed": false,
-            "description": "First Half",
-            "detail": "41'",
-            "shortDetail": "41'"
+            "description": "Halftime",
+            "detail": "HT",
+            "shortDetail": "HT"
           }
         },
         "venue": {
@@ -55339,8 +55336,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2381.0,
-              "displayClock": "40'",
+              "clock": 2617.0,
+              "displayClock": "44'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -55348,8 +55345,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "40'",
-                "shortDetail": "40'"
+                "detail": "44'",
+                "shortDetail": "44'"
               }
             },
             "venue": {
@@ -55410,7 +55407,7 @@
                 "homeAway": "home",
                 "winner": false,
                 "form": "WWWWW",
-                "score": "1",
+                "score": "3",
                 "curatedRank": {
                   "current": 10
                 },
@@ -55567,8 +55564,8 @@
           }
         ],
         "status": {
-          "clock": 2381.0,
-          "displayClock": "40'",
+          "clock": 2617.0,
+          "displayClock": "44'",
           "period": 1,
           "type": {
             "id": "25",
@@ -55576,8 +55573,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "40'",
-            "shortDetail": "40'"
+            "detail": "44'",
+            "shortDetail": "44'"
           }
         },
         "venue": {
@@ -55619,17 +55616,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2484.0,
-              "displayClock": "42'",
+              "clock": 2700.0,
+              "displayClock": "45'",
               "period": 1,
               "type": {
-                "id": "25",
-                "name": "STATUS_FIRST_HALF",
+                "id": "23",
+                "name": "STATUS_HALFTIME",
                 "state": "in",
                 "completed": false,
-                "description": "First Half",
-                "detail": "42'",
-                "shortDetail": "42'"
+                "description": "Halftime",
+                "detail": "HT",
+                "shortDetail": "HT"
               }
             },
             "venue": {
@@ -55844,17 +55841,17 @@
           }
         ],
         "status": {
-          "clock": 2484.0,
-          "displayClock": "42'",
+          "clock": 2700.0,
+          "displayClock": "45'",
           "period": 1,
           "type": {
-            "id": "25",
-            "name": "STATUS_FIRST_HALF",
+            "id": "23",
+            "name": "STATUS_HALFTIME",
             "state": "in",
             "completed": false,
-            "description": "First Half",
-            "detail": "42'",
-            "shortDetail": "42'"
+            "description": "Halftime",
+            "detail": "HT",
+            "shortDetail": "HT"
           }
         },
         "venue": {
@@ -55882,8 +55879,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2240.0,
-              "displayClock": "38'",
+              "clock": 2541.0,
+              "displayClock": "43'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -55891,8 +55888,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "38'",
-                "shortDetail": "38'"
+                "detail": "43'",
+                "shortDetail": "43'"
               }
             },
             "venue": {
@@ -56110,8 +56107,8 @@
           }
         ],
         "status": {
-          "clock": 2240.0,
-          "displayClock": "38'",
+          "clock": 2541.0,
+          "displayClock": "43'",
           "period": 1,
           "type": {
             "id": "25",
@@ -56119,8 +56116,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "38'",
-            "shortDetail": "38'"
+            "detail": "43'",
+            "shortDetail": "43'"
           }
         },
         "venue": {
@@ -57196,7 +57193,7 @@
             "startDate": "2026-11-12T02:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": false,
+            "recent": true,
             "status": {
               "clock": 0.0,
               "displayClock": "0'",
@@ -57725,7 +57722,7 @@
             "startDate": "2026-11-11T17:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 6600.0,
               "displayClock": "110'",
@@ -60118,15 +60115,15 @@
             "status": {
               "clock": 6600.0,
               "displayClock": "110'",
-              "period": 4,
+              "period": 5,
               "type": {
-                "id": "24",
-                "name": "STATUS_OVERTIME",
+                "id": "44",
+                "name": "STATUS_SHOOTOUT",
                 "state": "in",
                 "completed": false,
-                "description": "Overtime",
-                "detail": "110'",
-                "shortDetail": "110'"
+                "description": "Shootout",
+                "detail": "Penalties",
+                "shortDetail": "Pens"
               }
             },
             "venue": {
@@ -60188,6 +60185,7 @@
                 "winner": false,
                 "form": "WWWWW",
                 "score": "1",
+                "shootoutScore": 3,
                 "curatedRank": {
                   "current": 25
                 },
@@ -60267,6 +60265,7 @@
                 "winner": false,
                 "form": "DLDDL",
                 "score": "1",
+                "shootoutScore": 4,
                 "records": [
                   {
                     "name": "All Splits",
@@ -60346,15 +60345,15 @@
         "status": {
           "clock": 6600.0,
           "displayClock": "110'",
-          "period": 4,
+          "period": 5,
           "type": {
-            "id": "24",
-            "name": "STATUS_OVERTIME",
+            "id": "44",
+            "name": "STATUS_SHOOTOUT",
             "state": "in",
             "completed": false,
-            "description": "Overtime",
-            "detail": "110'",
-            "shortDetail": "110'"
+            "description": "Shootout",
+            "detail": "Penalties",
+            "shortDetail": "Pens"
           }
         },
         "venue": {
@@ -60382,17 +60381,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 6000.0,
-              "displayClock": "100'",
-              "period": 3,
+              "clock": 6193.0,
+              "displayClock": "104'",
+              "period": 4,
               "type": {
                 "id": "24",
                 "name": "STATUS_OVERTIME",
                 "state": "in",
                 "completed": false,
                 "description": "Overtime",
-                "detail": "100'",
-                "shortDetail": "100'"
+                "detail": "104'",
+                "shortDetail": "104'"
               }
             },
             "venue": {
@@ -60613,17 +60612,17 @@
           }
         ],
         "status": {
-          "clock": 6000.0,
-          "displayClock": "100'",
-          "period": 3,
+          "clock": 6193.0,
+          "displayClock": "104'",
+          "period": 4,
           "type": {
             "id": "24",
             "name": "STATUS_OVERTIME",
             "state": "in",
             "completed": false,
             "description": "Overtime",
-            "detail": "100'",
-            "shortDetail": "100'"
+            "detail": "104'",
+            "shortDetail": "104'"
           }
         },
         "venue": {
@@ -60665,8 +60664,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 5037.0,
-              "displayClock": "84'",
+              "clock": 5318.0,
+              "displayClock": "89'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -60674,8 +60673,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "84'",
-                "shortDetail": "84'"
+                "detail": "89'",
+                "shortDetail": "89'"
               }
             },
             "venue": {
@@ -60812,7 +60811,7 @@
                 "homeAway": "away",
                 "winner": false,
                 "form": "WWWDW",
-                "score": "2",
+                "score": "3",
                 "records": [
                   {
                     "name": "All Splits",
@@ -60890,8 +60889,8 @@
           }
         ],
         "status": {
-          "clock": 5037.0,
-          "displayClock": "84'",
+          "clock": 5318.0,
+          "displayClock": "89'",
           "period": 2,
           "type": {
             "id": "26",
@@ -60899,8 +60898,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "84'",
-            "shortDetail": "84'"
+            "detail": "89'",
+            "shortDetail": "89'"
           }
         },
         "venue": {
@@ -60928,8 +60927,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 5221.0,
-              "displayClock": "88'",
+              "clock": 5400.0,
+              "displayClock": "90'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -60937,8 +60936,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "88'",
-                "shortDetail": "88'"
+                "detail": "90'",
+                "shortDetail": "90'"
               }
             },
             "venue": {
@@ -61151,8 +61150,8 @@
           }
         ],
         "status": {
-          "clock": 5221.0,
-          "displayClock": "88'",
+          "clock": 5400.0,
+          "displayClock": "90'",
           "period": 2,
           "type": {
             "id": "26",
@@ -61160,8 +61159,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "88'",
-            "shortDetail": "88'"
+            "detail": "90'",
+            "shortDetail": "90'"
           }
         },
         "venue": {
@@ -61189,8 +61188,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 4755.0,
-              "displayClock": "80'",
+              "clock": 5106.0,
+              "displayClock": "86'",
               "period": 2,
               "type": {
                 "id": "26",
@@ -61198,8 +61197,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "Second Half",
-                "detail": "80'",
-                "shortDetail": "80'"
+                "detail": "86'",
+                "shortDetail": "86'"
               }
             },
             "venue": {
@@ -61414,8 +61413,8 @@
           }
         ],
         "status": {
-          "clock": 4755.0,
-          "displayClock": "80'",
+          "clock": 5106.0,
+          "displayClock": "86'",
           "period": 2,
           "type": {
             "id": "26",
@@ -61423,8 +61422,8 @@
             "state": "in",
             "completed": false,
             "description": "Second Half",
-            "detail": "80'",
-            "shortDetail": "80'"
+            "detail": "86'",
+            "shortDetail": "86'"
           }
         },
         "venue": {
@@ -61452,8 +61451,8 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2341.0,
-              "displayClock": "40'",
+              "clock": 2630.0,
+              "displayClock": "44'",
               "period": 1,
               "type": {
                 "id": "25",
@@ -61461,8 +61460,8 @@
                 "state": "in",
                 "completed": false,
                 "description": "First Half",
-                "detail": "40'",
-                "shortDetail": "40'"
+                "detail": "44'",
+                "shortDetail": "44'"
               }
             },
             "venue": {
@@ -61677,8 +61676,8 @@
           }
         ],
         "status": {
-          "clock": 2341.0,
-          "displayClock": "40'",
+          "clock": 2630.0,
+          "displayClock": "44'",
           "period": 1,
           "type": {
             "id": "25",
@@ -61686,8 +61685,8 @@
             "state": "in",
             "completed": false,
             "description": "First Half",
-            "detail": "40'",
-            "shortDetail": "40'"
+            "detail": "44'",
+            "shortDetail": "44'"
           }
         },
         "venue": {
@@ -61715,17 +61714,17 @@
             "timeValid": true,
             "recent": true,
             "status": {
-              "clock": 2573.0,
-              "displayClock": "43'",
+              "clock": 2700.0,
+              "displayClock": "45'",
               "period": 1,
               "type": {
-                "id": "25",
-                "name": "STATUS_FIRST_HALF",
+                "id": "23",
+                "name": "STATUS_HALFTIME",
                 "state": "in",
                 "completed": false,
-                "description": "First Half",
-                "detail": "43'",
-                "shortDetail": "43'"
+                "description": "Halftime",
+                "detail": "HT",
+                "shortDetail": "HT"
               }
             },
             "venue": {
@@ -61786,7 +61785,7 @@
                 "homeAway": "home",
                 "winner": false,
                 "form": "WWWDW",
-                "score": "0",
+                "score": "1",
                 "records": [
                   {
                     "name": "All Splits",
@@ -61940,17 +61939,17 @@
           }
         ],
         "status": {
-          "clock": 2573.0,
-          "displayClock": "43'",
+          "clock": 2700.0,
+          "displayClock": "45'",
           "period": 1,
           "type": {
-            "id": "25",
-            "name": "STATUS_FIRST_HALF",
+            "id": "23",
+            "name": "STATUS_HALFTIME",
             "state": "in",
             "completed": false,
-            "description": "First Half",
-            "detail": "43'",
-            "shortDetail": "43'"
+            "description": "Halftime",
+            "detail": "HT",
+            "shortDetail": "HT"
           }
         },
         "venue": {
@@ -63287,7 +63286,7 @@
             "startDate": "2026-11-12T02:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": false,
+            "recent": true,
             "status": {
               "clock": 0.0,
               "displayClock": "0'",
@@ -63546,7 +63545,7 @@
             "startDate": "2026-11-12T02:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": false,
+            "recent": true,
             "status": {
               "clock": 0.0,
               "displayClock": "0'",
