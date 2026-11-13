@@ -31730,7 +31730,7 @@
   },
   "20261112": {
     "is_locked": false,
-    "last_fetched": 1794542263.758042,
+    "last_fetched": 1794542588.424909,
     "raw_events": [
       {
         "id": "401929778",
@@ -45924,7 +45924,7 @@
             "startDate": "2026-11-12T20:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 5400.0,
               "displayClock": "90'+8'",
@@ -57445,13 +57445,13 @@
               "displayClock": "90'+6'",
               "period": 2,
               "type": {
-                "id": "26",
-                "name": "STATUS_SECOND_HALF",
-                "state": "in",
-                "completed": false,
-                "description": "Second Half",
-                "detail": "90'+6'",
-                "shortDetail": "90'+6'"
+                "id": "28",
+                "name": "STATUS_FULL_TIME",
+                "state": "post",
+                "completed": true,
+                "description": "Full Time",
+                "detail": "FT",
+                "shortDetail": "FT"
               }
             },
             "venue": {
@@ -57488,7 +57488,7 @@
               "title": "Apertura - Semifinals",
               "totalCompetitions": 2
             },
-            "altGameNote": "Liga de Expansi\u00f3n MX - 1st Leg",
+            "altGameNote": "Liga de Expansi\u00f3n MX",
             "notes": [
               {
                 "text": "1st Leg",
@@ -57506,8 +57506,8 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "WWLWL",
+                "winner": true,
+                "form": "WWWLW",
                 "score": "1",
                 "team": {
                   "id": "221",
@@ -57638,7 +57638,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "40.1"
+                    "displayValue": "41.1"
                   },
                   {
                     "name": "shotAssists",
@@ -57669,7 +57669,7 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "WLWWL",
+                "form": "LWLWW",
                 "score": "0",
                 "team": {
                   "id": "10129",
@@ -57800,7 +57800,7 @@
                   {
                     "name": "possessionPct",
                     "abbreviation": "PP",
-                    "displayValue": "59.9"
+                    "displayValue": "58.9"
                   },
                   {
                     "name": "shotAssists",
@@ -58097,6 +58097,50 @@
                   "text": "Yellow Card"
                 },
                 "clock": {
+                  "value": 5361.0,
+                  "displayValue": "90'"
+                },
+                "team": {
+                  "id": "221"
+                },
+                "scoreValue": 0,
+                "scoringPlay": false,
+                "redCard": false,
+                "yellowCard": true,
+                "penaltyKick": false,
+                "ownGoal": false,
+                "shootout": false,
+                "athletesInvolved": [
+                  {
+                    "id": "3106130",
+                    "displayName": "Jos\u00e9 Alonso Flores Ram\u00edrez",
+                    "shortName": "J. Flores Ram\u00edrez",
+                    "fullName": "Jos\u00e9 Alonso Flores Ram\u00edrez",
+                    "jersey": "28",
+                    "team": {
+                      "id": "221"
+                    },
+                    "links": [
+                      {
+                        "rel": [
+                          "playercard",
+                          "desktop",
+                          "athlete"
+                        ],
+                        "href": "https://www.espn.com/soccer/player/_/id/3106130/jose-alonso-flores-ramirez",
+                        "isHidden": false
+                      }
+                    ],
+                    "position": "SUB"
+                  }
+                ]
+              },
+              {
+                "type": {
+                  "id": "94",
+                  "text": "Yellow Card"
+                },
+                "clock": {
                   "value": 5400.0,
                   "displayValue": "90'+3'"
                 },
@@ -58137,260 +58181,7 @@
               }
             ],
             "odds": [
-              {
-                "overUnder": 2.5,
-                "link": {
-                  "language": "en-US",
-                  "rel": [
-                    "game",
-                    "desktop",
-                    "bets"
-                  ],
-                  "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34992914",
-                  "text": "Game",
-                  "shortText": "Game",
-                  "isExternal": true,
-                  "isPremium": false,
-                  "isHidden": false
-                },
-                "provider": {
-                  "id": "100",
-                  "name": "DraftKings",
-                  "priority": 1,
-                  "displayName": "DraftKings",
-                  "logos": [
-                    {
-                      "href": "https://a.espncdn.com/i/betting/Draftkings_Light.svg",
-                      "rel": [
-                        "light"
-                      ]
-                    },
-                    {
-                      "href": "https://a.espncdn.com/i/betting/Draftkings_Dark.svg",
-                      "rel": [
-                        "dark"
-                      ]
-                    }
-                  ]
-                },
-                "drawOdds": {
-                  "moneyLine": 255,
-                  "link": {
-                    "language": "en-US",
-                    "rel": [
-                      "draw",
-                      "desktop",
-                      "bets",
-                      "draftkings"
-                    ],
-                    "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34992914%3Foutcomes%3D0ML87173406_2",
-                    "text": "Draw Bet",
-                    "shortText": "Draw Bet",
-                    "isExternal": true,
-                    "isPremium": false,
-                    "isHidden": false
-                  }
-                },
-                "total": {
-                  "displayName": "Total",
-                  "shortDisplayName": "Total",
-                  "over": {
-                    "open": {
-                      "line": "o2.5",
-                      "odds": "-155"
-                    },
-                    "close": {
-                      "line": "o2.5",
-                      "odds": "-105"
-                    },
-                    "current": {
-                      "line": "OFF",
-                      "odds": "OFF",
-                      "link": {
-                        "rel": [
-                          "over",
-                          "bets"
-                        ],
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "mex.2",
-                            "sport": "soccer",
-                            "gameId": 401931922,
-                            "betSide": "over",
-                            "betType": "straight",
-                            "betDetails": "Over:null"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "under": {
-                    "open": {
-                      "line": "u2.5",
-                      "odds": "+100"
-                    },
-                    "close": {
-                      "line": "u2.5",
-                      "odds": "-130"
-                    },
-                    "current": {
-                      "line": "OFF",
-                      "odds": "OFF",
-                      "link": {
-                        "rel": [
-                          "under",
-                          "bets"
-                        ],
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "mex.2",
-                            "sport": "soccer",
-                            "gameId": 401931922,
-                            "betSide": "under",
-                            "betType": "straight",
-                            "betDetails": "Under:null"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "pointSpread": {
-                  "displayName": "Spread",
-                  "shortDisplayName": "Spread",
-                  "home": {
-                    "open": {
-                      "line": "-0.5",
-                      "odds": "-170"
-                    },
-                    "close": {
-                      "line": "-0.5",
-                      "odds": "-145"
-                    },
-                    "current": {
-                      "line": "OFF",
-                      "odds": "OFF",
-                      "link": {
-                        "rel": [
-                          "homeSpread",
-                          "bets"
-                        ],
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "mex.2",
-                            "sport": "soccer",
-                            "gameId": 401931922,
-                            "betSide": "home",
-                            "betType": "straight",
-                            "betDetails": "Spread:MORnull"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "line": "+0.5",
-                      "odds": "+110"
-                    },
-                    "close": {
-                      "line": "+0.5",
-                      "odds": "+105"
-                    },
-                    "current": {
-                      "line": "OFF",
-                      "odds": "OFF",
-                      "link": {
-                        "rel": [
-                          "awaySpread",
-                          "bets"
-                        ],
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "mex.2",
-                            "sport": "soccer",
-                            "gameId": 401931922,
-                            "betSide": "away",
-                            "betType": "straight",
-                            "betDetails": "Spread:UDGnull"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "moneyline": {
-                  "displayName": "Moneyline",
-                  "shortDisplayName": "ML",
-                  "home": {
-                    "open": {
-                      "odds": "-160"
-                    },
-                    "close": {
-                      "odds": "-140"
-                    },
-                    "current": {
-                      "odds": "OFF",
-                      "link": {
-                        "rel": [
-                          "home",
-                          "bets"
-                        ],
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "mex.2",
-                            "sport": "soccer",
-                            "gameId": 401931922,
-                            "betSide": "home",
-                            "betType": "straight"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "away": {
-                    "open": {
-                      "odds": "+340"
-                    },
-                    "close": {
-                      "odds": "+360"
-                    },
-                    "current": {
-                      "odds": "OFF",
-                      "link": {
-                        "rel": [
-                          "away",
-                          "bets"
-                        ],
-                        "tracking": {
-                          "campaign": "betting-integrations",
-                          "tags": {
-                            "league": "mex.2",
-                            "sport": "soccer",
-                            "gameId": 401931922,
-                            "betSide": "away",
-                            "betType": "straight"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "draw": {
-                    "open": {
-                      "odds": "+285"
-                    },
-                    "close": {
-                      "odds": "+255"
-                    }
-                  }
-                },
-                "details": "MOR -140"
-              }
+              null
             ],
             "wasSuspended": false,
             "playByPlayAvailable": true,
@@ -58402,13 +58193,13 @@
           "displayClock": "90'+6'",
           "period": 2,
           "type": {
-            "id": "26",
-            "name": "STATUS_SECOND_HALF",
-            "state": "in",
-            "completed": false,
-            "description": "Second Half",
-            "detail": "90'+6'",
-            "shortDetail": "90'+6'"
+            "id": "28",
+            "name": "STATUS_FULL_TIME",
+            "state": "post",
+            "completed": true,
+            "description": "Full Time",
+            "detail": "FT",
+            "shortDetail": "FT"
           }
         },
         "venue": {
@@ -58418,13 +58209,13 @@
           {
             "language": "en-US",
             "rel": [
-              "live",
+              "summary",
               "desktop",
               "event"
             ],
-            "href": "https://www.espn.com/soccer/match/_/gameId/401931922",
-            "text": "Gamecast",
-            "shortText": "Live",
+            "href": "https://www.espn.com/soccer/match/_/gameId/401931922/leones-negros-club-atletico-morelia",
+            "text": "Summary",
+            "shortText": "Summary",
             "isExternal": false,
             "isPremium": false,
             "isHidden": false
@@ -74525,7 +74316,7 @@
             "startDate": "2026-11-12T20:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 5400.0,
               "displayClock": "90'",
@@ -78264,7 +78055,7 @@
             "startDate": "2026-11-12T20:00Z",
             "attendance": 0,
             "timeValid": true,
-            "recent": true,
+            "recent": false,
             "status": {
               "clock": 5400.0,
               "displayClock": "90'",
@@ -81965,13 +81756,13 @@
               "displayClock": "90'",
               "period": 2,
               "type": {
-                "id": "26",
-                "name": "STATUS_SECOND_HALF",
-                "state": "in",
-                "completed": false,
-                "description": "Second Half",
-                "detail": "90'",
-                "shortDetail": "90'"
+                "id": "28",
+                "name": "STATUS_FULL_TIME",
+                "state": "post",
+                "completed": true,
+                "description": "Full Time",
+                "detail": "FT",
+                "shortDetail": "FT"
               }
             },
             "venue": {
@@ -82028,14 +81819,14 @@
                 "type": "team",
                 "order": 0,
                 "homeAway": "home",
-                "winner": false,
-                "form": "WWDDW",
+                "winner": true,
+                "form": "DWWDD",
                 "score": "1",
                 "records": [
                   {
                     "name": "All Splits",
                     "type": "total",
-                    "summary": "7-5-4",
+                    "summary": "8-5-4",
                     "abbreviation": "Total"
                   }
                 ],
@@ -82105,13 +81896,13 @@
                 "order": 1,
                 "homeAway": "away",
                 "winner": false,
-                "form": "DDWLL",
+                "form": "DDDWL",
                 "score": "0",
                 "records": [
                   {
                     "name": "All Splits",
                     "type": "total",
-                    "summary": "2-4-10",
+                    "summary": "2-4-11",
                     "abbreviation": "Total"
                   }
                 ],
@@ -82188,13 +81979,13 @@
           "displayClock": "90'",
           "period": 2,
           "type": {
-            "id": "26",
-            "name": "STATUS_SECOND_HALF",
-            "state": "in",
-            "completed": false,
-            "description": "Second Half",
-            "detail": "90'",
-            "shortDetail": "90'"
+            "id": "28",
+            "name": "STATUS_FULL_TIME",
+            "state": "post",
+            "completed": true,
+            "description": "Full Time",
+            "detail": "FT",
+            "shortDetail": "FT"
           }
         },
         "venue": {
