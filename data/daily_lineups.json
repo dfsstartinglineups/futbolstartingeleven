@@ -746,7 +746,7 @@
     "side": "home",
     "league_name": "🌎 UEFA Nations League",
     "league_hashtag": "#UEFANationsLeague",
-    "formation": "4-3-3",
+    "formation": "4-4-2",
     "starting_xi": [
       {
         "name": "Martin Zlomislic",
@@ -786,42 +786,42 @@
       {
         "name": "Benjamin Tahirovic",
         "short_name": "B. Tahirovic",
-        "pos": "CM",
+        "pos": "CM-L",
         "category": "M",
         "number": "6"
       },
       {
         "name": "Ivan Basic",
         "short_name": "I. Basic",
-        "pos": "LM",
+        "pos": "CM-R",
         "category": "M",
         "number": "13"
       },
       {
-        "name": "Ermin Mahmic",
-        "short_name": "E. Mahmic",
-        "pos": "RM",
-        "category": "M",
-        "number": "20"
-      },
-      {
         "name": "Kerim Alajbegovic",
         "short_name": "K. Alajbegovic",
-        "pos": "LF",
+        "pos": "LM",
         "category": "M",
         "number": "19"
       },
       {
         "name": "Esmir Bajraktarevic",
         "short_name": "E. Bajraktarevic",
-        "pos": "RF",
+        "pos": "RM",
         "category": "M",
         "number": "11"
       },
       {
+        "name": "Ermin Mahmic",
+        "short_name": "E. Mahmic",
+        "pos": "CF-L",
+        "category": "F",
+        "number": "20"
+      },
+      {
         "name": "Jovo Lukic",
         "short_name": "J. Lukic",
-        "pos": "F",
+        "pos": "CF-R",
         "category": "F",
         "number": "16"
       }
@@ -838,7 +838,7 @@
     "side": "away",
     "league_name": "🌎 UEFA Nations League",
     "league_hashtag": "#UEFANationsLeague",
-    "formation": "4-3-3",
+    "formation": "3-4-2-1",
     "starting_xi": [
       {
         "name": "Otto Hindrich",
@@ -848,6 +848,13 @@
         "number": "12"
       },
       {
+        "name": "Vladimir Screciu",
+        "short_name": "V. Screciu",
+        "pos": "CD",
+        "category": "D",
+        "number": "6"
+      },
+      {
         "name": "Andrei Coubis",
         "short_name": "A. Coubis",
         "pos": "CD-L",
@@ -855,60 +862,39 @@
         "number": "4"
       },
       {
-        "name": "Vladimir Screciu",
-        "short_name": "V. Screciu",
-        "pos": "CD-R",
-        "category": "D",
-        "number": "6"
-      },
-      {
-        "name": "Andrei Ratiu",
-        "short_name": "A. Ratiu",
-        "pos": "LB",
-        "category": "D",
-        "number": "2"
-      },
-      {
         "name": "Radu Dragusin",
         "short_name": "R. Dragusin",
-        "pos": "RB",
+        "pos": "CD-R",
         "category": "D",
         "number": "3"
       },
       {
-        "name": "Dennis Man",
-        "short_name": "D. Man",
-        "pos": "CM",
-        "category": "M",
-        "number": "20"
-      },
-      {
         "name": "Razvan Marin",
         "short_name": "R. Marin",
-        "pos": "LM",
+        "pos": "CM-L",
         "category": "M",
         "number": "18"
       },
       {
         "name": "Vlad Dragomir",
         "short_name": "V. Dragomir",
-        "pos": "RM",
+        "pos": "CM-R",
         "category": "M",
         "number": "22"
       },
       {
-        "name": "Ianis Hagi",
-        "short_name": "I. Hagi",
-        "pos": "LF",
-        "category": "M",
-        "number": "10"
-      },
-      {
         "name": "Nicusor Bancu",
         "short_name": "N. Bancu",
-        "pos": "RF",
+        "pos": "LM",
         "category": "M",
         "number": "11"
+      },
+      {
+        "name": "Andrei Ratiu",
+        "short_name": "A. Ratiu",
+        "pos": "RM",
+        "category": "M",
+        "number": "2"
       },
       {
         "name": "Daniel Birligea",
@@ -916,6 +902,20 @@
         "pos": "F",
         "category": "F",
         "number": "9"
+      },
+      {
+        "name": "Ianis Hagi",
+        "short_name": "I. Hagi",
+        "pos": "CF-L",
+        "category": "F",
+        "number": "10"
+      },
+      {
+        "name": "Dennis Man",
+        "short_name": "D. Man",
+        "pos": "CF-R",
+        "category": "F",
+        "number": "20"
       }
     ]
   },
@@ -940,18 +940,18 @@
         "number": "16"
       },
       {
-        "name": "Joachim Andersen",
-        "short_name": "J. Andersen",
-        "pos": "CD-L",
-        "category": "D",
-        "number": "2"
-      },
-      {
         "name": "Oliver Provstgaard",
         "short_name": "O. Provstgaard",
-        "pos": "CD-R",
+        "pos": "CD-L",
         "category": "D",
         "number": "3"
+      },
+      {
+        "name": "Joachim Andersen",
+        "short_name": "J. Andersen",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "2"
       },
       {
         "name": "Joakim Maehle",
@@ -1103,6 +1103,98 @@
       }
     ]
   },
+  "401861191_hungary_2026-11-17": {
+    "fixture_id": "401861191",
+    "date": "2026-11-17",
+    "team_name": "Hungary",
+    "team_slug": "hungary",
+    "lineup_url": "https://futbolstartingeleven.com/teams/hungary/lineup/",
+    "opponent_name": "Northern Ireland",
+    "opponent_slug": "northern-ireland",
+    "side": "home",
+    "league_name": "🌎 UEFA Nations League",
+    "league_hashtag": "#UEFANationsLeague",
+    "formation": "4-3-3",
+    "starting_xi": [
+      {
+        "name": "Balazs Toth",
+        "short_name": "B. Toth",
+        "pos": "G",
+        "category": "G",
+        "number": "1"
+      },
+      {
+        "name": "Ákos Markgráf",
+        "short_name": "Á. Markgráf",
+        "pos": "CD-L",
+        "category": "D",
+        "number": "5"
+      },
+      {
+        "name": "Márk Csinger",
+        "short_name": "M. Csinger",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "3"
+      },
+      {
+        "name": "Milos Kerkez",
+        "short_name": "M. Kerkez",
+        "pos": "LB",
+        "category": "D",
+        "number": "11"
+      },
+      {
+        "name": "Attila Osvath",
+        "short_name": "A. Osvath",
+        "pos": "RB",
+        "category": "D",
+        "number": "2"
+      },
+      {
+        "name": "Áron Csongvai",
+        "short_name": "Á. Csongvai",
+        "pos": "CM",
+        "category": "M",
+        "number": "15"
+      },
+      {
+        "name": "Callum Styles",
+        "short_name": "C. Styles",
+        "pos": "LM",
+        "category": "M",
+        "number": "17"
+      },
+      {
+        "name": "András Schäfer",
+        "short_name": "A. Schäfer",
+        "pos": "RM",
+        "category": "M",
+        "number": "13"
+      },
+      {
+        "name": "Dominik Szoboszlai",
+        "short_name": "D. Szoboszlai",
+        "pos": "LF",
+        "category": "M",
+        "number": "10"
+      },
+      {
+        "name": "Bendegúz Bolla",
+        "short_name": "B. Bolla",
+        "pos": "RF",
+        "category": "M",
+        "number": "14"
+      },
+      {
+        "name": "Barnabás Varga",
+        "short_name": "B. Varga",
+        "pos": "F",
+        "category": "F",
+        "number": "19"
+      }
+    ]
+  },
   "401861191_northern-ireland_2026-11-17": {
     "fixture_id": "401861191",
     "date": "2026-11-17",
@@ -1124,11 +1216,11 @@
         "number": "1"
       },
       {
-        "name": "Tom Atcheson",
-        "short_name": "T. Atcheson",
+        "name": "Ruairi McConville",
+        "short_name": "R. McConville",
         "pos": "CD",
         "category": "D",
-        "number": "4"
+        "number": "15"
       },
       {
         "name": "Ciaron Brown",
@@ -1138,11 +1230,11 @@
         "number": "22"
       },
       {
-        "name": "Ruairi McConville",
-        "short_name": "R. McConville",
+        "name": "Tom Atcheson",
+        "short_name": "T. Atcheson",
         "pos": "CD-R",
         "category": "D",
-        "number": "15"
+        "number": "4"
       },
       {
         "name": "Shea Charles",
@@ -1173,18 +1265,18 @@
         "number": "2"
       },
       {
-        "name": "Isaac Price",
-        "short_name": "I. Price",
-        "pos": "F",
-        "category": "F",
-        "number": "14"
-      },
-      {
         "name": "Patrick Kelly",
         "short_name": "P. Kelly",
-        "pos": "CF-L",
+        "pos": "F",
         "category": "F",
         "number": "16"
+      },
+      {
+        "name": "Isaac Price",
+        "short_name": "I. Price",
+        "pos": "CF-L",
+        "category": "F",
+        "number": "14"
       },
       {
         "name": "Ethan Galbraith",
@@ -1343,11 +1435,11 @@
         "number": "6"
       },
       {
-        "name": "Raul Florucz",
-        "short_name": "R. Florucz",
+        "name": "Luca Weinhandl",
+        "short_name": "L. Weinhandl",
         "pos": "RM",
         "category": "M",
-        "number": "19"
+        "number": "22"
       },
       {
         "name": "Junior Adamu",
@@ -1364,18 +1456,18 @@
         "number": "9"
       },
       {
-        "name": "Luca Weinhandl",
-        "short_name": "L. Weinhandl",
-        "pos": "AM-L",
-        "category": "F",
-        "number": "22"
-      },
-      {
         "name": "Sascha Horvath",
         "short_name": "S. Horvath",
-        "pos": "AM-R",
+        "pos": "AM-L",
         "category": "F",
         "number": "21"
+      },
+      {
+        "name": "Raul Florucz",
+        "short_name": "R. Florucz",
+        "pos": "AM-R",
+        "category": "F",
+        "number": "19"
       }
     ]
   },
@@ -1775,11 +1867,11 @@
         "number": "22"
       },
       {
-        "name": "Illia Zabarnyi",
-        "short_name": "I. Zabarnyi",
+        "name": "Eduard Sarapyi",
+        "short_name": "E. Sarapyi",
         "pos": "CD-R",
         "category": "D",
-        "number": "13"
+        "number": "3"
       },
       {
         "name": "Vitaliy Mykolenko",
@@ -1789,11 +1881,11 @@
         "number": "16"
       },
       {
-        "name": "Eduard Sarapyi",
-        "short_name": "E. Sarapyi",
+        "name": "Illia Zabarnyi",
+        "short_name": "I. Zabarnyi",
         "pos": "RB",
         "category": "D",
-        "number": "3"
+        "number": "13"
       },
       {
         "name": "Yehor Yarmoliuk",
@@ -1824,18 +1916,18 @@
         "number": "20"
       },
       {
-        "name": "Ihor Krasnopir",
-        "short_name": "I. Krasnopir",
-        "pos": "CF-L",
-        "category": "F",
-        "number": "21"
-      },
-      {
         "name": "Danylo Sikan",
         "short_name": "D. Sikan",
-        "pos": "CF-R",
+        "pos": "CF-L",
         "category": "F",
         "number": "14"
+      },
+      {
+        "name": "Ihor Krasnopir",
+        "short_name": "I. Krasnopir",
+        "pos": "CF-R",
+        "category": "F",
+        "number": "21"
       }
     ]
   },
@@ -1860,11 +1952,11 @@
         "number": "1"
       },
       {
-        "name": "Irakli Azarovi",
-        "short_name": "I. Azarovi",
+        "name": "Luka Lochoshvili",
+        "short_name": "L. Lochoshvili",
         "pos": "CD-L",
         "category": "D",
-        "number": "16"
+        "number": "4"
       },
       {
         "name": "Saba Goglichidze",
@@ -1874,11 +1966,11 @@
         "number": "5"
       },
       {
-        "name": "Luka Lochoshvili",
-        "short_name": "L. Lochoshvili",
+        "name": "Irakli Azarovi",
+        "short_name": "I. Azarovi",
         "pos": "LB",
         "category": "D",
-        "number": "4"
+        "number": "16"
       },
       {
         "name": "Otar Kakabadze",
@@ -1942,7 +2034,7 @@
     "side": "home",
     "league_name": "🌎 UEFA Nations League",
     "league_hashtag": "#UEFANationsLeague",
-    "formation": "4-2-3-1",
+    "formation": "4-4-2",
     "starting_xi": [
       {
         "name": "Danny Ward",
@@ -1980,46 +2072,46 @@
         "number": "14"
       },
       {
-        "name": "David Brooks",
-        "short_name": "D. Brooks",
-        "pos": "LM",
+        "name": "Rubin Colwill",
+        "short_name": "R. Colwill",
+        "pos": "CM-L",
         "category": "M",
-        "number": "7"
+        "number": "17"
       },
       {
         "name": "Josh Sheehan",
         "short_name": "J. Sheehan",
-        "pos": "RM",
+        "pos": "CM-R",
         "category": "M",
         "number": "22"
       },
       {
-        "name": "Harry Wilson",
-        "short_name": "H. Wilson",
-        "pos": "AM",
-        "category": "F",
-        "number": "8"
-      },
-      {
-        "name": "Rubin Colwill",
-        "short_name": "R. Colwill",
-        "pos": "F",
-        "category": "F",
-        "number": "17"
-      },
-      {
         "name": "Sorba Thomas",
         "short_name": "S. Thomas",
-        "pos": "AM-L",
-        "category": "F",
+        "pos": "LM",
+        "category": "M",
         "number": "19"
       },
       {
         "name": "Daniel James",
         "short_name": "D. James",
-        "pos": "AM-R",
-        "category": "F",
+        "pos": "RM",
+        "category": "M",
         "number": "20"
+      },
+      {
+        "name": "Harry Wilson",
+        "short_name": "H. Wilson",
+        "pos": "CF-L",
+        "category": "F",
+        "number": "8"
+      },
+      {
+        "name": "David Brooks",
+        "short_name": "D. Brooks",
+        "pos": "CF-R",
+        "category": "F",
+        "number": "7"
       }
     ]
   },
@@ -2058,18 +2150,18 @@
         "number": "4"
       },
       {
-        "name": "João Cancelo",
-        "short_name": "J. Cancelo",
-        "pos": "LB",
-        "category": "D",
-        "number": "20"
-      },
-      {
         "name": "Diogo Dalot",
         "short_name": "D. Dalot",
-        "pos": "RB",
+        "pos": "LB",
         "category": "D",
         "number": "2"
+      },
+      {
+        "name": "João Cancelo",
+        "short_name": "J. Cancelo",
+        "pos": "RB",
+        "category": "D",
+        "number": "20"
       },
       {
         "name": "João Neves",
@@ -3030,6 +3122,190 @@
         "name": "Kamory Doumbia",
         "short_name": "K. Doumbia",
         "pos": "CF-R",
+        "category": "F",
+        "number": "10"
+      }
+    ]
+  },
+  "401927180_niger_2026-11-17": {
+    "fixture_id": "401927180",
+    "date": "2026-11-17",
+    "team_name": "Niger",
+    "team_slug": "niger",
+    "lineup_url": "https://futbolstartingeleven.com/teams/niger/lineup/",
+    "opponent_name": "Morocco",
+    "opponent_slug": "morocco",
+    "side": "home",
+    "league_name": "Africa Cup of Nations Qualifying",
+    "league_hashtag": "#AfricaCupofNationsQualifying",
+    "formation": "4-2-3-1",
+    "starting_xi": [
+      {
+        "name": "Mahamadou Tanja Djibo",
+        "short_name": "M. Tanja Djibo",
+        "pos": "G",
+        "category": "G",
+        "number": "22"
+      },
+      {
+        "name": "Mohamed Abdouramane",
+        "short_name": "M. Abdouramane",
+        "pos": "CD-L",
+        "category": "D",
+        "number": "13"
+      },
+      {
+        "name": "Oumar Sako",
+        "short_name": "O. Sako",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "3"
+      },
+      {
+        "name": "Rahim Alhassane",
+        "short_name": "R. Alhassane",
+        "pos": "LB",
+        "category": "D",
+        "number": "2"
+      },
+      {
+        "name": "Aboubacar Camara",
+        "short_name": "A. Camara",
+        "pos": "RB",
+        "category": "D",
+        "number": "24"
+      },
+      {
+        "name": "Mamane Sabo",
+        "short_name": "M. Sabo",
+        "pos": "LM",
+        "category": "M",
+        "number": "5"
+      },
+      {
+        "name": "Abdoul Madjid Moumouni",
+        "short_name": "A. Madjid Moumouni",
+        "pos": "RM",
+        "category": "M",
+        "number": "23"
+      },
+      {
+        "name": "Youssouf Alio Oumarou",
+        "short_name": "Y. Alio Oumarou",
+        "pos": "AM",
+        "category": "F",
+        "number": "6"
+      },
+      {
+        "name": "Abdoul-Latif Goumey",
+        "short_name": "A. Goumey",
+        "pos": "F",
+        "category": "F",
+        "number": "25"
+      },
+      {
+        "name": "Amadou Moutari",
+        "short_name": "A. Moutari",
+        "pos": "AM-L",
+        "category": "F",
+        "number": "20"
+      },
+      {
+        "name": "Daniel Sosah",
+        "short_name": "D. Sosah",
+        "pos": "AM-R",
+        "category": "F",
+        "number": "7"
+      }
+    ]
+  },
+  "401927180_morocco_2026-11-17": {
+    "fixture_id": "401927180",
+    "date": "2026-11-17",
+    "team_name": "Morocco",
+    "team_slug": "morocco",
+    "lineup_url": "https://futbolstartingeleven.com/teams/morocco/lineup/",
+    "opponent_name": "Niger",
+    "opponent_slug": "niger",
+    "side": "away",
+    "league_name": "Africa Cup of Nations Qualifying",
+    "league_hashtag": "#AfricaCupofNationsQualifying",
+    "formation": "4-2-3-1",
+    "starting_xi": [
+      {
+        "name": "Yassine Bounou",
+        "short_name": "Y. Bounou",
+        "pos": "G",
+        "category": "G",
+        "number": "1"
+      },
+      {
+        "name": "Nayef Aguerd",
+        "short_name": "N. Aguerd",
+        "pos": "CD-L",
+        "category": "D",
+        "number": "5"
+      },
+      {
+        "name": "Abdelhamid Aït Boudlal",
+        "short_name": "A. Aït Boudlal",
+        "pos": "CD-R",
+        "category": "D",
+        "number": "27"
+      },
+      {
+        "name": "Souffian El Karouani",
+        "short_name": "S. El Karouani",
+        "pos": "LB",
+        "category": "D",
+        "number": "4"
+      },
+      {
+        "name": "Achraf Hakimi",
+        "short_name": "A. Hakimi",
+        "pos": "RB",
+        "category": "D",
+        "number": "2"
+      },
+      {
+        "name": "Reda Belahyane",
+        "short_name": "R. Belahyane",
+        "pos": "LM",
+        "category": "M",
+        "number": "13"
+      },
+      {
+        "name": "Ayyoub Bouaddi",
+        "short_name": "A. Bouaddi",
+        "pos": "RM",
+        "category": "M",
+        "number": "6"
+      },
+      {
+        "name": "Bilal El Khannouss",
+        "short_name": "B. El Khannouss",
+        "pos": "AM",
+        "category": "F",
+        "number": "23"
+      },
+      {
+        "name": "Yassir Zabiri",
+        "short_name": "Y. Zabiri",
+        "pos": "F",
+        "category": "F",
+        "number": "21"
+      },
+      {
+        "name": "Abdellah Ouazane",
+        "short_name": "A. Ouazane",
+        "pos": "AM-L",
+        "category": "F",
+        "number": "20"
+      },
+      {
+        "name": "Brahim Díaz",
+        "short_name": "B. Díaz",
+        "pos": "AM-R",
         "category": "F",
         "number": "10"
       }
